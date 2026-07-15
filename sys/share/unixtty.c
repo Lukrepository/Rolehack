@@ -41,7 +41,10 @@
 #endif /* POSIX_TYPES */
 #ifdef LINUX
 #include <sys/ioctl.h>
+/* ANDROID-PORT: bionic has no curses.h; nothing below needs it there */
+#ifndef CROSS_TO_ANDROID
 #include <curses.h>
+#endif
 #endif
 #define kill_sym c_cc[VKILL]
 #define erase_sym c_cc[VERASE]
@@ -136,7 +139,9 @@ struct tchars inittyb2, curttyb2;
 int has_colors(void);
 #endif
 
-#if defined(TTY_GRAPHICS) && ((!defined(SYSV) && !defined(HPUX)) \
+/* ANDROID-PORT: no libtermcap on bionic to supply ospeed; define it here */
+#if defined(TTY_GRAPHICS) && !defined(CROSS_TO_ANDROID) \
+    && ((!defined(SYSV) && !defined(HPUX)) \
                               || defined(UNIXPC) || defined(SVR4))
 extern /* it is defined in libtermlib (libtermcap) */
     short ospeed; /* terminal baudrate; set by gettty */
@@ -458,8 +463,12 @@ init_linux_cons(void)
     if (WINDOWPORT(tty) && linux_flag_console) {
         atexit(linux_mapon);
         linux_mapoff();
+/* ANDROID-PORT: no curses (has_colors) on bionic; Android has no VT
+   console so linux_flag_console is never set there anyway */
+#ifndef CROSS_TO_ANDROID
         if (has_colors())
             iflags.use_color = TRUE;
+#endif
     }
 #endif
 }
