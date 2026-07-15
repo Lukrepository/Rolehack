@@ -8,7 +8,9 @@
 #ifndef TCAP_H
 #define TCAP_H
 
-#ifndef MICRO
+/* ANDROID-PORT: no termcap/terminfo on-device; tty uses ANSI_DEFAULT
+   (same combination as the amiga port) */
+#if !defined(MICRO) && !defined(CROSS_TO_ANDROID)
 #define TERMLIB /* include termcap code */
 #endif
 
