@@ -809,6 +809,9 @@ tty_delay_output(void)
         (void) fflush(stdout);
     }
 #else /* MICRO */
+/* ANDROID-PORT: no termcap (tputs/ospeed/tgoto) on bionic; the
+   TIMED_DELAY msleep() path above provides the delay instead */
+#ifndef CROSS_TO_ANDROID
     /* BUG: if the padding character is visible, as it is on the 5620
        then this looks terrible. */
     if (flags.null) {
@@ -831,6 +834,7 @@ tty_delay_output(void)
             i -= cmlen * tmspc10[ospeed];
         }
     }
+#endif /* !CROSS_TO_ANDROID */
 #endif /* MICRO */
 }
 
