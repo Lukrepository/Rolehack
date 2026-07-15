@@ -460,6 +460,56 @@ NCURSES_PLATFORM=MIPS
 endif  # CROSS_TO_MIPS
 #=================================================================
 
+ifdef CROSS_TO_ANDROID
+#================================================================
+# Android NDK cross-compile recipe (port-layer addition, not upstream)
+#
+# 1. Unzip an Android NDK (tested: r27d) e.g. to /opt/android-ndk-r27d
+# 2. make CROSS_TO_ANDROID=1 WANT_WIN_TTY=1 all
+#    Overridable: ANDROID_NDK, ANDROID_API (default 24),
+#    ANDROID_TRIPLE (aarch64-linux-android | x86_64-linux-android)
+# Phase 0 proof-of-life build: tty windowport with ANSI_DEFAULT
+# (no termcap/ncurses on the device), Lua linked in, DLB data.
+#================================================================
+
+ANDROID_NDK ?= /opt/android-ndk-r27d
+ANDROID_API ?= 24
+ANDROID_TRIPLE ?= aarch64-linux-android
+ANDROID_TC = $(ANDROID_NDK)/toolchains/llvm/prebuilt/linux-x86_64/bin
+
+CFLAGS += -DCROSSCOMPILE
+
+override TARGET_CC = $(ANDROID_TC)/$(ANDROID_TRIPLE)$(ANDROID_API)-clang
+override TARGET_CXX = CXX=$(ANDROID_TC)/$(ANDROID_TRIPLE)$(ANDROID_API)-clang++
+override TARGET_AR = $(ANDROID_TC)/llvm-ar
+ANDROID_TARGET = $(TARGETPFX)nethack
+ANDROID_TARGET_CFLAGS = -c -O2 -I../include -I../sys/unix -I../win/share \
+	$(LUAINCL) -DDLB \
+	-DCROSSCOMPILE -DCROSSCOMPILE_TARGET \
+	-DCROSS_TO_ANDROID -DANSI_DEFAULT -DNO_TERMCAP_HEADERS \
+	-DNOCRASHREPORT -DNOPANICTRACE -DTIMED_DELAY \
+	-Wall -Wextra -Wno-missing-field-initializers -Wreturn-type -Wunused \
+	-Wformat -Wswitch -Wshadow -Wwrite-strings -Wno-unused-result
+ANDROID_TARGET_CXXFLAGS = -c -O2 -I../include -I../sys/unix -I../win/share \
+	$(LUAINCL) -DDLB \
+	-DCROSSCOMPILE -DCROSSCOMPILE_TARGET -DCROSS_TO_ANDROID \
+	-Wall -Wextra -Wno-missing-field-initializers
+override TARGET_CFLAGS = $(ANDROID_TARGET_CFLAGS)
+override TARGET_CXXFLAGS = $(ANDROID_TARGET_CXXFLAGS)
+override TARGET_LINK = $(ANDROID_TC)/$(ANDROID_TRIPLE)$(ANDROID_API)-clang++
+override TARGET_LFLAGS = -static-libstdc++
+LUA_TARGET_CFLAGS = $(TARGET_CFLAGS)
+override WINLIB =
+override LUALIB=
+override LUALIBS=
+override TOPLUALIB=
+override GAMEBIN=$(ANDROID_TARGET)
+override PACKAGE = androidpkg
+override PREGAME += mkdir -p $(TARGETDIR) ;
+override CLEANMORE += rm -f -r $(TARGETDIR) ;
+endif  # CROSS_TO_ANDROID
+#=================================================================
+
 #=================================================================
 
 ifdef CROSS_TO_AMIGA

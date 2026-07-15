@@ -230,6 +230,41 @@ mipspkg: dodata $(GAMEBIN) $(TARGETPFX)recover
 endif  # CROSS_TO_MIPS
 
 
+ifdef CROSS_TO_ANDROID
+# Android port-layer addition (not upstream); see build-notes-2026-07-14.md
+ANDROID_DATA_DIR = $(TARGETPFX)nethackdir
+
+$(ANDROID_TARGET): pregame $(TARGETPFX)date.o $(HOSTOBJ) $(HOBJ) $(LUACROSSLIB)
+	-rm -f $@
+	$(TARGET_LINK) $(TARGET_LFLAGS) -o $@ \
+		$(HOBJ) $(TARGETPFX)date.o $(TARGETPFX)$(HACKLIB) \
+		$(TARGET_LIBS) -lm
+
+$(TARGETPFX)unixmain.o : ../sys/unix/unixmain.c $(HACK_H)
+$(TARGETPFX)unixres.o : ../sys/unix/unixres.c $(HACK_H)
+$(TARGETPFX)unixunix.o : ../sys/unix/unixunix.c $(HACK_H)
+$(TARGETPFX)ioctl.o : ../sys/share/ioctl.c $(HACK_H)
+$(TARGETPFX)unixtty.o : ../sys/share/unixtty.c $(HACK_H)
+
+dodata:
+	( cd .. && make dlb && cd src)
+
+.PHONY: androidpkg
+androidpkg: dodata $(GAMEBIN)
+	mkdir -p $(TARGETPFX)pkg/nethackdir
+	cp $(GAMEBIN) $(TARGETPFX)pkg/nethack
+	cp ../dat/nhdat* $(TARGETPFX)pkg/nethackdir/
+	cp ../dat/license $(TARGETPFX)pkg/nethackdir/license
+	cp ../dat/symbols $(TARGETPFX)pkg/nethackdir/symbols
+	cp ../sys/unix/sysconf $(TARGETPFX)pkg/nethackdir/sysconf
+	-touch $(TARGETPFX)pkg/nethackdir/perm
+	-touch $(TARGETPFX)pkg/nethackdir/record
+	-touch $(TARGETPFX)pkg/nethackdir/logfile
+	-touch $(TARGETPFX)pkg/nethackdir/xlogfile
+	@echo Android package staged in $(TARGETPFX)pkg
+endif  # CROSS_TO_ANDROID
+
+
 ifdef CROSS_TO_AMIGA
 $(TARGETPFX)amidos.o : ../sys/amiga/amidos.c $(HACK_H)
 $(TARGETPFX)amigst.o : ../sys/amiga/amigst.c $(HACK_H)

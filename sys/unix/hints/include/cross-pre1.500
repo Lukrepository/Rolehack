@@ -38,6 +38,18 @@ override TARGETPFX = $(TARGETDIR)/
 override TARGET_LIBS=
 endif
 
+ifdef CROSS_TO_ANDROID
+# Android port-layer addition (not upstream); see build-notes-2026-07-14.md
+CROSS=1
+BUILD_TARGET_LUA=1
+HACKDIR=/data/local/tmp/nethackdir
+PREFIX=
+override TARGET = android
+override TARGETDIR=../targets/$(TARGET)
+override TARGETPFX = $(TARGETDIR)/
+override TARGET_LIBS=
+endif
+
 ifdef CROSS_TO_AMIGA
 CROSS=1
 BUILD_TARGET_LUA=1
