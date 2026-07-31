@@ -176,6 +176,16 @@ static const struct trobj Wizard[] = {
     { MAGIC_MARKER, 19, TOOL_CLASS, 1, 1, 0 }, /* actually spe = 18 + d4 */
     { 0, 0, 0, 0, 0, 0 }
 };
+static const struct trobj Apothecary[] = {
+    { QUARTERSTAFF, 0, WEAPON_CLASS, 1, 1, UNDEF_BLESS },
+    { ALCHEMY_SMOCK, 0, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
+    { POT_HEALING, 0, POTION_CLASS, 2, 2, 0 },
+    { POT_SICKNESS, 0, POTION_CLASS, 1, 1, 0 },
+    { POT_ACID, 0, POTION_CLASS, 1, 1, 0 },
+    { FOOD_RATION, 0, FOOD_CLASS, 2, 2, 0 },
+    { SACK, 0, TOOL_CLASS, 1, 1, 0 },
+    { 0, 0, 0, 0, 0, 0 }
+};
 
 /*
  *      Optional extra inventory items.
@@ -570,6 +580,24 @@ static const struct def_skill Skill_W[] = {
     { P_BARE_HANDED_COMBAT, P_BASIC },
     { P_NONE, 0 }
 };
+static const struct def_skill Skill_Apo[] = {
+    { P_KNIFE, P_EXPERT },
+    { P_DAGGER, P_SKILLED },
+    { P_QUARTERSTAFF, P_EXPERT },
+    { P_CLUB, P_BASIC },
+    { P_SLING, P_SKILLED },
+    { P_DART, P_EXPERT },
+    { P_UNICORN_HORN, P_SKILLED },
+    { P_HEALING_SPELL, P_EXPERT },
+    { P_MATTER_SPELL, P_EXPERT },
+    { P_DIVINATION_SPELL, P_SKILLED },
+    { P_ENCHANTMENT_SPELL, P_BASIC },
+    { P_ATTACK_SPELL, P_BASIC },
+    { P_ESCAPE_SPELL, P_BASIC },
+    { P_RIDING, P_BASIC },
+    { P_BARE_HANDED_COMBAT, P_BASIC },
+    { P_NONE, 0 }
+};
 
 staticfn void
 knows_object(int obj, boolean override_pauper)
@@ -776,6 +804,21 @@ u_init_role(void)
         if (!rn2(5))
             ini_inv(Blindfold);
         break;
+    case PM_APOTHECARY: {
+        int ct;
+
+        ini_inv(Apothecary);
+        if (!rn2(5))
+            ini_inv(Magicmarker);
+        /* an apothecary recognizes every potion on sight; knows_class()
+           won't do it because it skips magical objects, so call
+           knows_object() directly as its comment sanctions */
+        for (ct = svb.bases[POTION_CLASS];
+             objects[ct].oc_class == POTION_CLASS; ct++)
+            knows_object(ct, FALSE);
+        knows_object(SACK, FALSE);
+        break;
+    }
 
     default: /* impossible */
         break;
@@ -1080,6 +1123,9 @@ skills_for_role(void)
         break;
     case PM_WIZARD:
         skills = Skill_W;
+        break;
+    case PM_APOTHECARY:
+        skills = Skill_Apo;
         break;
     default:
         panic("No skills found for role");

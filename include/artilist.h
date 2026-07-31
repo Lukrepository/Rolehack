@@ -306,6 +306,16 @@ static NEARDATA struct artifact artilist[] = {
       NON_PM,
       0, 12, 4000L, NO_COLOR, EYE_OF_THE_AETHIOPICA),
 
+    /* the Apothecary's quest artifact; lore: chrysopoeia + elixir of life.
+       Carried life-saving is implemented separately (not an SPFX flag);
+       deliberately grants no reflection, magic resistance, speed, or
+       regeneration -- see role-spec-apothecary-2026-07-30.md */
+    A("The Philosopher's Stone", TOUCHSTONE,
+      (SPFX_NOGEN | SPFX_RESTR | SPFX_INTEL), SPFX_SEARCH, 0,
+      NO_ATTK, NO_DFNS, NO_CARY, ENLIGHTENING, A_NEUTRAL, PM_APOTHECARY,
+      NON_PM,
+      0, 12, 3500L, NO_COLOR, PHILOSOPHER_S_STONE),
+
 #if !defined(ARTI_ENUM) && !defined(DUMP_ARTI_ENUM)
     /*
      *  terminator; otyp must be zero

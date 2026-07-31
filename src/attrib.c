@@ -87,6 +87,12 @@ static const struct innate {
                  { 17, &(HTeleport_control), "controlled", "uncontrolled" },
                  { 0, 0, 0, 0 } },
 
+  /* deliberately sparse: the apothecary's budget is spent on knowing
+     every potion from turn 1 -- see role-spec-apothecary-2026-07-30.md */
+  apo_abil[] = { { 1, &(HPoison_resistance), "", "" },
+                 { 14, &(HSleep_resistance), "awake", "tired" },
+                 { 0, 0, 0, 0 } },
+
   /* Intrinsics conferred by race */
   dwa_abil[] = { { 1, &HInfravision, "", "" },
                  { 0, 0, 0, 0 } },
@@ -805,6 +811,7 @@ role_abil(int r)
         { PM_TOURIST, tou_abil },
         { PM_VALKYRIE, val_abil },
         { PM_WIZARD, wiz_abil },
+        { PM_APOTHECARY, apo_abil },
         { 0, 0 }
     };
     int i;
