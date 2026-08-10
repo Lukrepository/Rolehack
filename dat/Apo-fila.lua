@@ -1,42 +1,57 @@
--- NetHack Healer Hea-fila.lua	$NHDT-Date: 1652196003 2022/05/10 15:20:03 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.2 $
---	Copyright (c) 1989 by Jean-Christophe Collet
---	Copyright (c) 1991, 1993 by M. Stephenson, P. Winner
+-- NetHack Apothecary Apo-fila.lua
+--      Rolehack: the Apothecary quest -- the Royal Mint.
+--      See role-spec-apothecary-2026-07-30.md.
 -- NetHack may be freely redistributed.  See license for details.
 --
-des.level_init({ style = "solidfill", fg = "P" });
+--      Warrens, deeper.
 
-des.level_flags("mazelevel", "noflip");
+des.level_init({ style = "solidfill", fg = " " });
 
-des.level_init({ style="mines", fg=".", bg="P", smoothed=false, joined=true, lit=1, walled=false })
+des.level_flags("mazelevel", "noteleport", "hardfloor")
 
---
-des.stair("up")
-des.stair("down")
---
+des.map([[
+                                                                            
+                                                                            
+    -------------                       -------------                       
+    |...........|     -------------     |...........|                       
+    |...........|     |...........|     |...........|     -------------     
+    |...........+#####+...........+#####+...........+#####+...........|     
+    |...........|     |...........+#####+...........+#####+...........|     
+    |...........|     |...........|     ----------+--     |...........|     
+    ------+------     |...........|               #       |...........|     
+          #           --------+----               #       |...........|     
+          #                   #                   #       --------+----     
+          #                   #               ----+--------       #         
+      ----+----------     ----+----------     |...........|       #         
+      |.............|     |.............|     |...........|   ----+------   
+      |.............+#####+.............+#####+...........+###+.........|   
+      |.............|     |.............|     |...........|   |.........|   
+      |.............|     |.............|     -------------   |.........|   
+      ---------------     ---------------                     -----------   
+                                                                            
+                                                                            
+]]);
+
+des.region(selection.area(00,00,75,19), "unlit")
+
+des.stair("up", 8,5)
+des.stair("down", 66,15)
+
+des.non_diggable(selection.area(00,00,75,19))
+
 des.object()
 des.object()
 des.object()
-des.object()
-des.object()
-des.object()
-des.object()
-des.object()
---
-des.monster("rabid rat")
+des.object("gold piece")
+des.object("gold piece")
+
 des.monster({ class = "r", peaceful=0 })
 des.monster({ class = "r", peaceful=0 })
-des.monster("giant eel")
-des.monster("giant eel")
-des.monster("electric eel")
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
---
-des.trap()
+des.monster({ class = "r", peaceful=0 })
+des.monster({ class = "@", peaceful=0 })
+des.monster({ class = "@", peaceful=0 })
+des.monster({ class = "l", peaceful=0 })
+des.monster({ class = "F", peaceful=0 })
 des.trap()
 des.trap()
 des.trap()

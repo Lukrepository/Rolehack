@@ -1,90 +1,75 @@
--- NetHack Healer Hea-goal.lua	$NHDT-Date: 1652196003 2022/05/10 15:20:03 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.2 $
---	Copyright (c) 1989 by Jean-Christophe Collet
---	Copyright (c) 1991, 1993 by M. Stephenson, P. Winner
+-- NetHack Apothecary Apo-goal.lua
+--      Rolehack: the Apothecary quest -- the Royal Mint.
+--      See role-spec-apothecary-2026-07-30.md.
 -- NetHack may be freely redistributed.  See license for details.
 --
-des.level_init({ style = "solidfill", fg = "P" });
+--      Chaloner's workshop: the coining floor and the strongroom.
 
-des.level_flags("mazelevel");
+des.level_init({ style = "solidfill", fg = " " });
 
---
-des.level_init({ style="mines", fg=".", bg="P", smoothed=false, joined=true, lit=1, walled=false })
+des.level_flags("mazelevel", "noteleport", "hardfloor")
 
 des.map([[
-.P....................................PP.
-PP.......PPPPPPP....PPPPPPP....PPPP...PP.
-...PPPPPPP....PPPPPPP.....PPPPPP..PPP...P
-...PP..............................PPP...
-..PP..............................PP.....
-..PP..............................PPP....
-..PPP..............................PP....
-.PPP..............................PPPP...
-...PP............................PPP...PP
-..PPPP...PPPPP..PPPP...PPPPP.....PP...PP.
-P....PPPPP...PPPP..PPPPP...PPPPPPP...PP..
-PPP..................................PPP.
+                                                                            
+  ------------------------------------------------------------------------  
+  |.......................|.......................|......................|  
+  |..{..{..{..{..{..{.....|......-----------......|...F..F..F..F..F..F...|  
+  |.......................|......|.........|......|......................|  
+  |.......................|......|.........|......|...F..F..F..F..F..F...|  
+  |.......................|......|.........|......|......................|  
+  |.......................|......|.........|......|...F..F..F..F..F..F...|  
+  |.......................|......-----+-----......|......................|  
+  |.......................+...........................F..F..F..F..F..F...|  
+  |...............................................+......................|  
+  |.......................|.......................|...F..F..F..F..F..F...|  
+  |.......................|.......................|......................|  
+  |.......................|.......................|...F..F..F..F..F..F...|  
+  |.......................|.......................|......................|  
+  |.......................|.......................|...F..F..F..F..F..F...|  
+  |.......................|.......................|......................|  
+  |.......................|.......................|......................|  
+  ------------------------------------------------------------------------  
+                                                                            
 ]]);
--- Dungeon Description
-des.region(selection.area(00,00,40,11), "lit")
--- Stairs
-des.stair("up", 39,10)
--- Non diggable walls
-des.non_diggable(selection.area(00,00,40,11))
--- Objects
-des.object({ id = "touchstone", x=20, y=06, buc="blessed", spe=0, name="The Philosopher's Stone" })
-des.object("wand of lightning", 20, 06)
-des.object()
-des.object()
-des.object()
-des.object()
-des.object()
-des.object()
-des.object()
-des.object()
-des.object()
-des.object()
-des.object()
-des.object()
-des.object()
-des.object()
--- Random traps
-des.trap()
-des.trap()
-des.trap()
-des.trap()
-des.trap()
-des.trap()
--- Random monsters.
-des.monster({ id = "William Chaloner", x=20, y=06, peaceful=0 })
-des.monster("rabid rat")
-des.monster("rabid rat")
-des.monster("rabid rat")
-des.monster({ class = "r", peaceful=0 })
-des.monster({ class = "r", peaceful=0 })
-des.monster("giant eel")
-des.monster("giant eel")
-des.monster("giant eel")
-des.monster("giant eel")
-des.monster("giant eel")
-des.monster("giant eel")
-des.monster("electric eel")
-des.monster("electric eel")
-des.monster("shark")
-des.monster("shark")
-des.monster({ class = ";", peaceful=0 })
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
 
+-- The coining floor burns day and night.
+des.region(selection.area(00,00,75,19), "lit")
+
+des.stair("up", 5,16)
+
+des.door("closed",26,09)
+des.door("locked",50,10)
+des.door("locked",38,08)
+
+des.non_diggable(selection.area(00,00,75,19))
+
+-- The strongroom: the Stone, and the man who took it
+des.object({ id = "touchstone", x=38, y=05, buc="blessed", spe=0,
+             name="The Philosopher's Stone" })
+des.monster({ id = "William Chaloner", x=38, y=06, peaceful=0 })
+
+-- False coin, stacked and waiting
+des.object("gold piece", 36, 4)
+des.object("gold piece", 40, 4)
+des.object("gold piece", 55, 6)
+des.object("gold piece", 61, 12)
+des.object("gold piece", 67, 8)
+
+-- Chaloner's works: golems struck from his own dies, and the gold-thieves
+-- his false coin attracts.
+des.monster({ class = "'", peaceful=0 })
+des.monster({ class = "'", peaceful=0 })
+des.monster({ class = "'", peaceful=0 })
+des.monster({ class = "l", peaceful=0 })
+des.monster({ class = "l", peaceful=0 })
+des.monster({ class = "l", peaceful=0 })
+des.monster({ class = "@", peaceful=0 })
+des.monster({ class = "@", peaceful=0 })
+des.monster({ class = "@", peaceful=0 })
+des.monster({ class = "r", peaceful=0 })
+des.monster({ class = "r", peaceful=0 })
+des.trap()
+des.trap()
+des.trap()
+des.trap()
+des.trap()

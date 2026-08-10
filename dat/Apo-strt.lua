@@ -1,109 +1,91 @@
--- NetHack Healer Hea-strt.lua	$NHDT-Date: 1652196004 2022/05/10 15:20:04 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.2 $
---	Copyright (c) 1989 by Jean-Christophe Collet
---	Copyright (c) 1991, 1993 by M. Stephenson, P. Winner
+-- NetHack Apothecary Apo-strt.lua
+--      Rolehack: the Apothecary quest -- the Royal Mint.
+--      See role-spec-apothecary-2026-07-30.md.
 -- NetHack may be freely redistributed.  See license for details.
 --
---
---	The "start" level for the quest.
---
---	Here you meet your (besieged) class leader, Hippocrates
---	and receive your quest assignment.
---
+--      The Royal Mint: Sir Isaac Newton and the assay office.
+
 des.level_init({ style = "solidfill", fg = " " });
 
 des.level_flags("mazelevel", "noteleport", "hardfloor")
 
 des.map([[
-PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
-PPPP........PPPP.....PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP.P..PPPPP......PPPPPPPP
-PPP..........PPPP...PPPPP.........................PPPP..PPPPP........PPPPPPP
-PP............PPPPPPPP..............................PPP...PPPP......PPPPPPPP
-P.....PPPPPPPPPPPPPPP................................PPPPPPPPPPPPPPPPPPPPPPP
-PPPP....PPPPPPPPPPPP...................................PPPPP.PPPPPPPPPPPPPPP
-PPPP........PPPPP.........-----------------------........PP...PPPPPPP.....PP
-PPP............PPPPP....--|.|......S..........S.|--.....PPPP.PPPPPPP.......P
-PPPP..........PPPPP.....|.S.|......-----------|S|.|......PPPPPP.PPP.......PP
-PPPPPP......PPPPPP......|.|.|......|...|......|.|.|.....PPPPPP...PP.......PP
-PPPPPPPPPPPPPPPPPPP.....+.|.|......S.\.S......|.|.+......PPPPPP.PPPP.......P
-PPP...PPPPP...PPPP......|.|.|......|...|......|.|.|.......PPPPPPPPPPP.....PP
-PP.....PPP.....PPP......|.|S|-----------......|.S.|......PPPPPPPPPPPPPPPPPPP
-PPP..PPPPP...PPPP.......--|.S..........S......|.|--.....PPPPPPPPP....PPPPPPP
-PPPPPPPPPPPPPPPP..........-----------------------..........PPPPP..........PP
-PPPPPPPPPPPPPPPPP........................................PPPPPP............P
-PPP.............PPPP...................................PPP..PPPP..........PP
-PP...............PPPPP................................PPPP...PPPP........PPP
-PPP.............PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP....PPPPPP
-PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+}}........................................................................}}
+}}..--------------------------------------------------------------------..}}
+}}..|..................................................................|..}}
+}}..|...-----------------..............................................|..}}
+}}..|...|..{..{...{..{..|..............................................|..}}
+}}..|...|...............|....------------------........................|..}}
+}}..|...|...............|....|................|........................|..}}
+}}..|...|...............|....|................|........................|..}}
+}}..|...--------+--------....+.......\........|.....----------------...|..}}
+}}..+........................|................|.....|..............|...|..}}
+}}..|........................|................|.....|.F.F.F.F.F.F..|...|..}}
+}}..|.....------+------......--------+---------.....+..............|...|..}}
+}}..|.....|...........|.............................|..............|...|..}}
+}}..|.....|...........|.............................|..............|...|..}}
+}}..|.....|...........|.............................----------------...|..}}
+}}..|.....-------------................................................|..}}
+}}..---------------------------------+----------------------------------..}}
+}}........................................................................}}
+}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 ]]);
 
-des.replace_terrain({ region={01,01, 74,18}, fromterrain="P", toterrain=".", chance=10 })
-
--- Dungeon Description
+-- The works are lit; the river is not.
 des.region(selection.area(00,00,75,19), "lit")
--- Stairs
-des.stair("down", 37,9)
--- Portal arrival point
-des.levregion({ region = {04,12,04,12}, type="branch" })
--- altar for the Temple
-des.altar({ x=32,y=09,align="neutral",type="altar" })
--- Doors
-des.door("locked",24,10)
-des.door("closed",26,08)
-des.door("closed",27,12)
-des.door("locked",28,13)
-des.door("closed",35,07)
-des.door("locked",35,10)
-des.door("locked",39,10)
-des.door("closed",39,13)
-des.door("locked",46,07)
-des.door("closed",47,08)
-des.door("closed",48,12)
-des.door("locked",50,10)
--- Hippocrates
-des.monster({ id = "Sir Isaac Newton", coord = {37, 10}, inventory = function()
-   des.object({ id = "silver dagger", spe = 5 });
+
+-- Arrival from the portal: the courtyard between press house and assay office
+des.levregion({ region = {26,10,26,10}, type="branch" })
+-- Down, towards the warrens
+des.stair("down", 60,13)
+
+-- Doors.  The Mint is locked at every internal threshold; that is the point.
+des.door("locked",37,17)
+des.door("locked",04,10)
+des.door("closed",16,09)
+des.door("closed",37,12)
+des.door("locked",29,09)
+des.door("locked",52,12)
+des.door("closed",16,12)
+
+-- Sir Isaac Newton at his bench in the assay office
+des.monster({ id = "Sir Isaac Newton", coord = {37, 8}, inventory = function()
+   des.object({ id = "touchstone" });
+   des.object({ id = "scroll of magic mapping" });
 end })
--- The treasure of Hippocrates
-des.object("chest", 37, 10)
--- intern guards for the audience chamber
-des.monster("assayer", 29, 08)
-des.monster("assayer", 29, 09)
-des.monster("assayer", 29, 10)
-des.monster("assayer", 29, 11)
-des.monster("assayer", 40, 09)
-des.monster("assayer", 40, 10)
-des.monster("assayer", 40, 11)
-des.monster("assayer", 40, 13)
--- Non diggable walls
+des.object("chest", 37, 8)
+
+-- Assayers, at the benches and on the doors
+des.monster("assayer", 33, 08)
+des.monster("assayer", 33, 10)
+des.monster("assayer", 41, 08)
+des.monster("assayer", 41, 10)
+des.monster("assayer", 30, 09)
+des.monster("assayer", 45, 09)
+des.monster("assayer", 16, 07)
+des.monster("assayer", 60, 12)
+
+-- Stock in trade
+des.object("gold piece", 55, 11)
+des.object("gold piece", 59, 11)
+des.object("gold piece", 63, 11)
+des.object({ id = "potion of acid", x=12, y=14 })
+des.object({ id = "potion of healing", x=14, y=14 })
+
 des.non_diggable(selection.area(00,00,75,19))
--- Random traps
+
+-- Chaloner's people have got in among the crates.
+des.monster({ class = "@", peaceful=0 })
+des.monster({ class = "@", peaceful=0 })
+des.monster({ class = "@", peaceful=0 })
+des.monster("sewer rat")
+des.monster("sewer rat")
+des.monster("sewer rat")
+des.monster("giant rat")
+des.monster("giant rat")
+des.monster({ class = "l", peaceful=0 })
+des.monster({ class = "l", peaceful=0 })
 des.trap()
 des.trap()
 des.trap()
-des.trap()
-des.trap()
-des.trap()
--- Monsters on siege duty.
-des.monster("rabid rat")
-des.monster("rabid rat")
-des.monster("rabid rat")
-des.monster("rabid rat")
-des.monster("rabid rat")
-des.monster("rabid rat")
-des.monster("rabid rat")
-des.monster("rabid rat")
-des.monster("rabid rat")
-des.monster("rabid rat")
-des.monster("giant eel")
-des.monster("shark")
-des.monster(";")
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "D", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
-des.monster({ class = "S", peaceful=0 })
