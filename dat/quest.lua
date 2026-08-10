@@ -1112,235 +1112,250 @@ absence, yes?  How fare you upon your quest for the Amulet?"]],
       assignquest = {
          synopsis = "[Travel to %i on your way to recover %o from %n.]",
          output = "text",
-         text = [[For the first time, you sense a smile on %ls face.
+         text = [[%l sets down his glass and looks at you for a long moment.
 
-    "You have indeed learned as much as we can teach you in preparation
-    for this task.  Let me tell you what I know of the symptoms and hope
-    that you can provide a cure.
+    "Then you are real, and my working held.  Forgive me.  I have
+    laboured thirty years at the furnace and never once been answered.
 
-    "A short while ago, the dreaded %nt was fooled by the gods
-    into thinking that %nh could use %o to find a
-    cure for old age.  Think of it, eternal youth!  But %nj good
-    health is accomplished by drawing the health from those around %ni.
+    "Hear the whole of it.  The coin of this realm is being unmade.
+    Clipped, counterfeited, passed as true - and the man who does it
+    is no common coiner.  %n has taken from this Mint the one thing
+    I was set here to guard: %o.
 
-    "He has exhausted %nj own supply of healthy people and now %nh seeks to
-    extend %nj influence into our world.  You must recover from %ni
-    %o and break the spell.
+    "You know what it is.  Every apprentice is told the tale and few
+    believe it.  Base metal made noble.  The elixir that lengthens
+    life.  I did not believe it either, until I held it.
 
-    "You must travel into the swamps to %i, and from there
-    follow the trail to %ns island lair.  Be careful."]],
+    "%nH does not use it to make gold.  %nH uses it to make gold's
+    likeness - and every false coin %nh strikes carries the sickness
+    of the working.  Men handle them.  Men die of it.
+
+    "Go by way of %i.  The warrens beneath the gaol lead to %nj
+    workshop.  Take back %o, and bring it here, to %H."]],
       },
       badalign = {
          synopsis = "[Return when you are more %a.]",
          output = "text",
-         text = [["You have learned much of the remedies that benefit, but you must also
-know which physic for which ail.  That is why %ds teachings are a
-part of your training.
+         text = [["No.  Not you - not as you stand.
 
-"Return to us when you have healed thyself."]],
+"An assay is a question put to metal, and the metal cannot lie.  I
+would put the same question to a man before I trust him with %o.
+You have not answered it well.
+
+"Come back when your own alloy is truer, and we shall weigh you again."]],
       },
       badlevel = {
          synopsis = "[You are too inexperienced.  Return when you are %Ra.]",
          output = "text",
-         text = [["Alas, %p, you are yet too inexperienced to deal with the rigors
-of such a task.  You must be able to draw on the knowledge of botany,
-alchemy and veterinary practices before I can send you on this quest 
-with good conscience.
+         text = [["Not yet, %p.
 
-"Return when you wear %Ra's caduceus."]],
+"I have seen what %nj false coin does to those who handle it.  I will
+not send an apprentice to that.  Learn your reagents.  Learn what a
+thing is by what it does, not by what it looks like - that is the
+whole of the assayer's art and the whole of ours.
+
+"Return to me when they name you %Ra, and we shall speak again."]],
       },
       discourage = {
-         "\"They might as well give scalpels to wizards as to let you try to use %o!\"",
-         "\"If I could strike %l, surrounded by %lj %gP, imagine what I can do to you here by yourself.\"",
-         "\"I will put my %Rp to work making a physic out of your ashes.\"",
-         "\"As we speak, Hades gathers your patients to join you.\"",
-         "\"After I'm done with you, I'll destroy %l as well.\"",
-         "\"You will have to kill me if you ever hope to leave this place.\"",
-         "\"I will impale your head on my caduceus for all to see.\"",
-         "\"There is no materia medica in your sack which will cure you of me!\"",
-         "\"Do not fight too hard, I want your soul strong, not weakened!\"",
-         "\"You should have stopped studying at veterinary.\"",
+         "\"Newton sent you?  He sends what he can spare.\"",
+         "\"Every coin in this realm will bear my mark before I am done.\"",
+         "\"You test metal with a stone.  Let us test you with steel.\"",
+         "\"I made gold that fooled the Mint itself.  You I need not fool.\"",
+         "\"The old man could not hang me.  You he merely wastes.\"",
+         "\"Come closer, physician.  I have a coin for your tongue.\"",
+         "\"Your master guards a stone and calls it wisdom.  I spend it.\"",
+         "\"They will remember my face on the coin long after yours is dust.\"",
       },
       encourage = {
-         "\"Remember, %p, to always wash your hands before operating.\"",
-         "\"%nC has no real magic of %nj own.  To this %nh is vulnerable.\"",
-         "\"If you have been true to %d, you can draw on the power of %o.\"",
-         "\"Bring with you antidotes for poisons.\"",
-         "\"Remember this, %n can twist the powers of %o to hurt instead of heal.\"",
-         "\"I have sent for Chiron, but I am afraid he will come too late.\"",
-         "\"Maybe when you return the snakes will once again begin to shed.\"",
-         "\"The plague grows worse as we speak.  Hurry, %p!\"",
-         "\"Many times %n has caused trouble in these lands.  It is time that %nh was eradicated like the diseases %nh has caused.\"",
-         "\"With but one eye, %n should be easy to blind.  Remember this.\"",
+         "\"Assay him, %p!\"",
+         "\"Truth against likeness!\"",
+         "\"For the Mint!\"",
+         "\"Strike true - %nh is only a man!\"",
       },
       firsttime = {
-         synopsis = "[You arrive back at %H and must find %l.]",
-         output = "text",
-         text = [[What sorcery has brought you back to %H?  The smell
-of fresh funeral pyres tells you that something is amiss with the healing
-powers that used to practice here.
-
-No rhizotomists are tending the materia medica gardens, and where are the
-common folk who used to come for the cures?
-
-You know that you must quickly make your way to the collegium, and
-%ls iatreion, and find out what has happened in your absence.]],
-      },
-      goal_first = {
-         synopsis = "[You have reached the lair of %n.  Take %o away from %ni.]",
-         output = "text",
-         text = [[You stand within sight of the infamous Isle of %n.  Even
-the words of %l had not prepared you for this.
-
-Steeling yourself against the wails of the ill that pierce your ears,
-you hurry on your task.  Maybe with %o you can
-heal them on your return, but not now.]],
-      },
-      goal_next = {
-         text = "Once again, you %x the Isle of %n in the distance.",
-      },
-      gotit = {
-         synopsis = "[You feel the healing power of %o and should return it to %l.]",
-         output = "text",
-         text = [[As you pick up %o, you feel its healing begin to
-warm your soul.  You curse Zeus for taking it from its rightful owner,
-but at least you hope that %l can put it to good use once
-again.]],
-      },
-      guardtalk_after = {
-         "\"Did you read that new treatise on the therapeutic use of leeches?\"",
-         "\"Paint a red caduceus on your shield and monsters won't hit you.\"",
-         "\"How are you feeling?  Perhaps a good bleeding will improve your spirits.\"",
-         "\"Have you heard the absurd new theory that diseases are caused by microscopic organisms, and not ill humors?\"",
-         "\"I see that you bring %o, now you can cure this plague!\"",
-      },
-      guardtalk_before = {
-         "\"Did you read that new treatise on the therapeutic use of leeches?\"",
-         "\"Paint a red caduceus on your shield and monsters won't hit you.\"",
-         "\"I passed handwriting so they are demoting me a rank.\"",
-         "\"I've heard that even %l has not been able to cure Chiron.\"",
-         "\"We think %n has used %nj alchemists, and %o, to unleash a new disease we call 'the cold' on Gehennom.\"",
-      },
-      hasamulet = {
-         synopsis = "[\"You have recovered the Amulet.  Travel to the Astral Plane and return it to %d.\"]",
-         output = "text",
-         text = [["Ah, you have recovered the Amulet, %p.  Well done!
-
-"Now, you should know that you must travel through the Elemental Planes
-to the Astral, and there return the Amulet to %d.  Go forth and
-may our prayers be as a wind upon your back."]],
-      },
-      killed_nemesis = {
-         synopsis = "[%nC curses you as %nh dies.]",
-         output = "text",
-         text = [[The battered body of %n slumps to the ground and gasps
-out one last curse:
-
-    "You have defeated me, %p, but I shall have my revenge.
-    How, I shall not say, but this curse shall be like a cancer
-    on you."
-
-With that %n dies.]],
-      },
-      leader_first = {
-         synopsis = "[%l is weak from the struggle with %n.  %lH wants to examine you.]",
-         output = "text",
-         text = [[Feebly, %l raises %lj head to look at you.
-
-"It is good to see you again, %p.  I see the concern in your
-eyes, but do not worry for me.  I am not ready for Hades yet.  We have
-exhausted much of our healing powers holding off %n.
-I need your fresh strength to carry on our work.
-
-"Come closer and let me lay hands on you, and determine if you have
-the skills necessary to accomplish this mission."]],
-      },
-      leader_last = {
-         synopsis = "[You are a failure as a healer.]",
-         output = "text",
-         text = [["You have failed us, %p.  You are a quack!  A charlatan!
-
-"Hades will be happy to hear that you are once again practicing your
-arts on the unsuspecting."]],
-      },
-      leader_next = {
-         text = [["Again you return to me, %p.  I sense that each trip back
-the pleurisy and maladies of our land begin to infect you.  Let us
-hope and pray to %d that you become ready for your task before
-you fall victim to the bad humors."]],
-      },
-      leader_other = {
-         text = [["Chiron has fallen, Hermes has fallen, what else must I tell you to
-impress upon you the importance of your mission!  I hope that you
-have come prepared this time."]],
-      },
-      locate_first = {
-         synopsis = "[You have reached %i but all is not well.]",
-         output = "text",
-         text = [[You stand before the entrance to %i.  Strange
-scratching noises come from within the building.
-
-The swampy ground around you seems to stink with disease.]],
-      },
-      locate_next = {
-         text = "Once again you stand at the entrance to %i.",
-      },
-      nemesis_first = {
-         synopsis = "[\"I will take your life, then defeat %l.\"]",
-         output = "text",
-         text = [["They have made a mistake in sending you, %p.
-
-"When I add your youth to mine, it will just make it easier for me
-to defeat %l."]],
-      },
-      nemesis_next = {
-         text = "\"Unlike your patients, you seem to keep coming back, %p!\"",
-      },
-      nemesis_other = {
-         text = "\"Which would you like, %p?  Boils, pleurisy, convulsions?\"",
-      },
-      nemesis_wantsit = {
-         text = [["I'll have %o back from you, %r.  You are
-not going to live to escape this place."]],
+         output = "pline",
+         text = [[A cold draught of furnace-smoke and river damp: you have come to %H.]],
       },
       nexttime = {
-         text = [[After your last experience you expected to be here, but you certainly
-did not expect to see things so much worse.  This time you must succeed.]],
-      },
-      offeredit = {
-         synopsis = "[%l touches %o and tells %lj %gP to do so too, then tells you to take it with you.]",
-         output = "text",
-         text = [[As soon as %l sees %o %lh summons %lj
-%gP.
-
-Gently, %l reaches out and touches %o.
-He instructs each of the assembled to do the same.  When everyone
-has finished %lh speaks to you.
-
-    "Now that we have been replenished we can defeat this plague.  You must
-    take %o with you and replenish the worlds you have
-    been called upon to travel next.  I wish you could ride Chiron to the
-    end of your journey, but I need him to help me spread the cure.  Go
-    now and continue your journey."]],
-      },
-      offeredit2 = {
-         synopsis = "[%l tells you to keep %o and return to %Z to search for the Amulet.]",
-         output = "text",
-         text = [[%l cautiously handles %o while watching you.
-
-"You are its keeper now, and the time has come to resume your search
-for the Amulet.  %Z await your return through the
-magic portal which brought you here."]],
+         output = "pline",
+         text = [[The presses are silent again.  %H waits.]],
       },
       othertime = {
-         text = [[Again, you %x %H in the distance.
+         output = "pline",
+         text = [[You return to %H.]],
+      },
+      leader_first = {
+         output = "text",
+         text = [[An old man in a scorched coat looks up from a crucible, and does
+not seem surprised.
 
-The smell of death and disease permeates the air.  You do not have
-to be %Ra to know that %n is on the verge of victory.]],
+    "You will be %p," says %l.  "I asked for help and did not
+    specify its shape.  That was deliberate.  I did not presume to
+    tell Providence its business - only to ask, in the one language
+    I have ever been fluent in, which is fire and salt and patience.
+
+    "You keep your own gods.  Keep them.  I keep mine, and we shall
+    both find that they have no quarrel with honest metal.
+
+    "Rest.  Eat.  Then we shall talk about what has been stolen."]],
+      },
+      leader_next = {
+         output = "text",
+         text = [["Still here, %p?  Good.  The furnace wants tending and so do you.
+
+"Ask me what you like.  I have written a great deal that I will never
+publish, and it is a relief to say some of it aloud."]],
+      },
+      leader_other = {
+         output = "text",
+         text = [["The work waits, %p.  So does %n."]],
+      },
+      leader_last = {
+         output = "text",
+         text = [["Then it is finished, and the Mint is clean.
+
+"I shall not ask you to stay.  I have read enough to know that you
+were called from somewhere, and that somewhere is missing you.
+
+"Take this with my thanks - and %p, when you are old, and some young
+fool asks whether the Stone was ever real: tell them the truth.  They
+will not believe you.  That is half the pleasure of it."]],
+      },
+      hasamulet = {
+         output = "text",
+         text = [[%l looks at what you carry, and for the first time seems afraid.
+
+    "Put it away.  Do not set it on my bench, do not tell me its
+    weight, and above all do not tell me what it whispers.
+
+    "There are questions a man may put to metal.  That is not one of
+    them.  Go, and finish it."]],
+      },
+      guardtalk_before = {
+         "\"Mind the crucibles.\"",
+         "\"Every ingot is weighed twice here.  Twice.\"",
+         "\"The Warden has not slept in four days.\"",
+         "\"You are the one he called up?  You are shorter than I expected.\"",
+         "\"Touchstone, aqua fortis, scale.  In that order, always.\"",
+         "\"Nine parts fine.  Not eight.  Nine.\"",
+      },
+      guardtalk_after = {
+         "\"Bring it back, and we will assay it ourselves.\"",
+         "\"%nH cut a die from the Warden's own pattern.  Take that back too.\"",
+         "\"Mind the warrens.  The air is bad and the men are worse.\"",
+         "\"We would come with you, but someone must weigh the silver.\"",
+         "\"Strike true.\"",
+      },
+      locate_first = {
+         output = "text",
+         text = [[The gaol has a beneath, and the beneath has a beneath.
+
+    Here the walls sweat and the passages are stacked with crates
+    that were never entered in any ledger.  Somewhere ahead a press
+    is working - you can feel it in the floor more than hear it,
+    a slow heartbeat of iron.
+
+    This is %i.  %nJ house lies past it.]],
+      },
+      locate_next = {
+         output = "pline",
+         text = [[You are back in %i.  Underfoot, the press still beats.]],
+      },
+      goal_first = {
+         synopsis = "[Recover %o from %n.]",
+         output = "text",
+         text = [[You have found the workshop of %n.
+
+    It is better appointed than the Mint.  Furnaces in a row, dies
+    racked and numbered, crates of blanks stacked to the ceiling -
+    and everywhere the smell of hot metal and something sweeter
+    underneath it, which you know, because you are what you are,
+    is the smell of a slow poison.
+
+    On the far bench, under lamplight, something small and grey is
+    doing what nothing grey should do.  %o.
+
+    Take it, and take nothing else from this place.]],
+      },
+      goal_next = {
+         output = "pline",
+         text = [[The furnaces of %n still burn.]],
+      },
+      nemesis_first = {
+         output = "text",
+         text = [[A well-dressed man sets down a pair of tongs and smiles at you as
+though you were expected and slightly late.
+
+    "The Warden's answered prayer.  I had heard he was praying.
+
+    "Do you know what he calls me?  A coiner.  Thirty years of the
+    finest work in England and the man cannot say the word artist.
+
+    "He guards %o and never once spends it.  I spend it.  I have made
+    more gold than the Mint has struck in a decade, and every ounce of
+    it passes.  Tell me which of us understands the thing better.
+
+    "No?  Then we shall settle it the old way."]],
+      },
+      nemesis_next = {
+         output = "text",
+         text = [["Back again?  The Warden is thorough, I will grant him that."]],
+      },
+      nemesis_other = {
+         output = "text",
+         text = [["Still breathing, physician?"]],
+      },
+      nemesis_wantsit = {
+         output = "text",
+         text = [["That is mine.  I paid for it in ways your master would not survive
+hearing about.  Set it down and I may let you walk out of here."]],
+      },
+      killed_nemesis = {
+         output = "text",
+         text = [[%n is dead.
+
+    The furnaces go on burning.  In the racks, a thousand dies wait
+    to strike a thousand faces that were never a king's.
+
+    On the bench, %o has gone quiet and cold, and looks - to any eye
+    but yours - exactly like a common grey stone.]],
+      },
+      gotit = {
+         output = "text",
+         text = [[It weighs less than it should.
+
+    You have handled touchstones all your life; you know what a
+    gray stone does and does not do.  This one is warm, and the
+    warmth does not fade, and along one edge there is a streak of
+    gold that you did not put there.
+
+    You are holding %o.  Take it home to %l.]],
+      },
+      offeredit = {
+         output = "text",
+         text = [[%l takes %o from you with both hands, the way one lifts something
+that is already broken, and sets it on the balance.
+
+    He watches the beam.  He watches it for a long time.
+
+    "Yes," he says at last, very quietly.  "Yes.  That is it exactly."]],
+      },
+      offeredit2 = {
+         output = "text",
+         text = [["No.  Keep it.
+
+"I have spent thirty years proving I could be trusted with %o and
+about four seconds discovering that I would rather not be.  Carry it.
+You have somewhere further to go than I ever did."]],
       },
       posthanks = {
-         text = [["You have again returned to us, %p.  We have done well in your
-absence, yes?  How fare you upon your quest for the Amulet?"]],
+         output = "text",
+         text = [["The coin will be clean by Michaelmas.  It will take longer for the
+men in the warrens, but that is a physician's work, not a warden's,
+and you have shown me you can do both.
+
+"Go on, %p.  Whatever called you here will want you back.  I am told
+that is how it works, though I never did get the mathematics of it."]],
       },
    },
    Kni = {
