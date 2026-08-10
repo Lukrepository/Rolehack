@@ -31,7 +31,7 @@ des.stair("up", 39,10)
 -- Non diggable walls
 des.non_diggable(selection.area(00,00,40,11))
 -- Objects
-des.object({ id = "quarterstaff", x=20, y=06, buc="blessed", spe=0, name="The Staff of Aesculapius" })
+des.object({ id = "touchstone", x=20, y=06, buc="blessed", spe=0, name="The Philosopher's Stone" })
 des.object("wand of lightning", 20, 06)
 des.object()
 des.object()
@@ -55,7 +55,7 @@ des.trap()
 des.trap()
 des.trap()
 -- Random monsters.
-des.monster({ id = "Cyclops", x=20, y=06, peaceful=0 })
+des.monster({ id = "William Chaloner", x=20, y=06, peaceful=0 })
 des.monster("rabid rat")
 des.monster("rabid rat")
 des.monster("rabid rat")
