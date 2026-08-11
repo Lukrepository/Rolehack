@@ -1078,7 +1078,39 @@ done(int how)
             disp.botl = TRUE;
         }
     }
-    if (Lifesaved && (how <= GENOCIDED)) {
+    /* ROLEHACK: the Philosopher's Stone saves its bearer while merely
+       carried -- it need not be worn, which is the whole point of it.
+       Unlike the amulet it is not destroyed; it goes inert and can be
+       re-tempered (see potion_dip).  Checked before the amulet so that a
+       hero carrying both spends the renewable one first. */
+    if (how <= GENOCIDED) {
+        struct obj *pstone;
+
+        for (pstone = gi.invent; pstone; pstone = pstone->nobj)
+            if (pstone->oartifact == ART_PHILOSOPHER_S_STONE
+                && !pstone->oeroded)
+                break;
+        if (pstone) {
+            pline("But wait...");
+            Your("pack grows suddenly, impossibly warm!");
+            if (how == CHOKING)
+                You("vomit ...");
+            You_feel("much better!");
+            pline("%s dull and grey.", Yobjnam2(pstone, "turn"));
+            pstone->oeroded = 1; /* spent; re-temper with acid + full healing */
+            savelife(how);
+            if (how == GENOCIDED) {
+                pline("Unfortunately you are still genocided...");
+            } else {
+                char killbuf[BUFSZ];
+
+                formatkiller(killbuf, BUFSZ, how, FALSE);
+                livelog_printf(LL_LIFESAVE, "averted death (%s)", killbuf);
+                survive = TRUE;
+            }
+        }
+    }
+    if (!survive && Lifesaved && (how <= GENOCIDED)) {
         pline("But wait...");
         /* assumes that only one type of item confers LifeSaved property */
         makeknown(AMULET_OF_LIFE_SAVING);

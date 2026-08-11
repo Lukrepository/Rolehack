@@ -2457,6 +2457,46 @@ potion_dip(struct obj *obj, struct obj *potion)
 
     obj->pickup_prev = 0; /* no longer 'recently picked up' */
     potion->in_use = TRUE; /* assume it will be used up */
+
+    /* ROLEHACK: re-tempering the Philosopher's Stone.  A spent stone is
+       inert (oeroded 1); dipping it in acid primes it (oeroded 2); dipping
+       a primed stone in full healing restores it.  Each restoration leaves
+       the stone less stable, so the acid step grows more dangerous every
+       time -- the player decides how greedy to be.  spe counts restorations. */
+    if (obj->oartifact == ART_PHILOSOPHER_S_STONE && obj->oeroded) {
+        if (obj->oeroded == 1 && potion->otyp == POT_ACID) {
+            int risk = 5 + 15 * obj->spe; /* 5%, 20%, 35%, ... */
+
+            pline("The acid bites at %s.", the(xname(obj)));
+            useup(potion);
+            if (rn2(100) < risk) {
+                pline_The("stone shudders, and the flask bursts!");
+                losehp(rnd(15 + 5 * obj->spe),
+                       "an alchemic blast", KILLED_BY_AN);
+                return ECMD_TIME;
+            }
+            obj->oeroded = 2;
+            pline("A faint gold streak wakes along its edge.");
+            return ECMD_TIME;
+        }
+        if (obj->oeroded == 2 && potion->otyp == POT_FULL_HEALING) {
+            useup(potion);
+            obj->oeroded = 0;
+            if (obj->spe < 20)
+                obj->spe++;
+            pline("The elixir sinks into the stone and does not come out.");
+            pline("%s warm again.", Yobjnam2(obj, "are"));
+            if (obj->spe > 2)
+                You_feel("that it will not take much more of this.");
+            return ECMD_TIME;
+        }
+        if (potion->otyp == POT_ACID || potion->otyp == POT_FULL_HEALING) {
+            pline("Nothing happens.  The order matters.");
+            potion->in_use = FALSE;
+            return ECMD_OK;
+        }
+    }
+
     if (potion->otyp == POT_WATER) {
         boolean useeit = !Blind || (obj == ublindf && Blindfolded_only);
         const char *obj_glows = Yobjnam2(obj, "glow");
