@@ -2463,7 +2463,7 @@ potion_dip(struct obj *obj, struct obj *potion)
        a primed stone in full healing restores it.  Each restoration leaves
        the stone less stable, so the acid step grows more dangerous every
        time -- the player decides how greedy to be.  spe counts restorations. */
-    if (obj->oartifact == ART_PHILOSOPHER_S_STONE && obj->oeroded) {
+    if (obj->oartifact == ART_LAPIS_PHILOSOPHORUM && obj->oeroded) {
         if (obj->oeroded == 1 && potion->otyp == POT_ACID) {
             int risk = 5 + 15 * obj->spe; /* 5%, 20%, 35%, ... */
 

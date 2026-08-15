@@ -96,7 +96,7 @@ const struct Role roles[NUM_ROLES+1] = {
       NON_PM,
       S_LEPRECHAUN,
       S_GOLEM,
-      ART_PHILOSOPHER_S_STONE,
+      ART_LAPIS_PHILOSOPHORUM,
       MH_HUMAN | MH_DWARF | MH_GNOME | ROLE_MALE | ROLE_FEMALE | ROLE_LAWFUL
           | ROLE_NEUTRAL,
       /* Str Int Wis Dex Con Cha */

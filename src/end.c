@@ -1087,7 +1087,7 @@ done(int how)
         struct obj *pstone;
 
         for (pstone = gi.invent; pstone; pstone = pstone->nobj)
-            if (pstone->oartifact == ART_PHILOSOPHER_S_STONE
+            if (pstone->oartifact == ART_LAPIS_PHILOSOPHORUM
                 && !pstone->oeroded)
                 break;
         if (pstone) {

@@ -310,11 +310,11 @@ static NEARDATA struct artifact artilist[] = {
        Carried life-saving is implemented separately (not an SPFX flag);
        deliberately grants no reflection, magic resistance, speed, or
        regeneration -- see role-spec-apothecary-2026-07-30.md */
-    A("The Philosopher's Stone", TOUCHSTONE,
+    A("The Lapis Philosophorum", TOUCHSTONE,
       (SPFX_NOGEN | SPFX_RESTR | SPFX_INTEL), SPFX_SEARCH, 0,
       NO_ATTK, NO_DFNS, NO_CARY, ENLIGHTENING, A_NEUTRAL, PM_APOTHECARY,
       NON_PM,
-      0, 12, 3500L, NO_COLOR, PHILOSOPHER_S_STONE),
+      0, 12, 3500L, NO_COLOR, LAPIS_PHILOSOPHORUM),
 
 #if !defined(ARTI_ENUM) && !defined(DUMP_ARTI_ENUM)
     /*

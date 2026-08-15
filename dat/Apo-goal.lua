@@ -45,7 +45,7 @@ des.non_diggable(selection.area(00,00,75,19))
 
 -- The strongroom: the Stone, and the man who took it
 des.object({ id = "touchstone", x=38, y=05, buc="blessed", spe=0,
-             name="The Philosopher's Stone" })
+             name="The Lapis Philosophorum" })
 des.monster({ id = "William Chaloner", x=38, y=06, peaceful=0 })
 
 -- Chaloner's hoard.  He coined some 30,000 guineas in his career and
