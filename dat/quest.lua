@@ -1115,23 +1115,31 @@ absence, yes?  How fare you upon your quest for the Amulet?"]],
          text = [[%l sets down his glass and looks at you for a long moment.
 
     "Then you are real, and my working held.  Forgive me.  I have
-    laboured thirty years at the furnace and never once been answered.
+    laboured thirty years at the furnace and been answered twice:
+    once by the Stone, and once by you.
 
-    "Hear the whole of it.  The coin of this realm is being unmade.
-    Clipped, counterfeited, passed as true - and the man who does it
-    is no common coiner.  %n has taken from this Mint the one thing
-    I was set here to guard: %o.
+    "Hear the whole of it.  I am the King's Warden here.  His Majesty
+    King William gave me one task - to make the coin of this realm
+    honest again - and I have spent four years at it while men clipped
+    the silver faster than we could strike it.
 
-    "You know what it is.  Every apprentice is told the tale and few
-    believe it.  Base metal made noble.  The elixir that lengthens
-    life.  I did not believe it either, until I held it.
+    "And I did the other thing too.  The thing they laugh at.  Thirty
+    years of furnace and salt and failure, and then one morning it was
+    simply there in my hand: %o.  Base metal made noble.  I told no
+    one.  I set it in the vault and went back to weighing shillings.
 
-    "%nH does not use it to make gold.  %nH uses it to make gold's
-    likeness - and every false coin %nh strikes carries the sickness
-    of the working.  Men handle them.  Men die of it.
+    "%n took it.  Not for gold - %nh had gold, %nh coined thirty
+    thousand guineas of the stuff.  %nH took it because %nh could not
+    bear that a clerk with a furnace had done what %nh only imitated.
+
+    "Do you understand what %nh can do with it now?  Not false coin.
+    True gold, without end, poured into a kingdom that has none to
+    spare.  Every honest shilling in England will be worth a farthing
+    by Lady Day.  Forgery I could hang.  This I cannot even prosecute.
 
     "Go by way of %i.  The warrens beneath the gaol lead to %nj
-    workshop.  Take back %o, and bring it here, to %H."]],
+    workshop.  Bring back %o - and %p, bring it *back*.  I have need
+    of it here."]],
       },
       badalign = {
          synopsis = "[Return when you are more %a.]",
@@ -1139,8 +1147,8 @@ absence, yes?  How fare you upon your quest for the Amulet?"]],
          text = [["No.  Not you - not as you stand.
 
 "An assay is a question put to metal, and the metal cannot lie.  I
-would put the same question to a man before I trust him with %o.
-You have not answered it well.
+would put the same question to a man before I trust him with thirty
+years of my life.  You have not answered it well.
 
 "Come back when your own alloy is truer, and we shall weigh you again."]],
       },
@@ -1154,22 +1162,22 @@ not send an apprentice to that.  Learn your reagents.  Learn what a
 thing is by what it does, not by what it looks like - that is the
 whole of the assayer's art and the whole of ours.
 
-"Return to me when they name you %Ra, and we shall speak again."]],
+"Return when they name you %Ra, and we shall speak again."]],
       },
       discourage = {
-         "\"Newton sent you?  He sends what he can spare.\"",
+         "\"The Warden's answered prayer.  He sends what he can spare.\"",
+         "\"Thirty thousand guineas I struck, and he calls me a coiner.\"",
+         "\"He kept it in a *vault*, physician.  I have it in my hand.\"",
          "\"Every coin in this realm will bear my mark before I am done.\"",
          "\"You test metal with a stone.  Let us test you with steel.\"",
-         "\"I made gold that fooled the Mint itself.  You I need not fool.\"",
          "\"The old man could not hang me.  You he merely wastes.\"",
-         "\"Come closer, physician.  I have a coin for your tongue.\"",
-         "\"Your master guards a stone and calls it wisdom.  I spend it.\"",
-         "\"They will remember my face on the coin long after yours is dust.\"",
+         "\"He held it a year and made nothing.  I make gold hourly.\"",
+         "\"Tell King William his Warden sent a stranger to do a hangman's work.\"",
       },
       encourage = {
          "\"Assay him, %p!\"",
          "\"Truth against likeness!\"",
-         "\"For the Mint!\"",
+         "\"For the Mint and the King!\"",
          "\"Strike true - %nh is only a man!\"",
       },
       firsttime = {
@@ -1197,7 +1205,8 @@ not seem surprised.
     "You keep your own gods.  Keep them.  I keep mine, and we shall
     both find that they have no quarrel with honest metal.
 
-    "Rest.  Eat.  Then we shall talk about what has been stolen."]],
+    "Rest.  Eat.  Then we shall talk about what has been stolen from
+    His Majesty's Mint, and from me."]],
       },
       leader_next = {
          output = "text",
@@ -1212,14 +1221,14 @@ publish, and it is a relief to say some of it aloud."]],
       },
       leader_last = {
          output = "text",
-         text = [["Then it is finished, and the Mint is clean.
+         text = [["Then it is finished, and the coin is clean.
 
 "I shall not ask you to stay.  I have read enough to know that you
 were called from somewhere, and that somewhere is missing you.
 
-"Take this with my thanks - and %p, when you are old, and some young
-fool asks whether the Stone was ever real: tell them the truth.  They
-will not believe you.  That is half the pleasure of it."]],
+"And %p - when you are old, and some young fool asks whether the
+Stone was ever real: tell them the truth.  They will not believe
+you.  That is half the pleasure of it."]],
       },
       hasamulet = {
          output = "text",
@@ -1238,11 +1247,13 @@ will not believe you.  That is half the pleasure of it."]],
          "\"You are the one he called up?  You are shorter than I expected.\"",
          "\"Touchstone, aqua fortis, scale.  In that order, always.\"",
          "\"Nine parts fine.  Not eight.  Nine.\"",
+         "\"They clipped the old coin to nothing.  We are striking it all anew.\"",
       },
       guardtalk_after = {
          "\"Bring it back, and we will assay it ourselves.\"",
          "\"%nH cut a die from the Warden's own pattern.  Take that back too.\"",
          "\"Mind the warrens.  The air is bad and the men are worse.\"",
+         "\"Half the constables down there draw two wages.  Trust none of them.\"",
          "\"We would come with you, but someone must weigh the silver.\"",
          "\"Strike true.\"",
       },
@@ -1272,10 +1283,11 @@ will not believe you.  That is half the pleasure of it."]],
     underneath it, which you know, because you are what you are,
     is the smell of a slow poison.
 
-    On the far bench, under lamplight, something small and grey is
-    doing what nothing grey should do.  %o.
+    The gold is not counterfeit.  That is the horror of it.  Every
+    ingot on those shelves is true, and there is no end to them.
 
-    Take it, and take nothing else from this place.]],
+    On the far bench, under lamplight, something small and grey is
+    doing what nothing grey should do.  %o.]],
       },
       goal_next = {
          output = "pline",
@@ -1291,9 +1303,12 @@ though you were expected and slightly late.
     "Do you know what he calls me?  A coiner.  Thirty years of the
     finest work in England and the man cannot say the word artist.
 
-    "He guards %o and never once spends it.  I spend it.  I have made
-    more gold than the Mint has struck in a decade, and every ounce of
-    it passes.  Tell me which of us understands the thing better.
+    "He had %o for a year.  A year!  And he set it in a vault and
+    went back to his ledgers, because he is a clerk who was handed a
+    miracle and could not think what to spend it on.
+
+    "I thought of something.  Ask him what a shilling will buy come
+    spring.  Ask him whose face is on it.
 
     "No?  Then we shall settle it the old way."]],
       },
@@ -1329,7 +1344,8 @@ hearing about.  Set it down and I may let you walk out of here."]],
     warmth does not fade, and along one edge there is a streak of
     gold that you did not put there.
 
-    You are holding %o.  Take it home to %l.]],
+    You are holding %o.  Thirty years of another man's life.
+    Take it home to %l.]],
       },
       offeredit = {
          output = "text",
@@ -1342,17 +1358,30 @@ that is already broken, and sets it on the balance.
       },
       offeredit2 = {
          output = "text",
-         text = [["No.  Keep it.
+         text = [[He holds it a moment longer than he means to, and you see exactly
+what it costs him to open his hand.
 
-"I have spent thirty years proving I could be trusted with %o and
-about four seconds discovering that I would rather not be.  Carry it.
-You have somewhere further to go than I ever did."]],
+    "No.  Take it back.
+
+    "I have wanted this returned to me for a year, and I find I have
+    wanted it for the wrong reasons - a man does not deserve a thing
+    merely because he made it.
+
+    "You are going somewhere I have only read about, after something
+    that makes my coinage look like children counting stones.  His
+    Majesty's shillings will hold without it.  I am not certain you
+    will.
+
+    "Carry it.  And do not tell me what you spend it on."]],
       },
       posthanks = {
          output = "text",
          text = [["The coin will be clean by Michaelmas.  It will take longer for the
 men in the warrens, but that is a physician's work, not a warden's,
 and you have shown me you can do both.
+
+"I shall write none of this down.  Let the Royal Society have the
+optics and the fluxions; this was never theirs.
 
 "Go on, %p.  Whatever called you here will want you back.  I am told
 that is how it works, though I never did get the mathematics of it."]],
