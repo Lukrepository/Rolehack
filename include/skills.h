@@ -80,6 +80,11 @@ enum p_skills {
 /* These roles qualify for a martial arts bonus */
 #define martial_bonus() (Role_if(PM_SAMURAI) || Role_if(PM_MONK))
 
+/* ROLEHACK: these roles qualify for a grappling bonus.  The ceiling is set
+   per role by the P_BARE_HANDED_COMBAT cap in u_init.c, exactly as the
+   martial arts ceiling differs between Monk and Samurai. */
+#define grapple_bonus() (Role_if(PM_CAVE_DWELLER))
+
 /*
  * These are the standard weapon skill levels.  It is important that
  * the lowest "valid" skill be 1.  The code calculates the

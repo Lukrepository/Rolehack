@@ -753,6 +753,92 @@ double_punch(void)
     return FALSE;
 }
 
+/* ROLEHACK: #grapple -- take hold of an adjacent monster, or throw the one
+   already held.  Strength decides how big a creature you can hold at all;
+   Dexterity and bare-handed skill decide whether the hold lands. */
+int
+dograpple(void)
+{
+    struct monst *mtmp;
+    int chance, maxsize, msize;
+
+    if (!grapple_bonus()) {
+        You("do not know how to grapple.");
+        return ECMD_FAIL;
+    }
+    if (u.uswallow) {
+        You("are in no position to grapple anything.");
+        return ECMD_FAIL;
+    }
+
+    /* already holding something?  throw it. */
+    if (u.ustuck && !sticks(u.ustuck->data)) {
+        struct monst *held = u.ustuck;
+
+        pline("You heave %s up.", mon_nam(held));
+        if (!getdir((char *) 0))
+            return ECMD_CANCEL;
+        if (!u.dx && !u.dy) {
+            You("set %s down again.", mon_nam(held));
+            return ECMD_TIME;
+        }
+        uunstick();
+        You("hurl %s away!", mon_nam(held));
+        mhurtle(held, u.dx, u.dy, rnd(3) + (ACURR(A_STR) > 17 ? 2 : 0));
+        exercise(A_STR, TRUE);
+        return ECMD_TIME;
+    }
+
+    if (uwep) {
+        You("need both hands free to grapple.");
+        return ECMD_FAIL;
+    }
+    if (!getdir((char *) 0))
+        return ECMD_CANCEL;
+    if (!u.dx && !u.dy) {
+        You("cannot grapple yourself.");
+        return ECMD_FAIL;
+    }
+
+    mtmp = m_at(u.ux + u.dx, u.uy + u.dy);
+    if (!mtmp || (!canspotmon(mtmp) && !glyph_is_invisible(
+                      levl[u.ux + u.dx][u.uy + u.dy].glyph))) {
+        You("grapple thin air.");
+        return ECMD_TIME;
+    }
+
+    /* Strength gates the weight class you can get hold of at all */
+    maxsize = (ACURR(A_STR) >= 18) ? MZ_HUGE
+              : (ACURR(A_STR) >= 15) ? MZ_LARGE
+                : (ACURR(A_STR) >= 11) ? MZ_HUMAN : MZ_SMALL;
+    msize = (int) mtmp->data->msize;
+    if (msize > maxsize) {
+        You("cannot get a grip on %s -- too big to hold.", mon_nam(mtmp));
+        return ECMD_TIME;
+    }
+    if (sticks(mtmp->data)) {
+        You("cannot hold %s; %s would be holding you.", mon_nam(mtmp),
+            mhe(mtmp));
+        return ECMD_TIME;
+    }
+    if (!mtmp->mcanmove || mtmp->msleeping)
+        chance = 100;
+    else
+        chance = 25 + 3 * ACURR(A_DEX)
+                 + 5 * (int) P_SKILL(P_BARE_HANDED_COMBAT)
+                 - 3 * (int) mtmp->m_lev - 5 * (msize - MZ_HUMAN);
+
+    wakeup(mtmp, TRUE);
+    if (rn2(100) < chance) {
+        You("get a grip on %s!", mon_nam(mtmp));
+        set_ustuck(mtmp);
+        exercise(A_DEX, TRUE);
+    } else {
+        You("try to grapple %s and lose your hold.", mon_nam(mtmp));
+    }
+    return ECMD_TIME;
+}
+
 /* hit target monster; returns TRUE if it still lives */
 staticfn boolean
 hitum(struct monst *mon, struct attack *uattk)
