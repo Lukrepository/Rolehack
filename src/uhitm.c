@@ -786,6 +786,22 @@ dograpple(void)
         You("hurl %s away!", mon_nam(held));
         mhurtle(held, u.dx, u.dy, rnd(3) + (ACURR(A_STR) > 17 ? 2 : 0));
         exercise(A_STR, TRUE);
+        /* the landing hurts; landing on someone hurts both */
+        if (!DEADMONSTER(held)) {
+            struct monst *bump = m_at(held->mx + u.dx, held->my + u.dy);
+            int dmg = d(2, 6) + ((ACURR(A_STR) > 17) ? 2 : 0);
+
+            if (bump && !DEADMONSTER(bump)) {
+                if (canseemon(held) || canseemon(bump))
+                    pline("%s slams into %s!", Monnam(held), mon_nam(bump));
+                bump->mhp -= rnd(6);
+                if (DEADMONSTER(bump))
+                    killed(bump);
+            }
+            held->mhp -= dmg;
+            if (DEADMONSTER(held))
+                killed(held);
+        }
         return ECMD_TIME;
     }
 
@@ -804,6 +820,13 @@ dograpple(void)
     if (!mtmp || (!canspotmon(mtmp) && !glyph_is_invisible(
                       levl[u.ux + u.dx][u.uy + u.dy].glyph))) {
         You("grapple thin air.");
+        return ECMD_TIME;
+    }
+
+    /* the oldest mistake in the dungeon */
+    if (touch_petrifies(mtmp->data) && !uarmg && !Stone_resistance) {
+        You("take hold of %s bare-handed.", mon_nam(mtmp));
+        instapetrify(an(pmname(mtmp->data, Mgender(mtmp))));
         return ECMD_TIME;
     }
 
@@ -832,6 +855,7 @@ dograpple(void)
     if (rn2(100) < chance) {
         You("get a grip on %s!", mon_nam(mtmp));
         set_ustuck(mtmp);
+        mtmp->mstun = 1; /* wrenched off balance */
         exercise(A_DEX, TRUE);
     } else {
         You("try to grapple %s and lose your hold.", mon_nam(mtmp));
