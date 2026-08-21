@@ -38,8 +38,8 @@ des.region(selection.area(00,00,75,19), "lit")
 des.stair("up", 5,16)
 
 des.door("closed",26,09)
-des.door("locked",50,10)
-des.door("locked",38,08)
+des.door("closed",50,10)
+des.door("closed",38,08)
 
 des.non_diggable(selection.area(00,00,75,19))
 

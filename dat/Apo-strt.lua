@@ -40,13 +40,15 @@ des.levregion({ region = {26,10,26,10}, type="branch" })
 -- Down, towards the warrens
 des.stair("down", 60,13)
 
--- Doors.  The Mint is locked at every internal threshold; that is the point.
-des.door("locked",37,17)
-des.door("locked",04,10)
+-- Doors.  Closed, not locked: without a key or a credit card a
+-- player can only kick them in, which is a poor way to be let
+-- into the King's Mint.
+des.door("closed",37,17)
+des.door("closed",04,10)
 des.door("closed",16,09)
 des.door("closed",37,12)
-des.door("locked",29,09)
-des.door("locked",52,12)
+des.door("closed",29,09)
+des.door("closed",52,12)
 des.door("closed",16,12)
 
 -- Sir Isaac Newton at his bench in the assay office
