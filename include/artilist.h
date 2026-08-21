@@ -312,7 +312,8 @@ static NEARDATA struct artifact artilist[] = {
        regeneration -- see role-spec-apothecary-2026-07-30.md */
     A("The Lapis Philosophorum", TOUCHSTONE,
       (SPFX_NOGEN | SPFX_RESTR | SPFX_INTEL), SPFX_SEARCH, 0,
-      NO_ATTK, NO_DFNS, NO_CARY, ENLIGHTENING, A_NEUTRAL, PM_APOTHECARY,
+      NO_ATTK, NO_DFNS, NO_CARY, TRANSMUTE_GOLD, A_NEUTRAL,
+      PM_APOTHECARY,
       NON_PM,
       0, 12, 3500L, NO_COLOR, LAPIS_PHILOSOPHORUM),
 

@@ -40,6 +40,7 @@ staticfn int invoke_banish(struct obj *) NONNULLARG1;
 staticfn int invoke_fling_poison(struct obj *) NONNULLARG1;
 staticfn int invoke_storm_spell(struct obj *) NONNULLARG1;
 staticfn int invoke_blinding_ray(struct obj *) NONNULLARG1;
+staticfn int invoke_transmute_gold(struct obj *) NONNULLARG1; /* ROLEHACK */
 staticfn int arti_invoke_cost_pw(struct obj *) NONNULLARG1;
 staticfn boolean arti_invoke_cost(struct obj *) NONNULLARG1;
 staticfn int arti_invoke(struct obj *);
@@ -2127,6 +2128,82 @@ arti_invoke_cost(struct obj *obj)
     return TRUE;
 }
 
+/* ROLEHACK: the Lapis Philosophorum's actual purpose.  Point it at a boulder
+   and the boulder becomes coin.  Newton spent four years making the coin of
+   this realm honest; this is what his life's other work turns out to be good
+   for, and he would not thank you for it.
+
+   Two things hold it in check: you must be standing next to a boulder, and
+   the cooldown is long on purpose.  This is not a tap you leave running. */
+staticfn int
+invoke_transmute_gold(struct obj *obj)
+{
+    coordxy x, y;
+    struct obj *boulder;
+
+    if (obj->oeroded) {
+        /* spent: the life-saving charge and the transmutation are the same
+           power, so an inert Stone makes no gold until it is re-tempered */
+        obj->age = svm.moves;
+        pline("%s dull and cold; there is no work left in it.",
+              Yobjnam2(obj, "are"));
+        return ECMD_FAIL;
+    }
+    You("hold up %s.", the(xname(obj)));
+    if (!getdir((char *) 0)) {
+        /* a mis-key should not cost two hundred turns */
+        obj->age = svm.moves;
+        return ECMD_CANCEL;
+    }
+    if (!u.dx && !u.dy) {
+        obj->age = svm.moves;
+        pline("%s wants base matter to work upon, not your %s.",
+              The(xname(obj)), body_part(HAND));
+        return ECMD_FAIL;
+    }
+    x = u.ux + u.dx;
+    y = u.uy + u.dy;
+    if (!isok(x, y) || (boulder = sobj_at(BOULDER, x, y)) == 0) {
+        obj->age = svm.moves;
+        There("is no boulder there for it to work upon.");
+        return ECMD_FAIL;
+    }
+
+    /* destroying a boulder in Sokoban is a crime whatever destroys it */
+    if (In_sokoban(&u.uz))
+        sokoban_guilt();
+
+    pline_The("boulder shivers, and the grey goes out of it.");
+    delobj(boulder);
+    if (!does_block(x, y, &levl[x][y])) {
+        unblock_point(x, y);
+        vision_recalc(0);
+    }
+
+    if (Luck < 0 && !rn2(2)) {
+        int i, n = rn1(6, 4); /* 4..9 */
+
+        for (i = 0; i < n; i++)
+            (void) mksobj_at(WORTHLESS_YELLOW_GLASS, x, y, TRUE, FALSE);
+        pline("What is left of it is yellow, and worthless.");
+        You("have handled enough fool's gold to know the difference.");
+    } else {
+        (void) mkgold(4000L + (long) rn2(2001), x, y);
+        pline("What is left of it is gold, and a great deal of it.");
+        if (!Role_if(PM_APOTHECARY)) {
+            /* other roles may carry the Stone, but they are not who it was
+               made for, and their gods are watching the exchange rate */
+            You_feel("that this is not what the work was for.");
+            adjalign(-3);
+        }
+    }
+    newsym(x, y);
+    /* deliberately long; see the comment above */
+    obj->age = svm.moves + 200L + (long) rnz(150);
+    exercise(A_WIS, TRUE);
+    return ECMD_TIME;
+}
+
 staticfn int
 arti_invoke(struct obj *obj)
 {
@@ -2170,6 +2247,8 @@ arti_invoke(struct obj *obj)
             /*FALLTHRU*/
         case FIRESTORM: res = invoke_storm_spell(obj); break;
         case BLINDING_RAY: res = invoke_blinding_ray(obj); break;
+        /* ROLEHACK */
+        case TRANSMUTE_GOLD: res = invoke_transmute_gold(obj); break;
         default:
             impossible("Unknown invoke power %d.", oart->inv_prop);
             break;

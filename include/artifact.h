@@ -74,7 +74,8 @@ enum invoke_prop_types {
     FLING_POISON,
     FIRESTORM,
     SNOWSTORM,
-    BLINDING_RAY
+    BLINDING_RAY,
+    TRANSMUTE_GOLD /* ROLEHACK */
 };
 
 /* artifact tracking; gift and wish imply found; it also gets set for items
