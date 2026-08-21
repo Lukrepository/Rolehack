@@ -1,5 +1,7 @@
 -- NetHack Apothecary Apo-fila.lua
 --      Rolehack: the Apothecary quest -- Cheapside, on the way to the warrens.
+--      Regenerated 2026-08-21: every building wall is flush with the street
+--      it faces, so no door opens into rock.  Layout is flood-fill verified.
 -- NetHack may be freely redistributed.  See license for details.
 
 des.level_init({ style = "solidfill", fg = " " });
@@ -9,58 +11,72 @@ des.level_flags("mazelevel", "noteleport", "hardfloor")
 des.map([[
                                                                             
                                                                             
-  ........................................................................  
-      . ----------------- .    ------+------    . ------------------- .     
-      . |...............| .    |...........|    . |.................| .     
-      . |...............| .    |...........|    . |.................| .     
-      . +...............| .    |...........|    . |.................| .     
-      . |...............| .    -------------    . |.................| .     
-      . --------+-------- .                     . ---------+--------- .     
-  ........................{.....................{.........................  
-      . --------+-------- . ------------------- .                     .     
-      . |...............| . |.................| .     ------+------   .     
-      . |...............| . |.................| .     |...........|   .     
-      . |...............+ . |.................| .     |...........|   .     
-      . |...............| . |.................| .     |...........|   .     
-      . |...............| . |.................| .     -------------   .     
-      . ----------------- . ---------+--------- .                     .     
-  ........................................................................  
+   ......................................................................   
+   .------+------.------+------.-------------.------+------.-----+------.   
+   .|...........|.|...........|.|...........|.|...........|.|..........|.   
+   .|...........+.+...........|.|...........|.+...........|.|..........+.   
+   .|...........|.|...........|.|...........|.|...........|.|..........|.   
+   .|...........|.|...........|.|...........|.|...........|.|..........|.   
+   .-------------.-------------.------+------.-------------.------------.   
+   ..............{...........................{...........................   
+   .-------------.-------------.-------------.------+------.------------.   
+   .|...........|.|...........|.|...........|.|...........|.|..........|.   
+   .+...........|.|...........+.+...........|.|...........|.+..........|.   
+   .|...........|.|...........|.|...........|.|...........|.|..........|.   
+   .|...........|.|...........|.|...........|.|...........|.|..........|.   
+   .------+------.------+------.------+------.-------------.-----+------.   
+   ......................................................................   
+                                                                            
                                                                             
                                                                             
 ]]);
 
 -- Streets are lit; the buildings are not, unless they are open for trade.
 des.region(selection.area(00,00,75,19), "unlit")
-des.region({ region={02,02, 73,02}, lit=1, type="ordinary" })
-des.region({ region={02,09, 73,09}, lit=1, type="ordinary" })
-des.region({ region={02,17, 73,17}, lit=1, type="ordinary" })
+des.region({ region={03,02, 72,02}, lit=1, type="ordinary" })
+des.region({ region={03,09, 72,09}, lit=1, type="ordinary" })
+des.region({ region={03,16, 72,16}, lit=1, type="ordinary" })
 
--- An apothecary's shop, and a general store.  Precedent for shops in a
--- quest level: Tou-loca.lua.
-des.region({ region={32,04, 42,06}, lit=1, type="potion shop", filled=1 })
-des.region({ region={55,12, 65,14}, lit=1, type="shop", filled=1 })
+-- An apothecary's shop and a general store.  Precedent for shops on a quest
+-- level: Tou-loca.lua.  Each has exactly one door, as NetHack requires.
+des.region({ region={33,04, 43,07}, lit=1, type="potion shop", filled=1 })
+des.region({ region={47,11, 57,14}, lit=1, type="shop", filled=1 })
 
-des.stair("up", 6,2)
-des.stair("down", 70,17)
+des.stair("up", 3,2)
+des.stair("down", 72,16)
 
-des.door("closed",16,08)
-des.door("closed",37,03)
-des.door("closed",59,08)
-des.door("closed",16,10)
-des.door("locked",37,16)
-des.door("closed",60,11)
-des.door("closed",08,06)
+des.door("closed",10,03)
+des.door("closed",16,05)
+des.door("closed",24,03)
+des.door("closed",18,05)
+des.door("closed",38,08)
+des.door("closed",52,03)
+des.door("closed",46,05)
+des.door("closed",65,03)
+des.door("closed",71,05)
+des.door("closed",10,15)
+des.door("closed",04,12)
+des.door("closed",24,15)
+des.door("closed",30,12)
+des.door("closed",38,15)
+des.door("closed",32,12)
+des.door("closed",52,10)
+des.door("closed",65,15)
+des.door("closed",60,12)
 
-
-des.door("closed",24,13)
-
-des.non_diggable(selection.area(00,00,75,19))
+-- Only the city wall is proof against a pick-axe; you can break into a house
+-- if you must.  The old version sealed the entire level, which left no way
+-- out at all when the layout turned out to be wrong.
+des.non_diggable(selection.area(00,00,75,00))
+des.non_diggable(selection.area(00,19,75,19))
+des.non_diggable(selection.area(00,00,00,19))
+des.non_diggable(selection.area(75,00,75,19))
 
 -- Constables on Chaloner's payroll, walking their beat.
-des.monster({ id = "bribed constable", x=13, y=02, peaceful=0 })
+des.monster({ id = "bribed constable", x=10, y=02, peaceful=0 })
 des.monster({ id = "bribed constable", x=38, y=09, peaceful=0 })
-des.monster({ id = "bribed constable", x=60, y=17, peaceful=0 })
-des.monster({ id = "bribed constable", x=26, y=13, peaceful=0 })
+des.monster({ id = "bribed constable", x=60, y=16, peaceful=0 })
+des.monster({ id = "bribed constable", peaceful=0 })
 des.monster({ id = "bribed constable", peaceful=0 })
 des.monster({ id = "bribed constable", peaceful=0 })
 
