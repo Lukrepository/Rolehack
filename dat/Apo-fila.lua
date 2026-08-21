@@ -80,14 +80,18 @@ des.monster({ id = "bribed constable", peaceful=0 })
 des.monster({ id = "bribed constable", peaceful=0 })
 des.monster({ id = "bribed constable", peaceful=0 })
 
--- and the usual traffic of a city that has stopped trusting its coin
-des.monster({ class = "@", peaceful=0 })
-des.monster({ class = "@", peaceful=0 })
-des.monster({ class = "l", peaceful=0 })
-des.monster({ class = "l", peaceful=0 })
-des.monster({ class = "r", peaceful=0 })
-des.monster({ class = "r", peaceful=0 })
-des.monster({ class = "d", peaceful=0 })
+-- Cheapside traffic: hired muscle, cutpurses, and whatever lives in the
+-- gutter.  One werejackal, deliberately: a city where people are not quite
+-- what they appear is the whole point, and it should be a choice rather than
+-- an accident of rolling "any human" on a low-difficulty table.
+des.monster({ id = "soldier", peaceful=0 })
+des.monster({ id = "soldier", peaceful=0 })
+des.monster({ id = "werejackal", peaceful=0 })
+des.monster({ id = "leprechaun", peaceful=0 })
+des.monster({ id = "leprechaun", peaceful=0 })
+des.monster({ id = "sewer rat", peaceful=0 })
+des.monster({ id = "sewer rat", peaceful=0 })
+des.monster({ id = "jackal", peaceful=0 })
 
 des.object("gold piece")
 des.object("gold piece")

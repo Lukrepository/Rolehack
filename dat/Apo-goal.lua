@@ -77,17 +77,21 @@ des.object("gold piece", 64, 16)
 
 -- Chaloner's works: golems struck from his own dies, and the gold-thieves
 -- his false coin attracts.
-des.monster({ class = "'", peaceful=0 })
-des.monster({ class = "'", peaceful=0 })
-des.monster({ class = "'", peaceful=0 })
-des.monster({ class = "l", peaceful=0 })
-des.monster({ class = "l", peaceful=0 })
-des.monster({ class = "l", peaceful=0 })
-des.monster({ class = "@", peaceful=0 })
-des.monster({ class = "@", peaceful=0 })
-des.monster({ class = "@", peaceful=0 })
-des.monster({ class = "r", peaceful=0 })
-des.monster({ class = "r", peaceful=0 })
+-- Chaloner's works.  Gold golems are the signature: a man who struck
+-- thirty thousand guineas would naturally set some of them walking.  The
+-- leprechauns collect for him, and the soldiers keep the door.
+des.monster({ id = "gold golem", peaceful=0 })
+des.monster({ id = "gold golem", peaceful=0 })
+des.monster({ id = "paper golem", peaceful=0 })
+des.monster({ id = "rope golem", peaceful=0 })
+des.monster({ id = "leprechaun", peaceful=0 })
+des.monster({ id = "leprechaun", peaceful=0 })
+des.monster({ id = "leprechaun", peaceful=0 })
+des.monster({ id = "soldier", peaceful=0 })
+des.monster({ id = "soldier", peaceful=0 })
+des.monster({ id = "soldier", peaceful=0 })
+des.monster({ id = "sewer rat", peaceful=0 })
+des.monster({ id = "sewer rat", peaceful=0 })
 des.trap()
 des.trap()
 des.trap()
