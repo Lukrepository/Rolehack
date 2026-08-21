@@ -44,9 +44,16 @@ des.door("locked",38,08)
 des.non_diggable(selection.area(00,00,75,19))
 
 -- The strongroom: the Stone, and the man who took it
-des.object({ id = "touchstone", x=38, y=05, buc="blessed", spe=0,
-             name="The Lapis Philosophorum" })
-des.monster({ id = "William Chaloner", x=38, y=06, peaceful=0 })
+-- ROLEHACK: he does not keep it on the bench.  He keeps it on him, and
+-- it is charged: killing him once only spends it.  The potions of acid are
+-- half of what you need to wake it up again afterwards.
+des.monster({ id = "William Chaloner", x=38, y=06, peaceful=0,
+              inventory = function()
+   des.object({ id = "touchstone", buc="blessed", spe=0,
+                name="The Lapis Philosophorum" });
+   des.object({ id = "potion of acid" });
+   des.object({ id = "potion of acid" });
+end })
 
 -- Chaloner's hoard.  He coined some 30,000 guineas in his career and
 -- spent little of it; this is a counterfeiter's lair, not a mint, so

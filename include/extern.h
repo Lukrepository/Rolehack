@@ -1791,6 +1791,7 @@ extern void mcalcdistress(void);
 extern void replmon(struct monst *, struct monst *) NONNULLARG12;
 extern void relmon(struct monst *, struct monst **) NONNULLARG1;
 extern struct obj *mlifesaver(struct monst *) NONNULLARG1;
+extern struct obj *m_outer_armor(struct monst *) NONNULLARG1; /* ROLEHACK */
 extern boolean corpse_chance(struct monst *, struct monst *, boolean) NONNULLARG1;
 extern void mondead(struct monst *) NONNULLARG1;
 extern void mondied(struct monst *) NONNULLARG1;

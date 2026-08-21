@@ -2465,7 +2465,9 @@ potion_dip(struct obj *obj, struct obj *potion)
        time -- the player decides how greedy to be.  spe counts restorations. */
     if (obj->oartifact == ART_LAPIS_PHILOSOPHORUM && obj->oeroded) {
         if (obj->oeroded == 1 && potion->otyp == POT_ACID) {
-            int risk = 5 + 15 * obj->spe; /* 5%, 20%, 35%, ... */
+            /* ROLEHACK: 0%, 15%, 30%, ...  The first restoration is
+               free: that is the charge the nemesis already spent. */
+            int risk = 15 * obj->spe;
 
             pline("The acid bites at %s.", the(xname(obj)));
             useup(potion);

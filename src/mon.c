@@ -2831,8 +2831,29 @@ mlifesaver(struct monst *mon)
 
         if (otmp && otmp->otyp == AMULET_OF_LIFE_SAVING)
             return otmp;
+        /* ROLEHACK: the Lapis Philosophorum saves whoever carries it --
+           including the man who stole it.  Unlike the amulet it is not
+           consumed, only spent: it goes inert, and can be re-tempered. */
+        for (otmp = mon->minvent; otmp; otmp = otmp->nobj)
+            if (otmp->oartifact == ART_LAPIS_PHILOSOPHORUM && !otmp->oeroded)
+                return otmp;
     }
     return (struct obj *) 0;
+}
+
+/* ROLEHACK: the layer of a monster's armor that a grappler's hands reach
+   first -- cloak, else body armor, else shirt.  Mirrors the hero-side
+   choice made in mhitu.c when greased armor defeats a monster's grab. */
+struct obj *
+m_outer_armor(struct monst *mon)
+{
+    struct obj *o = which_armor(mon, W_ARMC);
+
+    if (!o)
+        o = which_armor(mon, W_ARM);
+    if (!o)
+        o = which_armor(mon, W_ARMU);
+    return o;
 }
 
 staticfn void
@@ -2840,13 +2861,22 @@ lifesaved_monster(struct monst *mtmp)
 {
     boolean surviver;
     struct obj *lifesave = mlifesaver(mtmp);
+    boolean by_stone; /* ROLEHACK */
 
     if (lifesave) {
+        by_stone = (lifesave->oartifact == ART_LAPIS_PHILOSOPHORUM);
         /* not canseemon; amulets are on the head, so you don't want
          * to show this for a long worm with only a tail visible.
          * Nor do you check invisibility, because glowing and
          * disintegrating amulets are always visible. */
-        if (cansee(mtmp->mx, mtmp->my)) {
+        if (cansee(mtmp->mx, mtmp->my) && by_stone) {
+            /* ROLEHACK: the nemesis gets up again. */
+            pline("But wait...");
+            pline("%s flares white-hot!", The(xname(lifesave)));
+            if (canseemon(mtmp))
+                pline("%s draws breath again!", Monnam(mtmp));
+            pline("%s goes dull and grey.", The(xname(lifesave)));
+        } else if (cansee(mtmp->mx, mtmp->my)) {
             pline("But wait...");
             pline("%s medallion begins to glow!", s_suffix(Monnam(mtmp)));
             makeknown(AMULET_OF_LIFE_SAVING);
@@ -2860,7 +2890,12 @@ lifesaved_monster(struct monst *mtmp)
             }
             pline_The("medallion crumbles to dust!");
         }
-        m_useup(mtmp, lifesave);
+        /* ROLEHACK: the Stone is spent, not consumed -- it stays in his
+           pack for you to take off his body, inert and re-temperable. */
+        if (by_stone)
+            lifesave->oeroded = 1;
+        else
+            m_useup(mtmp, lifesave);
         /* equip replacement amulet, if any, on next move */
         check_gear_next_turn(mtmp);
 

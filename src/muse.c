@@ -2090,6 +2090,7 @@ rnd_offensive_item(struct monst *mtmp)
 #define MUSE_BULLWHIP 8
 #define MUSE_POT_POLYMORPH 9
 #define MUSE_BAG 10
+#define MUSE_CAN_OF_GREASE 11 /* ROLEHACK */
 
 boolean
 find_misc(struct monst *mtmp)
@@ -2230,6 +2231,16 @@ find_misc(struct monst *mtmp)
             && mons[monsndx(mdat)].difficulty < 6) {
             gm.m.misc = obj;
             gm.m.has_misc = MUSE_POT_POLYMORPH;
+        }
+        nomore(MUSE_CAN_OF_GREASE);
+        /* ROLEHACK: a monster with hands, a brain and a can of grease will
+           slick its outermost layer, which spoils a grapple.  find_misc has
+           already excluded animals and mindless monsters above. */
+        if (obj->otyp == CAN_OF_GREASE && obj->spe > 0 && !rn2(3)
+            && !gm.m.has_misc && nohands(mdat) == 0
+            && m_outer_armor(mtmp) && !m_outer_armor(mtmp)->greased) {
+            gm.m.misc = obj;
+            gm.m.has_misc = MUSE_CAN_OF_GREASE;
         }
         nomore(MUSE_BAG);
         if (Is_container(obj) && obj->otyp != BAG_OF_TRICKS && !rn2(5)
@@ -2546,6 +2557,25 @@ use_misc(struct monst *mtmp)
         if (!otmp)
             panic(MissingMiscellaneousItem, "container");
         return mloot_container(mtmp, otmp, vismon);
+    case MUSE_CAN_OF_GREASE: /* ROLEHACK */
+        if (!otmp)
+            panic(MissingMiscellaneousItem, "can of grease");
+        {
+            struct obj *marm = m_outer_armor(mtmp);
+
+            if (!marm)
+                break;
+            if (vismon)
+                pline_mon(mtmp, "%s greases %s %s.", Monnam(mtmp),
+                          mhis(mtmp), xname(marm));
+            else if (!Deaf)
+                You_hear("a can being sprayed.");
+            marm->greased = 1;
+            otmp->spe--;
+            if (oseen)
+                makeknown(CAN_OF_GREASE);
+        }
+        return 2;
     case MUSE_BULLWHIP:
         /* attempt to disarm hero */
         {

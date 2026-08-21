@@ -756,6 +756,13 @@ double_punch(void)
 /* ROLEHACK: #grapple -- take hold of an adjacent monster, or throw the one
    already held.  Strength decides how big a creature you can hold at all;
    Dexterity and bare-handed skill decide whether the hold lands. */
+/* ROLEHACK: monsters whose hide gives a grappler nothing to hold.
+   Eels and sharks are proverbial; jellies, puddings and blobs have no
+   surface that stays where you put your hands. */
+#define slippery_mon(ptr) \
+    ((ptr)->mlet == S_EEL || (ptr)->mlet == S_JELLY \
+     || (ptr)->mlet == S_PUDDING || (ptr)->mlet == S_BLOB)
+
 int
 dograpple(void)
 {
@@ -824,10 +831,21 @@ dograpple(void)
     }
 
     /* the oldest mistake in the dungeon */
-    if (touch_petrifies(mtmp->data) && !uarmg && !Stone_resistance) {
-        You("take hold of %s bare-handed.", mon_nam(mtmp));
-        instapetrify(an(pmname(mtmp->data, Mgender(mtmp))));
-        return ECMD_TIME;
+    if (touch_petrifies(mtmp->data) && !Stone_resistance) {
+        if (!uarmg) {
+            You("take hold of %s bare-handed.", mon_nam(mtmp));
+            instapetrify(an(pmname(mtmp->data, Mgender(mtmp))));
+            return ECMD_TIME;
+        }
+        /* ROLEHACK: gloves make this survivable, but not while you are
+           reeling.  A grapple is a two-handed commitment; you cannot bring
+           it off cleanly when you cannot tell where your hands are. */
+        if ((Stunned || Confusion) && !rn2(3)) {
+            You("reach for %s, and your %s slips.", mon_nam(mtmp),
+                gloves_simple_name(uarmg));
+            instapetrify(an(pmname(mtmp->data, Mgender(mtmp))));
+            return ECMD_TIME;
+        }
     }
 
     /* Strength gates the weight class you can get hold of at all */
@@ -843,6 +861,34 @@ dograpple(void)
         You("cannot hold %s; %s would be holding you.", mon_nam(mtmp),
             mhe(mtmp));
         return ECMD_TIME;
+    }
+    /* ROLEHACK: nothing solid enough to take hold of */
+    if (noncorporeal(mtmp->data) || is_whirly(mtmp->data)) {
+        Your("hands pass through %s.", mon_nam(mtmp));
+        return ECMD_TIME;
+    }
+    /* ROLEHACK: some hides simply offer a grappler nothing to grip */
+    if (slippery_mon(mtmp->data)) {
+        You("cannot keep hold of %s -- far too slippery.", mon_nam(mtmp));
+        wakeup(mtmp, TRUE);
+        return ECMD_TIME;
+    }
+    /* ROLEHACK: greased armor defeats a grapple exactly as it defeats a
+       monster's grab on the hero (mhitu.c), and wears off the same way. */
+    {
+        struct obj *marm = m_outer_armor(mtmp);
+
+        if (marm && (marm->greased || marm->otyp == OILSKIN_CLOAK)
+            && (!marm->cursed || rn2(3))) {
+            You("cannot keep hold of %s %s.", s_suffix(mon_nam(mtmp)),
+                xname(marm));
+            if (marm->greased && !rn2(2)) {
+                pline_The("grease wears off.");
+                marm->greased = 0;
+            }
+            wakeup(mtmp, TRUE);
+            return ECMD_TIME;
+        }
     }
     if (!mtmp->mcanmove || mtmp->msleeping)
         chance = 100;
@@ -4645,8 +4691,14 @@ mhitm_ad_dgst(
         wake_nearto(magr->mx, magr->my, 2 * 2); /* Burrrrp! */
         mhm->damage = mdef->mhp;
         /* Use up amulet of life saving */
-        if ((obj = mlifesaver(mdef)) != 0)
-            m_useup(mdef, obj);
+        if ((obj = mlifesaver(mdef)) != 0) {
+            /* ROLEHACK: swallowing denies the save, but the Stone is spent,
+               never destroyed -- it stays in the pack, inert. */
+            if (obj->oartifact == ART_LAPIS_PHILOSOPHORUM)
+                obj->oeroded = 1;
+            else
+                m_useup(mdef, obj);
+        }
 
         /* Is a corpse for nutrition possible?  It may kill magr */
         if (!corpse_chance(mdef, magr, TRUE) || DEADMONSTER(magr))
@@ -5160,8 +5212,13 @@ gulpum(struct monst *mdef, struct attack *mattk)
                 }
 
                 /* Use up amulet of life saving */
-                if ((otmp = mlifesaver(mdef)) != 0)
-                    m_useup(mdef, otmp);
+                if ((otmp = mlifesaver(mdef)) != 0) {
+                    /* ROLEHACK: as above -- spent, not destroyed. */
+                    if (otmp->oartifact == ART_LAPIS_PHILOSOPHORUM)
+                        otmp->oeroded = 1;
+                    else
+                        m_useup(mdef, otmp);
+                }
 
                 newuhs(FALSE);
                 /* start_engulf() issues "you engulf <mdef>" above; this
