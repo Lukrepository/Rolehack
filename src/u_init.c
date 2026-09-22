@@ -184,10 +184,21 @@ static const struct trobj Apothecary[] = {
     { ALCHEMY_SMOCK, 2, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
     { LEATHER_GLOVES, 1, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
     { POT_HEALING, 0, POTION_CLASS, 2, 2, 0 },
+    /* the thrown half of the stock.  These are the potions monsters throw
+       at the hero (muse.c: MUSE_POT_BLINDNESS / _CONFUSION / _SLEEPING /
+       _ACID), so they are the ones the trade knows how to use as weapons.
+       Paralysis is the fifth of that set and is deliberately absent: a
+       thrown one is a free kill on whatever fails its save. */
     { POT_SICKNESS, 0, POTION_CLASS, 1, 1, 0 },
     { POT_ACID, 0, POTION_CLASS, 1, 1, 0 },
+    { POT_BLINDNESS, 0, POTION_CLASS, 1, 1, 0 },
+    { POT_CONFUSION, 0, POTION_CLASS, 1, 1, 0 },
+    { POT_SLEEPING, 0, POTION_CLASS, 1, 1, 0 },
     { FOOD_RATION, 0, FOOD_CLASS, 2, 2, 0 },
-    { SACK, 0, TOOL_CLASS, 1, 1, 0 },
+    /* an oilskin sack, not a plain one: the Archeologist and Rogue both
+       open with a sack, and no role opens with this.  A waterproof bag is
+       the apothecary's own tool -- it is what keeps the stock dry. */
+    { OILSKIN_SACK, 0, TOOL_CLASS, 1, 1, 0 },
     { LENSES, 0, TOOL_CLASS, 1, 1, 0 },
     { 0, 0, 0, 0, 0, 0 }
 };
@@ -821,7 +832,7 @@ u_init_role(void)
         for (ct = svb.bases[POTION_CLASS];
              objects[ct].oc_class == POTION_CLASS; ct++)
             knows_object(ct, FALSE);
-        knows_object(SACK, FALSE);
+        knows_object(OILSKIN_SACK, FALSE);
         break;
     }
 
