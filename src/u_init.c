@@ -178,6 +178,9 @@ static const struct trobj Wizard[] = {
 };
 static const struct trobj Apothecary[] = {
     { QUARTERSTAFF, 0, WEAPON_CLASS, 1, 1, UNDEF_BLESS },
+    /* the poisoner's weapon: something to dip in the potion of sickness
+       on turn 1, and a ranged answer for a role that cannot take a bite */
+    { DART, 0, WEAPON_CLASS, 12, 20, UNDEF_BLESS },
     { ALCHEMY_SMOCK, 0, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
     { POT_HEALING, 0, POTION_CLASS, 2, 2, 0 },
     { POT_SICKNESS, 0, POTION_CLASS, 1, 1, 0 },
