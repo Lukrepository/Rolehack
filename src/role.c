@@ -100,8 +100,11 @@ const struct Role roles[NUM_ROLES+1] = {
       MH_HUMAN | MH_DWARF | MH_GNOME | ROLE_MALE | ROLE_FEMALE | ROLE_LAWFUL
           | ROLE_NEUTRAL,
       /* Str Int Wis Dex Con Cha */
-      { 7, 12, 10, 9, 9, 7 },
-      { 8, 28, 18, 14, 20, 12 },
+      /* Str raised from 7/8% to 9/14% (Lucas, 2026-09-21): two playtests
+         started at St 8-9 and could not carry a leather armor.  This lands
+         around 11-12, beside the Tourist and Priest. */
+      { 9, 12, 10, 9, 9, 7 },
+      { 14, 26, 16, 14, 18, 12 },
       /* Init   Lower  Higher */
       { 10, 0, 0, 6, 1, 0 }, /* Hit points */
       { 2, 3, 0, 3, 0, 2 },

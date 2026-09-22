@@ -1675,7 +1675,11 @@ hmon_hitmon_poison(
     if (Role_if(PM_SAMURAI)) {
         You("dishonorably use a poisoned weapon!");
         adjalign(-sgn(u.ualign.type));
-    } else if (u.ualign.type == A_LAWFUL && u.ualign.record > -10) {
+    } else if (u.ualign.type == A_LAWFUL && u.ualign.record > -10
+               && !Role_if(PM_APOTHECARY)) {
+        /* ROLEHACK: an Apothecary of any alignment uses poison without
+           penalty -- to the trade it is craft, not cowardice (Lucas,
+           2026-09-21).  Newton was lawful. */
         You_feel("like an evil coward for using a poisoned weapon.");
         adjalign(-1);
     }

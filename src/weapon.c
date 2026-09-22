@@ -183,6 +183,12 @@ hitval(struct obj *otmp, struct monst *mon)
     if (otmp->oartifact)
         tmp += spec_abon(otmp, mon);
 
+    /* ROLEHACK: an Apothecary knows exactly where a coated edge has to land.
+       hitval() serves both melee and thrown weapons, so darts and daggers
+       get it alike. */
+    if (otmp->opoisoned && Role_if(PM_APOTHECARY))
+        tmp += 2;
+
     return tmp;
 }
 
