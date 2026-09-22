@@ -364,6 +364,10 @@ release_hero(struct monst *mon)
     if (mon == u.ustuck) {
         if (u.uswallow) {
             expels(mon, mon->data, TRUE);
+        } else if (!sticks(mon->data)) {
+            /* ROLEHACK: it was in your grip, not you in its */
+            unstuck(mon);
+            pline("%s wriggles free!", Monnam(mon));
         } else if (!sticks(gy.youmonst.data)) {
             unstuck(mon); /* let go */
             You("get released!");
@@ -1052,7 +1056,15 @@ mon_would_consume_item(struct monst *mtmp, struct obj *otmp)
 boolean
 itsstuck(struct monst *mtmp)
 {
-    if (sticks(gy.youmonst.data) && mtmp == u.ustuck && !u.uswallow) {
+    /* ROLEHACK: a grappler holds u.ustuck by hand, not by being a sticky
+       form.  Nothing but a grapple sets u.ustuck to a monster that cannot
+       itself stick, so that is the test.  Without it a stunned victim
+       wandered off between the grip and the throw and the hold dropped
+       silently -- the throw only ever worked on monsters slower than you. */
+    boolean grappling = (u.ustuck && !u.uswallow && !sticks(u.ustuck->data));
+
+    if ((sticks(gy.youmonst.data) || grappling) && mtmp == u.ustuck
+        && !u.uswallow) {
         pline_mon(mtmp, "%s cannot escape from you!", Monnam(mtmp));
         return TRUE;
     }
