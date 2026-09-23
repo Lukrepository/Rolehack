@@ -2141,7 +2141,7 @@ invoke_transmute_gold(struct obj *obj)
     coordxy x, y;
     struct obj *boulder;
 
-    if (obj->oeroded) {
+    if (obj->lapis_state) {
         /* spent: the life-saving charge and the transmutation are the same
            power, so an inert Stone makes no gold until it is re-tempered */
         obj->age = svm.moves;
@@ -2149,7 +2149,7 @@ invoke_transmute_gold(struct obj *obj)
               Yobjnam2(obj, "are"));
         return ECMD_FAIL;
     }
-    You("hold up %s.", the(xname(obj)));
+    You("hold up %s.", yname(obj));
     if (!getdir((char *) 0)) {
         /* a mis-key should not cost two hundred turns */
         obj->age = svm.moves;
@@ -2157,8 +2157,8 @@ invoke_transmute_gold(struct obj *obj)
     }
     if (!u.dx && !u.dy) {
         obj->age = svm.moves;
-        pline("%s wants base matter to work upon, not your %s.",
-              The(xname(obj)), body_part(HAND));
+        pline("%s base matter to work upon, not your %s.",
+              Yobjnam2(obj, "want"), body_part(HAND));
         return ECMD_FAIL;
     }
     x = u.ux + u.dx;
@@ -2196,6 +2196,16 @@ invoke_transmute_gold(struct obj *obj)
             You_feel("that this is not what the work was for.");
             adjalign(-3);
         }
+    }
+    /* ROLEHACK: the sacrilege.  The horn was a unicorn's, and Newton would
+       not use it at all.  A lawful Apothecary keeps the same Law and pays
+       for every working, gold or glass -- the act is the sin, not the
+       yield; a neutral one does not.  Same shape as a lawful hero robbing
+       a grave (dig.c), and the Archeologist's -3 there.  Newton warns of
+       it when he hands the horn over (quest.lua, Apo offeredit). */
+    if (Role_if(PM_APOTHECARY) && u.ualign.type == A_LAWFUL) {
+        You_feel("the Law mark it against you.");
+        adjalign(-3);
     }
     newsym(x, y);
     /* deliberately long; see the comment above */

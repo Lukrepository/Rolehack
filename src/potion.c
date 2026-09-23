@@ -2458,37 +2458,40 @@ potion_dip(struct obj *obj, struct obj *potion)
     obj->pickup_prev = 0; /* no longer 'recently picked up' */
     potion->in_use = TRUE; /* assume it will be used up */
 
-    /* ROLEHACK: re-tempering the Philosopher's Stone.  A spent stone is
-       inert (oeroded 1); dipping it in acid primes it (oeroded 2); dipping
-       a primed stone in full healing restores it.  Each restoration leaves
-       the stone less stable, so the acid step grows more dangerous every
-       time -- the player decides how greedy to be.  spe counts restorations. */
-    if (obj->oartifact == ART_LAPIS_PHILOSOPHORUM && obj->oeroded) {
-        if (obj->oeroded == 1 && potion->otyp == POT_ACID) {
+    /* ROLEHACK: re-tempering the Lapis Philosophorum.  A spent horn is
+       inert (lapis_state 1); dipping it in acid primes it (state 2);
+       dipping a primed horn in full healing restores it.  Each restoration
+       leaves it less stable, so the acid step grows more dangerous every
+       time -- the player decides how greedy to be.  The count lives in
+       'recharged' (0..7; a unicorn horn is never recharged otherwise), not
+       in spe, which on a horn is weapon enchantment.  At 7 the risk is past
+       100%, so the 3-bit field is exactly enough. */
+    if (obj->oartifact == ART_LAPIS_PHILOSOPHORUM && obj->lapis_state) {
+        if (obj->lapis_state == 1 && potion->otyp == POT_ACID) {
             /* ROLEHACK: 0%, 15%, 30%, ...  The first restoration is
                free: that is the charge the nemesis already spent. */
-            int risk = 15 * obj->spe;
+            int risk = 15 * (int) obj->recharged;
 
-            pline("The acid bites at %s.", the(xname(obj)));
+            pline("The acid bites at %s.", yname(obj));
             useup(potion);
             if (rn2(100) < risk) {
-                pline_The("stone shudders, and the flask bursts!");
-                losehp(rnd(15 + 5 * obj->spe),
+                pline_The("horn shudders, and the flask bursts!");
+                losehp(rnd(15 + 5 * (int) obj->recharged),
                        "an alchemic blast", KILLED_BY_AN);
                 return ECMD_TIME;
             }
-            obj->oeroded = 2;
-            pline("A faint gold streak wakes along its edge.");
+            obj->lapis_state = 2;
+            pline("A faint gold thread wakes along its spiral.");
             return ECMD_TIME;
         }
-        if (obj->oeroded == 2 && potion->otyp == POT_FULL_HEALING) {
+        if (obj->lapis_state == 2 && potion->otyp == POT_FULL_HEALING) {
             useup(potion);
-            obj->oeroded = 0;
-            if (obj->spe < 20)
-                obj->spe++;
-            pline("The elixir sinks into the stone and does not come out.");
+            obj->lapis_state = 0;
+            if (obj->recharged < 7)
+                obj->recharged++;
+            pline("The elixir sinks into the horn and does not come out.");
             pline("%s warm again.", Yobjnam2(obj, "are"));
-            if (obj->spe > 2)
+            if (obj->recharged > 2)
                 You_feel("that it will not take much more of this.");
             return ECMD_TIME;
         }

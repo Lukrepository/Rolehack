@@ -306,11 +306,12 @@ static NEARDATA struct artifact artilist[] = {
       NON_PM,
       0, 12, 4000L, NO_COLOR, EYE_OF_THE_AETHIOPICA),
 
-    /* the Apothecary's quest artifact; lore: chrysopoeia + elixir of life.
+    /* the Apothecary's quest artifact; lore: chrysopoeia + elixir of life,
+       and -- being a unicorn's horn -- the panacea, via ordinary #apply.
        Carried life-saving is implemented separately (not an SPFX flag);
        deliberately grants no reflection, magic resistance, speed, or
        regeneration -- see role-spec-apothecary-2026-07-30.md */
-    A("The Lapis Philosophorum", TOUCHSTONE,
+    A("The Lapis Philosophorum", UNICORN_HORN,
       (SPFX_NOGEN | SPFX_RESTR | SPFX_INTEL), SPFX_SEARCH, 0,
       NO_ATTK, NO_DFNS, NO_CARY, TRANSMUTE_GOLD, A_NEUTRAL,
       PM_APOTHECARY,

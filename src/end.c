@@ -1088,7 +1088,7 @@ done(int how)
 
         for (pstone = gi.invent; pstone; pstone = pstone->nobj)
             if (pstone->oartifact == ART_LAPIS_PHILOSOPHORUM
-                && !pstone->oeroded)
+                && !pstone->lapis_state)
                 break;
         if (pstone) {
             pline("But wait...");
@@ -1096,8 +1096,9 @@ done(int how)
             if (how == CHOKING)
                 You("vomit ...");
             You_feel("much better!");
-            pline("%s dull and grey.", Yobjnam2(pstone, "turn"));
-            pstone->oeroded = 1; /* spent; re-temper with acid + full healing */
+            pline("%s dull as old bone.", Yobjnam2(pstone, "turn"));
+            pstone->lapis_state = 1; /* spent; re-temper with acid + full
+                                        healing */
             savelife(how);
             if (how == GENOCIDED) {
                 pline("Unfortunately you are still genocided...");

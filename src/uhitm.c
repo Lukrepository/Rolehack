@@ -4699,7 +4699,7 @@ mhitm_ad_dgst(
             /* ROLEHACK: swallowing denies the save, but the Stone is spent,
                never destroyed -- it stays in the pack, inert. */
             if (obj->oartifact == ART_LAPIS_PHILOSOPHORUM)
-                obj->oeroded = 1;
+                obj->lapis_state = 1;
             else
                 m_useup(mdef, obj);
         }
@@ -5219,7 +5219,7 @@ gulpum(struct monst *mdef, struct attack *mattk)
                 if ((otmp = mlifesaver(mdef)) != 0) {
                     /* ROLEHACK: as above -- spent, not destroyed. */
                     if (otmp->oartifact == ART_LAPIS_PHILOSOPHORUM)
-                        otmp->oeroded = 1;
+                        otmp->lapis_state = 1;
                     else
                         m_useup(mdef, otmp);
                 }

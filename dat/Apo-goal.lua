@@ -43,13 +43,13 @@ des.door("closed",38,08)
 
 des.non_diggable(selection.area(00,00,75,19))
 
--- The strongroom: the Stone, and the man who took it
+-- The strongroom: the horn, and the man who took it
 -- ROLEHACK: he does not keep it on the bench.  He keeps it on him, and
 -- it is charged: killing him once only spends it.  The potions of acid are
 -- half of what you need to wake it up again afterwards.
 des.monster({ id = "William Chaloner", x=38, y=06, peaceful=0,
               inventory = function()
-   des.object({ id = "touchstone", buc="blessed", spe=0,
+   des.object({ id = "unicorn horn", buc="blessed", spe=0,
                 name="The Lapis Philosophorum" });
    des.object({ id = "potion of acid" });
    des.object({ id = "potion of acid" });

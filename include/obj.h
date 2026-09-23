@@ -147,14 +147,17 @@ struct obj {
     Bitfield(how_lost, 3);  /* stolen by mon or thrown, dropped by hero, etc */
 
     Bitfield(named_how, 1);  /* source of name per TODO in resetobjs() */
+    Bitfield(lapis_state, 2); /* ROLEHACK: the Lapis Philosophorum's charge:
+                               * 0 charged, 1 spent, 2 primed for
+                               * re-tempering (see potion_dip) */
 #if 0
     /* not implemented */
     Bitfield(eknown, 1); /* effect known for wands zapped or rings worn when
                           * not seen yet after being picked up while blind
                           * [maybe for remaining stack of used potion too] */
-    /* 5 free bits */
+    /* 3 free bits */
 #else
-    /* 6 free bits */
+    /* 4 free bits */
 #endif
 
     int corpsenm;         /* type of corpse is mons[corpsenm] */

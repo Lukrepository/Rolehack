@@ -261,7 +261,14 @@ finish_quest(struct obj *obj) /* quest artifact or thrown unique item or faux
         }
     } else {
         /* normal quest completion; threw artifact or walked up carrying it */
-        qt_pager(!Qstat(got_thanks) ? "offeredit" : "offeredit2");
+        /* ROLEHACK: Newton warns a lawful Apothecary that making gold of
+           the horn will cost alignment; a neutral one pays nothing and
+           hears a different farewell. */
+        if (!Qstat(got_thanks) && Role_if(PM_APOTHECARY)
+            && u.ualign.type != A_LAWFUL)
+            qt_pager("offeredit_neutral");
+        else
+            qt_pager(!Qstat(got_thanks) ? "offeredit" : "offeredit2");
         /* should have obtained bell during quest;
            if not, suggest returning for it now */
         if ((otmp = carrying(BELL_OF_OPENING)) == 0)

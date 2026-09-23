@@ -1124,22 +1124,29 @@ absence, yes?  How fare you upon your quest for the Amulet?"]],
     the silver faster than we could strike it.
 
     "And I did the other thing too.  The thing they laugh at.  Thirty
-    years of furnace and salt and failure, and then one morning it was
-    simply there in my hand: %o.  Base metal made noble.  I told no
-    one.  I set it in the vault and went back to weighing shillings.
+    years of furnace and salt, and I never made it.  No one ever did.
+    The adepts called it a stone because not one of them had seen it.
+    I bought it in the end, from a Danish factor who did not know what
+    he was selling - a unicorn's horn, white and turned like a screw.
+    %oC.
 
-    "%n took it.  Not for gold - %nh had gold, %nh coined thirty
-    thousand guineas of the stuff.  %nH took it because %nh could not
-    bear that a clerk with a furnace had done what %nh only imitated.
+    "I have never used it.  A creature died to part with that horn,
+    and I paid the man who killed it, and that is sin enough for one
+    life.  Read the old books and it is everywhere - the fleece, the
+    cattle of the Sun: the sacred thing is taken, and the taking is
+    paid for.  So I set it in the vault and went back to weighing
+    shillings.
 
-    "Do you understand what %nh can do with it now?  Not false coin.
-    True gold, without end, poured into a kingdom that has none to
-    spare.  Every honest shilling in England will be worth a farthing
-    by Lady Day.  Forgery I could hang.  This I cannot even prosecute.
+    "%n had no such scruple.  %nH took it from
+    the vault, and has been making gold with it since Candlemas -
+    true gold, without end, struck with a King's face %nh has no
+    right to strike.  Every honest shilling in England will be worth
+    a farthing by Lady Day.  Forgery I could hang.  This I cannot
+    even prosecute.
 
-    "Go by way of %i.  The warrens beneath the gaol lead to %nj
-    workshop.  Bring back %o - and %p, bring it *back*.  I have need
-    of it here."]],
+    "Go by way of %i.  The warrens beneath the gaol
+    lead to %nj workshop.  Bring back %o -
+    and %p, bring it *back*.  I have need of it here."]],
       },
       badalign = {
          synopsis = "[Return when you are more %a.]",
@@ -1165,7 +1172,7 @@ whole of the assayer's art and the whole of ours.
 "Return when they name you %Ra, and we shall speak again."]],
       },
       discourage = {
-         "\"The Warden's answered prayer.  He sends what he can spare.\"",
+         "\"The Warden kept it like a relic.  I keep it like a tool.\"",
          "\"Thirty thousand guineas I struck, and he calls me a coiner.\"",
          "\"He kept it in a *vault*, physician.  I have it in my hand.\"",
          "\"Every coin in this realm will bear my mark before I am done.\"",
@@ -1186,7 +1193,7 @@ whole of the assayer's art and the whole of ours.
       },
       nexttime = {
          output = "pline",
-         text = [[The presses are silent again.  %H waits.]],
+         text = [[The presses are silent again.  %HC waits.]],
       },
       othertime = {
          output = "pline",
@@ -1286,8 +1293,9 @@ you.  That is half the pleasure of it."]],
     The gold is not counterfeit.  That is the horror of it.  Every
     ingot on those shelves is true, and there is no end to them.
 
-    On the far bench, under lamplight, something small and grey is
-    doing what nothing grey should do.  %o.]],
+    On the far bench, under lamplight, a velvet cloth still holds
+    the shape of something long and spiralled.  Wherever %n
+    is, %o is with %ni.]],
       },
       goal_next = {
          output = "pline",
@@ -1303,11 +1311,11 @@ though you were expected and slightly late.
     "Do you know what he calls me?  A coiner.  Thirty years of the
     finest work in England and the man cannot say the word artist.
 
-    "He had %o for a year.  A year!  And he set it in a vault and
-    went back to his ledgers, because he is a clerk who was handed a
-    miracle and could not think what to spend it on.
+    "He had %o for a year.  A year!  And he set it
+    in a vault and went back to his ledgers, because he thinks it
+    *holy*.  It is a horn, physician.  The horse had finished with it.
 
-    "I thought of something.  Ask him what a shilling will buy come
+    "I found a use for it.  Ask him what a shilling will buy come
     spring.  Ask him whose face is on it.
 
     "No?  Then we shall settle it the old way."]],
@@ -1322,8 +1330,9 @@ though you were expected and slightly late.
       },
       nemesis_wantsit = {
          output = "text",
-         text = [["That is mine.  I paid for it in ways your master would not survive
-hearing about.  Set it down and I may let you walk out of here."]],
+         text = [["That is mine.  I took it from a man too pious to use it, and that is
+better title than most men hold to anything.  Set it down and I may let
+you walk out of here."]],
       },
       killed_nemesis = {
          output = "text",
@@ -1332,47 +1341,78 @@ hearing about.  Set it down and I may let you walk out of here."]],
     The furnaces go on burning.  In the racks, a thousand dies wait
     to strike a thousand faces that were never a king's.
 
-    On the bench, %o has gone quiet and cold, and looks - to any eye
-    but yours - exactly like a common grey stone.]],
+    Among what %nh carried, %o has gone quiet
+    and cold, and looks - to any eye but yours - like any unicorn
+    horn a lucky adventurer might saw from a carcass.]],
       },
       gotit = {
          output = "text",
          text = [[It weighs less than it should.
 
-    You have handled touchstones all your life; you know what a
-    gray stone does and does not do.  This one is warm, and the
-    warmth does not fade, and along one edge there is a streak of
-    gold that you did not put there.
+    You have sold powdered alicorn across a counter all your life, and
+    you know what it mostly is: sea-ivory, burnt hartshorn, chalk.
+    This is none of those.  Turn it in the light, and the spiral goes
+    on turning after your hand has stopped.
 
-    You are holding %o.  Thirty years of another man's life.
-    Take it home to %l.]],
+    You are holding %o: a unicorn's horn, and
+    thirty years of another man's life.  Take it home to %l.]],
       },
       offeredit = {
          output = "text",
-         text = [[%l takes %o from you with both hands, the way one lifts something
-that is already broken, and sets it on the balance.
+         text = [[%l takes %o from you with both
+hands, the way one lifts something that is already broken, and sets
+it on the balance.
 
-    He watches the beam.  He watches it for a long time.
+    He watches the beam for a long time.  Then he gives it back.
 
-    "Yes," he says at last, very quietly.  "Yes.  That is it exactly."]],
+    "No.  Keep it.  I asked for it home, and I was wrong to.  I wanted
+    it for my own sake, and a man does not deserve a thing merely
+    because he paid for it.
+
+    "You are going down after the Amulet, into Moloch's own country.
+    Beside that, %n was a boy counting pebbles.  His
+    Majesty's shillings will hold without the horn.  I am not certain
+    you will.
+
+    "So use it.  Heal with it freely - the beast did as much itself,
+    and there is no sin in that.  But if you make gold of it, hear me.
+    You keep the Law, as I do, and the Law will mark it against you
+    every time, as it would mark me.  Not ruin.  A debt, and a debt
+    can be worked off against the Enemy's servants.  But the Law keeps
+    its own ledger, and that line is never struck out.
+
+    "Odysseus's men ate the cattle of the Sun, and not one of them came
+    home.  Use it with great care, %p."]],
+      },
+      offeredit_neutral = {
+         output = "text",
+         text = [[%l takes %o from you with both
+hands, the way one lifts something that is already broken, and sets
+it on the balance.
+
+    He watches the beam for a long time.  Then he gives it back.
+
+    "No.  Keep it.  I asked for it home, and I was wrong to.  I wanted
+    it for my own sake, and a man does not deserve a thing merely
+    because he paid for it.
+
+    "You are going down after the Amulet, into Moloch's own country.
+    Beside that, %n was a boy counting pebbles.  His
+    Majesty's shillings will hold without the horn.  I am not certain
+    you will.
+
+    "So use it.  Heal with it; make gold of it, if you must.  You do
+    not keep the Law as I keep it, and I think it will not be counted
+    against you as it would be against me.  I find I envy you that a
+    little, and pity you rather more.
+
+    "Use it with great care all the same, %p."]],
       },
       offeredit2 = {
          output = "text",
-         text = [[He holds it a moment longer than he means to, and you see exactly
-what it costs him to open his hand.
+         text = [["Still carrying it?  Good.  Keep it close.
 
-    "No.  Take it back.
-
-    "I have wanted this returned to me for a year, and I find I have
-    wanted it for the wrong reasons - a man does not deserve a thing
-    merely because he made it.
-
-    "You are going somewhere I have only read about, after something
-    that makes my coinage look like children counting stones.  His
-    Majesty's shillings will hold without it.  I am not certain you
-    will.
-
-    "Carry it.  And do not tell me what you spend it on."]],
+"And do not tell me what you spend it on."]],
       },
       posthanks = {
          output = "text",

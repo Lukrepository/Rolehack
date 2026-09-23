@@ -2835,7 +2835,8 @@ mlifesaver(struct monst *mon)
            including the man who stole it.  Unlike the amulet it is not
            consumed, only spent: it goes inert, and can be re-tempered. */
         for (otmp = mon->minvent; otmp; otmp = otmp->nobj)
-            if (otmp->oartifact == ART_LAPIS_PHILOSOPHORUM && !otmp->oeroded)
+            if (otmp->oartifact == ART_LAPIS_PHILOSOPHORUM
+                && !otmp->lapis_state)
                 return otmp;
     }
     return (struct obj *) 0;
@@ -2875,7 +2876,7 @@ lifesaved_monster(struct monst *mtmp)
             pline("%s flares white-hot!", The(xname(lifesave)));
             if (canseemon(mtmp))
                 pline("%s draws breath again!", Monnam(mtmp));
-            pline("%s goes dull and grey.", The(xname(lifesave)));
+            pline("%s goes dull as old bone.", The(xname(lifesave)));
         } else if (cansee(mtmp->mx, mtmp->my)) {
             pline("But wait...");
             pline("%s medallion begins to glow!", s_suffix(Monnam(mtmp)));
@@ -2893,7 +2894,7 @@ lifesaved_monster(struct monst *mtmp)
         /* ROLEHACK: the Stone is spent, not consumed -- it stays in his
            pack for you to take off his body, inert and re-temperable. */
         if (by_stone)
-            lifesave->oeroded = 1;
+            lifesave->lapis_state = 1;
         else
             m_useup(mtmp, lifesave);
         /* equip replacement amulet, if any, on next move */
