@@ -180,7 +180,15 @@ static const struct trobj Apothecary[] = {
     { QUARTERSTAFF, 0, WEAPON_CLASS, 1, 1, UNDEF_BLESS },
     /* the poisoner's weapon: something to dip in the potion of sickness
        on turn 1, and a ranged answer for a role that cannot take a bite */
-    { DART, 0, WEAPON_CLASS, 12, 20, UNDEF_BLESS },
+    /* +2 is the exact breakpoint in should_mulch_missile() (dothrow.c):
+       chance = 3 + erosion - spe, and broken = chance > 1 ? rn2(chance)
+       : !rn2(4).  At +0 a dart survives a throw 1 time in 3; at +1, 1 in
+       2; at +2 the formula falls through to the !rn2(4) branch and it
+       survives 3 times in 4 -- and no further enchantment improves that.
+       Ten +2 darts therefore outlast eighteen +0 ones (about 40 throws
+       against 27) and stay recoverable long enough to be a weapon
+       (Lucas, 2026-09-23). */
+    { DART, 2, WEAPON_CLASS, 10, 12, UNDEF_BLESS },
     { ALCHEMY_SMOCK, 2, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
     { LEATHER_GLOVES, 1, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
     { POT_HEALING, 0, POTION_CLASS, 2, 2, 0 },
