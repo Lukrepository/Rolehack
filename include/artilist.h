@@ -310,10 +310,13 @@ static NEARDATA struct artifact artilist[] = {
        and -- being a unicorn's horn -- the panacea, via ordinary #apply.
        Carried life-saving is implemented separately (not an SPFX flag);
        deliberately grants no reflection, magic resistance, speed, or
-       regeneration -- see role-spec-apothecary-2026-07-30.md */
+       regeneration -- see role-spec-apothecary-2026-07-30.md.
+       Lawful for everyone else (Newton's Law); hack_artifacts() gives an
+       Apothecary's own copy that Apothecary's starting alignment, as it
+       does the neutral Heart of Ahriman for a chaotic Barbarian. */
     A("The Lapis Philosophorum", UNICORN_HORN,
       (SPFX_NOGEN | SPFX_RESTR | SPFX_INTEL), SPFX_SEARCH, 0,
-      NO_ATTK, NO_DFNS, NO_CARY, TRANSMUTE_GOLD, A_NEUTRAL,
+      NO_ATTK, NO_DFNS, NO_CARY, TRANSMUTE_GOLD, A_LAWFUL,
       PM_APOTHECARY,
       NON_PM,
       0, 12, 3500L, NO_COLOR, LAPIS_PHILOSOPHORUM),
