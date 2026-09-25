@@ -177,7 +177,11 @@ static const struct trobj Wizard[] = {
     { 0, 0, 0, 0, 0, 0 }
 };
 static const struct trobj Apothecary[] = {
-    { QUARTERSTAFF, 0, WEAPON_CLASS, 1, 1, UNDEF_BLESS },
+    /* the trade's knife: the role's Expert melee skill in hand from turn
+       one, and a blade that pries a lock where a staff smashed the box
+       (Lucas, 2026-09-24: the quarterstaff lost every hard fight in
+       playtest #4, and its skill is gone from Skill_Apo[] too) */
+    { KNIFE, 0, WEAPON_CLASS, 1, 1, UNDEF_BLESS },
     /* the poisoner's weapon: something to dip in the potion of sickness
        on turn 1, and a ranged answer for a role that cannot take a bite */
     /* +2 is the exact breakpoint in should_mulch_missile() (dothrow.c):
@@ -607,7 +611,6 @@ static const struct def_skill Skill_W[] = {
 static const struct def_skill Skill_Apo[] = {
     { P_KNIFE, P_EXPERT },
     { P_DAGGER, P_SKILLED },
-    { P_QUARTERSTAFF, P_EXPERT },
     { P_CLUB, P_BASIC },
     { P_SLING, P_SKILLED },
     { P_DART, P_EXPERT },
