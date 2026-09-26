@@ -82,6 +82,8 @@ CLOAK_STYLES = ["faded pall", "coarse mantelet", "hooded cloak", "slippery cloak
                 "mummy wrapping"]
 HELM_LOOKS = ["leather hat", "iron skull cap", "hard hat", "fedora", "conical hat", "dented pot",
               "crystal helmet", "plumed helmet", "etched helmet", "crested helmet", "visored helmet"]
+SHIELD_LOOKS = ["wooden shield", "blue and green shield", "white-handed shield", "red-eyed shield",
+                "large shield", "large round shield", "polished silver shield"]
 DRAGONS = ["gray", "gold", "silver", "red", "white", "orange", "black", "blue", "green", "yellow"]
 ARMSLOT = {"HELM": "helmet", "CLOAK": "cloak", "SHIELD": "shield", "GLOVES": "gloves", "BOOTS": "boots",
            "DRGN_ARMR": "suit"}
@@ -118,6 +120,8 @@ for idx, o in enumerate(objs):
         it["dragon"] = DRAGONS.index(o["name"].split()[0])
     if slot == "helmet":
         it["helm"] = HELM_LOOKS.index(o["look"]) + 1 if o["look"] in HELM_LOOKS else 0
+    if slot == "shield":
+        it["shield"] = SHIELD_LOOKS.index(o["look"]) + 1 if o["look"] in SHIELD_LOOKS else 0
     if slot == "cloak":
         look = o["look"]
         it["cloak"] = CLOAK_STYLES.index(look) + 1 if look in CLOAK_STYLES else 0

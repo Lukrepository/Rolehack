@@ -1199,11 +1199,12 @@ staticfn void and_send_here_context(void)
  *   mail, for its pauldrons.  All of these are functions of the object type
  *   alone, and none of those appearances is ever shuffled, so they tell
  *   nothing the tile does not.
- *   A worn cloak or helmet carries its style in the low byte (rh_doll_look()),
- *   named by the words the player sees: its description, or its name when
- *   it has none.  The magic cloaks and four helmets shuffle their
- *   descriptions per game, so the doll draws the "opera cloak" or the
- *   "visored helmet", never the cloak of invisibility or helm of telepathy.
+ *   A worn cloak, helmet or shield carries its style in the low byte
+ *   (rh_doll_look()), named by the words the player sees: its description,
+ *   or its name when it has none.  The magic cloaks and four helmets shuffle
+ *   their descriptions per game, so the doll draws the "opera cloak" or the
+ *   "visored helmet", never the cloak of invisibility or helm of telepathy;
+ *   three shields share "wooden shield" and are drawn alike.
  *   RH_DOLL_FRONT marks the cloak-slot items worn in front of the body --
  *   robe, apron (alchemy smock), mummy wrapping; every other cloak is drawn
  *   as a cape behind it, so it no longer hides the armour (Lucas).  All
@@ -1320,9 +1321,11 @@ staticfn boolean rh_doll_costume(struct obj *obj)
 }
 
 /*
- * A worn cloak's or helmet's look, by the words the player sees for it (Lucas
- * asked for cloak and helmet art).  The orders match RhDoll's styles; 0 for
- * anything else.  Cornuthaum and dunce cap are both "conical hat".
+ * A worn cloak's, helmet's or shield's look, by the words the player sees for
+ * it (Lucas asked for cloak, helmet and shield art).  The orders match
+ * RhDoll's styles; 0 for anything else.  Cornuthaum and dunce cap are both
+ * "conical hat"; the small shield and the shields of drain and shock
+ * resistance are all "wooden shield".
  */
 static const char *const rh_cloak_looks[] = {
     "faded pall", "coarse mantelet", "hooded cloak", "slippery cloak",
@@ -1333,6 +1336,11 @@ static const char *const rh_helm_looks[] = {
     "leather hat", "iron skull cap", "hard hat", "fedora", "conical hat",
     "dented pot", "crystal helmet", "plumed helmet", "etched helmet",
     "crested helmet", "visored helmet",
+};
+static const char *const rh_shield_looks[] = {
+    "wooden shield", "blue and green shield", "white-handed shield",
+    "red-eyed shield", "large shield", "large round shield",
+    "polished silver shield",
 };
 
 staticfn int rh_doll_look(struct obj *obj, const char *const *looks, int n)
@@ -1481,6 +1489,8 @@ staticfn void and_send_hero_look(boolean from_display)
         look[4 + 3 * 3 + 2] |= rh_doll_look(uarmc, rh_cloak_looks, SIZE(rh_cloak_looks));
     if(uarmh)                                               /* slot 0: the helmet */
         look[4 + 3 * 0 + 2] |= rh_doll_look(uarmh, rh_helm_looks, SIZE(rh_helm_looks));
+    if(uarms)                                               /* slot 4: the shield */
+        look[4 + 3 * 4 + 2] |= rh_doll_look(uarms, rh_shield_looks, SIZE(rh_shield_looks));
     /* Knuth's multiplicative hash, high bits: games started seconds apart
        should not just step through the tones in order. */
     look[RH_DOLL_LEN - 2] = (int) ((((unsigned) ubirthday) * 2654435761U) >> 16);

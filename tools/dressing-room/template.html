@@ -416,7 +416,19 @@ const BODY_Y = [7, 8, 9, 10, 11], BODY_X0 = [5, 4, 4, 6, 6], BODY_X1 = [10, 11, 
 const GAP_FILL_ABOVE = 0.5, BLACK_HIDE_ABOVE = 0.55;
 const S_CLOAK = S(7, 5, "lmHmmd", 8, 4, "lmmmmmmd", 9, 4, "lmmmmmmd", 10, 5, "mmmAmd", 11, 4, "lmmmAmmd", 12, 4, "lmmmAmmd");
 const S_AMULET = S(8, 7, "lm");
-const S_SHIELD = S(-2, -1, "lmdA", -1, -1, "mWdA", 0, -1, "mmdA", 1, 0, "dA");
+const S_SHIELD = S(-2, -1, "lmdA", -1, -1, "mWdA", 0, -1, "mmdA", 1, 0, "dA");   // a shield whose look is not named
+// Shields, as the core numbers them (rh_shield_looks[]), full size on every body (Lucas, 2026-09-26)
+const SHIELDS = [null,
+  S(-2, -1, "CKJA", -1, -1, "KKJA", 0, -1, "KJJA", 1, 0, "JA"),  // wooden shield
+  S(-2, -1, "NNNA", -1, -1, "BNGA", 0, -1, "BNGA", 1, 0, "NA"),  // blue and green shield
+  S(-2, -1, "KJJA", -1, -1, "PNPA", 0, -1, "NNPA", 1, 0, "PA"),  // white-handed shield
+  S(-2, -1, "KKJA", -1, -1, "DADA", 0, -1, "PDPA", 1, 0, "PA"),  // red-eyed shield
+  S(-3, -1, "NNNOA", -2, -1, "NPPOA", -1, -1, "NPPOA", 0, -1, "NPPOA", 1, 0, "NPOA", 2, 1, "OA"),  // large shield
+  S(-3, 0, "BB", -2, -1, "BKKBA", -1, -1, "BKJBA", 0, -1, "BJJBA", 1, 0, "BBA"),  // large round shield
+  S(-2, -1, "NNOA", -1, -1, "NNZA", 0, -1, "NZOA", 1, 0, "OA"),  // polished silver shield
+];
+const SHIELD_WORDS = [null, "a brown wooden kite", "white rim, blue and green halves", "a white hand on a dark field", "a red eye, a black pupil", "a tall steel tower shield", "round, a blue rim over wood", "mirror-bright silver"];
+const shieldSprite = look => { const st = look.shape("shield") & 0xff; return st > 0 && st < SHIELDS.length ? SHIELDS[st] : S_SHIELD; };
 const S_SHORT_BLADE = S(-3, 0, "N", -2, 0, "O", -1, -1, "KHK");
 const S_SWORD = S(-7, 0, "N", -6, 0, "N", -5, 0, "O", -4, 0, "N", -3, 0, "O", -2, 0, "O", -1, -1, "KHK", 1, 0, "J");
 const S_GREAT_SWORD = S(-10, 0, "N", -9, 0, "N", -8, 0, "O", -7, 0, "N", -6, 0, "O", -5, 0, "N", -4, 0, "O", -3, 0, "O", -2, -1, "KHK", -1, 0, "J", 1, 0, "J");
@@ -483,7 +495,6 @@ const S_ROBE = S(7, 5, "CCJKKK", 8, 4, "CCCJKKKK", 9, 4, "CACJKKAK", 10, 5, "CCJ
 const S_ROBE_SHORT = S(9, 3, "CCJKKKK", 10, 3, "CAJKKAK", 11, 5, "CJK", 12, 4, "CCJKK");
 const S_APRON = S(7, 6, "F..R", 8, 6, "FFFR", 9, 6, "FFFR", 10, 6, "FFFR", 11, 6, "FFFR", 12, 6, "FFFR");
 const S_APRON_SHORT = S(9, 5, "FFR", 10, 5, "FFR", 11, 5, "FFR", 12, 5, "FFR");
-const S_SHIELD_SHORT = S(-2, 0, "lmA", -1, 0, "WdA", 0, 0, "mdA");
 const SHORT_Y = [9, 10, 11], SHORT_X0 = [3, 3, 5], SHORT_X1 = [9, 9, 7];
 const S_HELD = S(-2, -1, "lm", -1, -1, "md");
 // what the hand holds: an artifact's own art once its name is known, else its family's
@@ -738,7 +749,7 @@ function dressHuman(px, bg, look, a, skin) {
   if (look.draws("gloves")) { const c = ramp(look.item("gloves"), false)[1], h = a.hands || [a.main[0], a.main[1], a.off[0], a.off[1]]; for (let i = 0; i + 1 < h.length; i += 2) recolour(px, bg, h[i], h[i + 1], c); }
   if (look.draws("helmet")) stampHelmet(px, bg, look, a);
   if (look.draws("eyewear")) stamp(px, bg, look.art("eyewear") === ART_EYES ? S_EYES : S_EYEWEAR, a.head[0], a.head[1], false, ramp(look.item("eyewear"), false));
-  if (look.draws("shield")) stamp(px, bg, S_SHIELD, a.off[0], a.off[1], false, ramp(look.item("shield"), false));
+  if (look.draws("shield")) stamp(px, bg, shieldSprite(look), a.off[0], a.off[1], false, ramp(look.item("shield"), false));
   if (look.has("weapon")) stamp(px, bg, heldSprite(look, "weapon"), a.main[0], a.main[1], false, ramp(look.item("weapon"), false));
   if (look.has("offhand")) stamp(px, bg, heldSprite(look, "offhand"), a.off[0], a.off[1], true, ramp(look.item("offhand"), false));
 }
@@ -755,7 +766,7 @@ function dressShort(px, bg, look, a) {
   if (look.draws("gloves")) { const c = ramp(look.item("gloves"), false)[1]; recolour(px, bg, a.main[0], a.main[1], c); recolour(px, bg, a.off[0], a.off[1], c); }
   if (look.draws("helmet")) stampHelmet(px, bg, look, a);
   if (look.draws("eyewear")) stamp(px, bg, look.art("eyewear") === ART_EYES ? S_EYES_SHORT : S_EYEWEAR_SHORT, 0, 0, false, ramp(look.item("eyewear"), false));
-  if (look.draws("shield")) stamp(px, bg, S_SHIELD_SHORT, a.off[0], a.off[1], false, ramp(look.item("shield"), false));
+  if (look.draws("shield")) stamp(px, bg, shieldSprite(look), a.off[0], a.off[1], false, ramp(look.item("shield"), false));   // full size (Lucas)
   // weapons at full size: pound for pound the small races are the strong ones (Lucas, 2026-09-26)
   if (look.has("weapon")) stamp(px, bg, heldSprite(look, "weapon"), a.main[0], a.main[1], false, ramp(look.item("weapon"), false));
   if (look.has("offhand")) stamp(px, bg, heldSprite(look, "offhand"), a.off[0], a.off[1], true, ramp(look.item("offhand"), false));
@@ -773,6 +784,7 @@ function makeLook(bodyId, st) {
     if (i.front) v |= FRONT;
     if (s === "cloak" && i.cloak) v |= i.cloak;
     if (s === "helmet" && i.helm) v |= i.helm;
+    if (s === "shield" && i.shield) v |= i.shield;
     if (i.art) v |= i.art << 17;   // the artifact's own art (the core sends it once the name shows)
     if (s !== "weapon" && s !== "offhand" && costumeIds.includes(i.id)) v |= COSTUME;
     return v;
@@ -988,6 +1000,7 @@ function describe(look) {
     else if ((sh >> 17) & 0x3f) how = ART_WORDS[(sh >> 17) & 0x3f];
     else if (s === "suit") how = (sh & HIDE ? "a scale hide" : "cut from its floor tile") + (sh & DRAGON ? `, pauldrons: ${PAULDRON_NAMES[(sh >> 12) & 0xf]}` : "") + (b.anchor.feetRow >= 0 ? ", down to the boots" : "");
     else if (s === "helmet") how = (sh & 0xff) ? HELM_WORDS[sh & 0xff] : "drawn";
+    else if (s === "shield") how = (sh & 0xff) ? SHIELD_WORDS[sh & 0xff] : "drawn";
     else if (s === "cloak") how = sh & FRONT ? "worn in front" : `a cape behind${(sh & 0xff) ? ": " + CAPE_WORDS[sh & 0xff] : ""}`;
     else if (s === "shirt") how = "cut from its floor tile";
     else if (s === "gloves" || s === "boots") how = "its colour on the " + (s === "gloves" ? "hands" : "feet") + (s === "boots" && b.anchor.feetRow < 0 ? " (the robe hides them)" : "");
