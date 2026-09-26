@@ -84,6 +84,9 @@ HELM_LOOKS = ["leather hat", "iron skull cap", "hard hat", "fedora", "conical ha
               "crystal helmet", "plumed helmet", "etched helmet", "crested helmet", "visored helmet"]
 SHIELD_LOOKS = ["wooden shield", "blue and green shield", "white-handed shield", "red-eyed shield",
                 "large shield", "large round shield", "polished silver shield"]
+GLOVE_LOOKS = ["old gloves", "padded gloves", "riding gloves", "fencing gloves"]
+BOOT_LOOKS = ["walking shoes", "hard shoes", "hiking boots", "jackboots", "combat boots", "jungle boots",
+              "mud boots", "buckled boots", "riding boots", "snow boots"]
 DRAGONS = ["gray", "gold", "silver", "red", "white", "orange", "black", "blue", "green", "yellow"]
 ARMSLOT = {"HELM": "helmet", "CLOAK": "cloak", "SHIELD": "shield", "GLOVES": "gloves", "BOOTS": "boots",
            "DRGN_ARMR": "suit"}
@@ -122,6 +125,10 @@ for idx, o in enumerate(objs):
         it["helm"] = HELM_LOOKS.index(o["look"]) + 1 if o["look"] in HELM_LOOKS else 0
     if slot == "shield":
         it["shield"] = SHIELD_LOOKS.index(o["look"]) + 1 if o["look"] in SHIELD_LOOKS else 0
+    if slot == "gloves":
+        it["glove"] = GLOVE_LOOKS.index(o["look"]) + 1 if o["look"] in GLOVE_LOOKS else 0
+    if slot == "boots":
+        it["boot"] = BOOT_LOOKS.index(o["look"]) + 1 if o["look"] in BOOT_LOOKS else 0
     if slot == "cloak":
         look = o["look"]
         it["cloak"] = CLOAK_STYLES.index(look) + 1 if look in CLOAK_STYLES else 0
@@ -170,7 +177,7 @@ for idx, o in enumerate(objs):
 # ---- bodies: tiles and the anchors RhDoll.java measures
 def A(**kw):
     a = dict(head=[0, 0], torso=[0, 0], main=[4, 10], off=[11, 10], hands=None, feetRow=13,
-             feetCols=[5, 6, 9, 10], short=False, keep=[], offPose=[])
+             feetCols=[5, 6, 9, 10], short=False, keep=[], offPose=[], cuffs=None)
     a.update(kw)
     return a
 ANCH = {
@@ -188,7 +195,7 @@ ANCH = {
     # Claude's tile (2026-09-26), on vanilla's frame, a flask held up in the off hand: the flask's
     # neck survives a helmet (keep); a shield or second weapon brings the arm down (offPose:
     # x, y, colour -- "~" background, "L" skin, else a palette letter)
-    "apothecary": A(hands=[4, 10, 12, 5, 11, 10], keep=[12, 3],
+    "apothecary": A(hands=[4, 10, 12, 5, 11, 10], cuffs=[4, 9, 12, 6, 11, 9], keep=[12, 3],
                     offPose=[11, 7, "~", 12, 6, "~", 12, 5, "~", 12, 4, "~", 13, 4, "~", 12, 3, "~",
                              13, 5, "~", 11, 8, "O", 11, 9, "L", 11, 10, "L"]),
     "human": A(), "elf": A(),
