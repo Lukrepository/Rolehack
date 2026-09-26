@@ -197,6 +197,9 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
 .item { cursor: pointer; padding: 3px 6px; border-radius: 3px; min-height: 30px; display: flex; align-items: center; }
 .item:hover { background: #262019; }
 .item.sel { background: #4a3413; }
+.mtile { display: inline-block; flex: none; width: 32px; height: 32px; margin: 1px 8px 1px 0;
+         background: url('tiles.png') no-repeat; background-size: var(--menu-sheet); image-rendering: pixelated; }
+.mtile.none { visibility: hidden; }
 .head { color: #ffb347; padding: 6px 6px 2px; }
 .bold { color: #fff; } .inverse { background: var(--phos); color: #090d0a; }
 .uline { text-decoration: underline; } .dim { color: var(--phos-dim); }

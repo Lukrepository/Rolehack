@@ -142,6 +142,9 @@ async function loadTiles() {
   sheet = new Image();
   sheet.src = 'tiles.png';
   await sheet.decode();
+  // the sheet at menu size, for the pictures beside menu items
+  document.documentElement.style.setProperty('--menu-sheet',
+    `${(sheet.width / 16) * MENU_TILE}px ${(sheet.height / 16) * MENU_TILE}px`);
   const c = document.createElement('canvas');
   c.width = sheet.width;
   c.height = sheet.height;
@@ -530,6 +533,14 @@ async function showText(lines, title) {
 }
 
 const LETTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const MENU_TILE = 32;   // two pixels per tile pixel, crisp beside the menu's text
+
+// A tile from the sheet as a menu picture; an empty slot for an item without one.
+function tileSpan(tile) {
+  if (tile < 0) return '<span class="mtile none"></span>';
+  const x = (tile % sheetCols) * MENU_TILE, y = Math.floor(tile / sheetCols) * MENU_TILE;
+  return `<span class="mtile" style="background-position:-${x}px -${y}px"></span>`;
+}
 
 async function selectMenu(win, how, listPtr) {
   const w = wins.get(win);
@@ -545,13 +556,17 @@ async function selectMenu(win, how, listPtr) {
   let count = '';
 
   const draw = () => {
+    // ForkFront's menu pictures: a column only when some item has one; an item
+    // without keeps the slot so the text lines up; a heading takes none; and
+    // none at all while the map is drawn in text
+    const pictures = sheet && P.get('mapMode') !== 'text' && items.some((i) => i.selectable && i.tile >= 0);
     const body = items.map((it, n) => {
       if (!it.selectable) {
         return it.attr ? `<div class="head">${esc(it.text) || ' '}</div>` : lineHtml(it);
       }
       const mark = how === 2 ? (it.selected ? (it.count > 0 ? '#' : '+') : '-') : '-';
       return `<div class="item${it.selected ? ' sel' : ''}" data-n="${n}">`
-        + `${esc(String.fromCharCode(it.ch))} ${mark} ${esc(it.text)}</div>`;
+        + `${esc(String.fromCharCode(it.ch))} ${mark} ${pictures ? tileSpan(it.tile) : ''}${esc(it.text)}</div>`;
     }).join('');
     const foot = how === 0 ? 'Tap here, or Space, Enter or Esc to close'
       : how === 1 ? 'Tap an item or press its letter · tap here or Esc to cancel'
@@ -816,8 +831,12 @@ const handlers = {
     const w = wins.get(win);
     if (!w || !w.menu) return;
     const lo = M._web_any_word(identifier, 0), hi = M._web_any_word(identifier, 1);
+    // the item's picture, as the Android port finds it (and_add_menu): the
+    // glyph's tile, or none for the core's nul_glyphinfo, whose glyph is NO_GLYPH
+    const glyph = glyphinfo ? M._web_glyphinfo(glyphinfo, 0) : K.GLYPH.NO_GLYPH;
+    const tile = glyph === K.GLYPH.NO_GLYPH ? -1 : M._web_glyphinfo(glyphinfo, 4);
     w.menu.items.push({
-      lo, hi, selectable: !!(lo || hi), ch: ch & 0xff, gch: gch & 0xff, attr, clr, text: str,
+      lo, hi, selectable: !!(lo || hi), ch: ch & 0xff, gch: gch & 0xff, attr, clr, text: str, tile,
       selected: !!(itemflags & MENU_ITEMFLAGS_SELECTED), count: -1,
     });
   },
