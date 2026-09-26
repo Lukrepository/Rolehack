@@ -45,7 +45,7 @@ notices before each release.
 | `src/quest.c` | changed | 2026-09-23 | notice in file |
 | `src/report.c` | changed | 2026-09-25 | notice in file |
 | `src/role.c` | changed | 2026-07-31 to 2026-09-23 | notice in file |
-| `src/u_init.c` | changed | 2026-07-31 to 2026-09-25 | notice in file |
+| `src/u_init.c` | changed | 2026-07-31 to 2026-09-26 | notice in file |
 | `src/uhitm.c` | changed | 2026-08-16 to 2026-09-23 | notice in file |
 | `src/weapon.c` | changed | 2026-09-23 | notice in file |
 | `sys/android/Makefile.src` | changed | 2026-08-19 | notice in file |
@@ -53,7 +53,7 @@ notices before each release.
 | `sys/android/app/AndroidManifest.xml` | changed | 2026-09-24 to 2026-09-25 | notice in file |
 | `sys/android/app/assets/ver` | changed | 2026-08-21 to 2026-09-25 | cannot carry a comment; listed here |
 | `sys/android/app/build.gradle` | changed | 2026-09-24 to 2026-09-25 | notice in file |
-| `sys/android/app/res/drawable-nodpi/default_16x16.png` | changed | 2026-08-19 to 2026-09-25 | cannot carry a comment; listed here |
+| `sys/android/app/res/drawable-nodpi/default_16x16.png` | changed | 2026-08-19 to 2026-09-26 | cannot carry a comment; listed here |
 | `sys/android/app/res/drawable-nodpi/geoduck_15x25.png` | removed | 2026-08-19 to 2026-09-25 | file deleted |
 | `sys/android/app/res/drawable-nodpi/nevanda_32x32.png` | removed | 2026-08-19 to 2026-09-25 | file deleted |
 | `sys/android/app/res/values/config.xml` | changed | 2026-09-25 | notice in file |
@@ -67,5 +67,5 @@ notices before each release.
 | `tools/dressing-room/outfit.py` | added | 2026-09-26 | notice in file |
 | `tools/dressing-room/rolehack-dressing-room.html` | added | 2026-09-26 | notice in file |
 | `tools/dressing-room/template.html` | added | 2026-09-26 | notice in file |
-| `win/share/monsters.txt` | changed | 2026-08-04 to 2026-09-25 | notice in file |
+| `win/share/monsters.txt` | changed | 2026-08-04 to 2026-09-26 | notice in file |
 | `win/share/objects.txt` | changed | 2026-09-25 | notice in file |
