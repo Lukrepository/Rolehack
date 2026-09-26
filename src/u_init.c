@@ -198,6 +198,10 @@ static const struct trobj Apothecary[] = {
     /* closed-toed shoes, for safety: the trade is spilt acid and broken
        glass (Lucas, 2026-09-25) */
     { HIGH_BOOTS, 0, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
+    /* Heisenberg's hat, the Archeologist's joke told again (Lucas,
+       2026-09-26: "at least a +1 fedora").  Only an Archeologist gets
+       the fedora's Luck (do_wear.c, timeout.c); here it is +1 AC. */
+    { FEDORA, 1, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
     { POT_HEALING, 0, POTION_CLASS, 2, 2, 0 },
     /* the thrown half of the stock.  These are the potions monsters throw
        at the hero (muse.c: MUSE_POT_BLINDNESS / _CONFUSION / _SLEEPING /
