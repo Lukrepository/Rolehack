@@ -91,4 +91,4 @@ and build with `./gradlew assembleRelease`, which gives `app/build/outputs/apk/r
 - **NetHack 5.0:** the NetHack DevTeam, under the NetHack General Public License (`dat/license`).
 - **NetHack for Android:** gurrhack, with the NetHack 5.0 port by JodiJodington. The upstream README is kept here as [UPSTREAM-README.md](UPSTREAM-README.md).
 - **The ForkFront user interface:** gurrhack and JodiJodington, with the Rolehack interface in [RolehackFront](https://github.com/Lukrepository/RolehackFront). ForkFront has no licence file in its upstream repositories; its copyright remains with its authors.
-- **Rolehack:** Lucas Ruiz, who decides what goes in, playtests it, and drew the Apothecary's tiles. Most of the code and documentation was written by Claude, Anthropic's AI model, at Lucas's direction and to Lucas's review. Every commit Claude worked on says so in a `Co-Authored-By: Claude` line.
+- **Rolehack:** Lucas Ruiz, co-authored with Claude, Anthropic's AI model.
