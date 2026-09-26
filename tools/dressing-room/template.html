@@ -430,6 +430,27 @@ const SHIELDS = [null,
 const SHIELD_WORDS = [null, "a brown wooden kite", "white rim, blue and green halves", "a white hand on a dark field", "a red eye, a black pupil", "a tall steel tower shield", "round, a blue rim over wood", "mirror-bright silver"];
 // Gloves and boots, as the core numbers them (rh_glove_looks[], rh_boot_looks[]): tools/paperdoll/gloves_boots.py
 const GLOVE_LOOKS = [null, "J.", "CC", "KJ", "NO"];
+// Amulets, as the core numbers them (rh_amulet_looks[]; tools/paperdoll/amulets.py), worn over armour
+const AMULET_LOOKS = [null, ".C.C.C.K.", ".C.CHK.K.", ".C..K..K.", ".C.CKK...", ".C.CKJKJJ", "CK.KK....", "C.KKKJ...", ".C.CKK.K.", "CKKKKK.K.", "CKKKAK.K.", "CCKKKJKKJ", "HDH.B...."];
+const AMULET_WORDS = [null, "a ring with a hole", "a ball with a glint", "a tall drop", "a small triangle", "a shaded pyramid", "a flat block", "a bowl", "a diamond", "a round block", "a pierced plate", "a shaded cube", "a gold chain, a blue and red gem"];
+// an amulet as its look: a gold chain on the collar, the pendant on the chest -- over any armour
+function stampAmulet(px, bg, look, a) {
+  const st = look.shape("amulet") & 0xff;
+  if (look.art("amulet") === ART_AETHIOPICA || st <= 0 || st >= AMULET_LOOKS.length) {
+    stamp(px, bg, look.art("amulet") === ART_AETHIOPICA ? S_AETHIOPICA : S_AMULET, a.torso[0], a.torso[1], false, ramp(look.item("amulet"), false));
+    return;
+  }
+  const p = AMULET_LOOKS[st];
+  putPx(px, 7 + a.torso[0], 7 + a.torso[1], fixed("H")); putPx(px, 9 + a.torso[0], 7 + a.torso[1], fixed("H"));
+  for (let i = 0; i < 9; i++) if (p[i] !== ".") putPx(px, 7 + i % 3 + a.torso[0], 8 + Math.floor(i / 3) + a.torso[1], fixed(p[i]));
+}
+function amuletShortColour(look) {
+  if (look.art("amulet") === ART_AETHIOPICA) return fixed(AETHIOPICA_SHORT);
+  const st = look.shape("amulet") & 0xff;
+  if (st <= 0 || st >= AMULET_LOOKS.length) return ramp(look.item("amulet"), false)[1];
+  const c = [...AMULET_LOOKS[st]].find(ch => ch !== ".");
+  return c ? fixed(c) : ramp(look.item("amulet"), false)[1];
+}
 const BOOT_LOOKS = [null, "JK..", "PN..", "KL..", "JJK.", "RFF.", "JJG.", "KKC.", "KKKH", "QRQ.", "OON."];
 const GLOVE_WORDS = [null, "worn dark brown", "light tan, a padded cuff", "brown, a dark gauntlet cuff", "white, a long white cuff"];
 const BOOT_WORDS = [null, "low: a brown shoe", "low: iron, a glint", "low: brown, tan laces", "tall: brown", "tall: army green, a dark sole", "tall: a green upper, a brown foot", "tall: orange tops", "tall: brown, a gold buckle", "tall: glossy black", "tall: white fur"];
@@ -774,7 +795,7 @@ function dressHuman(px, bg, look, a, skin) {
   if (look.draws("cloak") && front) stampCloakFront(px, bg, look, a);
   if (capeOn) { const st = capeStyle(look), clasp = st === null ? "H" : st.clasp; if (clasp) putPx(px, 7 + a.torso[0], 7 + a.torso[1], fixed(clasp)); }
   if (look.draws("suit") && (look.shape("suit") & DRAGON)) stampPauldrons(px, (look.shape("suit") >> 12) & 0xf, a);
-  if (look.draws("amulet") && !covered) stamp(px, bg, look.art("amulet") === ART_AETHIOPICA ? S_AETHIOPICA : S_AMULET, a.torso[0], a.torso[1], false, ramp(look.item("amulet"), false));
+  if (look.draws("amulet")) stampAmulet(px, bg, look, a);   // over any armour (Lucas)
   if (look.draws("boots") && a.feetRow >= 0) stampBoots(px, bg, look, a);
   if (look.draws("gloves")) stampGloves(px, bg, look, a, a.hands || [a.main[0], a.main[1], a.off[0], a.off[1]]);
   if (look.draws("helmet")) stampHelmet(px, bg, look, a);
@@ -791,7 +812,7 @@ function dressShort(px, bg, look, a) {
   if (look.draws("suit")) stampBodyShort(px, bg, look, "suit", a, true);
   if (look.draws("cloak") && front) stampCloakFront(px, bg, look, a);
   if (look.draws("suit") && (look.shape("suit") & DRAGON)) stampPauldrons(px, (look.shape("suit") >> 12) & 0xf, a);
-  if (look.draws("amulet") && !covered && !keeps(a, 6, 10)) putPx(px, 6, 10, look.art("amulet") === ART_AETHIOPICA ? fixed(AETHIOPICA_SHORT) : ramp(look.item("amulet"), false)[1]);
+  if (look.draws("amulet")) putPx(px, 6, 11, amuletShortColour(look));   // under the beard, over any armour
   if (look.draws("boots")) stampBoots(px, bg, look, a);
   if (look.draws("gloves")) stampGloves(px, bg, look, a, [a.main[0], a.main[1], a.off[0], a.off[1]]);
   if (look.draws("helmet")) stampHelmet(px, bg, look, a);
@@ -817,6 +838,7 @@ function makeLook(bodyId, st) {
     if (s === "shield" && i.shield) v |= i.shield;
     if (s === "gloves" && i.glove) v |= i.glove;
     if (s === "boots" && i.boot) v |= i.boot;
+    if (s === "amulet" && i.amulet) v |= i.amulet;
     if (i.art) v |= i.art << 17;   // the artifact's own art (the core sends it once the name shows)
     if (s !== "weapon" && s !== "offhand" && costumeIds.includes(i.id)) v |= COSTUME;
     return v;
@@ -1021,7 +1043,7 @@ function setSkin(sk) {
 function describe(look) {
   const lines = [], b = look.body;
   const hidden = s => (s === "shirt" && (look.has("suit") || (look.has("cloak") && (look.shape("cloak") & FRONT)))) ||
-                      (s === "amulet" && (look.has("suit") || (look.has("cloak") && (look.shape("cloak") & FRONT))));
+                      false;   // an amulet is worn over armour now (Lucas)
   for (const [s, label] of SLOTS) {
     if (!look.has(s)) continue;
     const i = look.item(s), sh = look.shape(s);
@@ -1038,6 +1060,7 @@ function describe(look) {
     else if (s === "boots" && b.anchor.feetRow < 0) how = "the robe hides them";
     else if (s === "gloves") how = (sh & 0xff) ? GLOVE_WORDS[sh & 0xff] : "its colour on the hands";
     else if (s === "boots") how = (sh & 0xff) ? BOOT_WORDS[sh & 0xff] : "its colour on the feet";
+    else if (s === "amulet") how = ((sh & 0xff) ? AMULET_WORDS[sh & 0xff] : "drawn") + ", over any armour";
     else if (s === "weapon" || s === "offhand") how = i.held ? "held up in the hand" : "in hand";
     else how = "drawn";
     lines.push([i.name, how]);

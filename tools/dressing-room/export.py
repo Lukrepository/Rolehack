@@ -87,6 +87,8 @@ SHIELD_LOOKS = ["wooden shield", "blue and green shield", "white-handed shield",
 GLOVE_LOOKS = ["old gloves", "padded gloves", "riding gloves", "fencing gloves"]
 BOOT_LOOKS = ["walking shoes", "hard shoes", "hiking boots", "jackboots", "combat boots", "jungle boots",
               "mud boots", "buckled boots", "riding boots", "snow boots"]
+AMULET_LOOKS = ["circular", "spherical", "oval", "triangular", "pyramidal", "square", "concave", "hexagonal",
+                "octagonal", "perforated", "cubical", "Amulet of Yendor"]
 DRAGONS = ["gray", "gold", "silver", "red", "white", "orange", "black", "blue", "green", "yellow"]
 ARMSLOT = {"HELM": "helmet", "CLOAK": "cloak", "SHIELD": "shield", "GLOVES": "gloves", "BOOTS": "boots",
            "DRGN_ARMR": "suit"}
@@ -129,12 +131,20 @@ for idx, o in enumerate(objs):
         it["glove"] = GLOVE_LOOKS.index(o["look"]) + 1 if o["look"] in GLOVE_LOOKS else 0
     if slot == "boots":
         it["boot"] = BOOT_LOOKS.index(o["look"]) + 1 if o["look"] in BOOT_LOOKS else 0
+    if slot == "amulet":
+        it["amulet"] = AMULET_LOOKS.index(o["look"]) + 1 if o["look"] in AMULET_LOOKS else 0
     if slot == "cloak":
         look = o["look"]
         it["cloak"] = CLOAK_STYLES.index(look) + 1 if look in CLOAK_STYLES else 0
         if o["name"] in ("robe", "alchemy smock", "mummy wrapping"):
             it["front"] = True
     items.append(it)
+
+# the Amulet of Yendor and its imitation are plain objects in objects.h, not AMULET()s; both look alike
+for idx, o in enumerate(objs):
+    if o["name"] in ("Amulet of Yendor", "cheap plastic imitation of the Amulet of Yendor"):
+        items.append(dict(id=idx, name=o["name"], look="Amulet of Yendor", slot="amulet", px=o["px"],
+                          amulet=AMULET_LOOKS.index("Amulet of Yendor") + 1))
 
 # artifacts, each on its base item's tile, with the doll's own art (tools/paperdoll/artgen.py; numbered as
 # the core's rh_doll_arts[], in artilist.h's order; the Palantir is #if 0 in 5.0).  Ids 1001.. keep
