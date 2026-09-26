@@ -22,6 +22,12 @@
 void js_helpers_init();
 void js_constants_init();
 void js_globals_init();
+#if defined(VAR_PLAYGROUND) && !defined(CHDIR)
+static void web_playground(void);
+#endif
+#ifdef SELF_RECOVER
+static void web_recover(void);
+#endif
 #endif
 
 #if !defined(_BULL_SOURCE) && !defined(__sgi) && !defined(_M_UNIX)
@@ -167,6 +173,9 @@ nhmain(int argc, char *argv[])
 #ifdef CHDIR
     chdirx(dir, 1);
 #endif
+#if defined(__EMSCRIPTEN__) && defined(VAR_PLAYGROUND) && !defined(CHDIR)
+    web_playground();
+#endif
 
 #ifdef __EMSCRIPTEN__
     js_helpers_init();
@@ -266,6 +275,9 @@ nhmain(int argc, char *argv[])
      * (for gl.locknum > 0).
      */
     if (*svp.plname) {
+#if defined(__EMSCRIPTEN__) && defined(SELF_RECOVER)
+        web_recover();
+#endif
         getlock();
         program_state.preserve_locks = 0; /* after getlock() */
     }
@@ -297,6 +309,9 @@ nhmain(int argc, char *argv[])
                     nh_compress(fq_save);
                 }
             }
+        }
+        if (program_state.in_self_recover) { /* as unixmain.c */
+            program_state.in_self_recover = FALSE;
         }
     }
 
@@ -453,6 +468,12 @@ process_options(int argc, char *argv[])
     /* let syscf override compile-time limit */
     if (!gl.locknum || (sysopt.maxplayers && gl.locknum > sysopt.maxplayers))
         gl.locknum = sysopt.maxplayers;
+#endif
+#ifdef __EMSCRIPTEN__
+    /* Rolehack web: lock files named for the character (as in wizard
+       mode), so the game a closed window left behind is found by its
+       name; one page plays at a time anyway (web.js) */
+    gl.locknum = 0;
 #endif
 }
 
@@ -781,6 +802,52 @@ free_nhuuid(void)
     for (i = 0; i < SIZE(svn.nhuuid); i++)
         svn.nhuuid[i] = 0;
 }
+
+#if defined(__EMSCRIPTEN__) && defined(VAR_PLAYGROUND) && !defined(CHDIR)
+/* Rolehack web: config.h leaves CHDIR off for SHIM_GRAPHICS, so chdirx()
+   never runs; this is its VAR_PLAYGROUND part.  The page keeps /save in
+   IndexedDB and puts there the files NetHack expects to find (web.js). */
+static void
+web_playground(void)
+{
+    char *prefix = dupstr(VAR_PLAYGROUND "/");
+
+    gf.fqn_prefix[SCOREPREFIX] = prefix;
+    gf.fqn_prefix[LEVELPREFIX] = prefix;
+    gf.fqn_prefix[SAVEPREFIX] = prefix;
+    gf.fqn_prefix[BONESPREFIX] = prefix;
+    gf.fqn_prefix[LOCKPREFIX] = prefix;
+    gf.fqn_prefix[TROUBLEPREFIX] = prefix;
+    check_recordfile((const char *) 0);
+}
+#endif
+
+#if defined(__EMSCRIPTEN__) && defined(SELF_RECOVER)
+/* Rolehack web: closing the window is how a player stops, so a game is
+   never left running the way a terminal leaves one.  The window port keeps
+   NetHack's checkpoint current whenever the game waits for the player
+   (winshim.c); here, before getlock() would ask about an "Old game in
+   progress", a checkpoint left under this name is turned back into a save
+   file, which is then restored as any other -- what the Android port's
+   getlock() does, and what 'r' at that question would do.  If it can't be,
+   getlock() still asks. */
+static void
+web_recover(void)
+{
+    const char *fq_lock;
+
+    if (gl.locknum)
+        return;
+    Sprintf(gl.lock, "%u%s", (unsigned) getuid(), svp.plname);
+    regularize(gl.lock);
+    set_levelfile_name(gl.lock, 0);
+    fq_lock = fqname(gl.lock, LEVELPREFIX, 0);
+    if (access(fq_lock, F_OK) != 0)
+        return;
+    if (!recover_savefile())
+        program_state.in_self_recover = FALSE;
+}
+#endif
 
 #ifdef __EMSCRIPTEN__
 /***

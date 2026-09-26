@@ -344,6 +344,10 @@ WASM_CFLAGS += -DNOMAIL
 WASM_CFLAGS += $(LUAINCL)
 WASM_CFLAGS += -DNOTTYGRAPHICS -DSHIM_GRAPHICS -DLIBNH
 WASM_CFLAGS += -DTILES_IN_GLYPHMAP
+# Rolehack web: the variable files (levels, saves, bones, scores) live in
+# /save, which the page keeps in IndexedDB; a game whose window was closed
+# is rebuilt from its checkpoint (libnhmain.c, winshim.c)
+WASM_CFLAGS += -DVAR_PLAYGROUND=\"/save\" -DSELF_RECOVER
 WASM_CFLAGS += -DCROSSCOMPILE
 WASM_TARGET_CFLAGS = -DCROSSCOMPILE_TARGET -DCROSS_TO_WASM
 # For src Makefile

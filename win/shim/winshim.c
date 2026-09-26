@@ -197,6 +197,106 @@ shim_ctrl_nhwindow(
     win_request_info *wri UNUSED) {
     return (win_request_info *) 0;
 }
+
+#ifdef INSURANCE
+/* Rolehack web: closing the page is how a player stops, at any moment, and
+   it must neither lose the game nor bring back an earlier one.  So whenever
+   the game waits for the player it takes NetHack's own checkpoint (the one
+   INSURANCE takes at each level change: the current level, and the rest of
+   the game in the lock file), and the page copies whatever changed to the
+   browser's storage at once (web.js); the next start rebuilds a save file
+   from it (libnhmain.c).  Waiting for the player is also where a hangup
+   saves the game (end_of_input()), in the middle of a command or not.
+   Once the game is over the checkpoint is removed, so closing the page at
+   "You die..." can't bring the hero back; once it is saved there is
+   nothing worth a checkpoint (dosave0()). */
+EM_JS(void, web_waiting, (void), {
+    if (globalThis.rolehackWaiting)
+        globalThis.rolehackWaiting();
+});
+
+static void
+web_checkpoint(void)
+{
+    static boolean cleared = FALSE;
+
+    if (program_state.gameover) {
+        if (!cleared) {
+            cleared = TRUE;
+            clearlocks();
+        }
+    } else if (flags.ins_chkpt && program_state.in_moveloop
+               && program_state.something_worth_saving
+               && !program_state.saving && !program_state.restoring
+               && !program_state.in_getlev && !program_state.in_checkpoint
+               && !program_state.in_self_recover
+               && !program_state.freeingdata && !program_state.exiting
+               && !program_state.panicking && !program_state.done_hup) {
+        save_currentstate();
+    }
+    web_waiting();
+}
+
+static void
+web_display_nhwindow(winid window, boolean blocking)
+{
+    if (blocking || (window != WIN_MAP && window != WIN_MESSAGE
+                     && window != WIN_STATUS))
+        web_checkpoint();
+    shim_display_nhwindow(window, blocking);
+}
+
+static int
+web_select_menu(winid window, int how, MENU_ITEM_P **menu_list)
+{
+    web_checkpoint();
+    return shim_select_menu(window, how, menu_list);
+}
+
+static int
+web_nhgetch(void)
+{
+    web_checkpoint();
+    return shim_nhgetch();
+}
+
+static int
+web_nh_poskey(coordxy *x, coordxy *y, int *mod)
+{
+    web_checkpoint();
+    return shim_nh_poskey(x, y, mod);
+}
+
+static int
+web_doprev_message(void)
+{
+    web_checkpoint();
+    return shim_doprev_message();
+}
+
+static char
+web_yn_function(const char *query, const char *resp, char def)
+{
+    web_checkpoint();
+    return shim_yn_function(query, resp, def);
+}
+
+static void
+web_getlin(const char *query, char *bufp)
+{
+    web_checkpoint();
+    shim_getlin(query, bufp);
+}
+
+static int
+web_get_ext_cmd(void)
+{
+    web_checkpoint();
+    return shim_get_ext_cmd();
+}
+
+#define WAITS(fn) web_##fn
+#endif /* INSURANCE */
 #else /* !__EMSCRIPTEN__ */
 VDECLCB(shim_player_selection, (void), "v")
 VDECLCB(shim_update_inventory,(int a1 UNUSED), "vi", A2P a1)
@@ -204,6 +304,11 @@ DECLCB(win_request_info *, shim_ctrl_nhwindow,
     (winid window, int request, win_request_info *wri),
     "viip",
     A2P window, A2P request, P2V wri)
+#endif
+
+/* the procedures that wait for the player; web_checkpoint() comes first */
+#ifndef WAITS
+#define WAITS(fn) shim_##fn
 #endif
 
 /* Interface definition used in windows.c */
@@ -225,10 +330,10 @@ struct window_procs shim_procs = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},   /* color availability */
     shim_init_nhwindows, shim_player_selection, shim_askname, shim_get_nh_event,
     shim_exit_nhwindows, shim_suspend_nhwindows, shim_resume_nhwindows,
-    shim_create_nhwindow, shim_clear_nhwindow, shim_display_nhwindow,
+    shim_create_nhwindow, shim_clear_nhwindow, WAITS(display_nhwindow),
     shim_destroy_nhwindow, shim_curs, shim_putstr, genl_putmixed,
     genl_display_file, shim_start_menu, shim_add_menu, shim_end_menu,
-    shim_select_menu, shim_message_menu, shim_mark_synch,
+    WAITS(select_menu), shim_message_menu, shim_mark_synch,
     shim_wait_synch,
 #ifdef CLIPPING
     shim_cliparound,
@@ -236,9 +341,10 @@ struct window_procs shim_procs = {
 #ifdef POSITIONBAR
     shim_update_positionbar,
 #endif
-    shim_print_glyph, shim_raw_print, shim_raw_print_bold, shim_nhgetch,
-    shim_nh_poskey, shim_nhbell, shim_doprev_message, shim_yn_function,
-    shim_getlin, shim_get_ext_cmd, shim_number_pad, shim_delay_output,
+    shim_print_glyph, shim_raw_print, shim_raw_print_bold, WAITS(nhgetch),
+    WAITS(nh_poskey), shim_nhbell, WAITS(doprev_message),
+    WAITS(yn_function), WAITS(getlin), WAITS(get_ext_cmd), shim_number_pad,
+    shim_delay_output,
 #ifdef CHANGE_COLOR /* the Mac uses a palette device */
     shim_change_color,
 #ifdef MAC

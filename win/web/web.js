@@ -629,14 +629,15 @@ async function getLine(title, initial = '', datalist = null) {
     if (k === 8 || k === 0x7f) value = value.slice(0, -1);
     else if (k >= 32 && k < 127) value += String.fromCharCode(k);
   }
-  const listAttr = datalist ? ' list="extcmds"' : '';
-  const options = datalist ? `<datalist id="extcmds">${datalist.map((n) =>
+  const listAttr = datalist ? ' list="linechoices"' : '';
+  const options = datalist ? `<datalist id="linechoices">${datalist.map((n) =>
     `<option value="${esc(n)}">`).join('')}</datalist>` : '';
   openModal(title, `<input class="line" id="line" autocomplete="off"${listAttr}>${options}`,
             'Enter to accept · tap here or Esc to cancel');
   const input = $('line');
   input.value = value;
   input.focus();
+  if (value && value === initial) input.select();   // an offer: typing replaces it
   const result = await new Promise((resolve) => {
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') { e.preventDefault(); resolve(input.value); }
@@ -770,13 +771,15 @@ const handlers = {
   shim_init_nhwindows() {},
   shim_player_selection_or_tty() { return true; },   // core asks with menus
   async shim_askname() {
+    // the name is all it takes to go on with a game, so the latest one left
+    // open or saved is offered, and the others listed
+    const games = gamesKept();
     let name = null;
-    while (!name) name = await getLine('Who are you?');
+    while (!name) name = await getLine('Who are you?', games[0] || '', games.length ? games : null);
     G.svp.plname = name.slice(0, 31);
   },
   shim_get_nh_event() {},
   async shim_exit_nhwindows(str) {
-    inGame = false;
     if (str) addMessage(str);
     render();
     await syncSaves();
@@ -940,7 +943,6 @@ const handlers = {
     if (name === 'BL_FLUSH' || name === 'BL_RESET') { render(); return; }
     if (name === 'BL_CONDITION') { condMask = ptr ? M.getValue(ptr, 'i32') : 0; return; }
     if (!name) return;
-    inGame = true;   // a hero with a status line: closing now would lose it
     let text = ptr ? M.UTF8ToString(ptr) : '';
     if (name === 'BL_GOLD') text = plainGold(text);
     status[name] = { text: text.trim(), color };
@@ -963,11 +965,21 @@ globalThis.nethackCallback = async (name, ...args) => {
 
 /* ---------- saves, and the installed app ---------- */
 
-// A game lives in memory until it is saved, so closing the window mid-game
-// asks first (the browser's own "Leave?" dialog).
-let inGame = false;
+// Closing the page is how a player stops.  NetHack's playground (levels,
+// saves, bones, scores: VAR_PLAYGROUND=/save) is kept in IndexedDB, and
+// whenever the game waits for the player it checkpoints itself (winshim.c)
+// and the changes are copied here, so the copy is never behind what the
+// player has seen; the next start rebuilds the game from it (libnhmain.c).
+// When the game ends the checkpoint goes, so a death can't be undone by
+// closing the page.
+globalThis.rolehackWaiting = () => { syncSaves(); };
+// for looking at the playground from the browser's console
+globalThis.rolehackFiles = () => M && M.FS;
+
+// A copy takes a few milliseconds; closing the page in the middle of one
+// asks first, which gives it time to finish.
 window.addEventListener('beforeunload', (e) => {
-  if (!inGame) return;
+  if (!syncing) return;
   e.preventDefault();
   e.returnValue = '';
 });
@@ -979,11 +991,52 @@ if ('serviceWorker' in navigator) {
 }
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 
+// One copy at a time; a checkpoint taken during a copy is copied right after.
+let syncing = null, syncAgain = false;
 function syncSaves() {
-  return new Promise((resolve) => {
+  if (syncing) { syncAgain = true; return syncing; }
+  syncing = new Promise((resolve) => {
     try { M.FS.syncfs(false, (err) => { if (err) console.warn('save sync', err); resolve(); }); }
     catch (e) { console.warn('save sync', e); resolve(); }
+  }).then(() => {
+    syncing = null;
+    if (syncAgain) { syncAgain = false; return syncSaves(); }
   });
+  return syncing;
+}
+
+// The playground as NetHack expects to find it.  Before 2026-09-26 only the
+// saves were kept, at the top; they move to save/, where NetHack looks.
+function preparePlayground(FS) {
+  const has = (p) => { try { FS.stat(p); return true; } catch (e) { return false; } };
+  if (!has('/save/save')) FS.mkdir('/save/save');
+  for (const f of FS.readdir('/save')) {
+    if (/^\d[^.]*$/.test(f) && FS.isFile(FS.stat(`/save/${f}`).mode) && !has(`/save/save/${f}`)) {
+      FS.rename(`/save/${f}`, `/save/save/${f}`);
+    }
+  }
+  for (const f of ['perm', 'record', 'logfile', 'xlogfile', 'livelog']) {
+    if (!has(`/save/${f}`)) FS.writeFile(`/save/${f}`, '');
+  }
+}
+
+// Names with a game to go on with, latest first: a checkpoint (<uid><name>.0,
+// a game whose page was closed) or a save file (save/<uid><name>).  The uid
+// is always 0 here.
+function gamesKept() {
+  const found = [];
+  const scan = (dir, re) => {
+    try {
+      for (const f of M.FS.readdir(dir)) {
+        const m = re.exec(f);
+        if (m) found.push({ name: m[1], t: M.FS.stat(`${dir}/${f}`).mtime.getTime() });
+      }
+    } catch (e) { /* no such directory yet */ }
+  };
+  scan('/save', /^0(.+)\.0$/);
+  scan('/save/save', /^0([^.]+)$/);
+  found.sort((a, b) => b.t - a.t);
+  return [...new Set(found.map((g) => g.name))];
 }
 
 /* ---------- start ---------- */
@@ -1001,29 +1054,48 @@ overlay = new Overlay({
   form,
   toggleKeyboard: () => $('kbd').classList.toggle('on'),
 });
-createNetHack({
-  preRun: [(mod) => {
-    // a generic user name (sysconf GENERICUSERS), so the game asks "Who are
-    // you?" instead of calling everyone web_user
-    mod.ENV.USER = 'player';
-    // libnh's sysconf turns perm_invent on, which needs a side panel this
-    // page doesn't have yet; without one every inventory change pops up
-    mod.ENV.NETHACKOPTIONS = '!perm_invent,time';
-    // saved games live in IndexedDB so they survive a reload
-    mod.FS.mkdir('/save');
-    mod.FS.mount(mod.IDBFS, {}, '/save');
-    mod.addRunDependency('syncfs');
-    mod.FS.syncfs(true, (err) => {
-      if (err) console.warn('save restore', err);
-      mod.removeRunDependency('syncfs');
-    });
-  }],
-  print: (s) => console.log(s),
-  printErr: (s) => console.warn(s),
-  // main() starts right after this, before the factory's promise settles
-  onRuntimeInitialized() {
-    M = this;
-    $('boot').remove();
-    M.ccall('shim_graphics_set_callback', null, ['string'], ['nethackCallback']);
-  },
-}).catch((e) => { $('boot').textContent = `The game failed to load: ${e}`; });
+function start() {
+  createNetHack({
+    preRun: [(mod) => {
+      // a generic user name (sysconf GENERICUSERS), so the game asks "Who are
+      // you?" instead of calling everyone web_user
+      mod.ENV.USER = 'player';
+      // libnh's sysconf turns perm_invent on, which needs a side panel this
+      // page doesn't have yet; without one every inventory change pops up
+      mod.ENV.NETHACKOPTIONS = '!perm_invent,time';
+      mod.FS.mkdir('/save');
+      mod.FS.mount(mod.IDBFS, {}, '/save');
+      mod.addRunDependency('syncfs');
+      mod.FS.syncfs(true, (err) => {
+        if (err) console.warn('save restore', err);
+        preparePlayground(mod.FS);
+        mod.removeRunDependency('syncfs');
+      });
+    }],
+    print: (s) => console.log(s),
+    printErr: (s) => console.warn(s),
+    // main() starts right after this, before the factory's promise settles
+    onRuntimeInitialized() {
+      M = this;
+      $('boot').remove();
+      M.ccall('shim_graphics_set_callback', null, ['string'], ['nethackCallback']);
+    },
+  }).catch((e) => { $('boot').textContent = `The game failed to load: ${e}`; });
+}
+
+// One page plays at a time.  Two would each keep their own copy of a game in
+// the same storage, and the one closed last would win -- a way back to an
+// earlier state.  A second page waits and starts when the first one closes.
+if (navigator.locks) {
+  const waiting = setTimeout(() => {
+    $('boot').textContent = 'Rolehack is open in another window. It starts here when that one closes.';
+  }, 800);
+  navigator.locks.request('rolehack-game', () => {
+    clearTimeout(waiting);
+    $('boot').textContent = 'Loading Rolehack…';
+    start();
+    return new Promise(() => {});   // held until the page goes
+  });
+} else {
+  start();
+}
