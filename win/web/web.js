@@ -12,6 +12,7 @@ import { setPalette, dressHero, LOOK_LEN } from './doll.js';
 import { Overlay, MSG_BAND, STATUS_BAND, LINE } from './overlay.js';
 import { keyCodes } from './commands.js';
 import * as P from './prefs.js';
+import * as FB from './feedback.js';
 
 const COLNO = 80, ROWNO = 21;
 // CLR_BLACK .. CLR_WHITE; NO_COLOR (8) draws as gray
@@ -486,12 +487,14 @@ function showChips(choices) {
   for (const ch of choices) {
     const b = document.createElement('button');
     b.textContent = ch;
+    b.addEventListener('pointerdown', () => FB.press());
     b.addEventListener('pointerup', (e) => { e.preventDefault(); push({ key: ch.charCodeAt(0) }); });
     c.appendChild(b);
   }
   const x = document.createElement('button');
   x.className = 'esc';
   x.textContent = 'Esc';
+  x.addEventListener('pointerdown', () => FB.press());
   x.addEventListener('pointerup', (e) => { e.preventDefault(); push({ key: 27 }); });
   c.appendChild(x);
 }
@@ -658,6 +661,7 @@ function form(title, fields, buttons) {
         b.addEventListener('click', () => {
           values[fd.seg] = val;
           for (const o of seg.children) o.classList.toggle('on', o === b);
+          if (fd.onPick) fd.onPick(val, values);
         });
         seg.appendChild(b);
       }
@@ -720,7 +724,7 @@ function buildKeyboard() {
       b.textContent = label;
       if (label in mods) { b.className = 'mod'; modKeys[label] = b; }
       if (label === 'Space') b.style.flexGrow = '3';
-      b.addEventListener('pointerdown', (e) => e.preventDefault());
+      b.addEventListener('pointerdown', (e) => { e.preventDefault(); FB.press(); });
       b.addEventListener('click', () => {
         if (label in mods) { mods[label] = !mods[label]; b.classList.toggle('on', mods[label]); return; }
         if (label === 'Hide') { kb.classList.remove('on'); return; }

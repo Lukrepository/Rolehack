@@ -15,10 +15,11 @@
 // banks side by side along the bottom, each ending in a 3x3 pad.  Nothing in
 // a bank moves between the two; turning the window rebuilds in place.
 //
-// Not yet here: key feedback (vibration and click).
+// Key feedback -- a vibration, the click, both or neither -- is feedback.js.
 
 import * as C from './commands.js';
 import * as P from './prefs.js';
+import * as FB from './feedback.js';
 
 // ---- geometry, design dp (RhCase, RhOverlay, RhScreen)
 const MARGIN = 8, WELL_PAD = 10, DECK_H = 66, DECK_KEY = 52, HOOD_TOP = 14, HOOD_SIDE = 16,
@@ -1622,6 +1623,12 @@ export class Overlay {
       seg('padCell', 'Movement key size', [['46', '46'], ['52', '52'], ['58', '58 (Parhi)']]),
       seg('labelMode', 'Key labels', [['words', 'Words'], ['keys', 'Keys'], ['both', 'Both']]),
       { seg: 'keyFlash', label: 'Key flash', value: P.get('keyFlash') ? 'on' : 'off', options: [['on', 'On'], ['off', 'Off']] },
+      // a choice with the click in it plays one, at the volume shown
+      { seg: 'feedback', label: 'Key feedback (vibration needs a device that can vibrate)', value: P.get('feedback'),
+        options: [['off', 'Off'], ['vibrate', 'Vibration'], ['click', 'Click'], ['both', 'Both']],
+        onPick: (val, v) => { if (val === 'click' || val === 'both') FB.preview(Number(v.clickVolume)); } },
+      { ...seg('clickVolume', 'Click volume', [['20', '20'], ['40', '40'], ['60', '60'], ['80', '80'], ['100', '100']]),
+        onPick: (val) => FB.preview(Number(val)) },
       { note: 'Zoom the map with the mouse wheel or a pinch; drag it to look around.  Esc closes an open fan or drawer.' },
     ], [
       { label: 'Reset zoom', run: () => { P.set('zoom', 0); this.host.glassChanged(this.geom); } },
@@ -1635,6 +1642,8 @@ export class Overlay {
         put('padCell', parseInt(v.padCell, 10));
         put('labelMode', v.labelMode);
         put('keyFlash', v.keyFlash === 'on');
+        put('feedback', v.feedback);
+        put('clickVolume', parseInt(v.clickVolume, 10));
       } },
     ]);
   }
@@ -1693,11 +1702,13 @@ export class Overlay {
       ev.stopPropagation();
       try { e.setPointerCapture(ev.pointerId); } catch (x) { /* synthetic */ }
       key.press(true);
+      FB.press();
     });
     e.addEventListener('pointerup', (ev) => {
       ev.stopPropagation();
       if (!key.pressed) return;
       key.press(false);
+      FB.up();
       action();
     });
     e.addEventListener('pointercancel', () => key.press(false));
@@ -1713,13 +1724,15 @@ export class Overlay {
       ev.stopPropagation();
       try { e.setPointerCapture(ev.pointerId); } catch (x) { /* synthetic */ }
       key.press(true);
+      FB.press();
       justOpened = false;
       clearTimeout(pending);
-      pending = setTimeout(() => { pending = 0; justOpened = true; onHold(); }, holdMs);
+      pending = setTimeout(() => { pending = 0; justOpened = true; FB.held(); onHold(); }, holdMs);
     });
     e.addEventListener('pointerup', (ev) => {
       ev.stopPropagation();
       key.press(false);
+      FB.up();
       if (justOpened) { justOpened = false; return; }
       if (!pending) return;
       clearTimeout(pending);
@@ -1738,6 +1751,7 @@ export class Overlay {
     const arcCentre = (lower[0] + upper[n - 1]) / 2;
     let pendingHold = 0, pendingReveal = 0, justOpened = false, dragging = false, revealed = false;
     let downAt = 0, x0 = 0, y0 = 0, wedge = -1;
+    let ticked = -1;   // the last wedge a detent was felt for, so a re-highlight does not tick twice
     const wedgeAt = (dx, dy) => {
       let ang = (Math.atan2(dy, dx) * 180) / Math.PI;
       while (ang <= arcCentre - 180) ang += 360;
@@ -1746,6 +1760,10 @@ export class Overlay {
       return -1;
     };
     const highlight = (w) => {
+      if (dragging && w !== ticked) {
+        if (w >= 0) FB.detent();
+        ticked = w;
+      }
       if (w === wedge) return;
       if (this.radialNodes[wedge]) this.radialNodes[wedge].press(false);
       wedge = w;
@@ -1769,9 +1787,11 @@ export class Overlay {
       ev.stopPropagation();
       try { e.setPointerCapture(ev.pointerId); } catch (x) { /* synthetic */ }
       key.press(true);
+      FB.press();
       reset();
+      ticked = -1;
       x0 = ev.clientX; y0 = ev.clientY; downAt = performance.now();
-      pendingHold = setTimeout(() => { pendingHold = 0; justOpened = true; onHold(); }, HUB_HOLD_MS);
+      pendingHold = setTimeout(() => { pendingHold = 0; justOpened = true; FB.held(); onHold(); }, HUB_HOLD_MS);
       pendingReveal = setTimeout(() => { pendingReveal = 0; reveal(); }, FLICK_REVEAL_MS);
     });
     e.addEventListener('pointermove', (ev) => {
@@ -1795,6 +1815,7 @@ export class Overlay {
     e.addEventListener('pointerup', (ev) => {
       ev.stopPropagation();
       key.press(false);
+      FB.up();
       clearTimers();
       if (justOpened) { justOpened = false; return; }
       if (!dragging) { onTap(); return; }

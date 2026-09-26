@@ -14,6 +14,8 @@ const DEFAULTS = {
   padCell: 58,                // 46 | 52 | 58 (Parhi's 9.2 mm)
   labelMode: 'words',         // words | keys | both
   keyFlash: true,
+  feedback: 'vibrate',        // off | vibrate | click | both (RhFeedback)
+  clickVolume: 60,
   mapMode: 'tiles',           // tiles | text
   zoom: 0,                    // tile size in CSS px; 0 = fit the level's height
   searchMode: false, searchBefore: true, searchCount: 1,
