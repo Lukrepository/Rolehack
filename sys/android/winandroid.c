@@ -1106,12 +1106,24 @@ void print_status_field(int idx, boolean first_field)
  * it builds a menu window and waits for a selection -- so it cannot be called
  * once a turn just to look.  This asks the same things of the same public state
  * and returns instead of prompting.
+ *
+ * ROLEHACK: sent from two places.  The status pass sends it every time, as it
+ * always has.  But the core only makes a status pass when a status field
+ * changed (botl.c), and some moves change none: travel, rush and run leave
+ * the turn counter alone while context.run is set (allmain.c), and a Fast
+ * hero's extra move does not advance it at all.  After those the pad kept
+ * offering what was on the square you left, until a wait moved the clock
+ * (Lucas, 2026-09-26).  So the command wait sends it too, when it differs
+ * from what the interface last got.
  */
-staticfn void and_send_here_context(void)
+staticfn void and_send_here_context(boolean always)
 {
+    static int last_flags = -1;
+    static char last_mon[BUFSZ];
     int flags = 0;
     int i;
     struct monst *hostile = 0;
+    const char *mon;
     stairway *stway;
     jbyteArray jmon;
 
@@ -1168,7 +1180,13 @@ staticfn void and_send_here_context(void)
         }
     }
 
-    jmon = create_bytearray(hostile ? mon_nam(hostile) : "");
+    mon = hostile ? mon_nam(hostile) : "";
+    if(!always && flags == last_flags && !strcmp(mon, last_mon))
+        return;
+    last_flags = flags;
+    Strcpy(last_mon, mon);
+
+    jmon = create_bytearray(mon);
     JNICallV(jHereContext, flags, jmon);
     destroy_jobject(jmon);
 }
@@ -1605,7 +1623,7 @@ void and_status_flush()
         print_status_field(idx, i == 0);
 
     and_send_status_fields();   /* Rolehack */
-    and_send_here_context();    /* Rolehack */
+    and_send_here_context(TRUE);    /* Rolehack */
     and_bot_updated();
 }
 
@@ -2015,6 +2033,7 @@ int and_nh_poskey(coordxy *x, coordxy *y, int *mod)
     jintArray a;
 
     and_send_hero_look(FALSE);   /* Rolehack: the paper doll */
+    and_send_here_context(FALSE);    /* Rolehack: after a move that made no status pass */
     a = (*jEnv)->NewIntArray(jEnv, 2);
     int c = JNICallI(jReceivePosKey, bMouseLock, a);
     if(!c)
