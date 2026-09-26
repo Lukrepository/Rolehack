@@ -13,9 +13,16 @@ cd "$top"
 # the Linux hints set a desktop HACKDIR after cross-pre1 sets "/"
 make CROSS_TO_WASM=1 HACKDIR=/ PREFIX= all
 mkdir -p targets/web/fonts
+export PYTHONDONTWRITEBYTECODE=1
 python3 win/web/tiles.py targets/web
+python3 win/web/icons.py targets/web
 cp targets/wasm/nethack.js targets/wasm/nethack.wasm win/web/index.html \
    win/web/rolehack.css win/web/web.js win/web/overlay.js win/web/commands.js \
-   win/web/prefs.js win/web/doll.js targets/web/
+   win/web/prefs.js win/web/doll.js win/web/manifest.json targets/web/
 cp win/web/fonts/* targets/web/fonts/
+# the installed app's cache is named for what is in it, so a changed build
+# replaces it and an unchanged one leaves it alone
+version=$(cd targets/web && find . -type f ! -name sw.js | sort | xargs cat | md5sum | cut -c1-12)
+sed "s/__VERSION__/$version/" win/web/sw.js > targets/web/sw.js
+echo "App version $version"
 echo "Built $top/targets/web/"

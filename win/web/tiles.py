@@ -13,45 +13,53 @@ paper doll's sprites use).  No imaging library needed.
 import json, pathlib, re, struct, sys, zlib
 
 TOP = pathlib.Path(__file__).resolve().parents[2]
-OUT = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else ".")
 COLS, SIZE = 40, 16
 
 
 def read(name):
+    """A tile file's palette, its tiles as rows of RGB tuples, and their names."""
     txt = (TOP / "win" / "share" / f"{name}.txt").read_text()
     pal = {m.group(1): tuple(int(v) for v in m.group(2, 3, 4))
            for m in re.finditer(r"^(\S) = \((\d+),\s*(\d+),\s*(\d+)\)", txt, re.M)}
-    tiles = []
+    tiles, names = [], []
     for m in re.finditer(r"^# tile \d+ \((.*?)\)\n(?:#[^\n]*\n)*\{\n(.*?)\n\}", txt, re.S | re.M):
         rows = [r.strip() for r in m.group(2).split("\n")]
         assert len(rows) == SIZE and all(len(r) == SIZE for r in rows), m.group(1)
         tiles.append([[pal[c] for c in r] for r in rows])
-    return pal, tiles
+        names.append(m.group(1))
+    return pal, tiles, names
 
 
-def png(path, width, height, rgb_rows):
-    raw = b"".join(b"\0" + bytes(v for px in row for v in px) for row in rgb_rows)
+def png(path, width, height, rows):
+    """Rows of RGB or RGBA tuples, written as an 8-bit PNG."""
+    alpha = len(rows[0][0]) == 4
+    raw = b"".join(b"\0" + bytes(v for px in row for v in px) for row in rows)
     def chunk(kind, data):
         return (struct.pack(">I", len(data)) + kind + data
                 + struct.pack(">I", zlib.crc32(kind + data) & 0xffffffff))
     path.write_bytes(b"\x89PNG\r\n\x1a\n"
-                     + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
+                     + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 6 if alpha else 2, 0, 0, 0))
                      + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b""))
 
 
-palette, tiles = read("monsters")
-for name in ("objects", "other"):
-    tiles += read(name)[1]
-rows = (len(tiles) + COLS - 1) // COLS
-sheet = [[(0, 0, 0)] * (COLS * SIZE) for _ in range(rows * SIZE)]
-for i, t in enumerate(tiles):
-    ox, oy = (i % COLS) * SIZE, (i // COLS) * SIZE
-    for y in range(SIZE):
-        sheet[oy + y][ox:ox + SIZE] = t[y]
-OUT.mkdir(parents=True, exist_ok=True)
-png(OUT / "tiles.png", COLS * SIZE, rows * SIZE, sheet)
-(OUT / "tiles.json").write_text(json.dumps({
-    "cols": COLS, "size": SIZE, "count": len(tiles),
-    "palette": {k: "#%02x%02x%02x" % v for k, v in palette.items()},
-}))
-print(f"{len(tiles)} tiles -> {OUT / 'tiles.png'}")
+def main(out):
+    palette, tiles, _ = read("monsters")
+    for name in ("objects", "other"):
+        tiles += read(name)[1]
+    rows = (len(tiles) + COLS - 1) // COLS
+    sheet = [[(0, 0, 0)] * (COLS * SIZE) for _ in range(rows * SIZE)]
+    for i, t in enumerate(tiles):
+        ox, oy = (i % COLS) * SIZE, (i // COLS) * SIZE
+        for y in range(SIZE):
+            sheet[oy + y][ox:ox + SIZE] = t[y]
+    out.mkdir(parents=True, exist_ok=True)
+    png(out / "tiles.png", COLS * SIZE, rows * SIZE, sheet)
+    (out / "tiles.json").write_text(json.dumps({
+        "cols": COLS, "size": SIZE, "count": len(tiles),
+        "palette": {k: "#%02x%02x%02x" % v for k, v in palette.items()},
+    }))
+    print(f"{len(tiles)} tiles -> {out / 'tiles.png'}")
+
+
+if __name__ == "__main__":
+    main(pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else "."))

@@ -755,6 +755,7 @@ const handlers = {
   },
   shim_get_nh_event() {},
   async shim_exit_nhwindows(str) {
+    inGame = false;
     if (str) addMessage(str);
     render();
     await syncSaves();
@@ -914,6 +915,7 @@ const handlers = {
     if (name === 'BL_FLUSH' || name === 'BL_RESET') { render(); return; }
     if (name === 'BL_CONDITION') { condMask = ptr ? M.getValue(ptr, 'i32') : 0; return; }
     if (!name) return;
+    inGame = true;   // a hero with a status line: closing now would lose it
     let text = ptr ? M.UTF8ToString(ptr) : '';
     if (name === 'BL_GOLD') text = plainGold(text);
     status[name] = { text: text.trim(), color };
@@ -934,7 +936,23 @@ globalThis.nethackCallback = async (name, ...args) => {
   }
 };
 
-/* ---------- saves ---------- */
+/* ---------- saves, and the installed app ---------- */
+
+// A game lives in memory until it is saved, so closing the window mid-game
+// asks first (the browser's own "Leave?" dialog).
+let inGame = false;
+window.addEventListener('beforeunload', (e) => {
+  if (!inGame) return;
+  e.preventDefault();
+  e.returnValue = '';
+});
+
+// the files, cached for starting with no server (sw.js); and the saves kept
+// out of the browser's reach when it clears space
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch((e) => console.warn('service worker', e));
+}
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 
 function syncSaves() {
   return new Promise((resolve) => {
