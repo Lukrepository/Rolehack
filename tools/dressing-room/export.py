@@ -73,13 +73,15 @@ for o, (n, px) in zip(objs, [t for t in OBJ if "shimmering" not in t[0]]):
 
 SKILL_FAMILY = {"P_DAGGER": 1, "P_KNIFE": 1, "P_SHORT_SWORD": 2, "P_BROAD_SWORD": 2, "P_LONG_SWORD": 2,
                 "P_SABER": 2, "P_TWO_HANDED_SWORD": 3, "P_AXE": 4, "P_PICK_AXE": 5, "P_CLUB": 6,
-                "P_MACE": 6, "P_MORNING_STAR": 6, "P_FLAIL": 6, "P_HAMMER": 6, "P_QUARTERSTAFF": 7,
+                "P_MACE": 6, "P_MORNING_STAR": 13, "P_FLAIL": 6, "P_HAMMER": 6, "P_QUARTERSTAFF": 7,
                 "P_POLEARMS": 8, "P_SPEAR": 8, "P_TRIDENT": 8, "P_LANCE": 8, "P_BOW": 9, "P_SLING": 9,
                 "P_CROSSBOW": 9, "P_DART": 10, "P_SHURIKEN": 10, "P_BOOMERANG": 10, "P_WHIP": 11,
                 "P_UNICORN_HORN": 12}
 CLOAK_STYLES = ["faded pall", "coarse mantelet", "hooded cloak", "slippery cloak", "leather cloak",
                 "tattered cape", "opera cloak", "ornamental cope", "piece of cloth", "robe", "apron",
                 "mummy wrapping"]
+HELM_LOOKS = ["leather hat", "iron skull cap", "hard hat", "fedora", "conical hat", "dented pot",
+              "crystal helmet", "plumed helmet", "etched helmet", "crested helmet", "visored helmet"]
 DRAGONS = ["gray", "gold", "silver", "red", "white", "orange", "black", "blue", "green", "yellow"]
 ARMSLOT = {"HELM": "helmet", "CLOAK": "cloak", "SHIELD": "shield", "GLOVES": "gloves", "BOOTS": "boots",
            "DRGN_ARMR": "suit"}
@@ -114,11 +116,41 @@ for idx, o in enumerate(objs):
         it["hide"] = True
     if o["name"].endswith("dragon scale mail"):
         it["dragon"] = DRAGONS.index(o["name"].split()[0])
+    if slot == "helmet":
+        it["helm"] = HELM_LOOKS.index(o["look"]) + 1 if o["look"] in HELM_LOOKS else 0
     if slot == "cloak":
         look = o["look"]
         it["cloak"] = CLOAK_STYLES.index(look) + 1 if look in CLOAK_STYLES else 0
         if o["name"] in ("robe", "alchemy smock", "mummy wrapping"):
             it["front"] = True
+    items.append(it)
+
+# artifacts, each on its base item's tile, with the doll's own art (tools/paperdoll/artgen.py; numbered as
+# the core's rh_doll_arts[], in artilist.h's order; the Palantir is #if 0 in 5.0).  Ids 1001.. keep
+# clear of the objects[] indices.
+ARTIFACTS = [("Excalibur", "long sword"), ("Stormbringer", "runesword"), ("Mjollnir", "war hammer"),
+             ("Cleaver", "battle-axe"), ("Grimtooth", "orcish dagger"), ("Orcrist", "elven broadsword"),
+             ("Sting", "elven dagger"), ("Magicbane", "athame"), ("Frost Brand", "long sword"),
+             ("Fire Brand", "long sword"), ("Dragonbane", "broadsword"), ("Demonbane", "silver mace"),
+             ("Werebane", "silver saber"), ("Grayswandir", "silver saber"), ("Giantslayer", "long sword"),
+             ("Ogresmasher", "war hammer"), ("Trollsbane", "morning star"), ("Vorpal Blade", "long sword"),
+             ("Snickersnee", "katana"), ("Sunsword", "long sword"), ("the Orb of Detection", "crystal ball"),
+             ("the Heart of Ahriman", "luckstone"), ("the Sceptre of Might", "mace"),
+             ("the Staff of Aesculapius", "quarterstaff"),
+             ("the Magic Mirror of Merlin", "mirror"), ("the Eyes of the Overworld", "lenses"),
+             ("the Mitre of Holiness", "helm of brilliance"), ("the Longbow of Diana", "bow"),
+             ("the Master Key of Thievery", "skeleton key"), ("the Tsurugi of Muramasa", "tsurugi"),
+             ("the Platinum Yendorian Express Card", "credit card"), ("the Orb of Fate", "crystal ball"),
+             ("the Eye of the Aethiopica", "amulet of ESP"), ("the Lapis Philosophorum", "unicorn horn")]
+by_name = {it["name"]: it for it in items}
+for n, (art, base) in enumerate(ARTIFACTS, 1):
+    if base in by_name:
+        it = dict(by_name[base])
+    else:                                  # a thing held up: crystal ball, luckstone, mirror, key, card
+        o = next(o for o in objs if o["name"] == base)
+        it = dict(look=o["look"], slot="weapon", px=o["px"], family=0, held=True)
+    it.update(id=1000 + n, name=art, art=n)
+    it.pop("helm", None)
     items.append(it)
 
 # absurd things to hold: a thing held up, tinted with its own colour
@@ -134,7 +166,7 @@ for idx, o in enumerate(objs):
 # ---- bodies: tiles and the anchors RhDoll.java measures
 def A(**kw):
     a = dict(head=[0, 0], torso=[0, 0], main=[4, 10], off=[11, 10], hands=None, feetRow=13,
-             feetCols=[5, 6, 9, 10], short=False, keep=[])
+             feetCols=[5, 6, 9, 10], short=False, keep=[], offPose=[])
     a.update(kw)
     return a
 ANCH = {
@@ -149,7 +181,12 @@ ANCH = {
     "samurai": A(head=[0, 1], torso=[0, 1], main=[4, 11], off=[11, 11], feetRow=14, feetCols=[5, 6, 9, 10]),
     "tourist": A(head=[0, 1], torso=[0, 1], main=[4, 11], off=[11, 11], feetRow=14, feetCols=[5, 6, 9, 10]),
     "valkyrie": A(), "wizard": A(feetRow=-1),
-    "apothecary": A(head=[-1, -1], main=[4, 10], off=[9, 10], hands=[3, 9, 9, 10], feetCols=[5, 6, 8, 9]),
+    # Claude's tile (2026-09-26), on vanilla's frame, a flask held up in the off hand: the flask's
+    # neck survives a helmet (keep); a shield or second weapon brings the arm down (offPose:
+    # x, y, colour -- "~" background, "L" skin, else a palette letter)
+    "apothecary": A(hands=[4, 10, 12, 5, 11, 10], keep=[12, 3],
+                    offPose=[11, 7, "~", 12, 6, "~", 12, 5, "~", 12, 4, "~", 13, 4, "~", 12, 3, "~",
+                             13, 5, "~", 11, 8, "O", 11, 9, "L", 11, 10, "L"]),
     "human": A(), "elf": A(),
     "dwarf": A(main=[4, 11], off=[8, 11], feetCols=[4, 5, 7, 8], short=True, keep=[5, 9, 6, 9, 7, 9, 6, 10]),
     "gnome,male": A(main=[4, 11], off=[8, 11], feetCols=[4, 5, 7, 8], short=True, keep=[5, 9, 6, 9, 7, 9, 6, 10]),

@@ -66,7 +66,8 @@ def main(argv):
             want = "weapon" if k == "offhand" else k
             pool = [i for i in data["items"] if i["slot"] == want and not (k == "offhand" and i.get("held"))]
             v = v.replace("armour", "armor").replace("Armour", "Armor")   # NetHack spells it the American way
-            hit = [i for i in pool if v.lower() in (i["name"].lower(), i["look"].lower())]
+            bare = lambda t: t.lower()[4:] if t.lower().startswith("the ") else t.lower()   # "the Mitre" or "Mitre"
+            hit = [i for i in pool if bare(v) in (bare(i["name"]), i["look"].lower())]
             if not hit:
                 names = sorted({i["name"] for i in pool} | {i["look"] for i in pool})
                 close = difflib.get_close_matches(v, names, n=4, cutoff=0.5)

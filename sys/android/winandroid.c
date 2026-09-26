@@ -1199,10 +1199,11 @@ staticfn void and_send_here_context(void)
  *   mail, for its pauldrons.  All of these are functions of the object type
  *   alone, and none of those appearances is ever shuffled, so they tell
  *   nothing the tile does not.
- *   A worn cloak carries its style in the low byte, 1-12 (rh_doll_cloak()),
+ *   A worn cloak or helmet carries its style in the low byte (rh_doll_look()),
  *   named by the words the player sees: its description, or its name when
- *   it has none.  The four magic cloaks shuffle their descriptions per game,
- *   so the doll draws the "opera cloak", never the cloak of invisibility.
+ *   it has none.  The magic cloaks and four helmets shuffle their
+ *   descriptions per game, so the doll draws the "opera cloak" or the
+ *   "visored helmet", never the cloak of invisibility or helm of telepathy.
  *   RH_DOLL_FRONT marks the cloak-slot items worn in front of the body --
  *   robe, apron (alchemy smock), mummy wrapping; every other cloak is drawn
  *   as a cape behind it, so it no longer hides the armour (Lucas).  All
@@ -1212,6 +1213,10 @@ staticfn void and_send_here_context(void)
  *   leaves the tile alone for it.  Only when the player already knows the
  *   item's type (oc_name_known -- starting kit is discovered at creation),
  *   so it cannot tell a helm of telepathy from a plain helmet.
+ *   Bits 17-22 carry an artifact's own art (rh_doll_art(): its place in
+ *   rh_doll_arts[] plus one), set only once the inventory would print the
+ *   artifact's name, so they tell nothing the player cannot read.  An
+ *   artifact is never marked costume.
  *
  *   then, from version 2, the skin: a seed that is fixed for the character
  *   (a hash of ubirthday, which the save keeps) and the skintone option
@@ -1230,18 +1235,20 @@ staticfn void and_send_here_context(void)
 #define RH_DOLL_GREAT_SWORD  3
 #define RH_DOLL_AXE          4
 #define RH_DOLL_PICK         5
-#define RH_DOLL_BLUNT        6  /* club, mace, morning star, flail, hammer */
+#define RH_DOLL_BLUNT        6  /* club, mace, flail, hammer */
 #define RH_DOLL_STAFF        7
 #define RH_DOLL_POLE         8  /* polearms, spear, trident, lance */
 #define RH_DOLL_LAUNCHER     9  /* bow, sling, crossbow */
 #define RH_DOLL_MISSILE     10  /* ammo, darts, shuriken, boomerang */
 #define RH_DOLL_WHIP        11
 #define RH_DOLL_HORN        12  /* unicorn horn */
+#define RH_DOLL_CHAIN       13  /* morning star: a spiked ball on a chain, as its floor tile */
 #define RH_DOLL_TWOHANDED  0x100
 #define RH_DOLL_HIDE       0x200  /* dragon scales: a hide, not a shirt-shaped suit */
 #define RH_DOLL_COSTUME    0x400  /* the role tile already draws this item */
 #define RH_DOLL_DRAGON     0x800  /* dragon scale mail; index in bits 12-15 */
 #define RH_DOLL_FRONT    0x10000  /* robe, apron, mummy wrapping: worn in front */
+#define RH_DOLL_ART_SHIFT     17  /* bits 17-22: the artifact's own art, rh_doll_arts[] + 1 */
 
 staticfn int rh_doll_family(struct obj *obj)
 {
@@ -1260,8 +1267,9 @@ staticfn int rh_doll_family(struct obj *obj)
     case P_TWO_HANDED_SWORD:                            return RH_DOLL_GREAT_SWORD;
     case P_AXE:                                         return RH_DOLL_AXE;
     case P_PICK_AXE:                                    return RH_DOLL_PICK;
-    case P_CLUB: case P_MACE: case P_MORNING_STAR:
+    case P_CLUB: case P_MACE:
     case P_FLAIL: case P_HAMMER:                        return RH_DOLL_BLUNT;
+    case P_MORNING_STAR:                                return RH_DOLL_CHAIN;
     case P_QUARTERSTAFF:                                return RH_DOLL_STAFF;
     case P_POLEARMS: case P_SPEAR: case P_TRIDENT:
     case P_LANCE:                                       return RH_DOLL_POLE;
@@ -1312,29 +1320,97 @@ staticfn boolean rh_doll_costume(struct obj *obj)
 }
 
 /*
- * A worn cloak's look, by the words the player sees for it (Lucas asked for
- * cloak art).  Order matches RhDoll's cloak styles; 0 for anything else.
+ * A worn cloak's or helmet's look, by the words the player sees for it (Lucas
+ * asked for cloak and helmet art).  The orders match RhDoll's styles; 0 for
+ * anything else.  Cornuthaum and dunce cap are both "conical hat".
  */
-staticfn int rh_doll_cloak(struct obj *obj)
+static const char *const rh_cloak_looks[] = {
+    "faded pall", "coarse mantelet", "hooded cloak", "slippery cloak",
+    "leather cloak", "tattered cape", "opera cloak", "ornamental cope",
+    "piece of cloth", "robe", "apron", "mummy wrapping",
+};
+static const char *const rh_helm_looks[] = {
+    "leather hat", "iron skull cap", "hard hat", "fedora", "conical hat",
+    "dented pot", "crystal helmet", "plumed helmet", "etched helmet",
+    "crested helmet", "visored helmet",
+};
+
+staticfn int rh_doll_look(struct obj *obj, const char *const *looks, int n)
 {
-    static const char *const looks[] = {
-        "faded pall", "coarse mantelet", "hooded cloak", "slippery cloak",
-        "leather cloak", "tattered cape", "opera cloak", "ornamental cope",
-        "piece of cloth", "robe", "apron", "mummy wrapping",
-    };
     const char *look = OBJ_DESCR(objects[obj->otyp]);
     int i;
 
-    if(!look)   /* robe, leather cloak, mummy wrapping: the name is the look */
+    if(!look)   /* robe, leather cloak, fedora, dented pot: the name is the look */
         look = OBJ_NAME(objects[obj->otyp]);
-    for(i = 0; i < SIZE(looks); ++i)
+    for(i = 0; i < n; ++i)
         if(look && !strcmp(look, looks[i]))
+            return i + 1;
+    return 0;
+}
+
+/*
+ * Artifacts with art of their own on the doll (Lucas, 2026-09-26), in
+ * artilist.h's order.  The UI's tables (RhDoll.ART_HELD and friends) follow
+ * this list: an artifact's place here, plus one, is its number there.
+ */
+static const short rh_doll_arts[] = {
+    ART_EXCALIBUR,
+    ART_STORMBRINGER,
+    ART_MJOLLNIR,
+    ART_CLEAVER,
+    ART_GRIMTOOTH,
+    ART_ORCRIST,
+    ART_STING,
+    ART_MAGICBANE,
+    ART_FROST_BRAND,
+    ART_FIRE_BRAND,
+    ART_DRAGONBANE,
+    ART_DEMONBANE,
+    ART_WEREBANE,
+    ART_GRAYSWANDIR,
+    ART_GIANTSLAYER,
+    ART_OGRESMASHER,
+    ART_TROLLSBANE,
+    ART_VORPAL_BLADE,
+    ART_SNICKERSNEE,
+    ART_SUNSWORD,
+    ART_ORB_OF_DETECTION,
+    ART_HEART_OF_AHRIMAN,
+    ART_SCEPTRE_OF_MIGHT,
+    ART_STAFF_OF_AESCULAPIUS,
+    ART_MAGIC_MIRROR_OF_MERLIN,
+    ART_EYES_OF_THE_OVERWORLD,
+    ART_MITRE_OF_HOLINESS,
+    ART_LONGBOW_OF_DIANA,
+    ART_MASTER_KEY_OF_THIEVERY,
+    ART_TSURUGI_OF_MURAMASA,
+    ART_YENDORIAN_EXPRESS_CARD,
+    ART_ORB_OF_FATE,
+    ART_EYE_OF_THE_AETHIOPICA,
+    ART_LAPIS_PHILOSOPHORUM
+};
+
+/*
+ * The artifact's art number, or 0 -- given only once the inventory would print
+ * its name (xname(): has_oname && dknown), so the doll never shows what the
+ * player cannot read.  No artifact exists as a floor tile of its own in 5.0;
+ * this art is the doll's alone.
+ */
+staticfn int rh_doll_art(struct obj *obj)
+{
+    int i;
+
+    if(!obj->oartifact || !obj->dknown || !has_oname(obj))
+        return 0;
+    for(i = 0; i < SIZE(rh_doll_arts); ++i)
+        if(obj->oartifact == rh_doll_arts[i])
             return i + 1;
     return 0;
 }
 
 staticfn void rh_doll_slot(int *out, struct obj *obj, boolean worn)
 {
+    int art;
     glyph_info gi;
     int glyph;
 
@@ -1357,9 +1433,11 @@ staticfn void rh_doll_slot(int *out, struct obj *obj, boolean worn)
     map_glyphinfo(0, 0, glyph, 0, &gi);
     out[0] = gi.gm.tileidx;
     out[1] = nhcolor_to_RGB(gi.gm.sym.color);
+    art = rh_doll_art(obj);        /* an artifact is never costume: its art is its own */
     out[2] = rh_doll_family(obj) | (bimanual(obj) ? RH_DOLL_TWOHANDED : 0)
              | (Is_dragon_scales(obj) ? RH_DOLL_HIDE : 0)
-             | (worn && rh_doll_costume(obj) ? RH_DOLL_COSTUME : 0);
+             | (worn && !art && rh_doll_costume(obj) ? RH_DOLL_COSTUME : 0)
+             | (art << RH_DOLL_ART_SHIFT);
     if(Is_dragon_mail(obj))
         out[2] |= RH_DOLL_DRAGON | ((obj->otyp - GRAY_DRAGON_SCALE_MAIL) << 12);
     if(obj->otyp == ROBE || obj->otyp == ALCHEMY_SMOCK || obj->otyp == MUMMY_WRAPPING)
@@ -1399,8 +1477,10 @@ staticfn void and_send_hero_look(boolean from_display)
     }
     for(i = 0; i < RH_DOLL_SLOTS; ++i)
         rh_doll_slot(&look[4 + 3 * i], slots[i], i < 9);    /* 9, 10: in hand */
-    if(uarmc)
-        look[4 + 3 * 3 + 2] |= rh_doll_cloak(uarmc);        /* slot 3: the cloak */
+    if(uarmc)                                               /* slot 3: the cloak */
+        look[4 + 3 * 3 + 2] |= rh_doll_look(uarmc, rh_cloak_looks, SIZE(rh_cloak_looks));
+    if(uarmh)                                               /* slot 0: the helmet */
+        look[4 + 3 * 0 + 2] |= rh_doll_look(uarmh, rh_helm_looks, SIZE(rh_helm_looks));
     /* Knuth's multiplicative hash, high bits: games started seconds apart
        should not just step through the tones in order. */
     look[RH_DOLL_LEN - 2] = (int) ((((unsigned) ubirthday) * 2654435761U) >> 16);
