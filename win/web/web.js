@@ -1,8 +1,10 @@
-// Rolehack web front end, test build: a plain-text window port for the
-// WebAssembly core.  The core calls nethackCallback(name, ...args) for every
-// window-port function in win/shim/winshim.c and waits on the promise it
-// returns, so each handler may take as long as the player does.
+// Rolehack web front end, test build: a window port for the WebAssembly
+// core, drawing the map in tiles (with the paper doll on the hero) or text.
+// The core calls nethackCallback(name, ...args) for every window-port
+// function in win/shim/winshim.c and waits on the promise it returns, so
+// each handler may take as long as the player does.
 import createNetHack from './nethack.js';
+import { setPalette, dressHero, LOOK_LEN } from './doll.js';
 
 const COLNO = 80, ROWNO = 21;
 // CLR_BLACK .. CLR_WHITE; NO_COLOR (8) draws as gray
@@ -39,10 +41,12 @@ const status = {};        // field name -> { text, color }
 let condMask = 0;
 let promptText = '';
 let moreShown = false;
+let mode = 'tiles';       // or 'text'
+try { mode = localStorage.getItem('rh.mapmode') === 'text' ? 'text' : 'tiles'; } catch (e) { /* none */ }
 
 function blankGrid() {
   return Array.from({ length: ROWNO }, () =>
-    Array.from({ length: COLNO }, () => ({ ch: 32, color: 8, flags: 0 })));
+    Array.from({ length: COLNO }, () => ({ ch: 32, color: 8, flags: 0, tile: -1 })));
 }
 
 /* ---------- input ---------- */
@@ -97,24 +101,163 @@ window.addEventListener('keydown', (e) => {
 });
 
 // a tap or click on the map is a CLICK_1 at that square (travel, in play)
-$('map').addEventListener('pointerup', (e) => {
-  const r = $('map').getBoundingClientRect();
-  const x = Math.floor((e.clientX - r.left) / (r.width / COLNO));
-  const y = Math.floor((e.clientY - r.top) / (r.height / ROWNO));
-  if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO) push({ click: { x, y, mod: 1 } });
+for (const id of ['map', 'tiles']) {
+  $(id).addEventListener('pointerup', (e) => {
+    const r = $(id).getBoundingClientRect();
+    const x = Math.floor((e.clientX - r.left) / (r.width / COLNO));
+    const y = Math.floor((e.clientY - r.top) / (r.height / ROWNO));
+    if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO) push({ click: { x, y, mod: 1 } });
+  });
+}
+
+$('mode').addEventListener('click', () => {
+  mode = mode === 'tiles' ? 'text' : 'tiles';
+  try { localStorage.setItem('rh.mapmode', mode); } catch (e) { /* none */ }
+  fit();
+  render();
 });
+
+/* ---------- tiles and the paper doll ---------- */
+
+let sheet = null;         // tiles.png
+let sheetPx = null;       // its pixels, for the doll
+let sheetCols = 40;
+const tileCache = new Map();
+const dollCache = new Map();
+let tileDev = 16;         // a tile's size on the canvas, in device pixels
+
+async function loadTiles() {
+  const info = await (await fetch('tiles.json')).json();
+  sheetCols = info.cols;
+  setPalette(info.palette);
+  sheet = new Image();
+  sheet.src = 'tiles.png';
+  await sheet.decode();
+  const c = document.createElement('canvas');
+  c.width = sheet.width;
+  c.height = sheet.height;
+  const cx = c.getContext('2d');
+  cx.drawImage(sheet, 0, 0);
+  sheetPx = cx.getImageData(0, 0, c.width, c.height);
+}
+
+// tile n as 256 0xRRGGBB pixels, the form the doll works in
+function tilePx(n) {
+  let px = tileCache.get(n);
+  if (px) return px;
+  px = new Int32Array(256);
+  const ox = (n % sheetCols) * 16, oy = Math.floor(n / sheetCols) * 16, d = sheetPx.data;
+  for (let y = 0; y < 16; y++) {
+    for (let x = 0; x < 16; x++) {
+      const i = ((oy + y) * sheetPx.width + ox + x) * 4;
+      px[y * 16 + x] = (d[i] << 16) | (d[i + 1] << 8) | d[i + 2];
+    }
+  }
+  tileCache.set(n, px);
+  return px;
+}
+
+// the core's look (rhdoll.c), or null before there is a hero to dress
+function heroLook() {
+  const p = M ? M._web_hero_look() : 0;
+  if (!p) return null;
+  const a = new Array(LOOK_LEN);
+  for (let i = 0; i < LOOK_LEN; i++) a[i] = M.getValue(p + 4 * i, 'i32');
+  return a;
+}
+
+function dollCanvas(look) {
+  const key = look.slice(3).join(',');
+  if (dollCache.has(key)) return dollCache.get(key);
+  const px = dressHero(look, tilePx);
+  let c = null;
+  if (px) {
+    c = document.createElement('canvas');
+    c.width = c.height = 16;
+    const cx = c.getContext('2d'), img = cx.createImageData(16, 16);
+    for (let i = 0; i < 256; i++) {
+      img.data[i * 4] = (px[i] >> 16) & 255;
+      img.data[i * 4 + 1] = (px[i] >> 8) & 255;
+      img.data[i * 4 + 2] = px[i] & 255;
+      img.data[i * 4 + 3] = 255;
+    }
+    cx.putImageData(img, 0, 0);
+  }
+  if (dollCache.size > 64) dollCache.clear();
+  dollCache.set(key, c);
+  return c;
+}
+
+const HEART = ['.X.X.', 'XXXXX', '.XXX.', '..X..'];
+
+function renderTiles() {
+  const cv = $('tiles'), cx = cv.getContext('2d'), T = tileDev, px = T / 16;
+  cx.imageSmoothingEnabled = false;
+  cx.fillStyle = '#000';
+  cx.fillRect(0, 0, cv.width, cv.height);
+  const look = heroLook();
+  for (let y = 0; y < ROWNO; y++) {
+    for (let x = 0; x < COLNO; x++) {
+      const c = grid[y][x];
+      if (c.tile < 0) continue;
+      // the doll only where the map shows the hero's own base tile, so a
+      // polymorph, a steed or a hallucination draws as the map says
+      const doll = look && x === look[1] && y === look[2] && c.tile === look[3] ? dollCanvas(look) : null;
+      if (doll) cx.drawImage(doll, x * T, y * T, T, T);
+      else cx.drawImage(sheet, (c.tile % sheetCols) * 16, Math.floor(c.tile / sheetCols) * 16,
+                        16, 16, x * T, y * T, T, T);
+      if (c.flags & MG_PET) {
+        cx.fillStyle = '#ff3b5c';
+        HEART.forEach((row, r) => [...row].forEach((ch, i) => {
+          if (ch === 'X') cx.fillRect(x * T + (1 + i) * px, y * T + (1 + r) * px, Math.ceil(px), Math.ceil(px));
+        }));
+      }
+    }
+  }
+  if (cursor.x >= 0) {
+    cx.strokeStyle = '#e0b04a';
+    cx.lineWidth = Math.max(1, Math.round(px));
+    cx.strokeRect(cursor.x * T + cx.lineWidth / 2, cursor.y * T + cx.lineWidth / 2,
+                  T - cx.lineWidth, T - cx.lineWidth);
+  }
+}
 
 /* ---------- drawing ---------- */
 
-function fitFont() {
+function fit() {
   const w = window.innerWidth - 32, h = window.innerHeight - 70;
-  // 80 columns at ~0.6em, and 21 map rows plus ~6 lines of text
-  const cell = Math.max(9, Math.min(w / (COLNO * 0.6), h / (ROWNO * 1.12 + 6 * 1.25)));
+  const tiles = mode === 'tiles' && sheet;
+  $('map').hidden = tiles;
+  $('tiles').hidden = !tiles;
+  $('mode').textContent = tiles ? 'Text map' : 'Tile map';
+  if (!tiles) {
+    // 80 columns at ~0.6em, and 21 map rows plus ~6 lines of text
+    const cell = Math.max(9, Math.min(w / (COLNO * 0.6), h / (ROWNO * 1.12 + 6 * 1.25)));
+    document.documentElement.style.setProperty('--cell', `${cell.toFixed(2)}px`);
+    return;
+  }
+  // text lines at a readable size; the tiles take what is left, crisp at a
+  // multiple of 16 device pixels when one comes close to the largest fit
+  const cell = Math.max(11, Math.min(17, w / (COLNO * 0.6)));
   document.documentElement.style.setProperty('--cell', `${cell.toFixed(2)}px`);
+  const dpr = window.devicePixelRatio || 1;
+  const fitDev = Math.floor(Math.min(w * dpr / COLNO, (h - cell * 1.25 * 6) * dpr / ROWNO));
+  const snapped = Math.floor(fitDev / 16) * 16;
+  tileDev = Math.max(6, snapped >= 16 && snapped >= fitDev * 0.85 ? snapped : fitDev);
+  const cv = $('tiles');
+  cv.width = COLNO * tileDev;
+  cv.height = ROWNO * tileDev;
+  cv.style.width = `${cv.width / dpr}px`;
+  cv.style.height = `${cv.height / dpr}px`;
 }
-window.addEventListener('resize', fitFont);
+window.addEventListener('resize', () => { fit(); render(); });
 
 function render() {
+  if (mode === 'tiles' && sheet) renderTiles(); else renderText();
+  renderLines();
+}
+
+function renderText() {
   const rows = [];
   for (let y = 0; y < ROWNO; y++) {
     let html = '', run = '', runColor = -1;
@@ -141,7 +284,10 @@ function render() {
     rows.push(html);
   }
   $('map').innerHTML = rows.join('\n');
+}
 
+// the message and status lines, under either map
+function renderLines() {
   const shown = msgs.slice(-3).map((m) =>
     `<div class="${m.fresh ? '' : 'old'}">${esc(m.text)}</div>`).join('');
   $('msgs').innerHTML = shown
@@ -391,7 +537,7 @@ const handlers = {
   shim_print_glyph(win, x, y, gi) {
     if (y < 0 || y >= ROWNO || x < 0 || x >= COLNO) return;
     grid[y][x] = { ch: M._web_glyphinfo(gi, 1), color: M._web_glyphinfo(gi, 2) & 15,
-                   flags: M._web_glyphinfo(gi, 3) };
+                   flags: M._web_glyphinfo(gi, 3), tile: M._web_glyphinfo(gi, 4) };
   },
   shim_raw_print(str) { if (str) addMessage(str); },
   shim_raw_print_bold(str) { if (str) addMessage(str); },
@@ -503,7 +649,12 @@ function syncSaves() {
 
 /* ---------- start ---------- */
 
-fitFont();
+try {
+  await loadTiles();
+} catch (e) {
+  console.warn('tiles', e);   // the text map still works
+}
+fit();
 createNetHack({
   preRun: [(mod) => {
     // a generic user name (sysconf GENERICUSERS), so the game asks "Who are

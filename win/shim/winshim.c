@@ -6,6 +6,7 @@
 
 #include "hack.h"
 #include "func_tab.h"
+#include "rhdoll.h"
 #include <string.h>
 
 #ifdef SHIM_GRAPHICS
@@ -340,6 +341,7 @@ EMSCRIPTEN_KEEPALIVE void web_menu_set(menu_item *list, int i, int lo,
 EMSCRIPTEN_KEEPALIVE int web_glyphinfo(const glyph_info *ginfo, int which);
 EMSCRIPTEN_KEEPALIVE int web_extcmd_find(const char *txt);
 EMSCRIPTEN_KEEPALIVE const char *web_extcmd_name(int i);
+EMSCRIPTEN_KEEPALIVE int *web_hero_look(void);
 
 int
 web_any_word(const anything *id, int which)
@@ -405,6 +407,16 @@ const char *
 web_extcmd_name(int i)
 {
     return extcmdlist[i].ef_txt;
+}
+
+/* the paper doll's look (rhdoll.c), read by the page as it draws; colours
+   stay NetHack's, since the page tints from the tiles themselves */
+int *
+web_hero_look(void)
+{
+    static int look[RH_DOLL_LEN];
+
+    return rh_hero_look(look, (int (*)(int)) 0) ? look : (int *) 0;
 }
 #endif /* __EMSCRIPTEN__ */
 

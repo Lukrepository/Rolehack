@@ -30,6 +30,12 @@
   #prompt { color: var(--accent); }
   #map { margin: 4px 0; font-size: var(--cell); line-height: 1.12; white-space: pre;
          font-family: var(--font); cursor: crosshair; touch-action: manipulation; }
+  #map[hidden], #tiles[hidden] { display: none; }
+  #tiles { margin: 4px 0; cursor: crosshair; touch-action: manipulation; image-rendering: pixelated; }
+  header button { margin-left: auto; font: inherit; font-size: 12px; color: var(--ink);
+                  background: var(--panel); border: 1px solid var(--line); padding: 2px 10px;
+                  cursor: pointer; }
+  header button:hover { border-color: var(--accent); }
   #map .cur { outline: 1px solid var(--accent); outline-offset: -1px; }
   #map .pet { text-decoration: underline; }
   #status { width: calc(var(--cell) * 0.6 * 80); font-size: var(--cell); line-height: 1.25;
@@ -54,10 +60,12 @@
 </style>
 </head>
 <body>
-<header><b>ROLEHACK</b><span>web test build: plain text, keyboard, tap the map to travel</span></header>
+<header><b>ROLEHACK</b><span>web test build: keyboard, tap the map to travel</span>
+  <button id="mode" type="button">Text map</button></header>
 <main>
   <div id="msgs"></div>
-  <pre id="map"></pre>
+  <pre id="map" hidden></pre>
+  <canvas id="tiles" hidden></canvas>
   <div id="status"></div>
   <div id="boot">Loading the game…</div>
 </main>

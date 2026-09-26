@@ -343,6 +343,7 @@ WASM_CFLAGS += -DDEFAULT_WINDOW_SYS=\"shim\" \
 WASM_CFLAGS += -DNOMAIL
 WASM_CFLAGS += $(LUAINCL)
 WASM_CFLAGS += -DNOTTYGRAPHICS -DSHIM_GRAPHICS -DLIBNH
+WASM_CFLAGS += -DTILES_IN_GLYPHMAP
 WASM_CFLAGS += -DCROSSCOMPILE
 WASM_TARGET_CFLAGS = -DCROSSCOMPILE_TARGET -DCROSS_TO_WASM
 # For src Makefile
@@ -356,11 +357,11 @@ override TARGET_LFLAGS= $(EMCC_LFLAGS)
 override SYSSRC = ../sys/libnh/libnhmain.c \
 		../sys/share/ioctl.c ../sys/share/unixtty.c \
 		../sys/unix/unixunix.c ../sys/unix/unixres.c \
-		../win/shim/winshim.c
+		../win/shim/winshim.c ../win/share/rhdoll.c tile.c
 override SYSOBJ= $(TARGETPFX)libnhmain.o \
 		$(TARGETPFX)ioctl.o $(TARGETPFX)unixtty.o \
 		$(TARGETPFX)unixunix.o $(TARGETPFX)unixres.o \
-		$(TARGETPFX)winshim.o
+		$(TARGETPFX)winshim.o $(TARGETPFX)rhdoll.o $(TARGETPFX)tile.o
 override WINLIB = emranlib
 override LUALIB=
 override TOPLUALIB=
@@ -384,6 +385,9 @@ $(TARGETPFX)%.o : ../sys/libnh/%.c
 	$(TARGET_CC) $(TARGET_CFLAGS) -c -o$@ $<
 # Rule for files in win/shim
 $(TARGETPFX)%.o : ../win/shim/%.c
+	$(TARGET_CC) $(TARGET_CFLAGS) -c -o$@ $<
+# Rule for files in win/share (Rolehack's rhdoll.c)
+$(TARGETPFX)%.o : ../win/share/%.c
 	$(TARGET_CC) $(TARGET_CFLAGS) -c -o$@ $<
 endif  # CROSS_TO_WASM
 
