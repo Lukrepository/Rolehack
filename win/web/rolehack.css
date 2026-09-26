@@ -216,12 +216,14 @@ input.line { width: 100%; font: inherit; font-size: 22px; background: #090d0a; c
 
 /* the soft keyboard */
 #kbd { position: fixed; left: 50%; bottom: 8px; transform: translateX(-50%); z-index: 40; display: none;
-       padding: 8px; border-radius: 8px; background: #1b1815; box-shadow: 0 6px 24px rgba(0,0,0,.6); }
+       width: min(640px, calc(100vw - 16px)); padding: 8px; border-radius: 8px; background: #1b1815;
+       box-shadow: 0 6px 24px rgba(0,0,0,.6); }
 #kbd.on { display: block; }
-#kbd .row { display: flex; gap: 5px; justify-content: center; margin-top: 5px; }
+#kbd .row { display: flex; gap: 4px; justify-content: center; margin-top: 5px; }
 #kbd .row:first-child { margin-top: 0; }
-#kbd button { font: 600 15px var(--capfont); min-width: 38px; height: 40px; border-radius: 5px; border: 0; padding: 0 8px;
-              background: #35302b; color: #f1e8d5; box-shadow: 0 2px 0 #0c0b0a; cursor: pointer; }
+#kbd button { font: 600 15px var(--capfont); flex: 1 1 0; min-width: 0; height: 40px; border-radius: 5px; border: 0;
+              padding: 0 2px; background: #35302b; color: #f1e8d5; box-shadow: 0 2px 0 #0c0b0a; cursor: pointer;
+              overflow: hidden; }
 #kbd button.mod.on { background: #e38a26; color: #2a1503; }
 #kbd button:active { transform: translateY(2px); box-shadow: none; }
 

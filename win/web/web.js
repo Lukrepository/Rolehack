@@ -216,9 +216,11 @@ function layoutGlass(g) {
   $('statband').style.height = `${statusBandH() * s}px`;
   $('statband').style.display = P.get('statusLines') === 'hidden' ? 'none' : '';
   $('chips').style.top = `${(MSG_BAND + 6) * s}px`;
-  // where the map centres
-  view.area = g.caseless ? { x: 0, y: 0, w: box.w, h: box.h }
-    : { x: 2 * s, y: MSG_BAND * s, w: box.w - 4 * s, h: box.h - (MSG_BAND + statusBandH()) * s };
+  // Where the map centres: the glass between its bands; caseless, the whole
+  // window -- except in portrait, where the banks take the bottom of the
+  // screen and the hero centres in what is left above them (RhOverlay.mapArea)
+  view.area = g.caseless && !g.portrait ? { x: 0, y: 0, w: box.w, h: box.h }
+    : { x: bx + 2 * s, y: by + MSG_BAND * s, w: r.w - 4 * s, h: r.h - (MSG_BAND + statusBandH()) * s };
   const cv = $('map'), dpr = window.devicePixelRatio || 1;
   cv.width = Math.round(box.w * dpr);
   cv.height = Math.round(box.h * dpr);
@@ -717,7 +719,7 @@ function buildKeyboard() {
       b.type = 'button';
       b.textContent = label;
       if (label in mods) { b.className = 'mod'; modKeys[label] = b; }
-      if (label === 'Space') b.style.minWidth = '120px';
+      if (label === 'Space') b.style.flexGrow = '3';
       b.addEventListener('pointerdown', (e) => e.preventDefault());
       b.addEventListener('click', () => {
         if (label in mods) { mods[label] = !mods[label]; b.classList.toggle('on', mods[label]); return; }
