@@ -87,6 +87,7 @@ SHIELD_LOOKS = ["wooden shield", "blue and green shield", "white-handed shield",
 GLOVE_LOOKS = ["old gloves", "padded gloves", "riding gloves", "fencing gloves"]
 BOOT_LOOKS = ["walking shoes", "hard shoes", "hiking boots", "jackboots", "combat boots", "jungle boots",
               "mud boots", "buckled boots", "riding boots", "snow boots"]
+EYEWEAR_LOOKS = ["lenses", "blindfold", "towel"]
 AMULET_LOOKS = ["circular", "spherical", "oval", "triangular", "pyramidal", "square", "concave", "hexagonal",
                 "octagonal", "perforated", "cubical", "Amulet of Yendor"]
 DRAGONS = ["gray", "gold", "silver", "red", "white", "orange", "black", "blue", "green", "yellow"]
@@ -131,6 +132,8 @@ for idx, o in enumerate(objs):
         it["glove"] = GLOVE_LOOKS.index(o["look"]) + 1 if o["look"] in GLOVE_LOOKS else 0
     if slot == "boots":
         it["boot"] = BOOT_LOOKS.index(o["look"]) + 1 if o["look"] in BOOT_LOOKS else 0
+    if slot == "eyewear":
+        it["eyewear"] = EYEWEAR_LOOKS.index(o["look"]) + 1 if o["look"] in EYEWEAR_LOOKS else 0
     if slot == "amulet":
         it["amulet"] = AMULET_LOOKS.index(o["look"]) + 1 if o["look"] in AMULET_LOOKS else 0
     if slot == "cloak":

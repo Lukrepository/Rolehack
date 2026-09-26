@@ -451,6 +451,15 @@ function amuletShortColour(look) {
   const c = [...AMULET_LOOKS[st]].find(ch => ch !== ".");
   return c ? fixed(c) : ramp(look.item("amulet"), false)[1];
 }
+// Eyewear, as the core numbers it (rh_eyewear_looks[]; tools/paperdoll/eyewear.py)
+const EYEWEAR_HUMAN = [null, S(4, 5, "PNBPNB"), S(4, 5, "RQQQQR", 5, 10, "RR", 6, 11, "R"), S(3, 5, "OOOOOO", 4, 5, "OPPPPOP", 5, 10, "P")];
+const EYEWEAR_SHORT = [null, S(7, 4, "PNPNB"), S(7, 4, "RQQQR", 8, 9, "R"), S(6, 4, "OOOOO", 7, 4, "OPPPP")];
+const EYEWEAR_WORDS = [null, "two glass lenses, a glint in each", "a dark band, its ties trailing", "a thick towel over the eyes and brow"];
+function eyewearSprite(look, shortFrame) {
+  if (look.art("eyewear") === ART_EYES) return shortFrame ? S_EYES_SHORT : S_EYES;
+  const st = look.shape("eyewear") & 0xff, set = shortFrame ? EYEWEAR_SHORT : EYEWEAR_HUMAN;
+  return st > 0 && st < set.length ? set[st] : (shortFrame ? S_EYEWEAR_SHORT : S_EYEWEAR);
+}
 const BOOT_LOOKS = [null, "JK..", "PN..", "KL..", "JJK.", "RFF.", "JJG.", "KKC.", "KKKH", "QRQ.", "OON."];
 const GLOVE_WORDS = [null, "worn dark brown", "light tan, a padded cuff", "brown, a dark gauntlet cuff", "white, a long white cuff"];
 const BOOT_WORDS = [null, "low: a brown shoe", "low: iron, a glint", "low: brown, tan laces", "tall: brown", "tall: army green, a dark sole", "tall: a green upper, a brown foot", "tall: orange tops", "tall: brown, a gold buckle", "tall: glossy black", "tall: white fur"];
@@ -799,7 +808,7 @@ function dressHuman(px, bg, look, a, skin) {
   if (look.draws("boots") && a.feetRow >= 0) stampBoots(px, bg, look, a);
   if (look.draws("gloves")) stampGloves(px, bg, look, a, a.hands || [a.main[0], a.main[1], a.off[0], a.off[1]]);
   if (look.draws("helmet")) stampHelmet(px, bg, look, a);
-  if (look.draws("eyewear")) stamp(px, bg, look.art("eyewear") === ART_EYES ? S_EYES : S_EYEWEAR, a.head[0], a.head[1], false, ramp(look.item("eyewear"), false));
+  if (look.draws("eyewear")) stamp(px, bg, eyewearSprite(look, false), a.head[0], a.head[1], false, ramp(look.item("eyewear"), false));
   if (look.draws("shield")) stamp(px, bg, shieldSprite(look), a.off[0], a.off[1], false, ramp(look.item("shield"), false));
   if (look.has("weapon")) stamp(px, bg, heldSprite(look, "weapon"), a.main[0], a.main[1], false, ramp(look.item("weapon"), false));
   if (look.has("offhand")) stamp(px, bg, heldSprite(look, "offhand"), a.off[0], a.off[1], true, ramp(look.item("offhand"), false));
@@ -816,7 +825,7 @@ function dressShort(px, bg, look, a) {
   if (look.draws("boots")) stampBoots(px, bg, look, a);
   if (look.draws("gloves")) stampGloves(px, bg, look, a, [a.main[0], a.main[1], a.off[0], a.off[1]]);
   if (look.draws("helmet")) stampHelmet(px, bg, look, a);
-  if (look.draws("eyewear")) stamp(px, bg, look.art("eyewear") === ART_EYES ? S_EYES_SHORT : S_EYEWEAR_SHORT, 0, 0, false, ramp(look.item("eyewear"), false));
+  if (look.draws("eyewear")) stamp(px, bg, eyewearSprite(look, true), 0, 0, false, ramp(look.item("eyewear"), false));
   if (look.draws("shield")) stamp(px, bg, shieldSprite(look), a.off[0], a.off[1], false, ramp(look.item("shield"), false));   // full size (Lucas)
   // weapons at full size: pound for pound the small races are the strong ones (Lucas, 2026-09-26)
   if (look.has("weapon")) stamp(px, bg, heldSprite(look, "weapon"), a.main[0], a.main[1], false, ramp(look.item("weapon"), false));
@@ -839,6 +848,7 @@ function makeLook(bodyId, st) {
     if (s === "gloves" && i.glove) v |= i.glove;
     if (s === "boots" && i.boot) v |= i.boot;
     if (s === "amulet" && i.amulet) v |= i.amulet;
+    if (s === "eyewear" && i.eyewear) v |= i.eyewear;
     if (i.art) v |= i.art << 17;   // the artifact's own art (the core sends it once the name shows)
     if (s !== "weapon" && s !== "offhand" && costumeIds.includes(i.id)) v |= COSTUME;
     return v;
@@ -1060,6 +1070,7 @@ function describe(look) {
     else if (s === "boots" && b.anchor.feetRow < 0) how = "the robe hides them";
     else if (s === "gloves") how = (sh & 0xff) ? GLOVE_WORDS[sh & 0xff] : "its colour on the hands";
     else if (s === "boots") how = (sh & 0xff) ? BOOT_WORDS[sh & 0xff] : "its colour on the feet";
+    else if (s === "eyewear") how = (sh & 0xff) ? EYEWEAR_WORDS[sh & 0xff] : "drawn";
     else if (s === "amulet") how = ((sh & 0xff) ? AMULET_WORDS[sh & 0xff] : "drawn") + ", over any armour";
     else if (s === "weapon" || s === "offhand") how = i.held ? "held up in the hand" : "in hand";
     else how = "drawn";
