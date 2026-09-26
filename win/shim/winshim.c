@@ -5,6 +5,7 @@
 /* not an actual windowing port, but a fake win port for libnethack */
 
 #include "hack.h"
+#include "func_tab.h"
 #include <string.h>
 
 #ifdef SHIM_GRAPHICS
@@ -131,7 +132,7 @@ VDECLCB(shim_display_file,(const char *name, boolean complain), "vsb", P2V name,
 VDECLCB(shim_start_menu,(winid window, unsigned long mbehavior), "vii", A2P window, A2P mbehavior)
 VDECLCB(shim_add_menu,
     (winid window, const glyph_info *glyphinfo, const ANY_P *identifier, char ch, char gch, int attr, int clr, const char *str, unsigned int itemflags),
-    "vipi00iisi",
+    "vipp00iisi",
     A2P window, P2V glyphinfo, P2V identifier, A2P ch, A2P gch, A2P attr, A2P clr, P2V str, A2P itemflags)
 VDECLCB(shim_end_menu,(winid window, const char *prompt), "vis", A2P window, P2V prompt)
 /* XXX: shim_select_menu menu_list is an output */
@@ -224,7 +225,7 @@ struct window_procs shim_procs = {
     shim_exit_nhwindows, shim_suspend_nhwindows, shim_resume_nhwindows,
     shim_create_nhwindow, shim_clear_nhwindow, shim_display_nhwindow,
     shim_destroy_nhwindow, shim_curs, shim_putstr, genl_putmixed,
-    shim_display_file, shim_start_menu, shim_add_menu, shim_end_menu,
+    genl_display_file, shim_start_menu, shim_add_menu, shim_end_menu,
     shim_select_menu, shim_message_menu, shim_mark_synch,
     shim_wait_synch,
 #ifdef CLIPPING
@@ -247,7 +248,7 @@ struct window_procs shim_procs = {
     genl_outrip,
     shim_preference_update,
     shim_getmsghistory, shim_putmsghistory,
-    shim_status_init,
+    genl_status_init,
     genl_status_finish, genl_status_enablefield,
 #ifdef STATUS_HILITES
     shim_status_update,
@@ -320,6 +321,91 @@ EM_JS(void, local_callback, (const char *cb_name, const char *shim_name, void *r
         }
     });
 })
+#endif /* __EMSCRIPTEN__ */
+
+#ifdef __EMSCRIPTEN__
+/*
+ * Rolehack web port: small accessors for the JavaScript window code, so it
+ * never has to know struct layouts.
+ */
+
+/* a menu identifier is copied by value when the item is added, because
+   the core reuses one 'anything' for every add_menu() call */
+_Static_assert(sizeof (anything) == 8, "web menu ids are two 32-bit words");
+
+EMSCRIPTEN_KEEPALIVE int web_any_word(const anything *id, int which);
+EMSCRIPTEN_KEEPALIVE menu_item *web_menu_alloc(int n);
+EMSCRIPTEN_KEEPALIVE void web_menu_set(menu_item *list, int i, int lo,
+                                       int hi, int count);
+EMSCRIPTEN_KEEPALIVE int web_glyphinfo(const glyph_info *ginfo, int which);
+EMSCRIPTEN_KEEPALIVE int web_extcmd_find(const char *txt);
+EMSCRIPTEN_KEEPALIVE const char *web_extcmd_name(int i);
+
+int
+web_any_word(const anything *id, int which)
+{
+    int32_t w[2];
+
+    (void) memcpy(w, id, sizeof w);
+    return w[which & 1];
+}
+
+/* the core frees the array returned through select_menu() */
+menu_item *
+web_menu_alloc(int n)
+{
+    return (menu_item *) alloc((unsigned) n * sizeof (menu_item));
+}
+
+void
+web_menu_set(menu_item *list, int i, int lo, int hi, int count)
+{
+    int32_t w[2];
+
+    w[0] = lo, w[1] = hi;
+    (void) memset(&list[i], 0, sizeof list[i]);
+    (void) memcpy(&list[i].item, w, sizeof w);
+    list[i].count = count;
+}
+
+int
+web_glyphinfo(const glyph_info *ginfo, int which)
+{
+    switch (which) {
+    case 0:
+        return ginfo->glyph;
+    case 1:
+        return ginfo->ttychar;
+    case 2:
+        return ginfo->gm.sym.color;
+    case 3:
+        return (int) ginfo->gm.glyphflags;
+    case 4:
+        return ginfo->gm.tileidx;
+    case 5:
+        return (int) ginfo->framecolor;
+    }
+    return 0;
+}
+
+/* get_ext_cmd() answers with an index into extcmdlist[] */
+int
+web_extcmd_find(const char *txt)
+{
+    int i;
+
+    for (i = 0; extcmdlist[i].ef_txt; i++)
+        if (!strcmpi(extcmdlist[i].ef_txt, txt))
+            return i;
+    return -1;
+}
+
+/* names for the page's completion list; NULL past the end */
+const char *
+web_extcmd_name(int i)
+{
+    return extcmdlist[i].ef_txt;
+}
 #endif /* __EMSCRIPTEN__ */
 
 #endif /* SHIM_GRAPHICS */

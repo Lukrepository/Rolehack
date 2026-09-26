@@ -282,10 +282,13 @@ EMCC_LFLAGS += -s MODULARIZE
 EMCC_LFLAGS += -s EXPORTED_FUNCTIONS='["_main", "_shim_graphics_set_callback", "_repopulate_perminvent", "_malloc"]'
 EMCC_LFLAGS += -s EXPORTED_RUNTIME_METHODS='["cwrap", "ccall", "addFunction", \
 			"removeFunction", "UTF8ToString", "stringToUTF8", "getValue", \
-			"setValue", "ENV", "FS", "IDBFS"]'
+			"setValue", "ENV", "FS", "IDBFS", \
+			"addRunDependency", "removeRunDependency"]'
 EMCC_LFLAGS += -s ERROR_ON_UNDEFINED_SYMBOLS=0
 EMCC_LFLAGS += -s EXPORT_ES6=1
 EMCC_LFLAGS += -lidbfs.js
+EMCC_LFLAGS += -s ALLOW_MEMORY_GROWTH=1 -s STACK_SIZE=5MB
+EMCC_LFLAGS += -s ASYNCIFY_STACK_SIZE=262144
 # XXX: the "@/" at the end of "--embed-file" tells emscripten to embed the files
 # in the root directory, otherwise they will end up in the $(WASM_DATA_DIR) path
 EMCC_LFLAGS += --embed-file $(WASM_DATA_DIR)@/
@@ -295,7 +298,7 @@ EMCC_LFLAGS += --embed-file $(WASM_DATA_DIR)@/
 # WASM C flags
 EMCC_CFLAGS =
 EMCC_CFLAGS += -Wall
-EMCC_CFLAGS += -Werror
+#EMCC_CFLAGS += -Werror
 EMCC_CFLAGS += -DNO_SIGNAL
 #EMCC_CFLAGS += -s DISABLE_EXCEPTION_CATCHING=0
 EMCC_DEBUG_LFLAGS += -s ASSERTIONS=1

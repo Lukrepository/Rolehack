@@ -35,7 +35,7 @@ extern struct passwd *getpwuid, (int);
 #endif
 extern struct passwd *getpwnam(const char *);
 #ifdef CHDIR
-static void chdirx(const char *, boolean);
+void chdirx(const char *, boolean);
 #endif /* CHDIR */
 static boolean whoami(void);
 static void process_options(int, char **);
@@ -51,7 +51,6 @@ extern void init_linux_cons(void);
 
 static void wd_message(void);
 static struct passwd *get_unix_pw(void);
-ATTRNORETURN static void opt_terminate(void) NORETURN;
 
 #ifdef __EMSCRIPTEN__
 /* if WebAssembly, export this API and don't optimize it out */
@@ -110,7 +109,7 @@ nhmain(int argc, char *argv[])
 
         if (argcheck(argc, argv, ARG_SHOWPATHS) == 2) {
             gd.deferred_showpaths = TRUE;
-            return;
+            return 0;
         }
         if (argcheck(argc, argv, ARG_DEBUG) == 1) {
             argc--;
@@ -458,7 +457,7 @@ process_options(int argc, char *argv[])
 }
 
 #ifdef CHDIR
-static void
+void
 chdirx(const char *dir, boolean wr)
 {
     if (dir /* User specified directory? */
@@ -769,30 +768,18 @@ sys_random_seed(void)
     return seed;
 }
 
-/* for command-line options that perform some immediate action and then
-   terminate the program without starting play, like 'nethack --version'
-   or 'nethack -s Zelda'; do some cleanup before that termination */
-ATTRNORETURN static void
-opt_terminate(void)
+void
+get_nhuuid(void)
 {
-    config_error_done(); /* free memory allocated by config_error_init() */
-
-    nh_terminate(EXIT_SUCCESS);
-    /*NOTREACHED*/
 }
 
-/* show the sysconf file name, playground directory, run-time configuration
-   file name, dumplog file name if applicable, and some other things */
-ATTRNORETURN void
-after_opt_showpaths(const char *dir)
+void
+free_nhuuid(void)
 {
-#ifdef CHDIR
-    chdirx(dir, FALSE);
-#else
-    nhUse(dir);
-#endif
-    opt_terminate();
-    /*NOTREACHED*/
+    int i;
+
+    for (i = 0; i < SIZE(svn.nhuuid); i++)
+        svn.nhuuid[i] = 0;
 }
 
 #ifdef __EMSCRIPTEN__

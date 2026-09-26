@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rolehack Web</title>
+<style>
+  :root {
+    --bg: #0c0f0d;
+    --panel: #151a17;
+    --ink: #cfd8cf;
+    --dim: #7d8a80;
+    --accent: #e0b04a;
+    --line: #2a332d;
+    --font: "Cascadia Mono", "Consolas", "DejaVu Sans Mono", monospace;
+    --cell: 16px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); }
+  body { font-family: var(--font); display: flex; flex-direction: column; overflow: hidden; }
+  header { display: flex; gap: 12px; align-items: baseline; padding: 6px 16px;
+           border-bottom: 1px solid var(--line); color: var(--dim); font-size: 13px; }
+  header b { color: var(--accent); font-weight: 600; letter-spacing: .04em; }
+  main { flex: 1; display: flex; flex-direction: column; align-items: center;
+         justify-content: flex-start; padding: 8px 16px; min-height: 0; }
+  #msgs { width: calc(var(--cell) * 0.6 * 80); min-height: calc(var(--cell) * 1.25 * 3);
+          font-size: var(--cell); line-height: 1.25; white-space: pre-wrap; }
+  #msgs .old { color: var(--dim); }
+  #msgs .more { color: var(--bg); background: var(--accent); padding: 0 4px; }
+  #prompt { color: var(--accent); }
+  #map { margin: 4px 0; font-size: var(--cell); line-height: 1.12; white-space: pre;
+         font-family: var(--font); cursor: crosshair; touch-action: manipulation; }
+  #map .cur { outline: 1px solid var(--accent); outline-offset: -1px; }
+  #map .pet { text-decoration: underline; }
+  #status { width: calc(var(--cell) * 0.6 * 80); font-size: var(--cell); line-height: 1.25;
+            white-space: pre; }
+  #modal { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: flex;
+           align-items: center; justify-content: center; padding: 16px; }
+  #modal[hidden] { display: none; }
+  .box { background: var(--panel); border: 1px solid var(--line); max-width: min(900px, 100%);
+         max-height: 100%; display: flex; flex-direction: column; min-width: min(420px, 100%); }
+  .box .title { padding: 10px 14px; color: var(--accent); border-bottom: 1px solid var(--line); }
+  .box .body { padding: 8px 14px; overflow: auto; white-space: pre; font-size: 15px; line-height: 1.35; }
+  .box .foot { padding: 8px 14px; color: var(--dim); border-top: 1px solid var(--line); font-size: 13px; }
+  .item { cursor: pointer; padding: 1px 4px; border-radius: 3px; }
+  .item:hover { background: #222a25; }
+  .item.sel { background: #3a3218; }
+  .head { color: var(--accent); padding: 4px 4px 1px; }
+  .bold { font-weight: 700; } .inverse { background: var(--ink); color: var(--bg); }
+  .uline { text-decoration: underline; } .dim { color: var(--dim); }
+  input.line { width: 100%; font: inherit; font-size: 16px; background: var(--bg); color: var(--ink);
+               border: 1px solid var(--line); padding: 6px 8px; }
+  #boot { color: var(--dim); padding: 24px; }
+</style>
+</head>
+<body>
+<header><b>ROLEHACK</b><span>web test build: plain text, keyboard, tap the map to travel</span></header>
+<main>
+  <div id="msgs"></div>
+  <pre id="map"></pre>
+  <div id="status"></div>
+  <div id="boot">Loading the game…</div>
+</main>
+<div id="modal" hidden><div class="box">
+  <div class="title" id="modal-title"></div>
+  <div class="body" id="modal-body"></div>
+  <div class="foot" id="modal-foot"></div>
+</div></div>
+<script type="module" src="web.js"></script>
+</body>
+</html>
