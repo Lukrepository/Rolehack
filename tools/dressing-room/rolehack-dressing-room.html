@@ -244,6 +244,14 @@ select option { color: #111; background: #fff; }
 footer { margin: 16px auto 0; max-width: 1180px; font-size: 13px; color: var(--desk-ink); opacity: .85; display: grid; gap: 4px; }
 footer p { margin: 0; max-width: 78ch; }
 @media (prefers-reduced-motion: reduce) { .key { transition: none; } }
+/* the Showcase: a caption over the stage, a shutter flicker on each still, a glow on the Astral Plane */
+.caption { margin: 0 0 12px; min-height: 3.2em; }
+.caption .cap-where { color: var(--phosphor-hot); font-size: 18px; letter-spacing: .14em; text-transform: uppercase; }
+.caption .cap-line { color: var(--phosphor); font-size: 25px; line-height: 1.15; }
+.doll-frame.shutter::after { content: ""; position: absolute; inset: 0; background: var(--phosphor); pointer-events: none; animation: shutter 160ms ease-out forwards; }
+@keyframes shutter { from { opacity: .45; } to { opacity: 0; } }
+.doll-frame.astral { box-shadow: 0 0 0 3px #ffd75e, 0 0 40px 10px rgba(255, 215, 94, .55); transition: box-shadow .8s; }
+@media (prefers-reduced-motion: reduce) { .doll-frame.shutter::after { animation: none; opacity: 0; } }
 </style>
 
 <div class="app" id="app">
@@ -256,11 +264,13 @@ footer p { margin: 0; max-width: 78ch; }
         <button class="key dark" data-skin="terminal" aria-pressed="false">Terminal</button>
         <button class="key dark" data-skin="light" aria-pressed="false">Tan</button>
         <button class="key dark" data-skin="gamecube" aria-pressed="false">GameCube</button>
+        <button class="key" id="showKey" title="A stop-motion ascension, one piece at a time">&#9654; Showcase</button>
       </div>
     </header>
 
     <div class="body-grid">
       <section class="glass" aria-label="The hero">
+        <div class="caption" id="caption" hidden aria-live="polite"><div class="cap-where" id="capWhere"></div><div class="cap-line" id="capLine"></div></div>
         <div class="stage">
           <div class="doll-frame">
             <canvas id="doll" width="16" height="16" role="img" aria-label="The dressed hero, 16 by 16 pixels"></canvas>
@@ -792,7 +802,7 @@ function stampCloakFront(px, bg, look, a) {
     putPx(px, x, y, fixed(c));
   }
 }
-function dressHuman(px, bg, look, a, skin) {
+function dressHuman(px, bg, look, a, skin, tile) {
   // first, before any layer: the tile's off-hand pose gives way to a shield or a second weapon
   if (look.draws("shield") || look.has("offhand"))
     for (let i = 0; i + 2 < a.offPose.length; i += 3) { const c = a.offPose[i + 2]; putPx(px, a.offPose[i], a.offPose[i + 1], c === "~" ? bg : c === "L" ? skin : fixed(c)); }
@@ -801,6 +811,9 @@ function dressHuman(px, bg, look, a, skin) {
   if (capeOn) stampCloakBehind(px, bg, look, a);
   if (look.draws("shirt") && !covered) stampBody(px, bg, look, "shirt", a, S_SHIRT);
   if (look.draws("suit")) stampBody(px, bg, look, "suit", a, S_SUIT);
+  // a front garment the tile itself wears (the Apothecary's smock, a Priest's robe) goes back over the armour
+  if (look.draws("suit") && front && (look.shape("cloak") & COSTUME))
+    for (let y = 7; y <= 11; y++) for (let x = 6; x <= 9; x++) { const X = x + a.torso[0], Y = y + a.torso[1]; if (X >= 0 && X < 16 && Y >= 0 && Y < 16) px[Y * 16 + X] = tile[Y * 16 + X]; }
   if (look.draws("cloak") && front) stampCloakFront(px, bg, look, a);
   if (capeOn) { const st = capeStyle(look), clasp = st === null ? "H" : st.clasp; if (clasp) putPx(px, 7 + a.torso[0], 7 + a.torso[1], fixed(clasp)); }
   if (look.draws("suit") && (look.shape("suit") & DRAGON)) stampPauldrons(px, (look.shape("suit") >> 12) & 0xf, a);
@@ -861,7 +874,7 @@ function compose(bodyId, st) {
   const skin = TONES[st.tone];
   for (let i = 0; i < 256; i++) if (px[i] === VANILLA_SKIN) px[i] = skin;
   if (!st.doll) return px;
-  if (a.short) dressShort(px, bg, look, a); else dressHuman(px, bg, look, a, skin);
+  if (a.short) dressShort(px, bg, look, a); else dressHuman(px, bg, look, a, skin, Int32Array.from(px));
   return px;
 }
 
@@ -1118,10 +1131,105 @@ function render() {
   });
 }
 
+// ---------------------------------------------------------------- the Showcase
+// A stop-motion ascension (Lucas, 2026-09-26): a Valkyrie on her classic tile, dressed one piece at a
+// time, then the same kit on every hero, and the Apothecary last.  Each beat is a still: where, a line,
+// and what changes.  Items are named as in the game; the drawing is the doll's own.
+const itemId = n => { const it = D.items.find(i => i.name === n); if (!it) console.warn("showcase: no item", n); return it ? it.id : null; };
+const KIT = { helmet: "helm of brilliance", cloak: "cloak of magic resistance", suit: "gray dragon scale mail",
+              gloves: "gauntlets of power", boots: "speed boots", shield: "shield of reflection", amulet: "amulet of life saving" };
+const MONTAGE = [
+  ["archeologist,female", 2, { weapon: "the Orb of Detection" }, "Archeologist"],
+  ["barbarian,male", 4, { weapon: "Cleaver", suit: "silver dragon scale mail" }, "Barbarian"],
+  ["cave dweller,female", 5, { weapon: "the Sceptre of Might", suit: "black dragon scale mail" }, "Cave dweller"],
+  ["healer,male", 1, { weapon: "the Staff of Aesculapius" }, "Healer"],
+  ["knight,female", 0, { weapon: "Excalibur", suit: "silver dragon scale mail" }, "Knight"],
+  ["monk,male", 3, { weapon: null, eyewear: "the Eyes of the Overworld", suit: "black dragon scale mail" }, "Monk"],
+  ["cleric,female", 6, { weapon: "Demonbane", helmet: "the Mitre of Holiness" }, "Priest"],
+  ["ranger,male", 2, { weapon: "the Longbow of Diana", suit: "silver dragon scale mail" }, "Ranger"],
+  ["rogue,female", 1, { weapon: "the Master Key of Thievery", suit: "black dragon scale mail" }, "Rogue"],
+  ["samurai,male", 3, { weapon: "the Tsurugi of Muramasa" }, "Samurai"],
+  ["tourist,female", 0, { weapon: "the Platinum Yendorian Express Card", suit: "silver dragon scale mail" }, "Tourist"],
+  ["valkyrie,male", 1, { weapon: "Mjollnir", suit: "black dragon scale mail" }, "Valkyrie"],
+  ["wizard,female", 5, { weapon: "Magicbane", amulet: "the Eye of the Aethiopica" }, "Wizard"],
+  ["human,female", 3, { weapon: "Sunsword", suit: "silver dragon scale mail" }, "Human"],
+  ["elf,male", 0, { weapon: "Orcrist" }, "Elf"],
+  ["dwarf,female", 2, { weapon: "dwarvish mattock", suit: "black dragon scale mail" }, "Dwarf, full-size mattock"],
+  ["gnome,male", 4, { weapon: "Sting", suit: "silver dragon scale mail" }, "Gnome"],
+  ["orc,female", 6, { weapon: "Grimtooth" }, "Orc"],
+];
+const VALK = "valkyrie,female";
+const SHOW = [
+  { body: VALK, tone: 1, doll: false, strip: true, where: "The Valkyrie you know", line: "Her classic tile, exactly as vanilla draws it.", hold: 2800 },
+  { doll: true, set: { weapon: "long sword", shield: "small shield" }, where: "Dlvl 1", line: "She sets out with a long sword and a small shield.", hold: 2500 },
+  { set: { weapon: "Excalibur" }, where: "Dlvl 3", line: "A fountain. Most people quaff. She dips.", hold: 2700 },
+  { set: { helmet: "dwarvish iron helm" }, where: "The Gnomish Mines", line: "A dwarf drops a hard hat.", hold: 2000 },
+  { set: { suit: "dwarvish mithril-coat" }, where: "The Gnomish Mines", line: "...and his mithril. Dwarves are generous, eventually.", hold: 2300 },
+  { set: { cloak: "elven cloak" }, where: "Minetown", line: "An elven cloak, paid for in full. Probably.", hold: 2100 },
+  { set: { amulet: "amulet of reflection" }, where: "Sokoban", line: "The prize at the top: reflection.", hold: 2100 },
+  { set: { eyewear: "towel" }, where: "Medusa's Island", line: "A towel over the eyes. Just in case.", hold: 2100 },
+  { set: { eyewear: null }, where: "Medusa's Island", line: "Reflection did the work. The towel comes off.", hold: 1900 },
+  { set: { suit: "gray dragon scale mail" }, where: "The Castle", line: "A wand of wishing. Wish one: gray dragon scale mail.", hold: 2800 },
+  { set: { boots: "speed boots" }, where: "The Castle", line: "Wish two: speed boots.", hold: 1500 },
+  { set: { gloves: "gauntlets of power" }, where: "The Castle", line: "Wish three: gauntlets of power.", hold: 1500 },
+  { set: { helmet: "helm of brilliance" }, where: "The Castle", line: "Wish four: a helm of brilliance. The hard hat retires.", hold: 2000 },
+  { set: { cloak: "cloak of magic resistance" }, where: "The Castle", line: "Wish five: a cloak of magic resistance.", hold: 1800 },
+  { set: { shield: "shield of reflection" }, where: "The Castle", line: "Wish six: a shield of reflection. That frees the amulet slot...", hold: 2100 },
+  { set: { amulet: "amulet of life saving" }, where: "The Castle", line: "...for life saving.", hold: 1800 },
+  { where: "Gehennom", line: "Nothing new to wear. Just a very long walk down.", hold: 1900 },
+  { set: { amulet: "Amulet of Yendor" }, where: "The Sanctum", line: "The Amulet of Yendor. Nobody has to wear it. She does anyway.", hold: 3000 },
+  { where: "The Astral Plane", line: "Ascended.", hold: 3400, astral: true },
+  { doll: false, where: "Before", line: "Where she started.", hold: 1100 },
+  { doll: true, where: "After", line: "Where she ended.", hold: 1100 },
+  { doll: false, where: "Before", line: "Where she started.", hold: 700 },
+  { doll: true, where: "After", line: "Where she ended.", hold: 1500 },
+  { where: "And every hero after her", line: "The same kit, and each one's own artifact.", hold: 2000 },
+  ...MONTAGE.map(([body, tone, over, name]) => ({ body, tone, doll: true, strip: true, set: Object.assign({}, KIT, over), where: name, line: over.weapon || over.eyewear || "", hold: 620 })),
+  { body: "apothecary,male", tone: 1, doll: true, strip: true, set: { helmet: "fedora", cloak: "alchemy smock", suit: "silver dragon scale mail", gloves: "leather gloves", boots: "high boots", amulet: "amulet of life saving", weapon: "the Lapis Philosophorum" },
+    where: "And one hero vanilla never had", line: "The Apothecary: smock over the dragon mail, the Lapis in hand, the fedora stays.", hold: 3600 },
+  { where: "Rolehack", line: "The paper doll. Every piece drawn as the look you see, and nothing it shows is a spoiler.", hold: 4200 },
+];
+let showRun = 0;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function showBeat(beat) {
+  if (beat.body) { state.body = beat.body; state.race = BODY[beat.body].group === "race"; }
+  if (beat.tone != null) state.tone = beat.tone;
+  if (beat.doll != null) state.doll = beat.doll;
+  state.costume = true;
+  if (beat.strip) for (const [s] of SLOTS) state.slots[s] = null;
+  for (const [s, n] of Object.entries(beat.set || {})) state.slots[s] = n == null ? null : itemId(n);
+  ruleCheck();
+  $("showrace").checked = state.race; $("costume").checked = state.costume; $("dollOn").checked = state.doll;
+  render();
+  $("capWhere").textContent = beat.where || "";
+  $("capLine").textContent = beat.line || "";
+  const f = document.querySelector(".doll-frame");
+  f.classList.remove("shutter"); void f.offsetWidth; f.classList.add("shutter");
+  f.classList.toggle("astral", !!beat.astral || beat.where === "After");   // the glow: ascended, and her after-frames
+}
+async function showcase() {
+  const run = ++showRun;
+  $("caption").hidden = false;
+  $("showKey").innerHTML = "&#9632; Stop";
+  document.querySelector(".doll-frame").classList.remove("astral");
+  for (const beat of SHOW) {
+    if (run !== showRun) return;
+    showBeat(beat);
+    await sleep(beat.hold || 1800);
+  }
+  if (run === showRun) { $("showKey").innerHTML = "&#9654; Replay"; showRun++; }
+}
+function stopShowcase() {
+  if (!$("caption").hidden) { showRun++; $("caption").hidden = true; $("showKey").innerHTML = "&#9654; Showcase"; document.querySelector(".doll-frame").classList.remove("astral", "shutter"); }
+}
+$("showKey").addEventListener("click", () => { if ($("showKey").textContent.includes("Stop")) stopShowcase(); else showcase(); });
+document.querySelector(".deck").addEventListener("pointerdown", stopShowcase);
+
 buildControls();
 try { const sk = localStorage.getItem("rh-dressing-skin"); if (sk) setSkin(sk); } catch (e) { /* storage blocked: follow the theme */ }
 applyHash();
 $("showrace").checked = state.race;
-window.addEventListener("hashchange", () => { if (applyHash()) render(); });
+window.addEventListener("hashchange", () => { if (location.hash === "#showcase") showcase(); else if (applyHash()) render(); });
 render();
+if (location.hash === "#showcase") showcase();
 </script>
