@@ -195,6 +195,9 @@ static const struct trobj Apothecary[] = {
     { DART, 2, WEAPON_CLASS, 10, 12, UNDEF_BLESS },
     { ALCHEMY_SMOCK, 2, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
     { LEATHER_GLOVES, 1, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
+    /* closed-toed shoes, for safety: the trade is spilt acid and broken
+       glass (Lucas, 2026-09-25) */
+    { HIGH_BOOTS, 0, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
     { POT_HEALING, 0, POTION_CLASS, 2, 2, 0 },
     /* the thrown half of the stock.  These are the potions monsters throw
        at the hero (muse.c: MUSE_POT_BLINDNESS / _CONFUSION / _SLEEPING /
