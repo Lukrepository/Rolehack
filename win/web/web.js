@@ -1,10 +1,17 @@
-// Rolehack web front end, test build: a window port for the WebAssembly
-// core, drawing the map in tiles (with the paper doll on the hero) or text.
-// The core calls nethackCallback(name, ...args) for every window-port
-// function in win/shim/winshim.c and waits on the promise it returns, so
-// each handler may take as long as the player does.
+// Written for Rolehack by Lucas Ruiz, 2026-09-26.
+//
+// Rolehack web front end: a window port for the WebAssembly core.  The core
+// calls nethackCallback(name, ...args) for every window-port function in
+// win/shim/winshim.c and waits on the promise it returns, so each handler may
+// take as long as the player does.  This file owns the game's side: input,
+// the glass (the map in tiles or text, with the paper doll; zoom, pan and
+// follow; the message and status lines after RhScreen), menus, prompts and
+// forms.  The touch controls are overlay.js.
 import createNetHack from './nethack.js';
 import { setPalette, dressHero, LOOK_LEN } from './doll.js';
+import { Overlay, MSG_BAND, STATUS_BAND, LINE } from './overlay.js';
+import { keyCodes } from './commands.js';
+import * as P from './prefs.js';
 
 const COLNO = 80, ROWNO = 21;
 // CLR_BLACK .. CLR_WHITE; NO_COLOR (8) draws as gray
@@ -14,19 +21,24 @@ const COLORS = ['#6f6f6f', '#d8453e', '#46a946', '#b5762a', '#4d74dc', '#b049b0'
 const MG_PET = 0x10;
 const MENU_ITEMFLAGS_SELECTED = 1;
 const ATR = { BOLD: 1, DIM: 2, ULINE: 4, BLINK: 5, INVERSE: 7 };
-const CONDITION_NAMES = {
-  BAREH: 'Bare', BLIND: 'Blind', BUSY: 'Busy', CONF: 'Conf', DEAF: 'Deaf',
-  ELF_IRON: 'Iron', FLY: 'Fly', FOODPOIS: 'FoodPois', GLOWHANDS: 'Glow',
-  GRAB: 'Grab', HALLU: 'Hallu', HELD: 'Held', ICY: 'Icy', INLAVA: 'Lava',
-  LEV: 'Lev', PARLYZ: 'Parlyz', RIDE: 'Ride', SLEEPING: 'Zzz', SLIME: 'Slime',
-  SLIPPERY: 'Slip', STONE: 'Stone', STRNGL: 'Strngl', STUN: 'Stun',
-  SUBMERGED: 'Sub', TERMILL: 'TermIll', TETHERED: 'Teth', TRAPPED: 'Trap',
-  UNCONSC: 'Out', WOUNDEDL: 'Legs', HOLDING: 'UHold',
+// RhStatus's conditions: short name and severity (2 deadly, 1 impairing, 0 movement)
+const CONDITIONS = {
+  GRAB: ['Grab', 2], STRNGL: ['Strngl', 2], FOODPOIS: ['FoodPois', 2], SLIME: ['Slime', 2],
+  STONE: ['Stone', 2], TERMILL: ['TermIll', 2], INLAVA: ['InLava', 2], BLIND: ['Blind', 1],
+  CONF: ['Conf', 1], DEAF: ['Deaf', 1], HALLU: ['Hallu', 1], STUN: ['Stun', 1], FLY: ['Fly', 0],
+  LEV: ['Lev', 0], RIDE: ['Ride', 0], ELF_IRON: ['Iron', 1], SUBMERGED: ['Submrg', 1],
+  PARLYZ: ['Parlyz', 2], UNCONSC: ['Out', 2], SLEEPING: ['Zzz', 2], HELD: ['Held', 1],
+  TRAPPED: ['Trap', 1], TETHERED: ['Teth', 1], WOUNDEDL: ['WLegs', 1], BUSY: ['Busy', 1],
+  HOLDING: ['UHold', 0], ICY: ['Icy', 0], SLIPPERY: ['Slip', 0], GLOWHANDS: ['Glow', 0], BAREH: ['Bare', 0],
 };
+const CONDITION_ORDER = Object.keys(CONDITIONS);
+// RhBadges' tiers: critical, serious, warning, info
+const TIER_BG = ['#c2412e', '#d9772b', '#c9a227', '#2f63ad'], TIER_FG = ['#ffffff', '#1a1206', '#1a1206', '#ffffff'];
 
 const $ = (id) => document.getElementById(id);
-const esc = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
 
 let M;                    // the Emscripten module
 let K;                    // nethackGlobal.constants
@@ -35,14 +47,16 @@ const wins = new Map();   // winid -> { type, lines, menu }
 let nextWin = 1;
 let grid = blankGrid();
 let cursor = { x: -1, y: -1 };
+let focus = { x: -1, y: -1 };   // cliparound's point, where the core gives one
+let lastFocus = { x: -1, y: -1 };
 const msgs = [];          // { text, fresh }
 const history = [];
 const status = {};        // field name -> { text, color }
 let condMask = 0;
 let promptText = '';
 let moreShown = false;
-let mode = 'tiles';       // or 'text'
-try { mode = localStorage.getItem('rh.mapmode') === 'text' ? 'text' : 'tiles'; } catch (e) { /* none */ }
+let geom = null;          // where the glass is (overlay.js)
+let overlay = null;
 
 function blankGrid() {
   return Array.from({ length: ROWNO }, () =>
@@ -84,47 +98,41 @@ function keyCode(e) {
   case 'Escape': return 27;
   case 'Backspace': return 8;
   case 'Tab': return 9;
+  case 'Delete': return 0x7f;
   }
   if (e.key.length !== 1) return null;
-  let c = e.key.charCodeAt(0);
+  const c = e.key.charCodeAt(0);
   if (e.ctrlKey && /^[a-z]$/i.test(e.key)) return e.key.toUpperCase().charCodeAt(0) & 0x1f;
   if (e.altKey && c < 128) return c | 0x80;   // M- commands
   return c;
 }
 
+let formOpen = null;
+
 window.addEventListener('keydown', (e) => {
+  if (formOpen) { if (e.key === 'Escape') { e.preventDefault(); formOpen.cancel(); } return; }
   if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
   const k = keyCode(e);
   if (k === null) return;
   e.preventDefault();
+  // Esc closes the interface's own popups first, as Back did on the phone
+  if (k === 27 && $('modal').hidden && overlay && overlay.onBack()) return;
   push({ key: k });
 });
 
-// a tap or click on the map is a CLICK_1 at that square (travel, in play)
-for (const id of ['map', 'tiles']) {
-  $(id).addEventListener('pointerup', (e) => {
-    const r = $(id).getBoundingClientRect();
-    const x = Math.floor((e.clientX - r.left) / (r.width / COLNO));
-    const y = Math.floor((e.clientY - r.top) / (r.height / ROWNO));
-    if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO) push({ click: { x, y, mod: 1 } });
-  });
+// the overlay's commands, in gurrhack's notation, go in as keys
+function send(seq) {
+  for (const k of keyCodes(seq)) push({ key: k });
 }
 
-$('mode').addEventListener('click', () => {
-  mode = mode === 'tiles' ? 'text' : 'tiles';
-  try { localStorage.setItem('rh.mapmode', mode); } catch (e) { /* none */ }
-  fit();
-  render();
-});
-
-/* ---------- tiles and the paper doll ---------- */
+/* ---------- the glass: map, zoom, pan ---------- */
 
 let sheet = null;         // tiles.png
 let sheetPx = null;       // its pixels, for the doll
 let sheetCols = 40;
 const tileCache = new Map();
 const dollCache = new Map();
-let tileDev = 16;         // a tile's size on the canvas, in device pixels
+const view = { T: 24, left: 0, top: 0, panX: 0, panY: 0, area: null };
 
 async function loadTiles() {
   const info = await (await fetch('tiles.json')).json();
@@ -188,112 +196,254 @@ function dollCanvas(look) {
   return c;
 }
 
+const statusBandH = () => ({ hidden: 0, compact: STATUS_BAND - LINE }[P.get('statusLines')] ?? STATUS_BAND);
+
+// Lay the glass out where the overlay says it is.  In the case, the map fills
+// the glass and centres between its bands; caseless, it fills the window.
+function layoutGlass(g) {
+  geom = g;
+  const gl = $('glass'), bands = $('bands'), s = g.s, r = g.glass;
+  const box = g.caseless ? { x: 0, y: 0, w: g.W, h: g.H } : r;
+  Object.assign(gl.style, { left: `${box.x}px`, top: `${box.y}px`, width: `${box.w}px`, height: `${box.h}px`,
+                            borderRadius: g.caseless ? '0' : `${r.r}px` });
+  const bx = r.x - box.x, by = r.y - box.y;
+  Object.assign(bands.style, { left: `${bx}px`, top: `${by}px`, width: `${r.w}px`, height: `${r.h}px` });
+  bands.style.setProperty('--line', `${LINE * s}px`);
+  $('msgband').style.fontSize = `${11 * 1.35 * s}px`;
+  $('msgband').style.lineHeight = `${LINE * s}px`;
+  $('msgband').style.minHeight = `${MSG_BAND * s}px`;
+  $('statband').style.fontSize = `${10.5 * 1.35 * s}px`;
+  $('statband').style.height = `${statusBandH() * s}px`;
+  $('statband').style.display = P.get('statusLines') === 'hidden' ? 'none' : '';
+  $('chips').style.top = `${(MSG_BAND + 6) * s}px`;
+  // where the map centres
+  view.area = g.caseless ? { x: 0, y: 0, w: box.w, h: box.h }
+    : { x: 2 * s, y: MSG_BAND * s, w: box.w - 4 * s, h: box.h - (MSG_BAND + statusBandH()) * s };
+  const cv = $('map'), dpr = window.devicePixelRatio || 1;
+  cv.width = Math.round(box.w * dpr);
+  cv.height = Math.round(box.h * dpr);
+  cv.style.width = `${box.w}px`;
+  cv.style.height = `${box.h}px`;
+  render();
+}
+
+function tileSize() {
+  const z = Number(P.get('zoom')) || 0;
+  if (z > 0) return z;
+  // fit the level's height, within reason
+  return view.area ? clamp(Math.floor(view.area.h / ROWNO), 12, 48) : 24;
+}
+
+function placeView() {
+  const a = view.area, T = view.T = tileSize();
+  const mapW = COLNO * T, mapH = ROWNO * T;
+  // follow the hero: the core's cursor sits on it whenever it waits for a command
+  const f = focus.x >= 0 ? focus : cursor.x >= 0 ? cursor : { x: 40, y: 10 };
+  if (f.x !== lastFocus.x || f.y !== lastFocus.y) {   // it moved: any pan ends
+    view.panX = view.panY = 0;
+    lastFocus = { x: f.x, y: f.y };
+  }
+  const axis = (len, avail, start, fc, pan) => (len <= avail ? start + (avail - len) / 2
+    : clamp(start + avail / 2 - (fc + 0.5) * T + pan, start + avail - len, start));
+  view.left = axis(mapW, a.w, a.x, f.x, view.panX);
+  view.top = axis(mapH, a.h, a.y, f.y, view.panY);
+}
+
 const HEART = ['.X.X.', 'XXXXX', '.XXX.', '..X..'];
 
-function renderTiles() {
-  const cv = $('tiles'), cx = cv.getContext('2d'), T = tileDev, px = T / 16;
+function renderMap() {
+  if (!view.area) return;
+  placeView();
+  const cv = $('map'), cx = cv.getContext('2d'), dpr = window.devicePixelRatio || 1;
+  const Td = Math.max(4, Math.round(view.T * dpr)), L = Math.round(view.left * dpr), Tp = Math.round(view.top * dpr);
+  cx.setTransform(1, 0, 0, 1, 0, 0);
   cx.imageSmoothingEnabled = false;
   cx.fillStyle = '#000';
   cx.fillRect(0, 0, cv.width, cv.height);
-  const look = heroLook();
+  const tiles = P.get('mapMode') !== 'text' && sheet;
+  const look = tiles ? heroLook() : null;
+  if (!tiles) {
+    cx.font = `${Math.round(Td * 1.05)}px VT323, Consolas, monospace`;
+    cx.textAlign = 'center';
+    cx.textBaseline = 'middle';
+  }
   for (let y = 0; y < ROWNO; y++) {
+    const dy = Tp + y * Td;
+    if (dy + Td < 0 || dy > cv.height) continue;
     for (let x = 0; x < COLNO; x++) {
+      const dx = L + x * Td;
+      if (dx + Td < 0 || dx > cv.width) continue;
       const c = grid[y][x];
-      if (c.tile < 0) continue;
-      // the doll only where the map shows the hero's own base tile, so a
-      // polymorph, a steed or a hallucination draws as the map says
-      const doll = look && x === look[1] && y === look[2] && c.tile === look[3] ? dollCanvas(look) : null;
-      if (doll) cx.drawImage(doll, x * T, y * T, T, T);
-      else cx.drawImage(sheet, (c.tile % sheetCols) * 16, Math.floor(c.tile / sheetCols) * 16,
-                        16, 16, x * T, y * T, T, T);
+      if (tiles) {
+        if (c.tile < 0) continue;
+        // the doll only where the map shows the hero's own base tile
+        const doll = look && x === look[1] && y === look[2] && c.tile === look[3] ? dollCanvas(look) : null;
+        if (doll) cx.drawImage(doll, dx, dy, Td, Td);
+        else cx.drawImage(sheet, (c.tile % sheetCols) * 16, Math.floor(c.tile / sheetCols) * 16, 16, 16, dx, dy, Td, Td);
+      } else if (c.ch !== 32) {
+        cx.fillStyle = COLORS[c.color];
+        cx.fillText(String.fromCharCode(c.ch), dx + Td / 2, dy + Td / 2 + 1);
+      }
       if (c.flags & MG_PET) {
+        const p = Math.max(1, Math.round(Td / 16));
         cx.fillStyle = '#ff3b5c';
         HEART.forEach((row, r) => [...row].forEach((ch, i) => {
-          if (ch === 'X') cx.fillRect(x * T + (1 + i) * px, y * T + (1 + r) * px, Math.ceil(px), Math.ceil(px));
+          if (ch === 'X') cx.fillRect(dx + (1 + i) * p, dy + (1 + r) * p, p, p);
         }));
       }
     }
   }
   if (cursor.x >= 0) {
+    const lw = Math.max(1, Math.round(Td / 16));
     cx.strokeStyle = '#e0b04a';
-    cx.lineWidth = Math.max(1, Math.round(px));
-    cx.strokeRect(cursor.x * T + cx.lineWidth / 2, cursor.y * T + cx.lineWidth / 2,
-                  T - cx.lineWidth, T - cx.lineWidth);
+    cx.lineWidth = lw;
+    cx.strokeRect(L + cursor.x * Td + lw / 2, Tp + cursor.y * Td + lw / 2, Td - lw, Td - lw);
   }
 }
 
-/* ---------- drawing ---------- */
+// Taps travel, drags pan, two fingers or the wheel zoom.
+(function glassGestures() {
+  const cv = $('map');
+  const pts = new Map();
+  let moved = false, pinch = null, panStart = null;
+  cv.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    try { cv.setPointerCapture(e.pointerId); } catch (x) { /* synthetic */ }
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size === 1) { moved = false; panStart = { x: e.clientX, y: e.clientY, px: view.panX, py: view.panY }; }
+    if (pts.size === 2) {
+      const [a, b] = [...pts.values()];
+      pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), T: view.T };
+      moved = true;
+    }
+  });
+  cv.addEventListener('pointermove', (e) => {
+    if (!pts.has(e.pointerId)) return;
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch && pts.size === 2) {
+      const [a, b] = [...pts.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      P.set('zoom', clamp(pinch.T * (d / pinch.d), 8, 96));
+      render();
+      return;
+    }
+    if (pts.size === 1 && panStart) {
+      const dx = e.clientX - panStart.x, dy = e.clientY - panStart.y;
+      if (!moved && Math.hypot(dx, dy) < 10) return;
+      moved = true;
+      view.panX = panStart.px + dx;
+      view.panY = panStart.py + dy;
+      renderMap();
+    }
+  });
+  const up = (e) => {
+    if (!pts.has(e.pointerId)) return;
+    pts.delete(e.pointerId);
+    if (pts.size < 2) pinch = null;
+    if (pts.size || moved) return;
+    // a tap: a --More-- or a text window's wait is answered, else it is a click on the map
+    if (moreShown) { push({ key: 32 }); return; }
+    const r = cv.getBoundingClientRect();
+    const x = Math.floor((e.clientX - r.left - view.left) / view.T);
+    const y = Math.floor((e.clientY - r.top - view.top) / view.T);
+    if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO) push({ click: { x, y, mod: 1 } });
+  };
+  cv.addEventListener('pointerup', up);
+  cv.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); pinch = null; });
+  cv.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    P.set('zoom', clamp(view.T * Math.pow(1.1, -e.deltaY / 100), 8, 96));
+    render();
+  }, { passive: false });
+  // the message band answers a tap only while earlier messages scrolled away
+  $('msgband').addEventListener('pointerup', () => {
+    if (moreShown) push({ key: 32 });
+    else if (hiddenMsgs() > 0) send('^P');
+  });
+}());
 
-function fit() {
-  const w = window.innerWidth - 32, h = window.innerHeight - 70;
-  const tiles = mode === 'tiles' && sheet;
-  $('map').hidden = tiles;
-  $('tiles').hidden = !tiles;
-  $('mode').textContent = tiles ? 'Text map' : 'Tile map';
-  if (!tiles) {
-    // 80 columns at ~0.6em, and 21 map rows plus ~6 lines of text
-    const cell = Math.max(9, Math.min(w / (COLNO * 0.6), h / (ROWNO * 1.12 + 6 * 1.25)));
-    document.documentElement.style.setProperty('--cell', `${cell.toFixed(2)}px`);
-    return;
-  }
-  // text lines at a readable size; the tiles take what is left, crisp at a
-  // multiple of 16 device pixels when one comes close to the largest fit
-  const cell = Math.max(11, Math.min(17, w / (COLNO * 0.6)));
-  document.documentElement.style.setProperty('--cell', `${cell.toFixed(2)}px`);
-  const dpr = window.devicePixelRatio || 1;
-  const fitDev = Math.floor(Math.min(w * dpr / COLNO, (h - cell * 1.25 * 6) * dpr / ROWNO));
-  const snapped = Math.floor(fitDev / 16) * 16;
-  tileDev = Math.max(6, snapped >= 16 && snapped >= fitDev * 0.85 ? snapped : fitDev);
-  const cv = $('tiles');
-  cv.width = COLNO * tileDev;
-  cv.height = ROWNO * tileDev;
-  cv.style.width = `${cv.width / dpr}px`;
-  cv.style.height = `${cv.height / dpr}px`;
+/* ---------- the bands: messages and status (RhScreen) ---------- */
+
+function hiddenMsgs() { return Math.max(0, msgs.filter((m) => m.fresh).length - 3); }
+
+function renderBands() {
+  const fresh = msgs.filter((m) => m.fresh);
+  const shown = fresh.length ? fresh.slice(-3) : msgs.slice(-1);
+  const more = hiddenMsgs();
+  let html = shown.map((m) => `<div class="${m.fresh ? '' : 'old'}">${esc(m.text)}</div>`).join('');
+  if (promptText) html += `<div class="ask">${esc(promptText)}</div>`;
+  if (moreShown) html += '<span class="moreprompt">--More--</span>';
+  if (more > 0) html += `<span class="more">+${more} ▸</span>`;
+  $('msgband').innerHTML = html;
+  if (overlay) overlay.setMore(more);
+  $('statband').innerHTML = statusHtml();
+  fitStatus();
 }
-window.addEventListener('resize', () => { fit(); render(); });
+
+const bare = (n) => ((status[n] && status[n].text) || '').trim();
+
+function badges() {
+  const out = [];
+  CONDITION_ORDER.forEach((name, n) => {
+    const v = K && K.BL_MASK && K.BL_MASK[`BL_MASK_${name}`];
+    if (v && (condMask & v)) {
+      const [word, sev] = CONDITIONS[name];
+      out.push({ text: word.toUpperCase(), tier: sev === 2 ? 0 : sev === 1 ? 2 : 3, order: n });
+    }
+  });
+  const h = bare('BL_HUNGER').toLowerCase();
+  if (h) out.push({ text: h.toUpperCase(), tier: /^(weak|faint)/.test(h) ? 0 : h.startsWith('hungry') ? 1 : 2, order: 100 });
+  const c = bare('BL_CAP').toLowerCase();
+  if (c) out.push({ text: c.toUpperCase(), tier: c.startsWith('burdened') ? 2 : c.startsWith('stressed') ? 1 : 0, order: 101 });
+  return out.sort((a, b) => a.tier - b.tier || a.order - b.order);
+}
+
+function statusHtml() {
+  if (!bare('BL_HPMAX')) return '';
+  const mode = P.get('statusLines'), compact = mode === 'compact';
+  const title = bare('BL_TITLE');
+  const hp = Number(bare('BL_HP')), hpmax = Number(bare('BL_HPMAX')) || 1;
+  const frac = clamp(hp / hpmax, 0, 1);
+  const colour = P.get('phosphor') === 'color';
+  const hpColour = !colour ? 'var(--phos)' : frac >= 0.66 ? '#63e07c' : frac >= 0.33 ? '#f5b342' : '#ff5a44';
+  const lab = (l, n) => (bare(n) ? ` ${l}${bare(n)}` : '');
+  const tail1 = [bare('BL_LEVELDESC'), bare('BL_GOLD') !== '' ? `$:${bare('BL_GOLD')}` : '', bare('BL_TIME') ? `T:${bare('BL_TIME')}` : '']
+    .filter(Boolean).join(' ');
+  const xp = bare('BL_XP') ? ` Xp:${bare('BL_XP')}${bare('BL_EXP') ? `/${bare('BL_EXP')}` : ''}` : lab('HD:', 'BL_HD');
+  const tail2 = `Pw:${bare('BL_ENE')}(${bare('BL_ENEMAX')})${lab('AC:', 'BL_AC')}${xp}${bare('BL_ALIGN') ? `  ${bare('BL_ALIGN')}` : ''}`;
+  const stats = ['St:', 'Dx:', 'Co:', 'In:', 'Wi:', 'Ch:'].map((l, n) =>
+    `${l}${bare(['BL_STR', 'BL_DX', 'BL_CO', 'BL_IN', 'BL_WI', 'BL_CH'][n])}`).join(' ');
+  const badgeHtml = `<span class="badges">${badges().map((b) => (colour
+    ? `<span class="badge" style="background:${TIER_BG[b.tier]};color:${TIER_FG[b.tier]}">${esc(b.text)}</span>`
+    : `<span class="badge" style="background:var(--phos);color:var(--glass)">${esc(b.text)}</span>`)).join('')}</span>`;
+  const titleHtml = `<span class="title">${esc(title)}<span class="hpbar" style="width:calc(${(frac * 100).toFixed(1)}% + 1px);`
+    + `background:${hpColour}"><span>${esc(title)}</span></span></span>`;
+  const row1 = `<div class="row">${titleHtml}&nbsp;&nbsp;${esc(tail1)}${compact ? badgeHtml : ''}</div>`;
+  const row2 = `<div class="row"><span style="color:${hpColour}">HP:${esc(bare('BL_HP'))}(${esc(bare('BL_HPMAX'))})</span>&nbsp;${esc(tail2)}</div>`;
+  const row3 = compact ? '' : `<div class="row">${esc(stats)}&nbsp;&nbsp;${badgeHtml}</div>`;
+  return row1 + row2 + row3;
+}
+
+// the lines shrink together until the widest fits
+function fitStatus() {
+  const sb = $('statband');
+  if (!geom || sb.style.display === 'none') return;
+  const base = 10.5 * 1.35 * geom.s;
+  sb.style.fontSize = `${base}px`;
+  const avail = sb.clientWidth - 20 * geom.s;
+  let widest = 0;
+  for (const r of sb.children) widest = Math.max(widest, r.scrollWidth);
+  if (widest > avail && avail > 0) sb.style.fontSize = `${base * Math.max(0.6, avail / widest)}px`;
+}
 
 function render() {
-  if (mode === 'tiles' && sheet) renderTiles(); else renderText();
-  renderLines();
-}
-
-function renderText() {
-  const rows = [];
-  for (let y = 0; y < ROWNO; y++) {
-    let html = '', run = '', runColor = -1;
-    const flush = () => {
-      if (run) html += `<span style="color:${COLORS[runColor]}">${esc(run)}</span>`;
-      run = '';
-    };
-    for (let x = 0; x < COLNO; x++) {
-      const c = grid[y][x];
-      const ch = String.fromCharCode(c.ch || 32);
-      const special = (x === cursor.x && y === cursor.y) || (c.flags & MG_PET);
-      if (special) {
-        flush();
-        const cls = [x === cursor.x && y === cursor.y ? 'cur' : '', c.flags & MG_PET ? 'pet' : '']
-          .join(' ').trim();
-        html += `<span class="${cls}" style="color:${COLORS[c.color]}">${esc(ch)}</span>`;
-        runColor = -1;
-      } else {
-        if (c.color !== runColor) { flush(); runColor = c.color; }
-        run += ch;
-      }
-    }
-    flush();
-    rows.push(html);
+  renderMap();
+  renderBands();
+  if (M && overlay) {
+    const flags = M._web_here_flags();
+    overlay.setHere(flags, flags >= 0 ? M.UTF8ToString(M._web_here_monster()) : '');
+    overlay.setWizard(!!M._web_wizard());
   }
-  $('map').innerHTML = rows.join('\n');
-}
-
-// the message and status lines, under either map
-function renderLines() {
-  const shown = msgs.slice(-3).map((m) =>
-    `<div class="${m.fresh ? '' : 'old'}">${esc(m.text)}</div>`).join('');
-  $('msgs').innerHTML = shown
-    + (promptText ? `<div id="prompt">${esc(promptText)}</div>` : '')
-    + (moreShown ? '<span class="more">--More--</span>' : '');
-  $('status').innerHTML = statusHtml();
 }
 
 function addMessage(text) {
@@ -304,36 +454,45 @@ function addMessage(text) {
 
 function ageMessages() { for (const m of msgs) m.fresh = false; }
 
-/* ---------- status ---------- */
-
-function field(name) {
-  const f = status[name];
-  if (!f || !f.text) return '';
-  const color = f.color & 0xff;
-  const style = color < 16 && color !== 8 ? ` style="color:${COLORS[color]}"` : '';
-  return `<span${style}>${esc(f.text)}</span>`;
-}
-
-function statusHtml() {
-  const t = (n) => (status[n] && status[n].text) || '';
-  const conds = Object.entries(K ? K.CONDITION : {})
-    .filter(([n, v]) => typeof v === 'number' && n.startsWith('BL_MASK_') && (condMask & v))
-    .map(([n]) => CONDITION_NAMES[n.slice(8)] || n.slice(8));
-  const line1 = [field('BL_TITLE'),
-    `St:${field('BL_STR')} Dx:${field('BL_DX')} Co:${field('BL_CO')} In:${field('BL_IN')} `
-    + `Wi:${field('BL_WI')} Ch:${field('BL_CH')}`, field('BL_ALIGN'),
-    t('BL_SCORE') ? `S:${field('BL_SCORE')}` : ''].filter(Boolean).join('  ');
-  const xp = t('BL_HD') ? `HD:${field('BL_HD')}`
-    : `Xp:${field('BL_XP')}${t('BL_EXP') ? '/' + field('BL_EXP') : ''}`;
-  const line2 = [field('BL_LEVELDESC'), `$:${field('BL_GOLD')}`,
-    `HP:${field('BL_HP')}(${field('BL_HPMAX')})`, `Pw:${field('BL_ENE')}(${field('BL_ENEMAX')})`,
-    `AC:${field('BL_AC')}`, xp, t('BL_TIME') ? `T:${field('BL_TIME')}` : '',
-    field('BL_HUNGER'), field('BL_CAP'), esc(conds.join(' '))].filter(Boolean).join(' ');
-  return `${line1}\n${line2}`;
-}
-
 // gold arrives with its map symbol encoded as \GXXXXNNNN; keep the number
 const plainGold = (s) => s.replace(/\\G[0-9a-fA-F]{8}:?/, '');
+
+/* ---------- prompts: choices as chips ---------- */
+
+// the choices a prompt offers: its explicit ones, or getobj's "[abc or ?*]"
+function promptChoices(query, allowed) {
+  if (allowed) return [...allowed.split('\x1b')[0]];
+  if (/what direction/.test(query)) return ['<', '>', '.'];
+  const m = /\[([^\]]*)\]/.exec(query);
+  if (!m) return [];
+  const out = [];
+  for (const part of m[1].split(/\s+or\s+|\s+/)) {
+    for (let i = 0; i < part.length; i++) {
+      if (part[i + 1] === '-' && part[i + 2]) {
+        for (let c = part.charCodeAt(i); c <= part.charCodeAt(i + 2); c++) out.push(String.fromCharCode(c));
+        i += 2;
+      } else if (part[i] !== '-') out.push(part[i]);
+    }
+  }
+  return [...new Set(out)].slice(0, 40);
+}
+
+function showChips(choices) {
+  const c = $('chips');
+  c.innerHTML = '';
+  if (!choices.length) return;
+  for (const ch of choices) {
+    const b = document.createElement('button');
+    b.textContent = ch;
+    b.addEventListener('pointerup', (e) => { e.preventDefault(); push({ key: ch.charCodeAt(0) }); });
+    c.appendChild(b);
+  }
+  const x = document.createElement('button');
+  x.className = 'esc';
+  x.textContent = 'Esc';
+  x.addEventListener('pointerup', (e) => { e.preventDefault(); push({ key: 27 }); });
+  c.appendChild(x);
+}
 
 /* ---------- modal windows ---------- */
 
@@ -352,12 +511,16 @@ function lineHtml(l) {
   return `<div class="${cls}">${esc(l.text) || ' '}</div>`;
 }
 
+const isEnter = (k) => k === 13 || k === 10;
+
 async function showText(lines, title) {
-  openModal(title, lines.map(lineHtml).join(''), 'Space, Enter or Esc to close');
+  openModal(title, lines.map(lineHtml).join(''), 'Tap here, or Space, Enter or Esc to close');
+  $('modal-foot').onpointerup = () => push({ key: 27 });
   for (;;) {
     const k = await nextKey();
-    if (k === 32 || k === 13 || k === 27) break;
+    if (k === 32 || isEnter(k) || k === 27) break;
   }
+  $('modal-foot').onpointerup = null;
   closeModal();
 }
 
@@ -385,16 +548,18 @@ async function selectMenu(win, how, listPtr) {
       return `<div class="item${it.selected ? ' sel' : ''}" data-n="${n}">`
         + `${esc(String.fromCharCode(it.ch))} ${mark} ${esc(it.text)}</div>`;
     }).join('');
-    const foot = how === 0 ? 'Space, Enter or Esc to close'
-      : how === 1 ? 'Press a letter or tap an item; Esc to cancel'
-      : 'Letters or taps toggle; . selects all, - none; Enter to accept, Esc to cancel';
+    const foot = how === 0 ? 'Tap here, or Space, Enter or Esc to close'
+      : how === 1 ? 'Tap an item or press its letter · tap here or Esc to cancel'
+      : 'Tap or type to toggle · . all, - none · Enter accepts · tap here to accept';
     openModal(w && w.menu ? w.menu.prompt : '', body, count ? `Count: ${count}` : foot);
-    for (const el of $('modal-body').querySelectorAll('.item')) {
-      el.addEventListener('click', () => push({ key: items[+el.dataset.n].ch }));
+    for (const e of $('modal-body').querySelectorAll('.item')) {
+      e.addEventListener('click', () => push({ key: items[+e.dataset.n].ch }));
     }
+    $('modal-foot').onpointerup = () => push({ key: how === 2 ? 13 : 27 });
   };
 
   const finish = (n) => {
+    $('modal-foot').onpointerup = null;
     closeModal();
     const chosen = items.filter((i) => i.selectable && i.selected);
     if (n < 0 || !chosen.length) { M.setValue(listPtr, 0, '*'); return n < 0 ? -1 : 0; }
@@ -408,7 +573,7 @@ async function selectMenu(win, how, listPtr) {
     draw();
     const k = await nextKey();
     if (k === 27) return finish(-1);
-    if (k === 13 || k === 32) return finish(0);
+    if (isEnter(k) || k === 32) return finish(0);
     if (how === 0) continue;
     if (k >= 48 && k <= 57) { count += String.fromCharCode(k); continue; }
     const hit = items.filter((i) => i.selectable && i.ch === k);
@@ -433,24 +598,149 @@ async function selectMenu(win, how, listPtr) {
   }
 }
 
+// A line of text.  Keys already queued -- a macro's "#terrain\n" -- are typed
+// into it first, so a sequence can answer the prompt it opens.
 async function getLine(title, initial = '', datalist = null) {
+  let value = initial;
+  while (queue.length && queue[0].key !== undefined) {
+    const k = queue.shift().key;
+    if (isEnter(k)) return value;
+    if (k === 27) return null;
+    if (k === 8 || k === 0x7f) value = value.slice(0, -1);
+    else if (k >= 32 && k < 127) value += String.fromCharCode(k);
+  }
   const listAttr = datalist ? ' list="extcmds"' : '';
   const options = datalist ? `<datalist id="extcmds">${datalist.map((n) =>
     `<option value="${esc(n)}">`).join('')}</datalist>` : '';
   openModal(title, `<input class="line" id="line" autocomplete="off"${listAttr}>${options}`,
-            'Enter to accept, Esc to cancel');
+            'Enter to accept · tap here or Esc to cancel');
   const input = $('line');
-  input.value = initial;
+  input.value = value;
   input.focus();
   const result = await new Promise((resolve) => {
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') { e.preventDefault(); resolve(input.value); }
       if (e.key === 'Escape') { e.preventDefault(); resolve(null); }
     });
+    $('modal-foot').onpointerup = () => resolve(null);
   });
+  $('modal-foot').onpointerup = null;
   input.blur();
   closeModal();
   return result;
+}
+
+/* ---------- forms: the overlay's dialogs ---------- */
+
+function form(title, fields, buttons) {
+  const box = $('form');
+  box.querySelector('.title').textContent = title;
+  const body = box.querySelector('.body');
+  body.innerHTML = '';
+  const values = {};
+  const f = document.createElement('div');
+  f.className = 'form';
+  for (const fd of fields) {
+    if (fd.note) { const n = document.createElement('div'); n.className = 'note'; n.textContent = fd.note; f.appendChild(n); continue; }
+    const lab = document.createElement('label');
+    lab.textContent = fd.label;
+    if (fd.seg) {
+      values[fd.seg] = fd.value;
+      const seg = document.createElement('div');
+      seg.className = 'seg';
+      for (const [val, text] of fd.options) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = text;
+        b.classList.toggle('on', val === fd.value);
+        b.addEventListener('click', () => {
+          values[fd.seg] = val;
+          for (const o of seg.children) o.classList.toggle('on', o === b);
+        });
+        seg.appendChild(b);
+      }
+      lab.appendChild(seg);
+    } else {
+      const inp = document.createElement('input');
+      inp.value = fd.value || '';
+      if (fd.numeric) inp.inputMode = 'numeric';
+      inp.addEventListener('input', () => { values[fd.id] = inp.value; });
+      inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); done(buttons.find((b) => b.primary)); } });
+      values[fd.id] = inp.value;
+      lab.appendChild(inp);
+    }
+    f.appendChild(lab);
+  }
+  const btns = document.createElement('div');
+  btns.className = 'btns';
+  const done = (b) => {
+    box.parentElement.hidden = true;
+    formOpen = null;
+    if (b && b.run) b.run(values);
+  };
+  for (const b of buttons) {
+    const e = document.createElement('button');
+    e.type = 'button';
+    e.textContent = b.label;
+    if (b.primary) e.className = 'primary';
+    e.addEventListener('click', () => done(b));
+    btns.appendChild(e);
+  }
+  f.appendChild(btns);
+  body.appendChild(f);
+  box.parentElement.hidden = false;
+  formOpen = { cancel: () => done(null) };
+  const first = f.querySelector('input');
+  if (first) first.focus();
+}
+
+/* ---------- the soft keyboard (KEYS) ---------- */
+
+const KBD_ROWS = [
+  ['Esc', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '⌫'],
+  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
+  ['Ctrl', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'Enter'],
+  ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Meta'],
+  ['#', '?', '*', '$', '_', '<', '>', ':', '@', 'Space', '`', 'Hide'],
+];
+const SHIFTED = { 1: '!', 2: '@', 3: '#', 4: '$', 5: '%', 6: '^', 7: '&', 8: '*', 9: '(', 0: ')', '-': '_', '=': '+',
+  '[': '{', ']': '}', '\\': '|', ';': ':', "'": '"', ',': '<', '.': '>', '/': '?', '`': '~' };
+
+function buildKeyboard() {
+  const kb = $('kbd'), mods = { Ctrl: false, Shift: false, Meta: false };
+  const modKeys = {};
+  for (const row of KBD_ROWS) {
+    const r = document.createElement('div');
+    r.className = 'row';
+    for (const label of row) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = label;
+      if (label in mods) { b.className = 'mod'; modKeys[label] = b; }
+      if (label === 'Space') b.style.minWidth = '120px';
+      b.addEventListener('pointerdown', (e) => e.preventDefault());
+      b.addEventListener('click', () => {
+        if (label in mods) { mods[label] = !mods[label]; b.classList.toggle('on', mods[label]); return; }
+        if (label === 'Hide') { kb.classList.remove('on'); return; }
+        let code;
+        if (label === 'Esc') code = 27;
+        else if (label === '⌫') code = 8;
+        else if (label === 'Enter') code = 13;
+        else if (label === 'Space') code = 32;
+        else {
+          let ch = label;
+          if (mods.Shift) ch = SHIFTED[ch] || ch.toUpperCase();
+          code = ch.charCodeAt(0);
+          if (mods.Ctrl && /^[a-z]$/i.test(ch)) code = ch.toUpperCase().charCodeAt(0) & 0x1f;
+          else if (mods.Meta) code |= 0x80;
+        }
+        for (const m of Object.keys(mods)) { mods[m] = false; modKeys[m].classList.remove('on'); }
+        push({ key: code });
+      });
+      r.appendChild(b);
+    }
+    kb.appendChild(r);
+  }
 }
 
 /* ---------- the window procedures ---------- */
@@ -489,7 +779,7 @@ const handlers = {
     if (w.type === K.WIN_TYPE.NHW_MESSAGE) {
       if (blocking && msgs.some((m) => m.fresh)) {
         moreShown = true;
-        for (;;) { const k = await nextKey(); if (k === 32 || k === 13 || k === 27) break; }
+        for (;;) { const k = await nextKey(); if (k === 32 || isEnter(k) || k === 27) break; }
         moreShown = false;
         ageMessages();
       }
@@ -532,7 +822,8 @@ const handlers = {
   shim_message_menu(let_, how, mesg) { addMessage(mesg); return 0; },
   shim_mark_synch() { render(); },
   shim_wait_synch() { render(); },
-  shim_cliparound() {},
+  // the core names the point to keep in view; a new one ends any pan
+  shim_cliparound(x, y) { focus = { x, y }; },
   shim_update_positionbar() {},
   shim_print_glyph(win, x, y, gi) {
     if (y < 0 || y >= ROWNO || x < 0 || x >= COLNO) return;
@@ -558,7 +849,7 @@ const handlers = {
     return ev.key;
   },
   shim_nhbell() {
-    document.body.animate([{ background: '#402020' }, { background: '' }], 150);
+    $('glass').animate([{ filter: 'brightness(1.8)' }, { filter: 'none' }], 150);
   },
   async shim_doprev_message() {
     await showText(history.slice(-60).map((text) => ({ attr: 0, text })), 'Messages');
@@ -571,6 +862,9 @@ const handlers = {
     if (shown) q += ` [${shown}]`;
     if (def) q += ` (${String.fromCharCode(def)})`;
     promptText = q;
+    const direction = /what direction/.test(query);
+    if (direction && overlay) overlay.setExpectsDirection(true);
+    showChips(promptChoices(query, allowed));
     let k;
     for (;;) {
       k = await nextKey();
@@ -579,12 +873,14 @@ const handlers = {
         k = allowed.includes('q') ? 113 : allowed.includes('n') ? 110 : def;
         break;
       }
-      if ((k === 13 || k === 32) && def) { k = def; break; }
+      if ((isEnter(k) || k === 32) && def) { k = def; break; }
       const ch = String.fromCharCode(k);
       if (allowed.includes(ch)) break;
       if (allowed.includes(ch.toLowerCase())) { k = ch.toLowerCase().charCodeAt(0); break; }
     }
     promptText = '';
+    showChips([]);
+    if (direction && overlay) overlay.setExpectsDirection(false);
     ageMessages();
     if (k >= 32 && k < 127) addMessage(`${q} ${String.fromCharCode(k)}`);
     return k > 127 ? 27 : k;
@@ -654,7 +950,14 @@ try {
 } catch (e) {
   console.warn('tiles', e);   // the text map still works
 }
-fit();
+buildKeyboard();
+P.onChange((name) => { if (name === 'mapMode' || name === 'zoom') render(); });
+overlay = new Overlay({
+  send,
+  glassChanged: (g) => layoutGlass(g),
+  form,
+  toggleKeyboard: () => $('kbd').classList.toggle('on'),
+});
 createNetHack({
   preRun: [(mod) => {
     // a generic user name (sysconf GENERICUSERS), so the game asks "Who are

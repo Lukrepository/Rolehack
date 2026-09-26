@@ -357,11 +357,13 @@ override TARGET_LFLAGS= $(EMCC_LFLAGS)
 override SYSSRC = ../sys/libnh/libnhmain.c \
 		../sys/share/ioctl.c ../sys/share/unixtty.c \
 		../sys/unix/unixunix.c ../sys/unix/unixres.c \
-		../win/shim/winshim.c ../win/share/rhdoll.c tile.c
+		../win/shim/winshim.c ../win/share/rhdoll.c \
+		../win/share/rhhere.c tile.c
 override SYSOBJ= $(TARGETPFX)libnhmain.o \
 		$(TARGETPFX)ioctl.o $(TARGETPFX)unixtty.o \
 		$(TARGETPFX)unixunix.o $(TARGETPFX)unixres.o \
-		$(TARGETPFX)winshim.o $(TARGETPFX)rhdoll.o $(TARGETPFX)tile.o
+		$(TARGETPFX)winshim.o $(TARGETPFX)rhdoll.o \
+		$(TARGETPFX)rhhere.o $(TARGETPFX)tile.o
 override WINLIB = emranlib
 override LUALIB=
 override TOPLUALIB=
@@ -386,7 +388,7 @@ $(TARGETPFX)%.o : ../sys/libnh/%.c
 # Rule for files in win/shim
 $(TARGETPFX)%.o : ../win/shim/%.c
 	$(TARGET_CC) $(TARGET_CFLAGS) -c -o$@ $<
-# Rule for files in win/share (Rolehack's rhdoll.c)
+# Rule for files in win/share (Rolehack's rhdoll.c, rhhere.c)
 $(TARGETPFX)%.o : ../win/share/%.c
 	$(TARGET_CC) $(TARGET_CFLAGS) -c -o$@ $<
 endif  # CROSS_TO_WASM

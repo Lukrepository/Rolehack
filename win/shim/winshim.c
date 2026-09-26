@@ -7,6 +7,7 @@
 #include "hack.h"
 #include "func_tab.h"
 #include "rhdoll.h"
+#include "rhhere.h"
 #include <string.h>
 
 #ifdef SHIM_GRAPHICS
@@ -342,6 +343,9 @@ EMSCRIPTEN_KEEPALIVE int web_glyphinfo(const glyph_info *ginfo, int which);
 EMSCRIPTEN_KEEPALIVE int web_extcmd_find(const char *txt);
 EMSCRIPTEN_KEEPALIVE const char *web_extcmd_name(int i);
 EMSCRIPTEN_KEEPALIVE int *web_hero_look(void);
+EMSCRIPTEN_KEEPALIVE int web_here_flags(void);
+EMSCRIPTEN_KEEPALIVE const char *web_here_monster(void);
+EMSCRIPTEN_KEEPALIVE int web_wizard(void);
 
 int
 web_any_word(const anything *id, int which)
@@ -417,6 +421,29 @@ web_hero_look(void)
     static int look[RH_DOLL_LEN];
 
     return rh_hero_look(look, (int (*)(int)) 0) ? look : (int *) 0;
+}
+
+/* the context key's question (rhhere.c): the flags now, -1 before a level
+   exists; web_here_monster() is the hostile beside the hero it last named */
+static char web_here_mon[BUFSZ];
+
+int
+web_here_flags(void)
+{
+    return rh_here_context(web_here_mon, (int) sizeof web_here_mon);
+}
+
+const char *
+web_here_monster(void)
+{
+    return web_here_mon;
+}
+
+/* debug mode, so the drawers can offer the wizard-mode commands */
+int
+web_wizard(void)
+{
+    return wizard ? 1 : 0;
 }
 #endif /* __EMSCRIPTEN__ */
 

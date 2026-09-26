@@ -12,8 +12,10 @@ cd "$top"
 [ "$1" = clean ] && rm -rf targets/wasm
 # the Linux hints set a desktop HACKDIR after cross-pre1 sets "/"
 make CROSS_TO_WASM=1 HACKDIR=/ PREFIX= all
-mkdir -p targets/web
+mkdir -p targets/web/fonts
 python3 win/web/tiles.py targets/web
-cp targets/wasm/nethack.js targets/wasm/nethack.wasm \
-   win/web/index.html win/web/web.js win/web/doll.js targets/web/
+cp targets/wasm/nethack.js targets/wasm/nethack.wasm win/web/index.html \
+   win/web/rolehack.css win/web/web.js win/web/overlay.js win/web/commands.js \
+   win/web/prefs.js win/web/doll.js targets/web/
+cp win/web/fonts/* targets/web/fonts/
 echo "Built $top/targets/web/"
