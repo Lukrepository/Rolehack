@@ -111,7 +111,11 @@ function keyCode(e) {
 let formOpen = null;
 
 window.addEventListener('keydown', (e) => {
-  if (formOpen) { if (e.key === 'Escape') { e.preventDefault(); formOpen.cancel(); } return; }
+  if (formOpen) {
+    if (e.key === 'Escape') { e.preventDefault(); formOpen.cancel(); }
+    else if (e.key === 'Enter') { e.preventDefault(); formOpen.accept(); }
+    return;
+  }
   if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
   const k = keyCode(e);
   if (k === null) return;
@@ -504,31 +508,83 @@ function showChips(choices) {
 
 /* ---------- modal windows ---------- */
 
-function openModal(title, bodyHtml, foot) {
+// A keycap for the windows' bezels, laid out in a row: the legend on the top
+// face, and the key that does the same on the front skirt.  It never takes
+// the focus, so a line being typed keeps it and a key isn't pressed twice.
+function capButton(label, { key = '', amber = false, onTap = null } = {}) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.tabIndex = -1;
+  b.className = amber ? 'cap amber' : 'cap';
+  b.innerHTML = `<span>${esc(label)}</span>${key ? `<b>${esc(key)}</b>` : ''}`;
+  b.addEventListener('mousedown', (e) => e.preventDefault());
+  b.addEventListener('pointerdown', () => { b.classList.add('pressed'); FB.press(); });
+  const release = () => { if (b.classList.contains('pressed')) { b.classList.remove('pressed'); FB.up(); } };
+  for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) b.addEventListener(ev, release);
+  b.addEventListener('contextmenu', (e) => e.preventDefault());
+  if (onTap) b.addEventListener('click', onTap);
+  return b;
+}
+// a key for the game, from a keycap
+const pushKey = (k) => () => push({ key: k });
+
+function openModal(title, bodyHtml, hint = '', caps = []) {
   $('modal-title').textContent = title || '';
   $('modal-title').hidden = !title;
   $('modal-body').innerHTML = bodyHtml;
-  $('modal-foot').textContent = foot || '';
+  $('modal-body').scrollTop = 0;
+  setHint(hint);
+  $('modal-caps').replaceChildren(...caps);
   $('modal').hidden = false;
+}
+function setHint(text, count = false) {
+  $('modal-hint').textContent = text;
+  $('modal-hint').classList.toggle('count', count);
 }
 function closeModal() { $('modal').hidden = true; }
 
+// tty's text attributes, on the text alone as tty draws them
+const ATTR_CLASS = { [ATR.BOLD]: 'bold', [ATR.DIM]: 'dim', [ATR.ULINE]: 'uline', [ATR.INVERSE]: 'inverse' };
+function attrText(text, attr) {
+  const cls = ATTR_CLASS[attr & 0xff];
+  return cls ? `<span class="${cls}">${esc(text)}</span>` : esc(text);
+}
+// the game's colour for a line, when the screen follows the game's colours
+function tint(clr) {
+  return P.get('phosphor') === 'color' && clr >= 0 && clr < 16 && clr !== 8 ? ` style="color:${COLORS[clr]}"` : '';
+}
 function lineHtml(l) {
-  const cls = { [ATR.BOLD]: 'bold', [ATR.DIM]: 'dim', [ATR.ULINE]: 'uline',
-                [ATR.INVERSE]: 'inverse' }[l.attr & 0xff] || '';
-  return `<div class="${cls}">${esc(l.text) || ' '}</div>`;
+  return `<div>${attrText(l.text, l.attr) || ' '}</div>`;
 }
 
 const isEnter = (k) => k === 13 || k === 10;
 
+// tty's paging keys scroll the window: > next page, < previous, ^ first, | last
+function pageKey(k) {
+  const b = $('modal-body'), page = Math.max(40, b.clientHeight - 30);
+  if (k === 62) b.scrollTop += page;
+  else if (k === 60) b.scrollTop -= page;
+  else if (k === 94) b.scrollTop = 0;
+  else if (k === 124) b.scrollTop = b.scrollHeight;
+  else return false;
+  return true;
+}
+// Space pages on, as in tty, until the last page, where it acts as Enter
+function spacePages() {
+  const b = $('modal-body');
+  if (b.scrollTop + b.clientHeight >= b.scrollHeight - 2) return false;
+  pageKey(62);
+  return true;
+}
+
 async function showText(lines, title) {
-  openModal(title, lines.map(lineHtml).join(''), 'Tap here, or Space, Enter or Esc to close');
-  $('modal-foot').onpointerup = () => push({ key: 27 });
+  openModal(title, lines.map(lineHtml).join(''), 'Space pages · Enter or Esc closes',
+            [capButton('OK', { key: 'Enter', amber: true, onTap: pushKey(13) })]);
   for (;;) {
     const k = await nextKey();
+    if (pageKey(k) || (k === 32 && spacePages())) continue;
     if (k === 32 || isEnter(k) || k === 27) break;
   }
-  $('modal-foot').onpointerup = null;
   closeModal();
 }
 
@@ -555,6 +611,18 @@ async function selectMenu(win, how, listPtr) {
   }
   let count = '';
 
+  // the bezel: OK alone for a menu that only shows; Esc to pick one; to pick
+  // any, All and None as well, and OK
+  const caps = how === 0 ? [capButton('OK', { key: 'Enter', amber: true, onTap: pushKey(13) })]
+    : how === 1 ? [capButton('Esc', { key: 'Esc', onTap: pushKey(27) })]
+    : [capButton('All', { key: '.', onTap: pushKey(46) }), capButton('None', { key: '-', onTap: pushKey(45) }),
+       capButton('Esc', { key: 'Esc', onTap: pushKey(27) }),
+       capButton('OK', { key: 'Enter', amber: true, onTap: pushKey(13) })];
+  const hint = how === 0 ? 'Space pages · Enter or Esc closes'
+    : how === 1 ? 'Tap an item or press its letter'
+    : 'Tap or type a letter to mark it · a number first sets a count';
+  openModal(w && w.menu ? w.menu.prompt : '', '', hint, caps);
+
   const draw = () => {
     // ForkFront's menu pictures: a column only when some item has one; an item
     // without keeps the slot so the text lines up; a heading takes none; and
@@ -562,24 +630,25 @@ async function selectMenu(win, how, listPtr) {
     const pictures = sheet && P.get('mapMode') !== 'text' && items.some((i) => i.selectable && i.tile >= 0);
     const body = items.map((it, n) => {
       if (!it.selectable) {
-        return it.attr ? `<div class="head">${esc(it.text) || ' '}</div>` : lineHtml(it);
+        return `<div class="${it.attr ? 'head' : ''}"${tint(it.clr)}>${attrText(it.text, it.attr) || ' '}</div>`;
       }
       const mark = how === 2 ? (it.selected ? (it.count > 0 ? '#' : '+') : '-') : '-';
       return `<div class="item${it.selected ? ' sel' : ''}" data-n="${n}">`
-        + `${esc(String.fromCharCode(it.ch))} ${mark} ${pictures ? tileSpan(it.tile) : ''}${esc(it.text)}</div>`;
+        // a flex row drops the spaces between its spans, so they go inside
+        + `<span class="let">${esc(String.fromCharCode(it.ch))}</span><span class="mark"> ${mark} </span>`
+        + `${pictures ? tileSpan(it.tile) : ''}<span${tint(it.clr)}>${attrText(it.text, it.attr)}</span></div>`;
     }).join('');
-    const foot = how === 0 ? 'Tap here, or Space, Enter or Esc to close'
-      : how === 1 ? 'Tap an item or press its letter · tap here or Esc to cancel'
-      : 'Tap or type to toggle · . all, - none · Enter accepts · tap here to accept';
-    openModal(w && w.menu ? w.menu.prompt : '', body, count ? `Count: ${count}` : foot);
+    const scroll = $('modal-body').scrollTop;
+    $('modal-body').innerHTML = body;
+    $('modal-body').scrollTop = scroll;
     for (const e of $('modal-body').querySelectorAll('.item')) {
       e.addEventListener('click', () => push({ key: items[+e.dataset.n].ch }));
     }
-    $('modal-foot').onpointerup = () => push({ key: how === 2 ? 13 : 27 });
+    if (count) setHint(`Count ${count}`, true);
+    else setHint(hint);
   };
 
   const finish = (n) => {
-    $('modal-foot').onpointerup = null;
     closeModal();
     const chosen = items.filter((i) => i.selectable && i.selected);
     if (n < 0 || !chosen.length) { M.setValue(listPtr, 0, '*'); return n < 0 ? -1 : 0; }
@@ -593,6 +662,7 @@ async function selectMenu(win, how, listPtr) {
     draw();
     const k = await nextKey();
     if (k === 27) return finish(-1);
+    if (pageKey(k) || (k === 32 && spacePages())) continue;
     if (isEnter(k) || k === 32) return finish(0);
     if (how === 0) continue;
     if (k >= 48 && k <= 57) { count += String.fromCharCode(k); continue; }
@@ -632,20 +702,23 @@ async function getLine(title, initial = '', datalist = null) {
   const listAttr = datalist ? ' list="linechoices"' : '';
   const options = datalist ? `<datalist id="linechoices">${datalist.map((n) =>
     `<option value="${esc(n)}">`).join('')}</datalist>` : '';
-  openModal(title, `<input class="line" id="line" autocomplete="off"${listAttr}>${options}`,
-            'Enter to accept · tap here or Esc to cancel');
+  let answer;
+  const result = new Promise((resolve) => { answer = resolve; });
+  openModal(title, `<input class="line" id="line" autocomplete="off" spellcheck="false"${listAttr}>${options}`,
+            datalist ? 'Type, or pick from the list' : '',
+            // Keys brings up the soft keyboard, whose own key the window covers
+            [capButton('Keys', { onTap: () => showKeyboard(!$('kbd').classList.contains('on')) }),
+             capButton('Esc', { key: 'Esc', onTap: () => answer(null) }),
+             capButton('OK', { key: 'Enter', amber: true, onTap: () => answer($('line').value) })]);
   const input = $('line');
   input.value = value;
   input.focus();
   if (value && value === initial) input.select();   // an offer: typing replaces it
-  const result = await new Promise((resolve) => {
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); resolve(input.value); }
-      if (e.key === 'Escape') { e.preventDefault(); resolve(null); }
-    });
-    $('modal-foot').onpointerup = () => resolve(null);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); answer(input.value); }
+    if (e.key === 'Escape') { e.preventDefault(); answer(null); }
   });
-  $('modal-foot').onpointerup = null;
+  await result;
   input.blur();
   closeModal();
   return result;
@@ -666,52 +739,49 @@ function form(title, fields, buttons) {
     const lab = document.createElement('label');
     lab.textContent = fd.label;
     if (fd.seg) {
+      // a row of keycaps; the chosen one lit amber, as a mode toggle is
       values[fd.seg] = fd.value;
       const seg = document.createElement('div');
       seg.className = 'seg';
       for (const [val, text] of fd.options) {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.textContent = text;
-        b.classList.toggle('on', val === fd.value);
-        b.addEventListener('click', () => {
+        const b = capButton(text, { amber: val === fd.value, onTap: () => {
           values[fd.seg] = val;
-          for (const o of seg.children) o.classList.toggle('on', o === b);
+          for (const o of seg.children) o.classList.toggle('amber', o === b);
           if (fd.onPick) fd.onPick(val, values);
-        });
+        } });
         seg.appendChild(b);
       }
       lab.appendChild(seg);
     } else {
       const inp = document.createElement('input');
       inp.value = fd.value || '';
+      inp.spellcheck = false;
       if (fd.numeric) inp.inputMode = 'numeric';
       inp.addEventListener('input', () => { values[fd.id] = inp.value; });
-      inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); done(buttons.find((b) => b.primary)); } });
+      inp.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        e.stopPropagation();
+        done(primary);
+      });
       values[fd.id] = inp.value;
       lab.appendChild(inp);
     }
     f.appendChild(lab);
   }
-  const btns = document.createElement('div');
-  btns.className = 'btns';
+  const primary = buttons.find((b) => b.primary);
   const done = (b) => {
     box.parentElement.hidden = true;
     formOpen = null;
     if (b && b.run) b.run(values);
   };
-  for (const b of buttons) {
-    const e = document.createElement('button');
-    e.type = 'button';
-    e.textContent = b.label;
-    if (b.primary) e.className = 'primary';
-    e.addEventListener('click', () => done(b));
-    btns.appendChild(e);
-  }
-  f.appendChild(btns);
+  box.querySelector('.caps').replaceChildren(...buttons.map((b) =>
+    capButton(b.label, { amber: !!b.primary, key: b.primary ? 'Enter' : '', onTap: () => done(b) })));
+  box.querySelector('.hint').textContent = 'Esc closes';
   body.appendChild(f);
   box.parentElement.hidden = false;
-  formOpen = { cancel: () => done(null) };
+  body.scrollTop = 0;
+  formOpen = { cancel: () => done(null), accept: () => done(primary) };
   const first = f.querySelector('input');
   if (first) first.focus();
 }
@@ -737,13 +807,19 @@ function buildKeyboard() {
     for (const label of row) {
       const b = document.createElement('button');
       b.type = 'button';
-      b.textContent = label;
-      if (label in mods) { b.className = 'mod'; modKeys[label] = b; }
+      b.tabIndex = -1;
+      b.className = 'cap';
+      b.innerHTML = `<span>${esc(label)}</span>`;
+      if (label in mods) modKeys[label] = b;
       if (label === 'Space') b.style.flexGrow = '3';
-      b.addEventListener('pointerdown', (e) => { e.preventDefault(); FB.press(); });
+      else if (label === 'Enter' || label === 'Shift') b.style.flexGrow = '1.5';
+      b.addEventListener('pointerdown', (e) => { e.preventDefault(); b.classList.add('pressed'); FB.press(); });
+      const release = () => { if (b.classList.contains('pressed')) { b.classList.remove('pressed'); FB.up(); } };
+      for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) b.addEventListener(ev, release);
       b.addEventListener('click', () => {
-        if (label in mods) { mods[label] = !mods[label]; b.classList.toggle('on', mods[label]); return; }
-        if (label === 'Hide') { kb.classList.remove('on'); return; }
+        // a modifier held down lights amber, as the overlay's mode keys do
+        if (label in mods) { mods[label] = !mods[label]; b.classList.toggle('amber', mods[label]); return; }
+        if (label === 'Hide') { showKeyboard(false); return; }
         let code;
         if (label === 'Esc') code = 27;
         else if (label === '⌫') code = 8;
@@ -756,14 +832,58 @@ function buildKeyboard() {
           if (mods.Ctrl && /^[a-z]$/i.test(ch)) code = ch.toUpperCase().charCodeAt(0) & 0x1f;
           else if (mods.Meta) code |= 0x80;
         }
-        for (const m of Object.keys(mods)) { mods[m] = false; modKeys[m].classList.remove('on'); }
-        push({ key: code });
+        for (const m of Object.keys(mods)) { mods[m] = false; modKeys[m].classList.remove('amber'); }
+        if (!typeInto(code)) push({ key: code });
       });
       r.appendChild(b);
     }
     kb.appendChild(r);
   }
 }
+
+// While a line is being typed -- "Who are you?", a name, a # command, a
+// dialog's field -- the soft keyboard types into it, as a real one does.
+function typeInto(code) {
+  // the focused field, or the open window's line if a tap took the focus off it
+  let input = document.activeElement;
+  if (!input || input.tagName !== 'INPUT') {
+    input = formOpen ? $('form').querySelector('input') : !$('modal').hidden ? $('line') : null;
+    if (!input) {
+      // a dialog with nothing to type in: Esc and Enter answer it, as the real
+      // keys do, and nothing reaches the game underneath
+      if (formOpen) {
+        if (code === 27) formOpen.cancel();
+        else if (code === 13) formOpen.accept();
+        return true;
+      }
+      return false;
+    }
+    input.focus();
+  }
+  if (code === 13 || code === 27) {
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: code === 13 ? 'Enter' : 'Escape', bubbles: true }));
+    return true;
+  }
+  let start = input.selectionStart, end = input.selectionEnd;
+  if (code === 8) {
+    if (start === end && start > 0) start--;
+    input.setRangeText('', start, end, 'end');
+  } else if (code >= 32 && code < 127) {
+    input.setRangeText(String.fromCharCode(code), start, end, 'end');
+  } else {
+    return true;   // a Ctrl or Meta key has no place in a line
+  }
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+  return true;
+}
+
+// The keyboard sits above the windows, and a window makes room for it.
+function showKeyboard(on) {
+  const kb = $('kbd');
+  kb.classList.toggle('on', on);
+  document.documentElement.style.setProperty('--kbd-room', on ? `${kb.offsetHeight + 12}px` : '0px');
+}
+window.addEventListener('resize', () => { if ($('kbd').classList.contains('on')) showKeyboard(true); });
 
 /* ---------- the window procedures ---------- */
 
@@ -1052,7 +1172,7 @@ overlay = new Overlay({
   send,
   glassChanged: (g) => layoutGlass(g),
   form,
-  toggleKeyboard: () => $('kbd').classList.toggle('on'),
+  toggleKeyboard: () => showKeyboard(!$('kbd').classList.contains('on')),
 });
 function start() {
   createNetHack({
