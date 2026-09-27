@@ -1,5 +1,5 @@
 /* NetHack 5.0	cmd.c	$NHDT-Date: 1781973043 2026/06/20 16:30:43 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.772 $ */
-/* Changed for Rolehack by Lucas Ruiz, 2026-09-26.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-27.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2013. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -1815,7 +1815,7 @@ struct ext_func_tab extcmdlist[] = {
               doputon, 0, NULL },
     { 'q',    "quaff", "quaff (drink) something",
               dodrink, CMD_M_PREFIX, NULL },
-    { '\0',   "quit", "exit without saving current game",
+    { M('q'), "quit", "exit without saving current game",
               done2, IFBURIED | AUTOCOMPLETE | GENERALCMD | NOFUZZERCMD,
               NULL },
     { 'Q',    "quiver", "select ammunition for quiver",

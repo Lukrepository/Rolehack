@@ -32,7 +32,7 @@ notices before each release.
 | `include/skills.h` | changed | 2026-08-16 | notice in file |
 | `src/artifact.c` | changed | 2026-08-21 to 2026-09-23 | notice in file |
 | `src/attrib.c` | changed | 2026-07-31 | notice in file |
-| `src/cmd.c` | changed | 2026-09-26 | notice in file |
+| `src/cmd.c` | changed | 2026-09-27 | notice in file |
 | `src/end.c` | changed | 2026-08-10 to 2026-09-23 | notice in file |
 | `src/mdlib.c` | changed | 2026-09-25 | notice in file |
 | `src/mon.c` | changed | 2026-08-21 to 2026-09-23 | notice in file |
