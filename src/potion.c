@@ -1904,10 +1904,18 @@ potionhit(struct monst *mon, struct obj *obj, int how)
     }
 
     /* Note: potionbreathe() does its own docall() */
+    /* ROLEHACK: an Apothecary does not breathe the vapours of a potion she
+       threw or bashed herself; a life spent over the fumes (Lucas,
+       2026-09-27: the mitigation for close-range throwing, chosen over
+       intrinsic speed).  Not while polymorphed: those are not her lungs.
+       Potions thrown by monsters still reach her. */
     if ((distance == 0 || (distance < 3 && !rn2((1+ACURR(A_DEX))/2)))
-        && (!breathless(gy.youmonst.data) || haseyes(gy.youmonst.data)))
-        potionbreathe(obj);
-    else if (obj->dknown && cansee(tx, ty))
+        && (!breathless(gy.youmonst.data) || haseyes(gy.youmonst.data))) {
+        if (your_fault && Role_if(PM_APOTHECARY) && !Upolyd)
+            You("smell a familiar odor, and think nothing of it.");
+        else
+            potionbreathe(obj);
+    } else if (obj->dknown && cansee(tx, ty))
         trycall(obj);
 
     if (*u.ushops && obj->unpaid) {
@@ -2657,7 +2665,7 @@ potion_dip(struct obj *obj, struct obj *potion)
         return ECMD_TIME;
     }
 
-    if (is_poisonable(obj)) {
+    if (rh_poisonable(obj)) { /* ROLEHACK: an Apothecary's knife too */
         if (potion->otyp == POT_SICKNESS && !obj->opoisoned) {
             char buf[BUFSZ];
 

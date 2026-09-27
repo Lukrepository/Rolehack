@@ -2501,20 +2501,29 @@ breakobj(
             explode_oil(obj, x, y);
         } else if (next2u(x, y)) {
             if (!breathless(gy.youmonst.data) || haseyes(gy.youmonst.data)) {
-                /* wet towel protects both eyes and breathing */
-                if (obj->otyp != POT_WATER && !Half_gas_damage) {
-                    if (!breathless(gy.youmonst.data)) {
-                        /* [what about "familiar odor" when known?] */
-                        You("smell a peculiar odor...");
-                    } else {
-                        const char *eyes = body_part(EYE);
+                /* ROLEHACK: an Apothecary does not breathe the vapours of a
+                   potion she broke herself (a throw that missed, a kick, a
+                   drop); not while polymorphed.  See potionhit() for the
+                   one that hits (Lucas, 2026-09-27). */
+                if (hero_caused && Role_if(PM_APOTHECARY) && !Upolyd
+                    && obj->otyp != POT_WATER) {
+                    You("smell a familiar odor, and think nothing of it.");
+                } else {
+                    /* wet towel protects both eyes and breathing */
+                    if (obj->otyp != POT_WATER && !Half_gas_damage) {
+                        if (!breathless(gy.youmonst.data)) {
+                            /* [what about "familiar odor" when known?] */
+                            You("smell a peculiar odor...");
+                        } else {
+                            const char *eyes = body_part(EYE);
 
-                        if (eyecount(gy.youmonst.data) != 1)
-                            eyes = makeplural(eyes);
-                        Your("%s %s.", eyes, vtense(eyes, "water"));
+                            if (eyecount(gy.youmonst.data) != 1)
+                                eyes = makeplural(eyes);
+                            Your("%s %s.", eyes, vtense(eyes, "water"));
+                        }
                     }
+                    potionbreathe(obj);
                 }
-                potionbreathe(obj);
             }
         }
         /* monster breathing isn't handled... [yet?] */

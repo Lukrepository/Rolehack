@@ -269,6 +269,15 @@ struct obj {
       && objects[otmp->otyp].oc_skill >= -P_SHURIKEN \
       && objects[otmp->otyp].oc_skill <= -P_BOW)     \
      || permapoisoned(otmp))
+/* ROLEHACK: an Apothecary also coats knives and daggers, the role's melee
+   weapons, where vanilla admits only missiles and ammo (Lucas, 2026-09-27).
+   Used at the hero's dip, hit, naming and cancellation sites; random
+   generation (mkobj.c) and wishing keep the vanilla rule. */
+#define rh_poisonable(otmp)                                          \
+    (is_poisonable(otmp)                                             \
+     || (Role_if(PM_APOTHECARY) && (otmp)->oclass == WEAPON_CLASS   \
+         && (objects[(otmp)->otyp].oc_skill == P_KNIFE               \
+             || objects[(otmp)->otyp].oc_skill == P_DAGGER)))
 #define uslinging() (uwep && objects[uwep->otyp].oc_skill == P_SLING)
 /* 'is_quest_artifact()' only applies to the current role's artifact */
 #define any_quest_artifact(o) ((o)->oartifact >= ART_ORB_OF_DETECTION)

@@ -1214,7 +1214,7 @@ hmon_hitmon_weapon_melee(
                 hmd->dmg++;
             hmd->train_weapon_skill = (hmd->dmg > 0);
         }
-        if (obj->opoisoned && is_poisonable(obj))
+        if (obj->opoisoned && rh_poisonable(obj)) /* ROLEHACK */
             hmd->ispoisoned = TRUE;
     }
     /* permapoisoned is non-ammo/missile, limit the poison */
