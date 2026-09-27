@@ -1,5 +1,5 @@
 /* NetHack 5.0	cmd.c	$NHDT-Date: 1781973043 2026/06/20 16:30:43 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.772 $ */
-/* Changed for Rolehack by Lucas Ruiz, 2026-08-16.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-26.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2013. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -1730,7 +1730,7 @@ struct ext_func_tab extcmdlist[] = {
               dofire, 0, NULL },
     { M('f'), "force", "force a lock",
               doforce, AUTOCOMPLETE, NULL },
-    { '\0',   "grapple", "grapple an adjacent monster, or throw the one held",
+    { M('G'), "grapple", "grapple an adjacent monster, or throw the one held",
               dograpple, AUTOCOMPLETE, NULL },
     { M('g'), "genocided",
               "list monsters that have been genocided or become extinct",
