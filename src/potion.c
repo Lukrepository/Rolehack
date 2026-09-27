@@ -1,5 +1,5 @@
 /* NetHack 5.0	potion.c	$NHDT-Date: 1781973062 2026/06/20 16:31:02 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.288 $ */
-/* Changed for Rolehack by Lucas Ruiz, 2026-08-10 to 2026-09-23.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-08-10 to 2026-09-27.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2013. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -1905,10 +1905,18 @@ potionhit(struct monst *mon, struct obj *obj, int how)
     }
 
     /* Note: potionbreathe() does its own docall() */
+    /* ROLEHACK: an Apothecary does not breathe the vapours of a potion she
+       threw or bashed herself; a life spent over the fumes (Lucas,
+       2026-09-27: the mitigation for close-range throwing, chosen over
+       intrinsic speed).  Not while polymorphed: those are not her lungs.
+       Potions thrown by monsters still reach her. */
     if ((distance == 0 || (distance < 3 && !rn2((1+ACURR(A_DEX))/2)))
-        && (!breathless(gy.youmonst.data) || haseyes(gy.youmonst.data)))
-        potionbreathe(obj);
-    else if (obj->dknown && cansee(tx, ty))
+        && (!breathless(gy.youmonst.data) || haseyes(gy.youmonst.data))) {
+        if (your_fault && Role_if(PM_APOTHECARY) && !Upolyd)
+            You("smell a familiar odor, and think nothing of it.");
+        else
+            potionbreathe(obj);
+    } else if (obj->dknown && cansee(tx, ty))
         trycall(obj);
 
     if (*u.ushops && obj->unpaid) {
@@ -2658,7 +2666,7 @@ potion_dip(struct obj *obj, struct obj *potion)
         return ECMD_TIME;
     }
 
-    if (is_poisonable(obj)) {
+    if (rh_poisonable(obj)) { /* ROLEHACK: an Apothecary's knife too */
         if (potion->otyp == POT_SICKNESS && !obj->opoisoned) {
             char buf[BUFSZ];
 

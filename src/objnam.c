@@ -1,4 +1,5 @@
 /* NetHack 5.0	objnam.c	$NHDT-Date: 1781973060 2026/06/20 16:31:00 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.464 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-27.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2011. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -683,7 +684,7 @@ xname_flags(
             Sprintf(buf, "%s amulet", dn);
         break;
     case WEAPON_CLASS:
-        if (is_poisonable(obj) && obj->opoisoned)
+        if (rh_poisonable(obj) && obj->opoisoned) /* ROLEHACK */
             Strcpy(buf, "poisoned ");
         FALLTHROUGH;
         /*FALLTHRU*/
