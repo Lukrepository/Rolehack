@@ -66,6 +66,11 @@ const GC_DARK = fam(['#4a4c6e', '#34365a', '#3a3c62', '#2b2d4f', '#1a1b36', '#ee
 const GC_ORANGE_DARK = fam(['#e0701f', '#c05200', '#b84e00', '#9a4000', '#6a2a00', '#2a1000', '#fff0dc', '#4a1e00']);
 const GC_TEAL = withLegend(GC_DARK, '#5fe3d2'), GC_ROSE = withLegend(GC_DARK, '#ff8fc0'),
   GC_LAV = withLegend(GC_DARK, '#c8bcff');
+// macros: jade on the Terminal skins, the Emerald Blue GameCube's teal on GameCube
+const CAP_JADE = fam(['#8cc9b8', '#6aae9b', '#65a592', '#5a9a88', '#3f7566', '#0f2a24', '#0f2a24', '#1f4a40']);
+const GC_EMERALD = fam(['#4fe0c4', '#12b89c', '#16b598', '#11a88e', '#0a7a66', '#032b24', '#032b24', '#04382f']);
+// APPLY's layer on the Terminal skins: the cream pad inverted, since APPLY is cream too
+const CAP_CREAM_INV = withLegend(CAP_DARK, '#fbf8f1');
 const ROLE_MOVE = 0, ROLE_INTERACT = 1, ROLE_CONSUME = 2, ROLE_SEARCH = 3, ROLE_INVENTORY = 4;
 
 const gc = () => P.get('style') === 'gamecube';
@@ -78,6 +83,7 @@ function capFor(face) {
   case C.TEAL: return g ? GC_TEAL : CAP_TEAL;
   case C.PINK: return g ? GC_ROSE : CAP_ROSE;
   case C.VIOLET: return g ? GC_LAV : CAP_LAV;
+  case C.JADE: return g ? GC_EMERALD : CAP_JADE;
   default: return g ? GC_DARK : CAP_DARK;
   }
 }
@@ -86,6 +92,19 @@ function role(r) {
   return [CAP_CREAM, CAP_CREAM, CAP_ROSE, CAP_DARK, CAP_DARK][r];
 }
 const longRestCap = () => (gc() ? GC_ORANGE_DARK : CAP_AMBER_DARK);
+// a layer wears its hub's colour (RhTheme.layerCap / layerAccent)
+const LAYER_APPLY = 0, LAYER_COMBAT = 1, LAYER_EAT = 2, LAYER_DROP = 3, LAYER_INVENTORY = 4;
+function layerCap(kind) {
+  const g = gc();
+  return [g ? GC_RED : CAP_CREAM_INV, g ? GC_SCARLET : CAP_RED, g ? GC_BLUE : CAP_ROSE,
+          g ? GC_TEAL : CAP_TEAL, g ? GC_GREY : CAP_SLATE][kind];
+}
+function layerAccent(kind) {
+  const g = gc();
+  return [g ? '#f0505f' : '#fbf8f1', g ? '#ff6b5b' : '#c85240', g ? '#5c93ff' : '#f08bb6',
+          g ? '#5fe3d2' : '#5fd8c9', g ? '#e4e4ea' : '#9c9a94'][kind];
+}
+const FLICK_ID = 'flick';
 
 const ARROW_DEG = { '↑': 0, '↗': 45, '→': 90, '↘': 135, '↓': 180, '↙': 225, '←': 270, '↖': 315 };
 const ARROW_SVG = (deg) => `<svg width="20" height="20" viewBox="0 0 20 20" style="transform:rotate(${deg}deg)">`
@@ -131,6 +150,7 @@ class Key {
     this.subRaw = false;
     this.tagText = null;
     this.isPh = false;
+    this.isNub = false;
     this.el.addEventListener('contextmenu', (e) => e.preventDefault());
   }
 
@@ -148,6 +168,14 @@ class Key {
     this.fr.style.top = `${h - shadow - front}px`;
     this.fr.style.height = `${front}px`;
     Object.assign(this.tp.style, { left: `${side}px`, right: `${side}px`, top: '2px', bottom: `${shadow + front}px` });
+    if (this.isNub) {
+      // a round dome in its hole, centred in the key's place
+      const d = Math.min(w, h) - 6, hole = d + 5;
+      Object.assign(this.tp.style, { left: `${(w - d) / 2}px`, top: `${(h - d) / 2}px`, right: 'auto', bottom: 'auto',
+        width: `${d}px`, height: `${d}px` });
+      Object.assign(this.sh.style, { left: `${(w - hole) / 2}px`, top: `${(h - hole) / 2 + 1}px`, right: 'auto', bottom: 'auto',
+        width: `${hole}px`, height: `${hole}px` });
+    }
     this.w = w; this.h = h;
     this.paint();
     scheduleFit(this);
@@ -162,7 +190,8 @@ class Key {
 
   family() {
     if (this.capFam) return this.capFam;
-    if (this.isPh) return capFor(C.G90);
+    // an empty key is dark, except a macro's, which keeps the macro colour
+    if (this.isPh && this.faceColour !== C.JADE) return capFor(C.G90);
     if (this.defFam && this.faceColour === C.G90) return this.defFam;
     return capFor(this.faceColour);
   }
@@ -222,6 +251,8 @@ class Key {
   }
 
   lit(on) { this.el.classList.toggle('lit', on); return this; }
+  // the flick key: a pointing stick's rubber nub rather than a keycap (RhFace.nub)
+  nub(on) { this.isNub = on; this.el.classList.toggle('nub', on); return this; }
   press(on) { this.pressed = on; this.el.classList.toggle('pressed', on); }
   show(on) { this.el.style.display = on ? '' : 'none'; return this; }
 
@@ -322,10 +353,15 @@ export class Overlay {
   }
 
   resetState() {
-    this.atkSlotKeys = (P.get('atkSlots') || C.ATK_SLOT_DEFAULT).slice();
+    P.macros();   // first run with the flick key moves the retired third point's command first
+    this.atkSlotKeys = (P.get('atkSlots') || C.ATK_SLOT_DEFAULT).slice(0, C.ATK_SLOT_DEFAULT.length);
     this.equipSlotKeys = (P.get('equipSlots') || C.EQUIP_SLOT_DEFAULT).slice();
     this.fanKeys = new Map();
-    for (const h of C.HUBS) if (h.fan.length) this.fanKeys.set(h.id, P.fanSlots(h.id, h.fan.map((it) => it.key)));
+    for (const h of C.HUBS) if (h.fan.length) this.fanKeys.set(h.id, P.fanSlots(h.id, h.fan.map((it) => (it ? it.key : null))));
+    this.flickFace = null;
+    this.flickNodes = [];
+    this.layerFrame = null;
+    this.padMold = null;
     this.hubs = [];
     this.fanOpen = null;
     this.drawerOpen = null;
@@ -577,7 +613,7 @@ export class Overlay {
 
   // ---- macros
   buildMacroKey(K, slot) {
-    const k = new Key(K).face(C.G90);
+    const k = new Key(K).face(C.JADE);
     this.macroKeys[slot] = k;
     // while a command is in hand a tap places it here, and a hold does nothing
     this.bindHold(k, HUB_HOLD_MS, () => { if (!this.assign) this.editMacro(slot); }, () => {
@@ -593,6 +629,7 @@ export class Overlay {
   }
 
   refreshMacroKey(slot) {
+    if (slot >= P.MACRO_SLOTS) { this.refreshFlick(); return; }
     const k = this.macroKeys[slot];
     if (!k) return;
     const m = P.macros()[slot];
@@ -600,8 +637,8 @@ export class Overlay {
     // gives way to a label with something to read (a macro of spaces keeps it).
     k.tag(this.portrait && slot > 0 && m.keys && (m.name || m.keys).trim() ? '' : `M${slot + 1}`);
     // every macro is a destination while a command is in hand, from any drawer
-    if (this.assign) { k.placeholder(false).face(C.A90).label('HERE', 8).sub(null); return; }
-    k.face(C.G90);
+    if (this.assign && !this.flickPlacing()) { k.placeholder(false).face(C.A90).label('HERE', 8).sub(null); return; }
+    k.face(C.JADE);
     if (m.keys) k.placeholder(false).label(m.name || m.keys, 8.5).sub('hold to edit');
     else k.placeholder(true).label('+', 15).sub('macro');
   }
@@ -613,15 +650,23 @@ export class Overlay {
     this.assign = null;
     this.assignHub = null;
     if (fan) this.closeFan();
+    this.closeRadial();   // the flick key's, when that is where it went
     this.refreshAllSlots();
     this.updateHubSubLines();
     this.syncModal();
   }
 
+  macroTitle(slot) {
+    if (slot === P.FLICK_TAP) return 'Flick key: tap';
+    if (slot === P.FLICK_TAP + 1) return 'Flick key: flick up';
+    if (slot === P.FLICK_TAP + 2) return 'Flick key: flick up-right';
+    return P.macros()[slot].keys ? 'Edit macro' : 'New macro';
+  }
+
   editMacro(slot) {
     this.closeAll();
     const m = P.macros()[slot];
-    this.host.form(m.keys ? 'Edit macro' : 'New macro', [
+    this.host.form(this.macroTitle(slot), [
       { id: 'name', label: 'Name (fits ~8 characters)', value: m.name },
       { id: 'keys', label: 'Keys, e.g. 20s  or  ^Dh  or  M-p', value: m.keys, mono: true },
       { note: 'Sent one key at a time, as typed.  ^X = Ctrl-X,  M-x = Meta-x,  \\e = Escape,  '
@@ -726,6 +771,7 @@ export class Overlay {
   buildNumpad(K) {
     const pitch = this.padCell + PAD_GAP, left = this.termInner();
     const mold = el('div', '', K);
+    this.padMold = mold;
     const box = this.lb(this.padBox, this.padBox, left, this.termInner());
     Object.assign(mold.style, { position: 'absolute', left: `${box.x}px`, top: `${box.y}px`, width: `${box.w}px`, height: `${box.h}px` });
     for (let row = 0; row < 3; row++) {
@@ -734,18 +780,27 @@ export class Overlay {
         const k = new Key(mold).place(col * pitch, row * pitch, this.padCell, this.padCell).cap(role(ROLE_MOVE));
         if (!key) {
           this.padCentre = k;
-          this.bindHold(k, CENTRE_HOLD_MS, () => this.openContextRadial(), () => {
+          this.bindHold(k, CENTRE_HOLD_MS, () => { if (!this.fanOpen) this.openContextRadial(); }, () => {
+            if (this.fanOpen) { this.layerPlaceTapped(4, k.el); return; }
             if (this.directionPending()) this.pressDirection('.');
             else this.execute(this.padCentreCommand(), k.el);
           });
           continue;
         }
         k.label(C.PAD_ARROW[idx], 18, true).sub(key, true);
-        this.bindTap(k, () => this.pressDirection(key));
+        this.bindTap(k, () => {
+          if (this.fanOpen) { this.layerPlaceTapped(idx, k.el); return; }
+          this.pressDirection(key);
+        });
         this.padCells.push(k);
       }
     }
     this.padBoxScreen = box;
+    // the frame and name chip round the pad while a layer is up
+    const f = el('div', 'layerframe', K);
+    el('b', '', f);
+    Object.assign(f.style, { left: `${box.x - 5}px`, top: `${box.y - 5}px`, width: `${box.w + 10}px`, height: `${box.h + 10}px` });
+    this.layerFrame = f;
   }
 
   directionPending() { return !!this.armed || this.expectsDirection; }
@@ -753,7 +808,7 @@ export class Overlay {
 
   refreshPadCentre() {
     const k = this.padCentre;
-    if (!k) return;
+    if (!k || this.fanOpen) return;   // a layer owns the centre while it is up
     if (this.directionPending()) k.label('HERE', 8).sub('.', true);
     else if (this.hereHas(HERE_OBJECT)) k.label('PICK UP', 8).sub(',', true);
     else k.label('REST', 9).sub('hold · context');
@@ -848,33 +903,11 @@ export class Overlay {
   }
 
   addHub(K, hub) {
-    const hv = { hub, fanFaces: [], slotFaces: [] };
-    hv.fan = el('div', 'pop', K);
-    hv.fan.style.display = 'none';
-    hub.fan.forEach((_, index) => {
-      if (index >= FAN_SIZE.length) return;
-      const p = this.around(hub, this.fanA0(hub) + index * hub.fanStep, hub.fanRadius), sz = FAN_SIZE[index];
-      const node = new Key(hv.fan).place(p.x - sz / 2, p.y - sz / 2, sz, sz, FAN_ROTATE[index]);
-      hv.fanFaces.push(node);
-      this.bindHold(node, HUB_HOLD_MS, () => {
-        const item = this.fanItem(hub, index);
-        if (this.assign || !item || !item.altKey) return;
-        this.closeFan();
-        this.flashRaw(item.altKey, node.el);
-        this.host.send(item.altKey);
-      }, () => {
-        if (this.assignAcceptsFan(hub)) { this.placeFan(hv, index); return; }
-        const item = this.fanItem(hub, index);
-        this.closeFan();
-        if (!item) { this.openDrawer(hub.group.id, hub); return; }
-        this.fireFromHub(hub, item, node.el);
-      });
-    });
-    this.refreshFan(hv);
-
+    const hv = { hub, slotFaces: [] };
+    // a hub's fan became its layer on the pad (2026-09-26): nothing hangs off it
     if (hub === C.HUB_ATTACK) {
-      this.buildRadial(K, hub, C.OFFENSE_RADIAL, C.ATK_SLOT_BEARING, C.ATK_SLOT_RADIUS);
       this.buildSlotGroup(K, hv, true);
+      this.buildFlickKey(K);
     }
     if (hub === C.HUB_EQUIP) this.buildEquipMatrix(K, hv);
 
@@ -892,22 +925,11 @@ export class Overlay {
       hv.face.box(this.cb(this.hubW(hub), this.hubH(hub), this.hubCx(hub), this.hubCy(hub)));
     }
 
-    if (hub === C.HUB_ATTACK) {
-      this.bindFlick(hv.face, hub, C.OFFENSE_RADIAL, C.ATK_SLOT_BEARING,
-        () => this.openDrawer(hub.group.id, hub), () => this.toggleRadial(hub));
-    } else if (hub === C.HUB_EQUIP) {
-      this.bindHold(hv.face, HUB_HOLD_MS, () => this.openDrawer(hub.group.id, hub), () => this.execute(hub.quick, hv.face.el));
-    } else {
-      this.bindHold(hv.face, HUB_HOLD_MS, () => this.openFan(hv), () => this.hubTapped(hv));
-    }
+    this.bindHold(hv.face, HUB_HOLD_MS, () => this.openFan(hv), () => this.hubTapped(hv));
     this.hubs.push(hv);
   }
 
-  hubIdleSub(hub) {
-    if (hub === C.HUB_EQUIP) return 'hold · all gear';
-    if (hub === C.HUB_ATTACK) return 'hold + flick';
-    return hub.leftSide ? 'hold ▸' : '◂ hold';
-  }
+  hubIdleSub() { return 'hold · layer'; }
 
   fireFromHub(hub, item, from) {
     // only Fight is armed: F is a prefix the core reads with no prompt
@@ -930,7 +952,7 @@ export class Overlay {
 
   buildSlotGroup(K, hv, attack) {
     hv.satellites = el('div', 'pop', K);
-    for (let n = 0; n < 3; n++) {
+    for (let n = 0; n < C.ATK_SLOT_DEFAULT.length; n++) {
       const slot = new Key(hv.satellites).box(this.termAttackSlot(n));
       hv.slotFaces.push(slot);
       this.bindSlot(hv, slot, attack, n);
@@ -993,17 +1015,16 @@ export class Overlay {
 
   // assignment targets: 0 OFFENSE's points, 1 the equip cells, 2 both, 3 a fan
   assignAccepts(attack) {
-    if (!this.assign) return false;
+    if (!this.assign || this.flickPlacing()) return false;
+    // from COMBAT's drawer: its layer or its points; from INVENTORY's: its layer or the cells
+    if (this.assignTarget === 3) return attack ? this.assignHub === C.HUB_ATTACK.id : this.assignHub === C.HUB_EQUIP.id;
     if (this.assignTarget === 2) return true;
     return attack ? this.assignTarget === 0 : this.assignTarget === 1;
   }
-  assignAcceptsFan(hub) { return !!this.assign && this.assignTarget === 3 && hub.id === this.assignHub; }
-  assignTargetFor(hub) {
-    if (hub === C.HUB_ATTACK) return 0;
-    if (hub === C.HUB_EQUIP) return 1;
-    if (hub && this.fanKeys.has(hub.id)) return 3;
-    return 2;
+  assignAcceptsFan(hub) {
+    return !!this.assign && !this.flickPlacing() && this.assignTarget === 3 && hub.id === this.assignHub;
   }
+  assignTargetFor(hub) { return hub && this.fanKeys.has(hub.id) ? 3 : 2; }
 
   pickUp(item, target, hub = null) {
     this.closeChips();
@@ -1014,8 +1035,9 @@ export class Overlay {
     this.assignTarget = target;
     this.assignHub = hub ? hub.id : null;
     if (target === 3) {
+      // the layer comes up with every place lit; tapping one places the command
       const hv = this.hubView(this.assignHub);
-      if (hv) { this.fanOpen = hv.hub.id; hv.fan.style.display = ''; }
+      if (hv) { this.disarm(); this.fanOpen = hv.hub.id; hv.face.lit(true); }
     }
     this.refreshAllSlots();
     this.updateHubSubLines();
@@ -1030,15 +1052,7 @@ export class Overlay {
     return C.pinnable(keys[n]);
   }
 
-  refreshFan(hv) {
-    const taking = this.assignAcceptsFan(hv.hub);
-    hv.fanFaces.forEach((node, n) => {
-      if (taking) { node.placeholder(false).face(C.A90).label('HERE', 8).sub(null); return; }
-      const item = this.fanItem(hv.hub, n);
-      if (!item) node.placeholder(true).label('+', 15).sub(null);
-      else node.placeholder(false).face(item.face || C.G90).label(this.labelFor(item), 8.5).sub(this.subKeyFor(item), true);
-    });
-  }
+  refreshFan(hv) { if (hv.hub.id === this.fanOpen) this.paintLayer(hv.hub); }
 
   placeFan(hv, n) {
     const keys = this.fanKeys.get(hv.hub.id);
@@ -1071,6 +1085,10 @@ export class Overlay {
     keys[n] = this.assign.key;
     P.set(attack ? 'atkSlots' : 'equipSlots', keys);
     this.assign = null;
+    this.assignHub = null;
+    // from COMBAT's or INVENTORY's drawer its layer was up too, and the flick key's radial may be
+    this.closeFan();
+    this.closeRadial();
     this.refreshAllSlots();
     this.updateHubSubLines();
     this.syncModal();
@@ -1090,14 +1108,15 @@ export class Overlay {
       else if (hv.hub === C.HUB_EQUIP) this.refreshSlots(hv, false);
     }
     for (let n = 0; n < this.macroKeys.length; n++) this.refreshMacroKey(n);
+    this.refreshFlick();
   }
 
   updateHubSubLines() {
     for (const hv of this.hubs) {
       let sub;
-      if (hv.hub === C.HUB_ATTACK && this.assignAccepts(true)) sub = 'pick a point';
+      if (this.assignAcceptsFan(hv.hub)) sub = 'pick a place';
+      else if (hv.hub === C.HUB_ATTACK && this.assignAccepts(true)) sub = 'pick a point';
       else if (hv.hub === C.HUB_EQUIP && this.assignAccepts(false)) sub = 'pick a cell';
-      else if (this.assignAcceptsFan(hv.hub)) sub = 'pick a node';
       else if (hv.hub.id === this.fanOpen) sub = 'tap = all';
       else sub = this.hubIdleSub(hv.hub);
       hv.face.sub(sub);
@@ -1113,7 +1132,75 @@ export class Overlay {
       this.openDrawer(hv.hub.group.id, hv.hub);
       return;
     }
-    this.execute(hv.hub.quick, hv.face.el);
+    this.fireFromHub(hv.hub, hv.hub.quick, hv.face.el);   // COMBAT's Fight arms the pad
+  }
+
+  // ---- layers (RhOverlay, 2026-09-26), in place of the fans.  Holding a hub
+  // turns the movement pad into its nine places, in the hub's colour; the
+  // centre is ALL, the drawer.  Let go and the layer stays up, or keep holding
+  // and tap the pad with the other thumb.  A place runs and the pad is arrows again.
+  layerKind(hub) {
+    if (hub === C.HUB_ATTACK) return LAYER_COMBAT;
+    if (hub === C.HUB_DROP) return LAYER_DROP;
+    if (hub === C.HUB_CONSUME) return LAYER_EAT;
+    if (hub === C.HUB_INTERACT) return LAYER_APPLY;
+    return LAYER_INVENTORY;
+  }
+
+  padFace(place) {
+    if (place === 4) return this.padCentre;
+    return this.padCells[place < 4 ? place : place - 1] || null;
+  }
+
+  paintLayer(hub) {
+    const kind = this.layerKind(hub), cap = layerCap(kind), taking = this.assignAcceptsFan(hub);
+    for (let place = 0; place < 9; place++) {
+      const f = this.padFace(place);
+      if (!f) continue;
+      if (place === 4) { f.placeholder(false).cap(cap).label('ALL', 11).sub('drawer'); continue; }
+      const item = this.fanItem(hub, place);
+      if (taking) f.placeholder(false).cap(capFor(C.A90)).label('HERE', 8).sub(null);
+      else if (!item) f.placeholder(true).cap(cap).label('+', 15).sub('assign');
+      else f.placeholder(false).cap(cap).label(this.labelFor(item), 9.5, true).sub(item.key, true);
+    }
+    const fr = this.layerFrame;
+    if (fr) {
+      fr.style.setProperty('--acc', layerAccent(kind));
+      fr.firstChild.textContent = `${hub.label.replace(/\n/g, ' ')} LAYER`;
+      fr.classList.add('on');
+    }
+  }
+
+  // the pad as it was: arrows, and the centre's own command
+  restorePad() {
+    this.padCells.forEach((k, i) => {
+      const idx = i < 4 ? i : i + 1;
+      k.cap(role(ROLE_MOVE)).placeholder(false).label(C.PAD_ARROW[idx], 18, true).sub(C.PAD_KEYS[idx], true);
+    });
+    if (this.padCentre) this.padCentre.cap(role(ROLE_MOVE)).placeholder(false);
+    this.refreshPadCentre();
+  }
+
+  layerPlaceTapped(place, from) {
+    const hv = this.hubView(this.fanOpen);
+    if (!hv) { this.closeFan(); return; }
+    if (place === 4) {
+      if (this.assign) return;
+      this.closeFan();
+      this.openDrawer(hv.hub.group.id, hv.hub);
+      return;
+    }
+    if (this.assignAcceptsFan(hv.hub)) { this.placeFan(hv, place); return; }
+    if (this.assign) return;
+    const item = this.fanItem(hv.hub, place);
+    this.closeFan();
+    if (!item) {
+      // an empty place is the way into the drawer to fill it
+      this.openDrawer(hv.hub.group.id, hv.hub);
+      this.setAssigning(true, 'pick a command for the layer');
+      return;
+    }
+    this.fireFromHub(hv.hub, item, from);
   }
 
   openFan(hv) {
@@ -1122,38 +1209,48 @@ export class Overlay {
     this.closeDrawer();
     this.closeFan();
     this.closeRadial();
+    this.closeContextRadial();
+    this.disarm();
     this.fanOpen = hv.hub.id;
-    hv.fan.style.display = '';
-    hv.face.sub('tap = all');
+    this.paintLayer(hv.hub);
+    hv.face.lit(true).sub('tap = all');
+    if (hv.hub === C.HUB_ATTACK) this.refreshSlots(hv, true);
     this.syncModal();
   }
 
   closeFan() {
     if (!this.fanOpen) return;
-    for (const hv of this.hubs) {
-      if (hv.hub.id !== this.fanOpen) continue;
-      hv.fan.style.display = 'none';
-      this.refreshFan(hv);
-      hv.face.sub(this.hubIdleSub(hv.hub));
-    }
+    const was = this.hubView(this.fanOpen);
     this.fanOpen = null;
+    this.restorePad();
+    if (this.layerFrame) this.layerFrame.classList.remove('on');
+    if (was) {
+      was.face.lit(false).sub(this.hubIdleSub(was.hub));
+      if (was.hub === C.HUB_ATTACK) this.refreshSlots(was, true);
+    }
     this.syncModal();
   }
 
-  // ---- OFFENSE's radial and flick
-  buildRadial(K, hub, items, bearings, radius) {
+  // ---- the flick key (RhOverlay.buildFlickKey): the deck's third COMBAT point,
+  // a macro key that also flicks -- its tap and two flicks are macros 4-6 (P.FLICK_TAP),
+  // drawn as a pointing stick's nub.
+  flickCentre() {
+    const b = this.termAttackSlot(2);
+    return { x: b.x + b.w / 2, y: b.y + b.h / 2, w: b.w };
+  }
+
+  buildFlickKey(K) {
     const radial = el('div', 'pop', K);
     radial.style.display = 'none';
-    this.radials.set(hub.id, radial);
+    this.radials.set(FLICK_ID, radial);
+    const c = this.flickCentre(), bearings = C.FLICK_BEARING, n = bearings.length;
     // the flick's wedges, drawn behind the nodes
-    const n = Math.min(items.length, bearings.length);
     const [lo, hi] = flickWedges(bearings, n);
-    const cx = this.X(this.hubCx(hub)), cy = this.Y(this.hubCy(hub));
-    const rIn = this.hubW(hub) / 2 + 5, rOut = radius + SAT_SIZE / 2 + 12;
+    const rIn = c.w / 2 + 5, rOut = C.FLICK_RADIUS + SAT_SIZE / 2 + 12;
     const svgNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(svgNS, 'svg');
     svg.setAttribute('class', 'wedges');
-    Object.assign(svg.style, { left: `${cx - rOut}px`, top: `${cy - rOut}px`, width: `${2 * rOut}px`, height: `${2 * rOut}px` });
+    Object.assign(svg.style, { left: `${c.x - rOut}px`, top: `${c.y - rOut}px`, width: `${2 * rOut}px`, height: `${2 * rOut}px` });
     svg.setAttribute('viewBox', `${-rOut} ${-rOut} ${2 * rOut} ${2 * rOut}`);
     const pt = (r, d) => `${(Math.cos(rad(d)) * r).toFixed(2)} ${(Math.sin(rad(d)) * r).toFixed(2)}`;
     this.wedges = [];
@@ -1167,16 +1264,82 @@ export class Overlay {
     }
     radial.appendChild(svg);
     this.setWedge(-1);
-    this.radialNodes = items.map((item, w) => {
-      const p = this.around(hub, bearings[w], radius);
-      const node = new Key(radial).place(p.x - SAT_SIZE / 2, p.y - SAT_SIZE / 2, SAT_SIZE, SAT_SIZE)
-        .face(item.face || C.G90).label(this.labelFor(item), 7.5).sub(item.key, true);
-      this.bindHold(node, HUB_HOLD_MS, () => this.pickUp(item, 0), () => {
+    this.flickNodes = bearings.map((deg, w) => {
+      const slot = P.FLICK_TAP + 1 + w;
+      const x = c.x + Math.cos(rad(deg)) * C.FLICK_RADIUS, y = c.y + Math.sin(rad(deg)) * C.FLICK_RADIUS;
+      const node = new Key(radial).place(x - SAT_SIZE / 2, y - SAT_SIZE / 2, SAT_SIZE, SAT_SIZE);
+      this.bindHold(node, HUB_HOLD_MS, () => { if (!this.assign) this.editMacro(slot); }, () => {
+        if (this.assign) { this.placeMacro(slot); return; }
         this.closeRadial();
-        this.fireFromHub(hub, item, node.el);
+        this.runOrEditMacro(slot, node.el);
       });
       return node;
     });
+    const face = new Key(K).nub(true).box(this.termAttackSlot(2)).face(C.JADE).tag('FLICK');
+    this.flickFace = face;
+    this.bindFlick(face, bearings,
+      () => { if (!this.assign) this.openFlickRadial(); },
+      () => {
+        if (this.assign) {
+          // first tap: the three parts light; a tap on the key again takes its tap
+          if (this.radialOpen === FLICK_ID) this.placeMacro(P.FLICK_TAP);
+          else this.openFlickRadial();
+          return;
+        }
+        this.closeRadial();
+        this.runOrEditMacro(P.FLICK_TAP, face.el);
+      },
+      (w, from) => {
+        if (this.assign) { this.openFlickRadial(); return; }
+        this.runOrEditMacro(P.FLICK_TAP + 1 + w, from);
+      });
+    this.refreshFlick();
+  }
+
+  runOrEditMacro(slot, from) {
+    const m = P.macros()[slot];
+    if (!m.keys) { this.editMacro(slot); return; }
+    this.closeChips();
+    this.flashRaw(m.name || m.keys, from);
+    this.host.send(m.keys);
+  }
+
+  // a command in hand and the flick key opened for it: only its three parts take it
+  flickPlacing() { return !!this.assign && this.radialOpen === FLICK_ID; }
+
+  openFlickRadial() {
+    const radial = this.radials.get(FLICK_ID);
+    if (!radial) return;
+    this.closeCandidates();
+    this.closeChips();
+    this.closeDrawer();
+    this.closeContextRadial();
+    this.closeRadial();
+    this.closeFan();   // a command in hand from a layer's drawer: the layer steps aside
+    this.radialOpen = FLICK_ID;
+    radial.style.display = '';
+    this.refreshAllSlots();
+    this.updateHubSubLines();
+    this.syncModal();
+  }
+
+  refreshFlick() {
+    if (!this.flickFace) return;
+    this.styleFlickPart(this.flickFace, P.FLICK_TAP, 'hold · flick');
+    this.flickNodes.forEach((node, w) => this.styleFlickPart(node, P.FLICK_TAP + 1 + w, null));
+  }
+
+  styleFlickPart(k, slot, sub) {
+    if (this.assign) {
+      // a + says the key opens onto more places; opened, it is one of them
+      const opener = slot === P.FLICK_TAP && this.radialOpen !== FLICK_ID;
+      k.placeholder(false).face(C.A90).label(opener ? '+' : 'HERE', opener ? 15 : 8).sub(opener ? '3 places' : null);
+      return;
+    }
+    const m = P.macros()[slot];
+    k.face(C.JADE);
+    if (m.keys) k.placeholder(false).label(m.name || m.keys, 8.5, true).sub(sub);
+    else k.placeholder(true).label('+', 15).sub(sub);
   }
 
   setWedge(active) {
@@ -1188,23 +1351,6 @@ export class Overlay {
     });
   }
 
-  toggleRadial(hub) { if (hub.id === this.radialOpen) this.closeRadial(); else this.openRadial(hub); }
-
-  openRadial(hub) {
-    this.closeCandidates();
-    const radial = this.radials.get(hub.id);
-    if (!radial) return;
-    this.closeChips();
-    this.closeFan();
-    this.closeDrawer();
-    this.closeContextRadial();
-    this.closeRadial();
-    this.radialOpen = hub.id;
-    radial.style.display = '';
-    this.refreshSlotsFor(hub);
-    this.syncModal();
-  }
-
   closeRadial() {
     if (!this.radialOpen) return;
     const radial = this.radials.get(this.radialOpen);
@@ -1214,6 +1360,8 @@ export class Overlay {
     this.setWedge(-1);
     const hv = this.hubView(was);
     if (hv) this.refreshSlotsFor(hv.hub);
+    // other destinations light again if a command is still in hand
+    if (was === FLICK_ID) { this.refreshAllSlots(); this.updateHubSubLines(); }
     this.syncModal();
   }
 
@@ -1225,9 +1373,9 @@ export class Overlay {
   // ---- modality: one scrim under anything open; the open things lift above it
   syncModal() {
     if (!this.scrim) return;
-    for (const e of this.keysEl.querySelectorAll('.lift')) e.classList.remove('lift');
+    for (const e of this.keysEl.querySelectorAll('.lift, .lift2')) e.classList.remove('lift', 'lift2');
     const lift = [];
-    if (this.fanOpen) { const hv = this.hubView(this.fanOpen); if (hv) lift.push(hv.face.el, hv.fan); }
+    if (this.fanOpen) { const hv = this.hubView(this.fanOpen); if (hv) lift.push(hv.face.el, this.padMold, this.layerFrame); }
     if (this.radialOpen) {
       const hv = this.hubView(this.radialOpen);
       if (hv) lift.push(hv.face.el);
@@ -1247,16 +1395,22 @@ export class Overlay {
       for (const hv of this.hubs) {
         if (hv.satellites && ((hv.hub === C.HUB_ATTACK && this.assignAccepts(true))
                               || (hv.hub === C.HUB_EQUIP && this.assignAccepts(false)))) lift.push(hv.satellites);
-        if (this.assignAcceptsFan(hv.hub)) lift.push(hv.face.el, hv.fan);
+        if (this.assignAcceptsFan(hv.hub)) lift.push(hv.face.el, this.padMold, this.layerFrame);
       }
-      for (const k of this.macroKeys) if (k) lift.push(k.el);
+      if (!this.flickPlacing()) for (const k of this.macroKeys) if (k) lift.push(k.el);
     }
+    // the flick key and its radial go on top of everything else lifted
+    const top = [];
+    if (this.flickFace && (this.assign || this.radialOpen === FLICK_ID)) top.push(this.flickFace.el);
+    if (this.radialOpen === FLICK_ID) top.push(this.radials.get(FLICK_ID));
+    for (const e of top) lift.push(e);
     if (!lift.length) { this.scrim.classList.remove('on'); return; }
     this.scrimHint.textContent = this.assign
       ? `TAP A LIT KEY TO PLACE ${this.assign.word.toUpperCase()}  ·  TAP ELSEWHERE OR ESC TO CANCEL`
       : 'TAP ANYWHERE OR ESC TO CLOSE';
     this.scrim.classList.add('on');
     for (const e of lift) if (e) e.classList.add('lift');
+    for (const e of top) if (e) e.classList.add('lift2');
   }
 
   dismissPopups() {
@@ -1414,7 +1568,7 @@ export class Overlay {
     this.candidates = [];
     if (this.hereHas(HERE_STAIRS_DOWN)) this.candidates.push(C.CTX_DESCEND);
     if (this.hereHas(HERE_STAIRS_UP)) this.candidates.push(C.CTX_ASCEND);
-    if (this.hereHas(HERE_ALTAR)) this.candidates.push(C.CTX_SACRIFICE);
+    if (this.hereHas(HERE_ALTAR)) this.candidates.push(C.CTX_SACRIFICE, C.CTX_DROP_UNKNOWN);
     if (this.hereHas(HERE_CONTAINER)) this.candidates.push(C.CTX_LOOT);
     if (this.hereHas(ADJ_CLOSED_DOOR)) this.candidates.push(C.CTX_OPEN);
     if (this.hereHas(ADJ_OPEN_DOOR)) this.candidates.push(C.CTX_CLOSE);
@@ -1560,6 +1714,11 @@ export class Overlay {
     Object.assign(assign.el.style, { left: 'auto', right: '4px', top: '3px' });
     this.bindTap(assign, () => this.setAssigning(!this.assigning));
     this.assignKey = assign;
+    const defaults = new Key(title).place(0, 0, 76, 26).label('DEFAULTS', 8.5);
+    Object.assign(defaults.el.style, { left: 'auto', right: '94px', top: '3px' });
+    defaults.show(false);
+    this.bindTap(defaults, () => this.confirmRestoreDefaults());
+    this.defaultsKey = defaults;
     this.drawerGrid = el('div', 'grid', panel);
     this.drawerGrid.style.gridTemplateColumns = `repeat(${this.portrait ? 3 : 4}, minmax(0, 1fr))`;
     this.drawerEl = d;
@@ -1569,6 +1728,25 @@ export class Overlay {
     this.assigning = on;
     this.assignKey.face(on ? C.A90 : C.G90).label(on ? 'ASSIGNING' : 'ASSIGN', 8.5);
     this.drawerCount.textContent = on ? (prompt || 'tap a command to pin it') : this.drawerCountText;
+    if (this.defaultsKey) this.defaultsKey.show(on);
+  }
+
+  // DEFAULTS (Lucas, 2026-09-26): keys and layers ticked, macros not -- they are the player's own typing
+  confirmRestoreDefaults() {
+    this.closeDrawer();
+    this.host.form('Restore default keys', [
+      { seg: 'keys', label: 'Pinned keys and layers: COMBAT\'s points, the Wear / Put on / Wield keys, every layer',
+        value: 'yes', options: [['yes', 'Restore'], ['no', 'Keep']] },
+      { seg: 'macros', label: 'Macros: M1-M3 emptied, the flick key back to Kick on the flick up',
+        value: 'no', options: [['yes', 'Restore'], ['no', 'Keep']] },
+    ], [
+      { label: 'Cancel' },
+      { label: 'Restore', primary: true, run: (v) => {
+        if (v.keys === 'yes') P.restoreKeys(C.HUBS.map((h) => h.id));
+        if (v.macros === 'yes') P.restoreMacros();
+        if (v.keys === 'yes' || v.macros === 'yes') this.rebuild();
+      } },
+    ]);
   }
 
   toggleDrawer(groupId) { if (groupId === this.drawerOpen) this.closeDrawer(); else this.openDrawer(groupId); }
@@ -1765,10 +1943,10 @@ export class Overlay {
     key.cancelGesture = () => { key.press(false); clearTimeout(pending); pending = 0; justOpened = false; };
   }
 
-  // Tap / hold / flick on OFFENSE: a marking menu.  Press and slide toward a
+  // Tap / hold / flick on the flick key: a marking menu.  Press and slide toward a
   // node and it fires on release; the radial shows only after FLICK_REVEAL_MS.
-  bindFlick(key, hub, items, bearings, onHold, onTap) {
-    const e = key.el, n = Math.min(items.length, bearings.length);
+  bindFlick(key, bearings, onHold, onTap, onFire) {
+    const e = key.el, n = bearings.length;
     const [lower, upper] = flickWedges(bearings, n);
     const arcCentre = (lower[0] + upper[n - 1]) / 2;
     let pendingHold = 0, pendingReveal = 0, justOpened = false, dragging = false, revealed = false;
@@ -1787,15 +1965,15 @@ export class Overlay {
         ticked = w;
       }
       if (w === wedge) return;
-      if (this.radialNodes[wedge]) this.radialNodes[wedge].press(false);
+      if (this.flickNodes[wedge]) this.flickNodes[wedge].press(false);
       wedge = w;
-      const open = hub.id === this.radialOpen;
-      if (open && this.radialNodes[wedge]) this.radialNodes[wedge].press(true);
+      const open = this.radialOpen === FLICK_ID;
+      if (open && this.flickNodes[wedge]) this.flickNodes[wedge].press(true);
       this.setWedge(open ? wedge : -1);
     };
     const reveal = () => {
       if (!dragging || revealed) return;
-      if (hub.id !== this.radialOpen) { this.openRadial(hub); revealed = true; }
+      if (this.radialOpen !== FLICK_ID) { this.openFlickRadial(); revealed = true; }
       const w = wedge;
       wedge = -1;
       highlight(w);
@@ -1844,7 +2022,7 @@ export class Overlay {
       const d = dist(ev);
       const w = d >= FLICK_MIN ? wedgeAt((ev.clientX - x0) / this.s, (ev.clientY - y0) / this.s) : -1;
       highlight(-1);
-      if (w >= 0) { this.closeRadial(); this.fireFromHub(hub, items[w], e); }
+      if (w >= 0) { this.closeRadial(); onFire(w, e); }
       else if (d < FLICK_MIN && !revealed) onTap();
       else if (revealed && w < 0 && d >= FLICK_MIN) this.closeRadial();
       dragging = false;

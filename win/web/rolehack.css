@@ -168,6 +168,24 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
                background: rgba(5,7,13,.95); color: rgba(255,255,255,.85); font-size: 9px; font-weight: 600;
                letter-spacing: .1em; white-space: nowrap; }
 .lift { z-index: 10; }
+.lift2 { z-index: 11; }
+/* the frame and name chip round the pad while a layer is up */
+#keys > .layerframe { position: absolute; display: none; pointer-events: none; box-sizing: border-box;
+  border: 2px solid var(--acc); border-radius: 10px; box-shadow: 0 0 10px var(--acc); }
+#keys > .layerframe.on { display: block; }
+.layerframe b { position: absolute; left: 10px; top: -9px; padding: 1px 7px; border-radius: 8px; background: var(--acc);
+  color: #111; font-size: 9.5px; font-weight: 700; letter-spacing: .12em; white-space: nowrap; }
+/* the flick key: a rubber nub standing out of the case (RhFace.drawNub) */
+.k.nub .sk, .k.nub .fr, .k.nub .rk { display: none; }
+.k.nub .sh { border-radius: 50%; background: rgba(0,0,0,.85); box-shadow: none; }
+.k.nub .tp { border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 32% 28%, var(--t1) 0%, var(--t2) 55%, var(--sR) 100%);
+  box-shadow: 1px 4px 6px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.3); }
+.k.nub .tp::before { content: ''; position: absolute; inset: 1px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(rgba(0,0,0,.2) 0.6px, transparent 0.9px) 0 0 / 2.6px 2.6px; }
+.k.nub .lg { position: relative; }
+.k.nub.pressed .tp { transform: translateY(1.5px);
+  box-shadow: 1px 1.5px 3px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.15); }
 .wedges { position: absolute; pointer-events: none; }
 .chiprow { position: absolute; display: flex; gap: 4px; padding: 4px; background: #04070e; border-radius: 4px; }
 .chiprow .k { position: relative; flex: none; }

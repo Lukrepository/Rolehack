@@ -7,7 +7,9 @@
 // skin's default key), R90 red, A90 amber, OFF90 slate, TEAL, PINK, VIOLET.
 
 export const G90 = 'G90', R90 = 'R90', A90 = 'A90', OFF90 = 'OFF90',
-             TEAL = 'TEAL', PINK = 'PINK', VIOLET = 'VIOLET';
+             TEAL = 'TEAL', PINK = 'PINK', VIOLET = 'VIOLET',
+             // macros' own colour: jade, or the Emerald Blue GameCube's teal
+             JADE = 'JADE';
 
 const i = (word, key, face = null, altKey = null) => ({ word, key, face, altKey });
 const alt = (word, key, altKey) => i(word, key, null, altKey);
@@ -37,10 +39,16 @@ export const WEAPON = group('weapon', 'WEAPON', [
   i('Wielded', ')'), i('All equipment', '*'), i('Enhance', 'M-e'),
 ]);
 
+// Everything of unknown B/U/C status, in one press: an altar's test.  D's menu
+// gives X (unknown status) and A (auto-select) fixed letters, and 5.0 rejects
+// A on its own, so with nothing unknown nothing drops (pickup.c).
+const DROP_UNKNOWN = 'DXA\\n';
+
 export const DROP = group('drop', 'DROP', [
   i('Drop one', 'd'), i('Drop type', 'D'), i('Pick from menu', 'Dm'), i('Review first', 'Di'),
   i('Blessed', 'DB'), i('Uncursed', 'DU'), i('Cursed', 'DC'), i('Unknown', 'DX'),
   i('Unpaid', 'Du'), i('Drop all', 'Da'), i('Tip container', 'M-T'),
+  i('Drop unknown', DROP_UNKNOWN),
 ]);
 
 // COMBAT, EQUIP's drawer titled INVENTORY, INTERACT is APPLY (Lucas, 2026-09-26)
@@ -138,34 +146,48 @@ export function wizardExtras(groupId) {
 const GROUPS = new Map([INVENT, WEAR, WEAPON, EQUIP, DROP, FIGHT, USE, WORLD, GAME].map((g) => [g.id, g]));
 export const groupById = (id) => GROUPS.get(id);
 
-// Hubs.  A tap runs quick, a hold fans the fan, a tap on an open fan opens
-// the group's drawer.  fanA0 / fanStep are CSS-convention degrees (0 = east,
-// y down, clockwise); leftSide hubs point their hold hint right.
+// Hubs (RhCommands, 2026-09-26).  A tap runs quick; a hold turns the movement
+// pad into the hub's layer: nine places in the pad's order, the centre (null)
+// ALL, the hub's drawer.  A tap on the hub while its layer is up opens the
+// drawer too.
 const hub = (o) => o;
-export const HUB_ATTACK = hub({ id: 'fight', label: 'COMBAT', face: R90, quick: i('Inventory', 'i'),
-  fan: [], group: FIGHT, fanA0: 0, fanStep: 0, fanRadius: 0, leftSide: true, labelSize: 7 });
+export const HUB_ATTACK = hub({ id: 'fight', label: 'COMBAT', face: R90, quick: i('Fight', 'F', R90),
+  fan: [i('Fire', 'f'), i('Throw', 't'), i('Zap', 'z'),
+        i('Kick', '^D'), null, i('Cast', 'Z'),
+        i('Quiver', 'Q'), i('Grapple', 'M-G'), i('Turn undead', 'M-t')],
+  group: FIGHT, leftSide: true, labelSize: 8 });
 export const HUB_DROP = hub({ id: 'drop', label: 'DROP', face: TEAL, quick: i('Drop', 'd'),
-  fan: [i('Drop type', 'D'), i('From menu', 'Dm'), i('Review first', 'Di', OFF90)], group: DROP,
-  fanA0: -64, fanStep: 32, fanRadius: 110, leftSide: true, labelSize: 10 });
+  fan: [i('Drop type', 'D'), i('From menu', 'Dm'), i('Review first', 'Di', OFF90),
+        i('Drop all', 'Da'), null, i('Tip', 'M-T'),
+        i('Cursed', 'DC'), i('Drop unknown', DROP_UNKNOWN), i('Unpaid', 'Du')],
+  group: DROP, leftSide: true, labelSize: 10 });
 export const HUB_INTERACT = hub({ id: 'apply', label: 'APPLY', face: G90, quick: i('Apply', 'a'),
-  fan: [i('Apply tool', 'a'), i('Sit', 'M-s'), i('Dip', 'M-d'), alt('Engrave', 'E', 'E?')], group: USE,
-  fanA0: 258, fanStep: -30, fanRadius: 118, leftSide: false, labelSize: 9.5 });
+  fan: [i('Apply', 'a'), i('Engrave', 'E'), i('Dip', 'M-d'),
+        i('Rub', 'M-r'), null, i('Invoke', 'M-i'),
+        i('Sit', 'M-s'), i('Force lock', 'M-f'), null],
+  group: USE, leftSide: false, labelSize: 9.5 });
+// The pinch layer: potions to dip, a unicorn horn to apply, a wand to zap your
+// way out.  Pray is kept off every layer: a mistap there costs a run.
 export const HUB_CONSUME = hub({ id: 'consume', label: 'EAT\nQUAFF\nREAD', face: PINK, quick: i('Eat', 'e'),
-  fan: [i('Eat', 'e'), i('Quaff', 'q'), i('Read', 'r')], group: USE,
-  fanA0: 200, fanStep: 32, fanRadius: 110, leftSide: false, labelSize: 8 });
+  fan: [i('Eat', 'e'), i('Quaff', 'q'), i('Read', 'r'),
+        i('Dip', 'M-d'), null, i('Apply', 'a'),
+        i('Zap', 'z'), null, null],
+  group: USE, leftSide: false, labelSize: 8 });
 export const HUB_EQUIP = hub({ id: 'equip', label: 'INVENTORY', face: G90, quick: i('Inventory', 'i'),
-  fan: [], group: EQUIP, fanA0: 0, fanStep: 0, fanRadius: 0, leftSide: false, labelSize: 8.5 });
+  fan: [i('By type', 'I'), i('Armour', '['), i('Rings', '='),
+        i('Wielded', ')'), null, i('Amulet', '"'),
+        i('All worn', '*'), i('Gold', '$'), i('Letters', 'M-a')],
+  group: EQUIP, leftSide: false, labelSize: 8.5 });
 export const HUBS = [HUB_DROP, HUB_CONSUME, HUB_EQUIP, HUB_ATTACK, HUB_INTERACT];
 
 export const PAD_KEYS = ['y', 'k', 'u', 'h', '', 'l', 'b', 'j', 'n'];
 export const PAD_ARROW = ['↖', '↑', '↗', '←', '', '→', '↙', '↓', '↘'];
 
-// OFFENSE's pinnable points' bearings, which are also its radial's and its flick's.
-export const ATK_SLOT_BEARING = [-85, -40, 5];
-export const ATK_SLOT_RADIUS = 96;
-export const ATK_SLOT_DEFAULT = [null, null, null];
-// Two nodes: Fight up, Kick up-and-right (Lucas, 2026-09-24).
-export const OFFENSE_RADIAL = [i('Fight', 'F', R90), i('Kick', '^D', R90)];
+// COMBAT's two pinned points; the deck's third became the flick key.
+export const ATK_SLOT_DEFAULT = [null, null];
+// The flick key's flicks: up and up-and-right, two wedges of about 60 degrees.
+export const FLICK_BEARING = [-85, -40];
+export const FLICK_RADIUS = 96;
 
 export const EQUIP_SLOT_DEFAULT = ['W', 'P', 'w', 'T', 'R', 'x'];
 export const EQUIP_RADIAL = [
@@ -200,6 +222,8 @@ export const CTX_OPEN = ctx('open', 'Open door', 'o');
 export const CTX_CLOSE = ctx('close', 'Close door', 'c');
 export const CTX_LOOT = ctx('loot', 'Loot', 'M-l');
 export const CTX_SACRIFICE = ctx('offer', 'Sacrifice', 'M-o');
+// on an altar, beside Sacrifice
+export const CTX_DROP_UNKNOWN = ctx('dropunknown', 'Drop unknown', DROP_UNKNOWN);
 export const CTX_SEARCH = ctx('search', 'Search', 's', 1);
 export const CTX_REST = ctx('rest', 'Rest', '.', 20);
 export const CTX_LONG_REST = ctx('longrest', 'Long rest', 's', 200, null, null, 'longrest', LONG_COUNT_CHOICES);
@@ -216,7 +240,7 @@ export const wordWithCount = (a, n) => (n > 1 ? `${a.word} ×${n}` : a.word);
 // hub, fan and radial entries overwrite them with their short labels.
 const PINNABLE = new Map();
 for (const g of GROUPS.values()) for (const it of g.items) if (!it.heading) PINNABLE.set(it.key, it);
-for (const h of HUBS) for (const it of h.fan) PINNABLE.set(it.key, it);
+for (const h of HUBS) for (const it of h.fan) if (it) PINNABLE.set(it.key, it);   // not a layer's centre or empties
 for (const it of EQUIP_RADIAL) PINNABLE.set(it.key, it);
 PINNABLE.set('x', i('Swap', 'x'));
 PINNABLE.set('X', i('2Weap', 'X'));
