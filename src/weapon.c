@@ -1,5 +1,5 @@
 /* NetHack 5.0	weapon.c	$NHDT-Date: 1781973073 2026/06/20 16:31:13 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.147 $ */
-/* Changed for Rolehack by Lucas Ruiz, 2026-09-23.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-23 to 2026-09-27.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2011. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -1768,7 +1768,9 @@ skill_init(const struct def_skill *class_skill)
     }
 
     /* set skills for magic */
-    if (Role_if(PM_HEALER) || Role_if(PM_MONK)) {
+    /* ROLEHACK: the Apothecary starts Basic in healing, as the Healer
+       does (Lucas, 2026-09-27) */
+    if (Role_if(PM_HEALER) || Role_if(PM_MONK) || Role_if(PM_APOTHECARY)) {
         P_SKILL(P_HEALING_SPELL) = P_BASIC;
     } else if (Role_if(PM_CLERIC)) {
         P_SKILL(P_CLERIC_SPELL) = P_BASIC;

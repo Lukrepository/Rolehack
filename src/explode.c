@@ -1,4 +1,5 @@
 /* NetHack 5.0	explode.c	$NHDT-Date: 1781973049 2026/06/20 16:30:49 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.128 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-27.  See ROLEHACK-CHANGES.md. */
 /*      Copyright (C) 1990 by Ken Arromdee */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -247,6 +248,7 @@ explode(
             break;
         case PM_HEALER:
         case PM_KNIGHT:
+        case PM_APOTHECARY: /* ROLEHACK (Lucas, 2026-09-27) */
             damu /= 2;
             break;
         default:

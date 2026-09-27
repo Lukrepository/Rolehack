@@ -1,4 +1,5 @@
 /* NetHack 5.0	exper.c	$NHDT-Date: 1781973049 2026/06/20 16:30:49 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.71 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-27.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2007. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -31,6 +32,8 @@ enermod(int en)
         return (2 * en);
     case PM_HEALER:
     case PM_KNIGHT:
+    case PM_APOTHECARY: /* ROLEHACK: a real caster, with the Healer
+                           (Lucas, 2026-09-27) */
         return ((3 * en) / 2);
     case PM_BARBARIAN:
     case PM_VALKYRIE:

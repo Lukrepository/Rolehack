@@ -118,8 +118,11 @@ const struct Role roles[NUM_ROLES+1] = {
       2,
       10,
       A_INT,
-      SPE_CURE_SICKNESS,
-      -3 },
+      /* ROLEHACK 2026-09-27 (Lucas): polymorph, transmutation being the
+         matter school's alchemy; cure sickness was the Healer's specialty
+         too.  -4 is the value every vanilla role uses. */
+      SPE_POLYMORPH,
+      -4 },
     { { "Barbarian", 0 },
       { { "Plunderer", "Plunderess" },
         { "Pillager", 0 },
