@@ -44,7 +44,7 @@ notices before each release.
 | `src/potion.c` | changed | 2026-08-10 to 2026-09-23 | notice in file |
 | `src/quest.c` | changed | 2026-09-23 | notice in file |
 | `src/report.c` | changed | 2026-09-25 | notice in file |
-| `src/role.c` | changed | 2026-07-31 to 2026-09-23 | notice in file |
+| `src/role.c` | changed | 2026-07-31 to 2026-09-27 | notice in file |
 | `src/u_init.c` | changed | 2026-07-31 to 2026-09-26 | notice in file |
 | `src/uhitm.c` | changed | 2026-08-16 to 2026-09-23 | notice in file |
 | `src/weapon.c` | changed | 2026-09-23 | notice in file |

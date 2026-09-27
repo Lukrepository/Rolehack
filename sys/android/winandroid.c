@@ -400,15 +400,22 @@ void and_init_nhwindows(int* argcp, char** argv)
 //____________________________________________________________________________________
 // Rolehack: character creation on the mobile interface (Lucas, 2026-09-27).
 //
-// Each menu opens with vanilla's own line of what is chosen so far (role.c's
-// plsel_startmenu()); each entry carries a picture -- the role's or race's own
-// tile, an alignment's altar -- found through the game's tables, so a role
-// added to roles[] brings its picture along; and a finished character gets
-// vanilla's "Is this ok?" (genl_player_setup()), which this port used to skip.
-// rh_creation() tells the interface which menus these are, so it can draw
-// them as keys; built against the stock ForkFront they stay plain menus.
+// Player selection is the core's own, role.c's genl_player_setup(), as tty and
+// curses use: "Shall I pick a character for you?", the "Pick race first"
+// family of entries and the role filter, vanilla's line of the character so
+// far, and "Is this ok?".  This port used to ask with its own short loop,
+// which had none of them (Lucas: "sometimes I really do just want to see what
+// kind of gnome I can play").  The window port adds two things while it asks
+// (program_state.in_role_selection): each role, race, gender and alignment
+// entry gets its picture, found by its words, so a role added to roles[] brings
+// its picture along; and rh_creation() tells the interface which menus these
+// are, so it can draw them as keys.  Built against the stock ForkFront they
+// stay plain menus, with pictures.
 #define RH_CREATE_PICK    1
 #define RH_CREATE_CONFIRM 2
+
+/* the last menu's prompt was vanilla's "Is this ok?" */
+static boolean rh_menu_confirm;
 
 staticfn void rh_creation(int step, int glyph)
 {
@@ -425,99 +432,72 @@ staticfn void rh_creation(int step, int glyph)
     JNICallV(jCreation, step, tile, iflags.rh_skintone);
 }
 
-/* An entry's picture: the glyph's tile, as the map would draw it. */
-staticfn const glyph_info *rh_pic(int glyph, glyph_info *gi)
+/* The gender to draw a picture in, before or after it is picked. */
+staticfn int rh_creation_gender(void)
 {
-    map_glyphinfo(0, 0, glyph, 0, gi);
-    return gi;
+    if(flags.initgend == 0 || flags.initgend == 1)
+        return flags.initgend == 1 ? FEMALE : MALE;
+    if(flags.initrole >= 0 && !(roles[flags.initrole].allow & ROLE_MALE))
+        return FEMALE;
+    return MALE;
 }
 
-/* A role's own picture, female for a role that has no men (Valkyrie). */
-staticfn int rh_role_glyph(int role)
+/* The body the hero will be drawn as, as far as it is known: hero_glyph
+   (display.h) draws the race under showrace, the role otherwise. */
+staticfn int rh_creation_body(void)
 {
-    return monnum_to_glyph(roles[role].mnum,
-                           (roles[role].allow & ROLE_MALE) ? MALE : FEMALE);
+    if(flags.initrace >= 0 && (flags.showrace || flags.initrole < 0))
+        return races[flags.initrace].mnum;
+    if(flags.initrole >= 0)
+        return roles[flags.initrole].mnum;
+    return PM_HUMAN;
 }
 
-/* The hero as the map will draw it: hero_glyph (display.h), before u is set. */
-staticfn int rh_hero_glyph(int gend)
+/* The finished hero, for "Is this ok?". */
+staticfn int rh_hero_glyph(void)
 {
-    return monnum_to_glyph(flags.showrace ? races[flags.initrace].mnum
-                                          : roles[flags.initrole].mnum,
-                           gend == 1 ? FEMALE : MALE);
-}
-
-/* role.c's plsel_startmenu() header: the character so far. */
-staticfn void rh_plsel_header(winid win)
-{
-    char qbuf[QBUFSZ];
-    anything any;
-    const char *rolename;
-    int role = flags.initrole, race = flags.initrace,
-        gend = flags.initgend, algn = flags.initalign;
-
-    rolename = (role < 0) ? "<role>"
-               : (gend == 1 && roles[role].name.f) ? roles[role].name.f
-                 : roles[role].name.m;
-    if(!svp.plname[0] || role < 0 || race < 0 || gend < 0 || algn < 0)
-        /* "<role> <race.noun> <gender> <alignment>" */
-        Sprintf(qbuf, "%.20s %.20s %.20s %.20s", rolename,
-                (race < 0) ? "<race>" : races[race].noun,
-                (gend < 0) ? "<gender>" : genders[gend].adj,
-                (algn < 0) ? "<alignment>" : aligns[algn].adj);
-    else
-        /* "<name> the <alignment> <gender> <race.adjective> <role>" */
-        Sprintf(qbuf, "%.20s the %.20s %.20s %.20s %.20s", svp.plname,
-                aligns[algn].adj, genders[gend].adj, races[race].adj, rolename);
-    any.a_void = 0;
-    and_add_menu(win, &nul_glyphinfo, &any, 0, 0, ATR_NONE, NO_COLOR, qbuf,
-                 MENU_ITEMFLAGS_NONE);
+    if(flags.initrole < 0 || flags.initrace < 0 || flags.initgend < 0)
+        return NO_GLYPH;
+    return monnum_to_glyph(rh_creation_body(), rh_creation_gender());
 }
 
 /*
- * Vanilla's "Is this ok?" (role.c, genl_player_setup()), with the hero shown.
- * TRUE starts the game, FALSE picks again; 'q' or Back quits, as it does at
- * the role menu.  No "choose another name": the name is asked for on the Java
- * side, before the core starts.
+ * A player-selection entry's picture, by its words (role.c's setup_*menu()):
+ * a role as an("Archeologist") or an("Caveman/Cavewoman"), a race's noun, a
+ * gender's or an alignment's adjective.  "Random", "Pick race first" and the
+ * like match none of them and have no picture.
  */
-staticfn boolean rh_confirm_character(void)
+staticfn int rh_creation_glyph(const char *str)
 {
-    winid win;
-    anything any;
-    menu_item *selected = 0;
-    int n, choice;
+    const char *name = str;
+    size_t len;
+    int i;
 
-    rh_creation(RH_CREATE_CONFIRM, rh_hero_glyph(flags.initgend));
-    win = and_create_nhwindow(NHW_MENU);
-    and_start_menu(win, MENU_BEHAVE_STANDARD);
-    rh_plsel_header(win);
-    any.a_void = 0;
-    any.a_int = 1;
-    and_add_menu(win, &nul_glyphinfo, &any, 'y', 0, ATR_NONE, NO_COLOR,
-                 "Yes; start game", MENU_ITEMFLAGS_SELECTED);
-    any.a_int = 2;
-    and_add_menu(win, &nul_glyphinfo, &any, 'n', 0, ATR_NONE, NO_COLOR,
-                 "No; choose role again", MENU_ITEMFLAGS_NONE);
-    any.a_int = 3;
-    and_add_menu(win, &nul_glyphinfo, &any, 'q', 0, ATR_NONE, NO_COLOR,
-                 "Quit", MENU_ITEMFLAGS_NONE);
-    and_end_menu(win, "Is this ok? [ynq]");
-    n = and_select_menu(win, PICK_ONE, &selected);
-    /* as role.c: nothing picked from a menu with a preselected entry is 'y' */
-    choice = (n > 0) ? selected[n - 1].item.a_int : (n == 0) ? 1 : 3;
-    if(selected)
-        free((genericptr_t) selected);
-    and_destroy_nhwindow(win);
-
-    if(choice == 2)
-        return FALSE;
-    if(choice != 1)
+    if(!strncmp(name, "an ", 3))
+        name += 3;
+    else if(!strncmp(name, "a ", 2))
+        name += 2;
+    len = strcspn(name, "/");
+    for(i = 0; roles[i].name.m; i++)
     {
-        clearlocks();
-        and_exit_nhwindows("bye");
-        nh_terminate(EXIT_SUCCESS);
+        if(strlen(roles[i].name.m) == len && !strncmp(name, roles[i].name.m, len))
+            return monnum_to_glyph(roles[i].mnum,
+                                   flags.initgend == 1 ? FEMALE
+                                   : flags.initgend == 0 ? MALE
+                                   : (roles[i].allow & ROLE_MALE) ? MALE : FEMALE);
+        if(roles[i].name.f && !strcmp(name, roles[i].name.f))
+            return monnum_to_glyph(roles[i].mnum, FEMALE);
     }
-    return TRUE;
+    for(i = 0; races[i].noun; i++)
+        if(!strcmp(str, races[i].noun))
+            return monnum_to_glyph(races[i].mnum, rh_creation_gender());
+    for(i = 0; i < ROLE_GENDERS; i++)
+        if(!strcmp(str, genders[i].adj))
+            return monnum_to_glyph(rh_creation_body(), i == 1 ? FEMALE : MALE);
+    for(i = 0; i < ROLE_ALIGNS; i++)
+        if(!strcmp(str, aligns[i].adj))
+            return altar_to_glyph(Align2amask(aligns[i].value));
+    return NO_GLYPH;
 }
 
 //____________________________________________________________________________________
@@ -528,200 +508,14 @@ staticfn boolean rh_confirm_character(void)
 //         You need to fill in pl_character[0].
 void and_player_selection()
 {
-    int i, result;
-    char pick4u = 'n', thisch, lastch = 0;
-    char pbuf[QBUFSZ], plbuf[QBUFSZ];
-    //int state[] = {0,0,0,0};
-    int state = 0;
-    winid win;
-    anything any;
-    menu_item *selected = 0;
-    glyph_info gi;
-    /* Rolehack: as role.c, "Is this ok?" only when something was picked here */
-    boolean picksomething = (flags.initrole < 0 || flags.initrace < 0
-                             || flags.initgend < 0 || flags.initalign < 0);
+    /* Rolehack: the core's own selection (see above) */
+    if(genl_player_setup(0))
+        return;
 
-    //debuglog("and_player_selection()");
-
- makepicks:
-    /* prevent an unnecessary prompt */
-    rigid_role_checks();
-
-    while(flags.initalign < 0)
-    {
-        if(state < 2)
-        {
-            if(!state)
-                flags.initrole = -1;
-            flags.initrace = -1;
-            state = 0;
-        }
-        else
-            state &= 1;
-        flags.initgend = -1;
-        flags.initalign = -1;
-
-        /* Select a role */
-        result = 1;
-        if(flags.initrole < 0)
-        {
-            /* Prompt for a role */
-            rh_creation(RH_CREATE_PICK, NO_GLYPH);
-            win = create_nhwindow(NHW_MENU);
-            and_start_menu(win, MENU_BEHAVE_STANDARD);
-            rh_plsel_header(win);
-            any.a_void = 0; /* zero out all bits */
-            any.a_int = randrole(TRUE)+1;
-            and_add_menu(win, &nul_glyphinfo, &any, '*', 0, ATR_NONE, NO_COLOR, "Random", 0);
-            for(i = 0; roles[i].name.m; i++)
-            {
-                if(ok_role(i, flags.initrace, flags.initgend, flags.initalign))
-                {
-                    any.a_int = i + 1; /* must be non-zero */
-                    thisch = lowc(roles[i].name.m[0]);
-                    if(thisch == lastch)
-                        thisch = highc(thisch);
-                    and_add_menu(win, rh_pic(rh_role_glyph(i), &gi), &any, thisch, 0, ATR_NONE, NO_COLOR, roles[i].name.m, 0);
-                    lastch = thisch;
-                }
-            }
-            and_end_menu(win, "Pick a role");
-            result = and_select_menu(win, PICK_ONE, &selected);
-            and_destroy_nhwindow(win);
-
-            if(result > 0)
-                flags.initrole = selected[0].item.a_int - 1;
-            free((genericptr_t)selected), selected = 0;
-        }
-
-        if(result <= 0)
-        {
-            clearlocks();
-            and_exit_nhwindows("bye");
-            nh_terminate(EXIT_SUCCESS);
-        }
-
-        /* Select a race, if necessary */
-        if(flags.initrace < 0)
-            flags.initrace = pick_race(flags.initrole, flags.initgend, flags.initalign, PICK_RIGID);
-
-        result = 1;
-        if(flags.initrace < 0)
-        {
-            /* tty_clear_nhwindow(BASE_WINDOW); */
-            /* tty_putstr(BASE_WINDOW, 0, "Choosing Race"); */
-            rh_creation(RH_CREATE_PICK, NO_GLYPH);
-            win = create_nhwindow(NHW_MENU);
-            and_start_menu(win, MENU_BEHAVE_STANDARD);
-            rh_plsel_header(win);
-            any.a_void = 0; /* zero out all bits */
-            any.a_int = randrace(flags.initrole)+1;
-            and_add_menu(win, &nul_glyphinfo, &any, '*', 0, ATR_NONE, NO_COLOR, "random", 0);
-            for(i = 0; races[i].noun; i++)
-                if(ok_race(flags.initrole, i, flags.initgend, flags.initalign))
-                {
-                    any.a_int = i + 1; /* must be non-zero */
-                    and_add_menu(win, rh_pic(monnum_to_glyph(races[i].mnum,
-                                     (roles[flags.initrole].allow & ROLE_MALE) ? MALE : FEMALE), &gi),
-                                 &any, races[i].noun[0], 0, ATR_NONE, NO_COLOR, races[i].noun, 0);
-                }
-            and_end_menu(win, "Pick a race");
-            result = and_select_menu(win, PICK_ONE, &selected);
-            and_destroy_nhwindow(win);
-
-            if(result > 0)
-            {
-                flags.initrace = selected[0].item.a_int - 1;
-                state |= 1;
-            }
-            free((genericptr_t)selected), selected = 0;
-        }
-
-        if(result <= 0)
-            continue;
-
-        /* Select a gender, if necessary */
-        flags.initgend = pick_gend(flags.initrole, flags.initrace, flags.initalign, PICK_RIGID);
-
-        result = 1;
-        /* force compatibility with role/race, try for compatibility with
-         * pre-selected alignment */
-        if(flags.initgend < 0)
-        {
-            /* tty_clear_nhwindow(BASE_WINDOW); */
-            /* tty_putstr(BASE_WINDOW, 0, "Choosing Gender"); */
-            rh_creation(RH_CREATE_PICK, NO_GLYPH);
-            win = create_nhwindow(NHW_MENU);
-            and_start_menu(win, MENU_BEHAVE_STANDARD);
-            rh_plsel_header(win);
-            any.a_void = 0; /* zero out all bits */
-            any.a_int = randgend(flags.initrole, flags.initrace)+1;
-            and_add_menu(win, &nul_glyphinfo, &any, '*', 0, ATR_NONE, NO_COLOR, "random", 0);
-            for(i = 0; i < ROLE_GENDERS; i++)
-                if(ok_gend(flags.initrole, flags.initrace, i, flags.initalign))
-                {
-                    any.a_int = i + 1;
-                    and_add_menu(win, rh_pic(rh_hero_glyph(i), &gi), &any, genders[i].adj[0], 0, ATR_NONE, NO_COLOR, genders[i].adj, 0);
-                }
-            and_end_menu(win, "Pick a gender");
-            result = and_select_menu(win, PICK_ONE, &selected);
-            and_destroy_nhwindow(win);
-
-            if(result > 0)
-            {
-                flags.initgend = selected[0].item.a_int - 1;
-                state |= 2;
-            }
-            free((genericptr_t)selected), selected = 0;
-        }
-
-        if(result <= 0)
-            continue;
-
-        /* Select an alignment, if necessary */
-        flags.initalign = pick_align(flags.initrole, flags.initrace, flags.initgend, PICK_RIGID);
-
-        result = 1;
-        if(flags.initalign < 0)
-        {
-            /* tty_clear_nhwindow(BASE_WINDOW); */
-            /* tty_putstr(BASE_WINDOW, 0, "Choosing Alignment"); */
-            rh_creation(RH_CREATE_PICK, NO_GLYPH);
-            win = and_create_nhwindow(NHW_MENU);
-            and_start_menu(win, MENU_BEHAVE_STANDARD);
-            rh_plsel_header(win);
-            any.a_void = 0; /* zero out all bits */
-            any.a_int = randalign(flags.initrole, flags.initrace)+1;
-            and_add_menu(win, &nul_glyphinfo, &any, '*', 0, ATR_NONE, NO_COLOR, "random", 0);
-            for(i = 0; i < ROLE_ALIGNS; i++)
-                if(ok_align(flags.initrole, flags.initrace, flags.initgend, i))
-                {
-                    any.a_int = i + 1;
-                    and_add_menu(win, rh_pic(altar_to_glyph(Align2amask(aligns[i].value)), &gi),
-                                 &any, aligns[i].adj[0], 0, ATR_NONE, NO_COLOR, aligns[i].adj, 0);
-                }
-            and_end_menu(win, "Pick an alignment");
-            result = and_select_menu(win, PICK_ONE, &selected);
-            and_destroy_nhwindow(win);
-
-            if(result > 0)
-                flags.initalign = selected[0].item.a_int - 1;
-            free((genericptr_t)selected), selected = 0;
-        }
-    }
-
-    /* Rolehack: "No; choose role again" starts fresh, as role.c does: any
-       partial selection from the options is discarded this time.  (An
-       alignment set in the options skips the loop above altogether and
-       leaves the rest to role_init(); there is nothing to show then.) */
-    if(picksomething && flags.initrole >= 0 && flags.initrace >= 0
-       && flags.initgend >= 0 && flags.initalign >= 0
-       && !rh_confirm_character())
-    {
-        flags.initrole = flags.initrace = flags.initgend = flags.initalign = -1;
-        state = 0;
-        goto makepicks;
-    }
+    /* Quit, or Back: as this port always has */
+    clearlocks();
+    and_exit_nhwindows("bye");
+    nh_terminate(EXIT_SUCCESS);
 }
 
 //____________________________________________________________________________________
@@ -1875,6 +1669,17 @@ void and_add_menu(winid wid, const glyph_info *glyphinfo, const anything *ident,
     int tile;
     if (glyphinfo == &nul_glyphinfo) {
         tile = -1;
+        /* Rolehack: player selection's entries get their pictures */
+        if(program_state.in_role_selection && ident->a_void)
+        {
+            int glyph = rh_creation_glyph(str);
+            if(glyph != NO_GLYPH)
+            {
+                glyph_info gi;
+                map_glyphinfo(0, 0, glyph, 0, &gi);
+                tile = gi.gm.tileidx;
+            }
+        }
     } else {
         tile = glyphinfo->gm.tileidx;
     }
@@ -1906,6 +1711,7 @@ void and_add_menu(winid wid, const glyph_info *glyphinfo, const anything *ident,
 void and_end_menu(winid wid, const char *prompt)
 {
     jbyteArray jstr;
+    rh_menu_confirm = prompt && !strncmp(prompt, "Is this ok?", 11);
     if(prompt)
         jstr = create_bytearray(prompt);
     else
@@ -1986,6 +1792,10 @@ int and_select_menu_r(winid wid, int how, menu_item **selected, int reentry)
 
 int and_select_menu(winid wid, int how, menu_item **selected)
 {
+    /* Rolehack: player selection's pick-one menus are drawn as keys */
+    if(program_state.in_role_selection && how == PICK_ONE)
+        rh_creation(rh_menu_confirm ? RH_CREATE_CONFIRM : RH_CREATE_PICK,
+                    rh_menu_confirm ? rh_hero_glyph() : NO_GLYPH);
     return and_select_menu_r(wid, how, selected, 0);
 }
 
@@ -2263,6 +2073,31 @@ char and_yn_function(const char *question, const char *choices, char def)
     boolean digit_ok, allow_num;
     intptr_t esc;
     int nChoices;
+
+    /* Rolehack: role.c asks "Shall I pick a character for you? [ynaq]"
+       with no choices and reads any key, which here meant a question on the
+       message line and no way to answer it but the keys.  A question that
+       ends in letters in brackets gets those letters as its buttons, as the
+       web port does; the caller still checks what comes back. */
+    char rh_choices[QBUFSZ], rh_question[BUFSZ];
+    if(!choices && question)
+    {
+        const char *lb = strrchr(question, '[');
+        size_t n = lb ? strspn(lb + 1, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") : 0;
+
+        if(lb && n > 0 && n < sizeof rh_choices && lb[1 + n] == ']'
+           && !lb[2 + n + strspn(lb + 2 + n, " ")]
+           && (size_t) (lb - question) < sizeof rh_question)
+        {
+            memcpy(rh_choices, lb + 1, n);
+            rh_choices[n] = '\0';
+            memcpy(rh_question, question, lb - question);
+            rh_question[lb - question] = '\0';
+            (void) trimspaces(rh_question);
+            choices = rh_choices;
+            question = rh_question;
+        }
+    }
 
     if(choices)
     {
