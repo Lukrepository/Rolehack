@@ -844,8 +844,24 @@ web_recover(void)
     fq_lock = fqname(gl.lock, LEVELPREFIX, 0);
     if (access(fq_lock, F_OK) != 0)
         return;
-    if (!recover_savefile())
+    if (!recover_savefile()) {
+        struct stat st;
+
         program_state.in_self_recover = FALSE;
+        /* A lock holding only the process id has no game behind it: the
+           window closed while the character was being chosen, before the
+           first checkpoint.  getlock() would then ask "Old game in
+           progress" before the windows are up -- on stdin, which a page
+           does not have -- and quit without a word.  One page plays at a
+           time here (web.js takes a Web Lock), so no other game holds it;
+           it goes, and the game starts afresh. */
+        /* fqname() hands out a few static buffers in turn, and
+           recover_savefile() used them all: name the lock afresh */
+        set_levelfile_name(gl.lock, 0);
+        fq_lock = fqname(gl.lock, LEVELPREFIX, 0);
+        if (stat(fq_lock, &st) == 0 && st.st_size <= (off_t) sizeof (int))
+            (void) unlink(fq_lock);
+    }
 }
 #endif
 

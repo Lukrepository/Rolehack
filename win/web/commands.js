@@ -115,7 +115,7 @@ export const GAME = group('game', 'GAME', [
   head('Help and commands'),
   i('All commands', '#'), i('Help', '?'), i('Version', 'V'), i('Repeat', '^A'),
   head('Save / quit'),
-  i('Save', 'S'), i('Quit', '#'),
+  i('Save', 'S'), i('Quit', 'M-q'),
   head('Settings'),
   i('Options', 'O'), i('All options', 'mO'), i('Autopickup', '@'), i('Explore mode', 'M-X'),
   head('Names and notes'),

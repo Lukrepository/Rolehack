@@ -1810,7 +1810,7 @@ struct ext_func_tab extcmdlist[] = {
               doputon, 0, NULL },
     { 'q',    "quaff", "quaff (drink) something",
               dodrink, CMD_M_PREFIX, NULL },
-    { '\0',   "quit", "exit without saving current game",
+    { M('q'), "quit", "exit without saving current game",
               done2, IFBURIED | AUTOCOMPLETE | GENERALCMD | NOFUZZERCMD,
               NULL },
     { 'Q',    "quiver", "select ammunition for quiver",

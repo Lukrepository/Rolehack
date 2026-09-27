@@ -95,7 +95,9 @@ body { font-family: var(--capfont); color: #f1e8d5; -webkit-tap-highlight-color:
 #msgband .old { color: var(--phos-dim); }
 #msgband .more { position: absolute; right: 10px; bottom: 3px; color: #ffb347; }
 #msgband .moreprompt { color: #090d0a; background: #ffb347; padding: 0 4px; text-shadow: none; }
-#msgband .ask { color: #ffc166; }
+/* a question stands out from the messages: amber, inverted, a size up */
+#msgband .ask { display: inline-block; margin-top: 2px; padding: 1px 7px; border-radius: 3px;
+  color: #090d0a; background: #ffb347; text-shadow: none; font-size: 1.15em; }
 #statband { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(9,13,10,.6); padding: 3px 10px 4px;
             white-space: pre; text-shadow: 0 0 2.5px color-mix(in srgb, var(--phos) 45%, transparent); }
 #statband .row { display: flex; align-items: center; height: var(--line); }
@@ -105,10 +107,16 @@ body { font-family: var(--capfont); color: #f1e8d5; -webkit-tap-highlight-color:
 #statband .badges { margin-left: auto; display: flex; gap: 4px; }
 #statband .badge { padding: 0 3px; text-shadow: none; }
 #chips { position: absolute; left: 10px; right: 10px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
-#chips button { pointer-events: auto; font-family: var(--screenfont); font-size: 20px; min-width: 38px; height: 34px; padding: 0 10px;
-                color: #1d0e01; background: #ffb347; border: 0; border-radius: 4px; cursor: pointer;
-                box-shadow: 0 2px 0 rgba(0,0,0,.5); }
-#chips button.esc { background: #3b3530; color: #f1e8d5; }
+/* a prompt's choices: keycaps a thumb can hit (Parhi's 9.2 mm and more), that
+   press down, rather than the small pills they were (Lucas, 2026-09-27) */
+#chips button { pointer-events: auto; font-family: var(--screenfont); font-size: 24px; min-width: 52px; height: 48px; padding: 0 12px;
+                color: #1d0e01; background: linear-gradient(180deg, #ffc56b, #f0962a); border: 0; border-radius: 6px; cursor: pointer;
+                box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 4px 0 #9f5b12, 0 6px 8px rgba(0,0,0,.45);
+                transition: transform 50ms ease-out, box-shadow 50ms ease-out; touch-action: none; }
+#chips button.esc { background: linear-gradient(180deg, #4b443e, #35302b); color: #f1e8d5;
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 4px 0 #1b1815, 0 6px 8px rgba(0,0,0,.45); }
+#chips button.pressed { transform: translateY(3px); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 #9f5b12, 0 2px 3px rgba(0,0,0,.4); }
+#chips button.esc.pressed { box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 1px 0 #1b1815, 0 2px 3px rgba(0,0,0,.4); }
 #tube { position: absolute; inset: 0; pointer-events: none;
   background:
     radial-gradient(ellipse 110% 80% at 28% 6%, rgba(255,255,255,.07) 0%, rgba(255,255,255,0) 45%),

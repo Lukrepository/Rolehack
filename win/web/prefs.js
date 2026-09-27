@@ -21,6 +21,10 @@ const DEFAULTS = {
   mapMode: 'tiles',           // tiles | text
   zoom: 0,                    // tile size in CSS px; 0 = fit the level's height
   searchMode: false, searchBefore: true, searchCount: 1,
+  // the on-screen keyboard for anything typed: for a touch screen whose own
+  // keyboard is put away (Lucas, 2026-09-27) -- chosen, never guessed, since a
+  // keyboard can be attached and still out of reach
+  touchKeyboard: false,
   atkSlots: null, equipSlots: null, counts: {}, macros: null,
 };
 

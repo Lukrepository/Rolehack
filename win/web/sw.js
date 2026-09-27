@@ -11,7 +11,7 @@ const VERSION = '__VERSION__';
 const CACHE = `rolehack-${VERSION}`;
 const FILES = [
   './', 'index.html', 'rolehack.css', 'manifest.json',
-  'web.js', 'overlay.js', 'commands.js', 'prefs.js', 'doll.js', 'feedback.js',
+  'web.js', 'overlay.js', 'commands.js', 'prefs.js', 'doll.js', 'feedback.js', 'defaults.nh',
   'sounds/key-tactile.ogg',
   'nethack.js', 'nethack.wasm', 'tiles.png', 'tiles.json',
   'fonts/VT323-Regular.ttf', 'fonts/IBMPlexSansCondensed-SemiBold.ttf',

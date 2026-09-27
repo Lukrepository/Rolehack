@@ -288,15 +288,84 @@ web_getlin(const char *query, char *bufp)
     shim_getlin(query, bufp);
 }
 
+/* '#' opens a menu of the commands, as gurrhack's Android port does
+   (do_ext_cmd_menu() in winandroid.c): the everyday ones lettered a-z and
+   A-Z, then '*' for every command.  A text field with suggestions was the
+   worse thing to use with a thumb (Lucas, 2026-09-27). */
+static int
+web_ext_cmd_menu(boolean complete)
+{
+    winid wid;
+    int i, count, what;
+    menu_item *selected = (menu_item *) 0;
+    anything any = cg.zeroany;
+    char accelerator = 'a';
+    const char *ptr;
+
+    wid = create_nhwindow(NHW_MENU);
+    start_menu(wid, MENU_BEHAVE_STANDARD);
+    for (i = 0; (ptr = extcmdlist[i].ef_txt) != 0; i++) {
+        int flgs = extcmdlist[i].flags;
+
+        if ((flgs & WIZMODECMD) && !wizard)
+            continue;
+        if (!complete && !(flgs & AUTOCOMPLETE) && !(flgs & WIZMODECMD))
+            continue;
+        any.a_int = i + 1;
+        add_menu(wid, &nul_glyphinfo, &any, accelerator, 0, ATR_NONE, NO_COLOR,
+                 ptr, MENU_ITEMFLAGS_NONE);
+        /* a-z, A-Z, then none */
+        if (accelerator == 'z')
+            accelerator = 'A';
+        else if (accelerator == 'Z')
+            accelerator = 0;
+        else if (accelerator)
+            accelerator++;
+    }
+    any.a_int = i + 1;
+    if (!complete)
+        add_menu(wid, &nul_glyphinfo, &any, '*', 0, ATR_NONE, NO_COLOR,
+                 "(list everything)", MENU_ITEMFLAGS_NONE);
+    end_menu(wid, "Extended command");
+    count = select_menu(wid, PICK_ONE, &selected);
+    what = count > 0 ? selected->item.a_int - 1 : -1;
+    if (selected)
+        free((genericptr_t) selected);
+    destroy_nhwindow(wid);
+    return (!complete && what == i) ? web_ext_cmd_menu(TRUE) : what;
+}
+
 static int
 web_get_ext_cmd(void)
 {
     web_checkpoint();
-    return shim_get_ext_cmd();
+    return web_ext_cmd_menu(FALSE);
 }
 
 #define WAITS(fn) web_##fn
 #endif /* INSURANCE */
+
+/* Rolehack web: the window system says it is up once it is initialised, as
+   every window port does (wintty.c when the message window opens,
+   winandroid.c in and_init_nhwindows()).  The shim never did, so
+   really_done() never called exit_nhwindows() and the page never learnt
+   that a game had ended -- it sat on the last question looking hung (Lucas,
+   2026-09-27) -- the tombstone went unshown, and getlock() asked about an
+   old game on stdin, which a page does not have. */
+static void
+web_init_nhwindows(int *argcp, char **argv)
+{
+    shim_init_nhwindows(argcp, argv);
+    iflags.window_inited = TRUE;
+}
+
+static void
+web_exit_nhwindows(const char *str)
+{
+    shim_exit_nhwindows(str);
+    iflags.window_inited = FALSE;
+}
+#define UPDOWN(fn) web_##fn
 #else /* !__EMSCRIPTEN__ */
 VDECLCB(shim_player_selection, (void), "v")
 VDECLCB(shim_update_inventory,(int a1 UNUSED), "vi", A2P a1)
@@ -309,6 +378,10 @@ DECLCB(win_request_info *, shim_ctrl_nhwindow,
 /* the procedures that wait for the player; web_checkpoint() comes first */
 #ifndef WAITS
 #define WAITS(fn) shim_##fn
+#endif
+/* the window system coming up and going down */
+#ifndef UPDOWN
+#define UPDOWN(fn) shim_##fn
 #endif
 
 /* Interface definition used in windows.c */
@@ -328,8 +401,8 @@ struct window_procs shim_procs = {
 #endif
      | WC2_DARKGRAY | WC2_SUPPRESS_HIST | WC2_STATUSLINES),
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},   /* color availability */
-    shim_init_nhwindows, shim_player_selection, shim_askname, shim_get_nh_event,
-    shim_exit_nhwindows, shim_suspend_nhwindows, shim_resume_nhwindows,
+    UPDOWN(init_nhwindows), shim_player_selection, shim_askname, shim_get_nh_event,
+    UPDOWN(exit_nhwindows), shim_suspend_nhwindows, shim_resume_nhwindows,
     shim_create_nhwindow, shim_clear_nhwindow, WAITS(display_nhwindow),
     shim_destroy_nhwindow, shim_curs, shim_putstr, genl_putmixed,
     genl_display_file, shim_start_menu, shim_add_menu, shim_end_menu,

@@ -524,6 +524,7 @@ export class Overlay {
     this.refreshRestFaces();
     this.refreshPadCentre();
     this.recomputeContext();
+    if (this.answering) this.paintAnswers();
   }
 
   // Rest (with Long rest in its scroll well), Msgs and macro 1: the left bank's top rows.
@@ -780,7 +781,8 @@ export class Overlay {
         const k = new Key(mold).place(col * pitch, row * pitch, this.padCell, this.padCell).cap(role(ROLE_MOVE));
         if (!key) {
           this.padCentre = k;
-          this.bindHold(k, CENTRE_HOLD_MS, () => { if (!this.fanOpen) this.openContextRadial(); }, () => {
+          this.bindHold(k, CENTRE_HOLD_MS, () => { if (!this.fanOpen && !this.answering) this.openContextRadial(); }, () => {
+            if (this.answering) { this.answerPlace(4); return; }
             if (this.fanOpen) { this.layerPlaceTapped(4, k.el); return; }
             if (this.directionPending()) this.pressDirection('.');
             else this.execute(this.padCentreCommand(), k.el);
@@ -789,6 +791,7 @@ export class Overlay {
         }
         k.label(C.PAD_ARROW[idx], 18, true).sub(key, true);
         this.bindTap(k, () => {
+          if (this.answering) { this.answerPlace(idx); return; }
           if (this.fanOpen) { this.layerPlaceTapped(idx, k.el); return; }
           this.pressDirection(key);
         });
@@ -808,7 +811,7 @@ export class Overlay {
 
   refreshPadCentre() {
     const k = this.padCentre;
-    if (!k || this.fanOpen) return;   // a layer owns the centre while it is up
+    if (!k || this.fanOpen || this.answering) return;   // a layer or a question owns the centre
     if (this.directionPending()) k.label('HERE', 8).sub('.', true);
     else if (this.hereHas(HERE_OBJECT)) k.label('PICK UP', 8).sub(',', true);
     else k.label('REST', 9).sub('hold · context');
@@ -1163,22 +1166,82 @@ export class Overlay {
       else if (!item) f.placeholder(true).cap(cap).label('+', 15).sub('assign');
       else f.placeholder(false).cap(cap).label(this.labelFor(item), 9.5, true).sub(item.key, true);
     }
-    const fr = this.layerFrame;
-    if (fr) {
-      fr.style.setProperty('--acc', layerAccent(kind));
-      fr.firstChild.textContent = `${hub.label.replace(/\n/g, ' ')} LAYER`;
-      fr.classList.add('on');
-    }
+    this.showFrame(`${hub.label.replace(/\n/g, ' ')} LAYER`, layerAccent(kind));
   }
 
   // the pad as it was: arrows, and the centre's own command
   restorePad() {
     this.padCells.forEach((k, i) => {
       const idx = i < 4 ? i : i + 1;
-      k.cap(role(ROLE_MOVE)).placeholder(false).label(C.PAD_ARROW[idx], 18, true).sub(C.PAD_KEYS[idx], true);
+      k.cap(role(ROLE_MOVE)).placeholder(false).tag(null).lit(false)
+        .label(C.PAD_ARROW[idx], 18, true).sub(C.PAD_KEYS[idx], true);
     });
-    if (this.padCentre) this.padCentre.cap(role(ROLE_MOVE)).placeholder(false);
+    if (this.padCentre) this.padCentre.cap(role(ROLE_MOVE)).placeholder(false).tag(null).lit(false);
     this.refreshPadCentre();
+  }
+
+  showFrame(title, accent) {
+    const fr = this.layerFrame;
+    if (!fr) return;
+    fr.style.setProperty('--acc', accent);
+    fr.firstChild.textContent = title;
+    fr.classList.add('on');
+  }
+
+  // ---- a question's answers on the pad (Lucas, 2026-09-27: in landscape they
+  // were far from the thumbs, and the question easy to miss).  A letter that is
+  // also a direction key sits where that direction is -- y up-left and n
+  // down-right, as those keys already are -- the rest take the free places in
+  // order, and the centre is q (or Esc).  False when they do not fit.
+  showAnswers(choices, def, onPick) {
+    const places = new Array(9).fill(null);
+    const rest = [];
+    for (const ch of choices) {
+      const at = C.PAD_KEYS.indexOf(ch);
+      if (ch !== 'q' && at >= 0 && at !== 4 && !places[at]) places[at] = ch;
+      else if (ch !== 'q') rest.push(ch);
+    }
+    for (const ch of rest) {
+      const free = places.findIndex((p, i) => !p && i !== 4);
+      if (free < 0) return false;
+      places[free] = ch;
+    }
+    places[4] = choices.includes('q') ? 'q' : '\x1b';
+    this.closeAll();
+    this.disarm();
+    this.answering = { places, def, onPick };
+    this.paintAnswers();
+    return true;
+  }
+
+  paintAnswers() {
+    const a = this.answering;
+    if (!a) return;
+    const cap = capFor(C.A90);
+    const WORDS = { y: 'Yes', n: 'No', q: 'Quit', '\x1b': 'Esc' };
+    for (let place = 0; place < 9; place++) {
+      const f = this.padFace(place);
+      if (!f) continue;
+      const ch = a.places[place];
+      if (!ch) { f.cap(cap).placeholder(true).tag(null).lit(false).label('', 10).sub(null); continue; }
+      const isDef = ch.charCodeAt(0) === a.def;
+      f.cap(cap).placeholder(false).label(WORDS[ch] || ch, WORDS[ch] ? 12 : 18, true)
+        .sub(isDef ? 'default' : null).tag(ch === '\x1b' ? 'Esc' : ch).lit(isDef);
+    }
+    this.showFrame('ANSWER', '#ffb347');
+  }
+
+  hideAnswers() {
+    if (!this.answering) return;
+    this.answering = null;
+    if (this.layerFrame) this.layerFrame.classList.remove('on');
+    this.restorePad();
+  }
+
+  answerPlace(place) {
+    const ch = this.answering && this.answering.places[place];
+    if (!ch) return;
+    this.answering.onPick(ch === '\x1b' ? 27 : ch.charCodeAt(0));
   }
 
   layerPlaceTapped(place, from) {
@@ -1204,6 +1267,7 @@ export class Overlay {
   }
 
   openFan(hv) {
+    if (this.answering) return;   // a question has the pad
     this.closeCandidates();
     this.closeChips();
     this.closeDrawer();
@@ -1823,6 +1887,8 @@ export class Overlay {
       seg('padCell', 'Movement key size', [['46', '46'], ['52', '52'], ['58', '58 (Parhi)']]),
       seg('labelMode', 'Key labels', [['words', 'Words'], ['keys', 'Keys'], ['both', 'Both']]),
       { seg: 'keyFlash', label: 'Key flash', value: P.get('keyFlash') ? 'on' : 'off', options: [['on', 'On'], ['off', 'Off']] },
+      { seg: 'touchKeyboard', label: 'On-screen keyboard for typing: for a touch screen with the keyboard out of reach',
+        value: P.get('touchKeyboard') ? 'on' : 'off', options: [['off', 'Off'], ['on', 'On']] },
       // a choice with the click in it plays one, at the volume shown
       { seg: 'feedback', label: 'Key feedback (vibration needs a device that can vibrate)', value: P.get('feedback'),
         options: [['off', 'Off'], ['vibrate', 'Vibration'], ['click', 'Click'], ['both', 'Both']],
@@ -1842,6 +1908,7 @@ export class Overlay {
         put('padCell', parseInt(v.padCell, 10));
         put('labelMode', v.labelMode);
         put('keyFlash', v.keyFlash === 'on');
+        put('touchKeyboard', v.touchKeyboard === 'on');
         put('feedback', v.feedback);
         put('clickVolume', parseInt(v.clickVolume, 10));
       } },

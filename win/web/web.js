@@ -144,8 +144,13 @@ async function loadTiles() {
   sheetCols = info.cols;
   setPalette(info.palette);
   sheet = new Image();
-  sheet.src = 'tiles.png';
-  await sheet.decode();
+  // the load event, not decode(): decode() waits while the page is hidden, so
+  // an app started minimized or behind another window sat at "Loading"
+  await new Promise((resolve, reject) => {
+    sheet.onload = resolve;
+    sheet.onerror = reject;
+    sheet.src = 'tiles.png';
+  });
   // the sheet at menu size, for the pictures beside menu items
   document.documentElement.style.setProperty('--menu-sheet',
     `${(sheet.width / 16) * MENU_TILE}px ${(sheet.height / 16) * MENU_TILE}px`);
@@ -494,15 +499,17 @@ function showChips(choices) {
   for (const ch of choices) {
     const b = document.createElement('button');
     b.textContent = ch;
-    b.addEventListener('pointerdown', () => FB.press());
-    b.addEventListener('pointerup', (e) => { e.preventDefault(); push({ key: ch.charCodeAt(0) }); });
+    b.addEventListener('pointerdown', () => { b.classList.add('pressed'); FB.press(); });
+    b.addEventListener('pointerleave', () => b.classList.remove('pressed'));
+    b.addEventListener('pointerup', (e) => { e.preventDefault(); b.classList.remove('pressed'); FB.up(); push({ key: ch.charCodeAt(0) }); });
     c.appendChild(b);
   }
   const x = document.createElement('button');
   x.className = 'esc';
   x.textContent = 'Esc';
-  x.addEventListener('pointerdown', () => FB.press());
-  x.addEventListener('pointerup', (e) => { e.preventDefault(); push({ key: 27 }); });
+  x.addEventListener('pointerdown', () => { x.classList.add('pressed'); FB.press(); });
+  x.addEventListener('pointerleave', () => x.classList.remove('pressed'));
+  x.addEventListener('pointerup', (e) => { e.preventDefault(); x.classList.remove('pressed'); FB.up(); push({ key: 27 }); });
   c.appendChild(x);
 }
 
@@ -711,6 +718,9 @@ async function getLine(title, initial = '', datalist = null) {
              capButton('Esc', { key: 'Esc', onTap: () => answer(null) }),
              capButton('OK', { key: 'Enter', amber: true, onTap: () => answer($('line').value) })]);
   const input = $('line');
+  // touch only: the page's own keyboard, and none of the system's over it
+  const touch = !!P.get('touchKeyboard');
+  if (touch) { input.inputMode = 'none'; showKeyboard(true); }
   input.value = value;
   input.focus();
   if (value && value === initial) input.select();   // an offer: typing replaces it
@@ -720,6 +730,7 @@ async function getLine(title, initial = '', datalist = null) {
   });
   await result;
   input.blur();
+  if (touch) showKeyboard(false);
   closeModal();
   return result;
 }
@@ -770,9 +781,12 @@ function form(title, fields, buttons) {
     f.appendChild(lab);
   }
   const primary = buttons.find((b) => b.primary);
+  // touch only: a dialog with something to type in brings the keyboard up
+  const touch = !!P.get('touchKeyboard') && !!f.querySelector('input');
   const done = (b) => {
     box.parentElement.hidden = true;
     formOpen = null;
+    if (touch) showKeyboard(false);
     if (b && b.run) b.run(values);
   };
   box.querySelector('.caps').replaceChildren(...buttons.map((b) =>
@@ -782,8 +796,36 @@ function form(title, fields, buttons) {
   box.parentElement.hidden = false;
   body.scrollTop = 0;
   formOpen = { cancel: () => done(null), accept: () => done(primary) };
+  if (touch) {
+    for (const inp of f.querySelectorAll('input')) inp.inputMode = 'none';
+    showKeyboard(true);
+  }
   const first = f.querySelector('input');
   if (first) first.focus();
+}
+
+/* ---------- the end of a game ---------- */
+
+// NetHack ends by exiting, and a page cannot exit, so it said nothing and
+// looked hung (Lucas, 2026-09-27: after a save, and after 'q' at "Do you
+// want your possessions identified?", which skips the rest and ends).  A
+// save closes the window, as the program closes; a death or a quit, or a
+// window that may not close itself, says so and offers what comes next.
+function gameEnded(saved) {
+  const offer = (refused) => form(saved ? 'Game saved' : 'Game over', [
+    { note: saved ? 'Your game is kept. Give the same name at "Who are you?" to go on with it.'
+                  : 'This game has ended.' },
+    ...(refused ? [{ note: 'This window cannot close itself; close it as you would any other.' }] : []),
+  ], [
+    { label: saved ? 'Go on playing' : 'New game', run: () => location.reload() },
+    { label: 'Close', primary: true, run: () => close() },
+  ]);
+  const close = () => {
+    window.close();
+    // a browser tab the page did not open may refuse; the page is still here
+    setTimeout(() => offer(true), 400);
+  };
+  if (saved) setTimeout(close, 600); else offer(false);
 }
 
 /* ---------- the soft keyboard (KEYS) ---------- */
@@ -903,6 +945,8 @@ const handlers = {
     if (str) addMessage(str);
     render();
     await syncSaves();
+    // save.c says goodbye this way; a death or a quit says nothing here
+    gameEnded(str === 'Be seeing you...');
   },
   shim_suspend_nhwindows() {},
   shim_resume_nhwindows() {},
@@ -1014,6 +1058,12 @@ const handlers = {
     const direction = /what direction/.test(query);
     if (direction && overlay) overlay.setExpectsDirection(true);
     showChips(promptChoices(query, allowed));
+    // the answers on the pad, under the thumb (overlay.js showAnswers): resp's
+    // letters, or a short "[ynaq]" written into the question itself, as role.c
+    // asks "Shall I pick ...?" -- never an item prompt's "[fg or ?*]"
+    const letters = shown || ((/\[([a-zA-Z]{1,8})\]\s*$/.exec(query) || [])[1] || '');
+    const onPad = !direction && !!letters && !!overlay
+      && overlay.showAnswers([...letters], def, (key) => push({ key }));
     let k;
     for (;;) {
       k = await nextKey();
@@ -1029,6 +1079,7 @@ const handlers = {
     }
     promptText = '';
     showChips([]);
+    if (onPad) overlay.hideAnswers();
     if (direction && overlay) overlay.setExpectsDirection(false);
     ageMessages();
     if (k >= 32 && k < 127) addMessage(`${q} ${String.fromCharCode(k)}`);
@@ -1174,9 +1225,17 @@ overlay = new Overlay({
   form,
   toggleKeyboard: () => showKeyboard(!$('kbd').classList.contains('on')),
 });
-function start() {
+async function start() {
+  // the phone's options (defaults.nh), read by the game as ~/.nethackrc
+  let rc = '';
+  try { rc = await (await fetch('defaults.nh')).text(); } catch (e) { console.warn('defaults.nh', e); }
   createNetHack({
     preRun: [(mod) => {
+      if (rc) {
+        mod.ENV.HOME = '/home/web_user';
+        try { mod.FS.mkdirTree('/home/web_user'); } catch (e) { /* there already */ }
+        mod.FS.writeFile('/home/web_user/.nethackrc', rc);
+      }
       // a generic user name (sysconf GENERICUSERS), so the game asks "Who are
       // you?" instead of calling everyone web_user
       mod.ENV.USER = 'player';
