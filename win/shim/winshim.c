@@ -8,6 +8,7 @@
 #include "func_tab.h"
 #include "rhdoll.h"
 #include "rhhere.h"
+#include "rhcreate.h"
 #include <string.h>
 
 #ifdef SHIM_GRAPHICS
@@ -185,8 +186,14 @@ void shim_update_inventory(int a1 UNUSED) {
 
 void shim_player_selection() {
     boolean do_genl_player_setup = shim_player_selection_or_tty();
-    if (do_genl_player_setup) {
-        genl_player_setup(80);
+    /* Rolehack web: Quit (or Esc) during player selection quits, as
+       genl_player_selection() and the Android port do; its answer went
+       unread, and the game began with the rest picked at random
+       (2026-09-27) */
+    if (do_genl_player_setup && !genl_player_setup(80)) {
+        clearlocks();
+        exit_nhwindows((char *) 0);
+        nh_terminate(EXIT_SUCCESS);
     }
 }
 
@@ -359,6 +366,26 @@ web_init_nhwindows(int *argcp, char **argv)
     iflags.window_inited = TRUE;
 }
 
+/* Player selection's entries get their pictures (rhcreate.c), as on the
+   Android port; the page draws those menus as keys (web.js, creationKeys()) */
+static void
+web_add_menu(winid window, const glyph_info *glyphinfo, const anything *identifier,
+             char ch, char gch, int attr, int clr, const char *str,
+             unsigned int itemflags)
+{
+    glyph_info pic;
+    int pglyph;
+
+    if (program_state.in_role_selection && glyphinfo == &nul_glyphinfo
+        && identifier->a_void
+        && (pglyph = rh_creation_glyph(str)) != NO_GLYPH) {
+        map_glyphinfo(0, 0, pglyph, 0, &pic);
+        glyphinfo = &pic;
+    }
+    shim_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr, str,
+                  itemflags);
+}
+
 static void
 web_exit_nhwindows(const char *str)
 {
@@ -366,6 +393,7 @@ web_exit_nhwindows(const char *str)
     iflags.window_inited = FALSE;
 }
 #define UPDOWN(fn) web_##fn
+#define PICTURES(fn) web_##fn
 #else /* !__EMSCRIPTEN__ */
 VDECLCB(shim_player_selection, (void), "v")
 VDECLCB(shim_update_inventory,(int a1 UNUSED), "vi", A2P a1)
@@ -382,6 +410,10 @@ DECLCB(win_request_info *, shim_ctrl_nhwindow,
 /* the window system coming up and going down */
 #ifndef UPDOWN
 #define UPDOWN(fn) shim_##fn
+#endif
+/* menus whose entries may get pictures */
+#ifndef PICTURES
+#define PICTURES(fn) shim_##fn
 #endif
 
 /* Interface definition used in windows.c */
@@ -405,7 +437,7 @@ struct window_procs shim_procs = {
     UPDOWN(exit_nhwindows), shim_suspend_nhwindows, shim_resume_nhwindows,
     shim_create_nhwindow, shim_clear_nhwindow, WAITS(display_nhwindow),
     shim_destroy_nhwindow, shim_curs, shim_putstr, genl_putmixed,
-    genl_display_file, shim_start_menu, shim_add_menu, shim_end_menu,
+    genl_display_file, shim_start_menu, PICTURES(add_menu), shim_end_menu,
     WAITS(select_menu), shim_message_menu, shim_mark_synch,
     shim_wait_synch,
 #ifdef CLIPPING
@@ -525,6 +557,8 @@ EMSCRIPTEN_KEEPALIVE int *web_hero_look(void);
 EMSCRIPTEN_KEEPALIVE int web_here_flags(void);
 EMSCRIPTEN_KEEPALIVE const char *web_here_monster(void);
 EMSCRIPTEN_KEEPALIVE int web_wizard(void);
+EMSCRIPTEN_KEEPALIVE int web_creation(void);
+EMSCRIPTEN_KEEPALIVE int web_creation_hero(void);
 
 int
 web_any_word(const anything *id, int which)
@@ -616,6 +650,26 @@ const char *
 web_here_monster(void)
 {
     return web_here_mon;
+}
+
+/* player selection is asking (role.c): its pick-one menus are drawn as keys */
+int
+web_creation(void)
+{
+    return program_state.in_role_selection ? 1 : 0;
+}
+
+/* the finished hero's tile, for "Is this ok?", or -1 */
+int
+web_creation_hero(void)
+{
+    glyph_info pic;
+    int hglyph = rh_creation_hero_glyph();
+
+    if (hglyph == NO_GLYPH)
+        return -1;
+    map_glyphinfo(0, 0, hglyph, 0, &pic);
+    return pic.gm.tileidx;
 }
 
 /* debug mode, so the drawers can offer the wizard-mode commands */

@@ -87,6 +87,17 @@ function capFor(face) {
   default: return g ? GC_DARK : CAP_DARK;
   }
 }
+// Character creation's keys (web.js creationKeys(), after RhCreate.family()):
+// the choices cream (grey on the GameCube), vanilla's other entries dark, the
+// default -- the one Enter takes -- amber, Quit red.
+export function creationCap(kind) {
+  switch (kind) {
+  case 'choice': return gc() ? GC_GREY : CAP_CREAM;
+  case 'default': return capFor(C.A90);
+  case 'quit': return capFor(C.R90);
+  default: return capFor(null);
+  }
+}
 function role(r) {
   if (gc()) return [GC_YELLOW, GC_RED, GC_BLUE, GC_NAVY, GC_GREY][r];
   return [CAP_CREAM, CAP_CREAM, CAP_ROSE, CAP_DARK, CAP_DARK][r];

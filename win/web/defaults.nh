@@ -2,7 +2,9 @@
 # so the page plays as the phone does -- item menus straight away
 # (force_invmenu), the command menu (extmenu), scores in a window (toptenwin),
 # pile_limit:2, the highlights and menu colours.  DECgraphics is left out:
-# its line-drawing characters suit a terminal font, not the page.
+# its line-drawing characters suit a terminal font, not the page.  Nor is
+# dumplog: this build has no DUMPLOG, and the option was an error at every
+# start ("Unknown option 'dumplog'", 2026-09-27).
 # web.js writes this to ~/.nethackrc; NETHACKOPTIONS still adds !perm_invent.
 
 # Sample config file for Android NetHack
@@ -39,7 +41,7 @@
 # restore old behavior for clicking on yourself (i.e just pick up an item/loot chest/use stairs without a menu popup)
 #BIND=mouse1:mouseaction
 
-OPTIONS=autounlock:apply-key+kick+force, color, dumplog, extmenu, force_invmenu, menucolors, use_inverse
+OPTIONS=autounlock:apply-key+kick+force, color, extmenu, force_invmenu, menucolors, use_inverse
 
 #OPTIONS=packorder:")[%?+/=!(*0_`
 OPTIONS=scores:10 top/2 around/own

@@ -9,7 +9,7 @@
 // forms.  The touch controls are overlay.js.
 import createNetHack from './nethack.js';
 import { setPalette, dressHero, LOOK_LEN } from './doll.js';
-import { Overlay, MSG_BAND, STATUS_BAND, LINE } from './overlay.js';
+import { Overlay, MSG_BAND, STATUS_BAND, LINE, creationCap } from './overlay.js';
 import { keyCodes } from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
@@ -548,7 +548,13 @@ function setHint(text, count = false) {
   $('modal-hint').textContent = text;
   $('modal-hint').classList.toggle('count', count);
 }
-function closeModal() { $('modal').hidden = true; }
+function closeModal() {
+  $('modal').hidden = true;
+  // character creation's keys go with the window (creationKeys)
+  const keys = $('ckeys');
+  if (keys) keys.remove();
+  $('modal').querySelector('.box').classList.remove('creating');
+}
 
 // tty's text attributes, on the text alone as tty draws them
 const ATTR_CLASS = { [ATR.BOLD]: 'bold', [ATR.DIM]: 'dim', [ATR.ULINE]: 'uline', [ATR.INVERSE]: 'inverse' };
@@ -605,6 +611,76 @@ function tileSpan(tile) {
   return `<span class="mtile" style="background-position:-${x}px -${y}px"></span>`;
 }
 
+// A tile at any size, unfiltered, for character creation's keys and hero.
+function tilePic(tile, px, cls) {
+  const x = (tile % sheetCols) * px, y = Math.floor(tile / sheetCols) * px;
+  return `<span class="${cls}" style="width:${px}px;height:${px}px;`
+    + `background-size:${(sheet.width / 16) * px}px ${(sheet.height / 16) * px}px;`
+    + `background-position:-${x}px -${y}px"></span>`;
+}
+
+// Character creation as keys (Lucas, 2026-09-27; the phone's RhCreate).
+// While the core's player selection asks (role.c genl_player_setup(), winshim.c
+// web_creation()), its pick-one menus are drawn as keycaps on the bezel under
+// the glass, the way a keyboard sits under a screen: the choices with their
+// pictures (winshim.c web_add_menu()), vanilla's other entries -- Random, "Pick
+// race first" and its kin, the role filter, Quit -- a row of smaller keys
+// under them.  A key presses its item's letter, so the menu answers exactly as
+// it does to a keyboard.  The glass keeps the title and vanilla's lines: the
+// character so far, "race forces neutral", and at "Is this ok?" the hero.
+function creationKeys(w, items) {
+  const confirm = /^Is this ok\?/.test(w && w.menu ? w.menu.prompt : '');
+  const pictures = !!sheet && P.get('mapMode') !== 'text' && items.some((i) => i.selectable && i.tile >= 0);
+  const split = !confirm && pictures;
+  const hero = confirm && sheet ? M._web_creation_hero() : -1;
+  const glass = (hero >= 0 ? `<div class="chero">${tilePic(hero, 96, 'cpic')}</div>` : '')
+    + items.filter((i) => !i.selectable)
+      .map((it) => `<div class="cline${confirm ? ' mid' : ''}">${esc(it.text.trim())}</div>`).join('');
+
+  const keys = document.createElement('div');
+  keys.id = 'ckeys';
+  keys.className = 'ckeys';
+  const main = document.createElement('div');
+  main.className = confirm ? 'cgrid answers' : 'cgrid';
+  const extra = document.createElement('div');
+  extra.className = 'cgrid extra';
+  for (const it of items) {
+    if (!it.selectable) continue;
+    const small = split && it.tile < 0;
+    const pic = pictures && it.tile >= 0;
+    const kind = it.selected ? 'default' : (it.ch === 113 && it.text === 'Quit') ? 'quit' : small ? 'extra' : 'choice';
+    // vanilla writes a role as an("Archeologist"); under its picture the
+    // article is clutter.  "Yes; start game" breaks at its semicolon.
+    let label = pic ? it.text.replace(/^an? /, '') : it.text;
+    label = label.replace('; ', ';\n');
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.tabIndex = -1;
+    // the phone's keys shrink a legend to fit; here a long one is set smaller
+    const long = label.replace('\n', '').length > 14;
+    b.className = `cap ck${small ? ' small' : ''}${pic ? ' pic' : ''}${confirm ? ' answer' : ''}${long ? ' long' : ''}`;
+    const f = creationCap(kind);
+    ['--t1', '--t2', '--sl', '--sm', '--sr', '--lg', '--hold', '--raw'].forEach((v, n) => b.style.setProperty(v, f[n]));
+    b.innerHTML = `<span>${it.ch ? `<i>${esc(String.fromCharCode(it.ch))}</i>` : ''}`
+      + `${pic ? tilePic(it.tile, 48, 'cpic') : ''}<em>${esc(label)}</em></span>`;
+    // the windows' keycap press (capButton): down on touch, the pick on release
+    b.addEventListener('mousedown', (e) => e.preventDefault());
+    b.addEventListener('pointerdown', () => { b.classList.add('pressed'); FB.press(); });
+    const release = () => { if (b.classList.contains('pressed')) { b.classList.remove('pressed'); FB.up(); } };
+    for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) b.addEventListener(ev, release);
+    b.addEventListener('contextmenu', (e) => e.preventDefault());
+    b.addEventListener('click', () => push({ key: it.ch }));
+    (small ? extra : main).appendChild(b);
+  }
+  keys.append(main);
+  if (extra.childElementCount) keys.append(extra);
+
+  $('modal-body').innerHTML = glass;
+  const box = $('modal').querySelector('.box');
+  box.classList.add('creating');
+  box.insertBefore(keys, box.querySelector('.deck'));
+}
+
 async function selectMenu(win, how, listPtr) {
   const w = wins.get(win);
   const items = (w && w.menu) ? w.menu.items : [];
@@ -629,8 +705,18 @@ async function selectMenu(win, how, listPtr) {
     : how === 1 ? 'Tap an item or press its letter'
     : 'Tap or type a letter to mark it · a number first sets a count';
   openModal(w && w.menu ? w.menu.prompt : '', '', hint, caps);
+  // character creation's menus are keys (creationKeys); they never change
+  const creating = how === 1 && !!M._web_creation();
+  if (creating) {
+    creationKeys(w, items);
+    setHint('Tap a key, or press its letter');
+  }
 
   const draw = () => {
+    if (creating) {
+      if (count) setHint(`Count ${count}`, true);
+      return;
+    }
     // ForkFront's menu pictures: a column only when some item has one; an item
     // without keeps the slot so the text lines up; a heading takes none; and
     // none at all while the map is drawn in text
@@ -724,9 +810,13 @@ async function getLine(title, initial = '', datalist = null) {
   input.value = value;
   input.focus();
   if (value && value === initial) input.select();   // an offer: typing replaces it
+  // The key that answers stops here.  Otherwise it reached the window's own
+  // handler after the line had closed and let go of the focus, and went on to
+  // the game: Enter at "Who are you?" answered "Shall I pick a character for
+  // you?" with yes (2026-09-27), and after any other line it was a ^J.
   input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); answer(input.value); }
-    if (e.key === 'Escape') { e.preventDefault(); answer(null); }
+    if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); answer(input.value); }
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); answer(null); }
   });
   await result;
   input.blur();

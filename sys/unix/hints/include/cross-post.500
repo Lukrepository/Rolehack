@@ -178,6 +178,7 @@ $(TARGETPFX)winshim.o : ../win/shim/winshim.c $(HACK_H)
 $(TARGETPFX)libnhmain.o : ../sys/libnh/libnhmain.c $(HACK_H)
 $(TARGETPFX)rhdoll.o : ../win/share/rhdoll.c ../include/rhdoll.h $(HACK_H)
 $(TARGETPFX)rhhere.o : ../win/share/rhhere.c ../include/rhhere.h $(HACK_H)
+$(TARGETPFX)rhcreate.o : ../win/share/rhcreate.c ../include/rhcreate.h $(HACK_H)
 $(TARGETPFX)tile.o : tile.c $(HACK_H)
 endif  # CROSS_TO_WASM
 
