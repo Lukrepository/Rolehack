@@ -842,6 +842,8 @@ extern boolean will_hurtle(struct monst *, coordxy, coordxy) NONNULLARG1;
 extern void hurtle(int, int, int, boolean);
 extern void mhurtle(struct monst *, int, int, int) NONNULLARG1;
 extern int dograpple(void); /* ROLEHACK */
+extern int doability(void); /* ROLEHACK: RoleMaker v1, rhability.c */
+extern void rh_ability_ready(union any *, long); /* ROLEHACK */
 extern boolean harmless_missile(struct obj *) NONNULLARG1;
 extern boolean throwing_weapon(struct obj *) NONNULLARG1;
 extern boolean throwit_mon_hit(struct obj *, struct monst *) NONNULLARG1;

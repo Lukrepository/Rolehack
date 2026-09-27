@@ -1987,7 +1987,8 @@ static const ttable timeout_funcs[NUM_TIME_FUNCS] = {
     TTAB(shrink_glob, (timeout_proc) 0, "shrink_glob"),
     /* level timers */
     TTAB(melt_ice_away, (timeout_proc) 0, "melt_ice_away"),
-    /* currently no monster or global timers */
+    /* global timers */
+    TTAB(rh_ability_ready, (timeout_proc) 0, "rh_ability_ready"), /* ROLEHACK */
 };
 #undef TTAB
 
