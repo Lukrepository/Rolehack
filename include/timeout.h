@@ -44,6 +44,8 @@ enum timeout_types {
     FIG_TRANSFORM,
     SHRINK_GLOB,
     MELT_ICE_AWAY,
+    RH_ABILITY_READY, /* ROLEHACK: a RoleMaker ability's cooldown ended;
+                         appended so older saves still load */
 
     NUM_TIME_FUNCS
 };
