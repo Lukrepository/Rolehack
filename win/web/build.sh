@@ -22,6 +22,18 @@ cp targets/wasm/nethack.js targets/wasm/nethack.wasm win/web/index.html \
    win/web/defaults.nh targets/web/
 cp win/web/fonts/* targets/web/fonts/
 cp win/web/sounds/* targets/web/sounds/
+# what the page was built from, for the page's own "source" link (the NGPL
+# asks that whoever gets the program can get its source); the commit's own
+# date, not the build's, so an unchanged rebuild keeps its cache version
+commit=$(git rev-parse HEAD); short=$(git rev-parse --short HEAD)
+branch=$(git rev-parse --abbrev-ref HEAD)
+cdate=$(git show -s --format=%cd --date=short HEAD)
+dirty=; [ -n "$(git status --porcelain --untracked-files=no)" ] && dirty=1
+cat > targets/web/build.json <<EOF
+{ "commit": "$commit", "short": "$short${dirty:++}", "branch": "$branch", "date": "$cdate",
+  "source": "https://github.com/Lukrepository/Rolehack/tree/$commit" }
+EOF
+touch targets/web/.nojekyll
 # the installed app's cache is named for what is in it, so a changed build
 # replaces it and an unchanged one leaves it alone
 version=$(cd targets/web && find . -type f ! -name sw.js | sort | xargs cat | md5sum | cut -c1-12)

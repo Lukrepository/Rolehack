@@ -837,6 +837,7 @@ function form(title, fields, buttons) {
   f.className = 'form';
   for (const fd of fields) {
     if (fd.note) { const n = document.createElement('div'); n.className = 'note'; n.textContent = fd.note; f.appendChild(n); continue; }
+    if (fd.html) { const n = document.createElement('div'); n.className = 'note'; n.innerHTML = fd.html; f.appendChild(n); continue; }
     const lab = document.createElement('label');
     lab.textContent = fd.label;
     if (fd.seg) {
@@ -906,6 +907,7 @@ function gameEnded(saved) {
     { note: saved ? 'Your game is kept. Give the same name at "Who are you?" to go on with it.'
                   : 'This game has ended.' },
     ...(refused ? [{ note: 'This window cannot close itself; close it as you would any other.' }] : []),
+    ...(build ? [{ html: `Rolehack build ${esc(build.short)} (${esc(build.date)}) · <a href="${esc(build.source)}" target="_blank" rel="noopener">source on GitHub</a>` }] : []),
   ], [
     { label: saved ? 'Go on playing' : 'New game', run: () => location.reload() },
     { label: 'Close', primary: true, run: () => close() },
@@ -1315,7 +1317,19 @@ overlay = new Overlay({
   form,
   toggleKeyboard: () => showKeyboard(!$('kbd').classList.contains('on')),
 });
+// build.json, written by build.sh: the commit this page was built from and a
+// link to its source on GitHub.  Shown at the foot of the boot screen and at
+// the end of a game, so whoever plays it can find the source.
+let build = null;
+async function loadBuild() {
+  try { build = await (await fetch('build.json')).json(); } catch (e) { return; }
+  const a = $('build');
+  a.textContent = `Rolehack · build ${build.short} (${build.date}) · source on GitHub`;
+  a.href = build.source;
+}
+
 async function start() {
+  loadBuild();
   // the phone's options (defaults.nh), read by the game as ~/.nethackrc
   let rc = '';
   try { rc = await (await fetch('defaults.nh')).text(); } catch (e) { console.warn('defaults.nh', e); }
@@ -1357,11 +1371,11 @@ async function start() {
 // earlier state.  A second page waits and starts when the first one closes.
 if (navigator.locks) {
   const waiting = setTimeout(() => {
-    $('boot').textContent = 'Rolehack is open in another window. It starts here when that one closes.';
+    $('boot-text').textContent = 'Rolehack is open in another window. It starts here when that one closes.';
   }, 800);
   navigator.locks.request('rolehack-game', () => {
     clearTimeout(waiting);
-    $('boot').textContent = 'Loading Rolehack…';
+    $('boot-text').textContent = 'Loading Rolehack…';
     start();
     return new Promise(() => {});   // held until the page goes
   });

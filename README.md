@@ -4,6 +4,14 @@ A fork of [NetHack 5.0](https://github.com/NetHack/NetHack) exploring **new play
 
 This is a **proof of concept**, not a release. It compiles, it plays, and it is not balanced.
 
+## Play it in the browser
+
+**https://lukrepository.github.io/Rolehack/** — NetHack 5.0 with the Apothecary, the paper doll and Rolehack's touch controls, as a page. Nothing to install: it runs in Edge, Chrome, Firefox or Safari, on a PC, a tablet or a phone. In Edge or Chrome you can also install it as an app (the "App available" icon at the right end of the address bar); the installed copy starts without a connection.
+
+Games are kept in the browser's own storage for that address. Closing the window keeps the game where it is: give the same name at "Who are you?" to go on. The page shows which commit it was built from at the foot of its loading screen, with a link back to the source here.
+
+The page is built from the [`web`](https://github.com/Lukrepository/Rolehack/tree/web) branch (`win/web/`, `win/shim/`, `win/share/`) and published from the `gh-pages` branch by [`win/web/build.sh`](win/web/build.sh). There is also an Android app, built from [RolehackDroid](https://github.com/Lukrepository/RolehackDroid) and [RolehackFront](https://github.com/Lukrepository/RolehackFront).
+
 Upstream's own documentation is still in [`README`](README); this file describes only what Rolehack adds.
 
 ---
@@ -60,6 +68,17 @@ NETHACKOPTIONS='windowtype:X11' ./nethack
 
 The Apothecary appears in the role menu as **`A`**, directly below Archeologist.
 
+### The browser version (`web` branch)
+
+The core compiles to WebAssembly with the [Emscripten SDK](https://emscripten.org/) (tested with 6.0); the page in `win/web/` is plain JavaScript with no build step of its own. With `emsdk` installed at `~/emsdk` (or `EMSDK` set):
+
+```
+sh win/web/build.sh clean
+python3 -m http.server 8123 --directory targets/web
+```
+
+then open http://localhost:8123/. `build.sh` writes `targets/web/`, which is what the `gh-pages` branch holds. Publishing a new build is copying that directory into `gh-pages` and pushing it; the page's service worker replaces the installed copy on its next start.
+
 ### The `android-port` branch
 
 A separate branch adds a `CROSS_TO_ANDROID` cross-compile target following upstream's existing msdos/amiga/wasm/mips pattern, which builds NetHack 5.0 for `aarch64-linux-android` with the NDK. It has been run on a physical phone via `adb`. Three small, clearly-marked C changes are involved, all in termcap/tty plumbing — no gameplay code.
@@ -86,7 +105,7 @@ Design notes, verification logs, and the analysis this was built on live outside
 ## Status and caveats
 
 - **Proof of concept.** Playable, not balanced. No claim is made that the Apothecary is fair, fun, or finished.
-- Monster tile art is **placeholder** — cloned from existing monsters, so the apothecary currently looks like a wizard.
+- The Apothecary has its own tiles (a chemist holding a flask up to the light), drawn for Rolehack.
 - Not submitted upstream, and not written with upstreaming in mind. NetHack's DevTeam has been conservative about the roster for over a quarter century, and that is their prerogative.
 - Licensed under the **NetHack General Public License**, like everything it is derived from. See [`dat/license`](dat/license).
 
