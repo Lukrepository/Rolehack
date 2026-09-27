@@ -1798,7 +1798,7 @@ poly_obj(struct obj *obj, int id)
     /* Keep chest/box traps and poisoned ammo if we may */
     if (obj->otrapped && Is_box(otmp))
         otmp->otrapped = 1;
-    if (obj->opoisoned && is_poisonable(otmp))
+    if (obj->opoisoned && rh_poisonable(otmp)) /* ROLEHACK */
         otmp->opoisoned = 1;
 
     if (id == STRANGE_OBJECT && obj->otyp == CORPSE) {

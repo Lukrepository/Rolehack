@@ -193,8 +193,11 @@ static const struct trobj Apothecary[] = {
        against 27) and stay recoverable long enough to be a weapon
        (Lucas, 2026-09-23). */
     { DART, 2, WEAPON_CLASS, 10, 12, UNDEF_BLESS },
-    { ALCHEMY_SMOCK, 2, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
-    { LEATHER_GLOVES, 1, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
+    /* +0 all round except the fedora (Lucas, 2026-09-27): the four pieces
+       already give AC 6 unenchanted, and +2/+1/+1 had crept to AC 2, the
+       best start in the game.  Toughness moved into the hit die. */
+    { ALCHEMY_SMOCK, 0, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
+    { LEATHER_GLOVES, 0, ARMOR_CLASS, 1, 1, UNDEF_BLESS },
     /* closed-toed shoes, for safety: the trade is spilt acid and broken
        glass (Lucas, 2026-09-25) */
     { HIGH_BOOTS, 0, ARMOR_CLASS, 1, 1, UNDEF_BLESS },

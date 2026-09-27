@@ -106,7 +106,9 @@ const struct Role roles[NUM_ROLES+1] = {
       { 9, 12, 10, 9, 9, 7 },
       { 14, 26, 16, 14, 18, 12 },
       /* Init   Lower  Higher */
-      { 10, 0, 0, 6, 1, 0 }, /* Hit points */
+      /* ROLEHACK 2026-09-27 (Lucas): the Healer's line.  Was 10 + d6, the
+         lowest hit die in the game; four playtests died of it. */
+      { 11, 0, 0, 8, 1, 0 }, /* Hit points */
       { 2, 3, 0, 3, 0, 2 },
       12, /* Energy */
       0,

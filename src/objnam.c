@@ -683,7 +683,7 @@ xname_flags(
             Sprintf(buf, "%s amulet", dn);
         break;
     case WEAPON_CLASS:
-        if (is_poisonable(obj) && obj->opoisoned)
+        if (rh_poisonable(obj) && obj->opoisoned) /* ROLEHACK */
             Strcpy(buf, "poisoned ");
         FALLTHROUGH;
         /*FALLTHRU*/
