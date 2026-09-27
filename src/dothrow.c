@@ -65,6 +65,12 @@ multishot_class_bonus(
         if (skill == P_DAGGER)
             multishot++;
         break;
+    case PM_APOTHECARY:
+        /* ROLEHACK: the trade's weapon, as the Rogue's daggers (Lucas,
+           2026-09-27) */
+        if (skill == -P_DART)
+            multishot++;
+        break;
     case PM_NINJA:
         if (skill == -P_SHURIKEN || skill == -P_DART)
             multishot++;

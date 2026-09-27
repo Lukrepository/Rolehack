@@ -247,6 +247,7 @@ explode(
             break;
         case PM_HEALER:
         case PM_KNIGHT:
+        case PM_APOTHECARY: /* ROLEHACK (Lucas, 2026-09-27) */
             damu /= 2;
             break;
         default:
