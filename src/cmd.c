@@ -1725,7 +1725,7 @@ struct ext_func_tab extcmdlist[] = {
               dofire, 0, NULL },
     { M('f'), "force", "force a lock",
               doforce, AUTOCOMPLETE, NULL },
-    { '\0',   "grapple", "grapple an adjacent monster, or throw the one held",
+    { M('G'), "grapple", "grapple an adjacent monster, or throw the one held",
               dograpple, AUTOCOMPLETE, NULL },
     { M('g'), "genocided",
               "list monsters that have been genocided or become extinct",
