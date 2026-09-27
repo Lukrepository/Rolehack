@@ -1,5 +1,5 @@
 /* NetHack 5.0	extern.h	$NHDT-Date: 1778886716 2026/05/15 15:11:56 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.1558 $ */
-/* Changed for Rolehack by Lucas Ruiz, 2026-08-16 to 2026-08-21.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-08-16 to 2026-09-27.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Steve Creps, 1988.                               */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -854,6 +854,8 @@ extern boolean will_hurtle(struct monst *, coordxy, coordxy) NONNULLARG1;
 extern void hurtle(int, int, int, boolean);
 extern void mhurtle(struct monst *, int, int, int) NONNULLARG1;
 extern int dograpple(void); /* ROLEHACK */
+extern int doability(void); /* ROLEHACK: RoleMaker v1, rhability.c */
+extern void rh_ability_ready(union any *, long); /* ROLEHACK */
 extern boolean harmless_missile(struct obj *) NONNULLARG1;
 extern boolean throwing_weapon(struct obj *) NONNULLARG1;
 extern boolean throwit_mon_hit(struct obj *, struct monst *) NONNULLARG1;

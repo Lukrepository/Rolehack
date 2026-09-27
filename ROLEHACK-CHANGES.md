@@ -29,7 +29,9 @@ notices before each release.
 | `include/objects.h` | changed | 2026-09-25 | notice in file |
 | `include/optlist.h` | changed | 2026-09-25 | notice in file |
 | `include/patchlevel.h` | changed | 2026-09-25 | notice in file |
+| `include/rhability.h` | added | 2026-09-27 | notice in file |
 | `include/skills.h` | changed | 2026-08-16 | notice in file |
+| `include/timeout.h` | changed | 2026-09-27 | notice in file |
 | `src/artifact.c` | changed | 2026-08-21 to 2026-09-23 | notice in file |
 | `src/attrib.c` | changed | 2026-07-31 | notice in file |
 | `src/cmd.c` | changed | 2026-09-27 | notice in file |
@@ -48,7 +50,9 @@ notices before each release.
 | `src/potion.c` | changed | 2026-08-10 to 2026-09-27 | notice in file |
 | `src/quest.c` | changed | 2026-09-23 | notice in file |
 | `src/report.c` | changed | 2026-09-25 | notice in file |
+| `src/rhability.c` | added | 2026-09-27 | notice in file |
 | `src/role.c` | changed | 2026-07-31 to 2026-09-27 | notice in file |
+| `src/timeout.c` | changed | 2026-09-27 | notice in file |
 | `src/u_init.c` | changed | 2026-07-31 to 2026-09-27 | notice in file |
 | `src/uhitm.c` | changed | 2026-08-16 to 2026-09-27 | notice in file |
 | `src/weapon.c` | changed | 2026-09-23 to 2026-09-27 | notice in file |

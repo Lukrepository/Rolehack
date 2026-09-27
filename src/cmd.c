@@ -1675,6 +1675,8 @@ struct ext_func_tab extcmdlist[] = {
     { M('?'), "?", "list all extended commands",
               doextlist, IFBURIED | AUTOCOMPLETE | GENERALCMD | CMD_M_PREFIX,
               NULL },
+    { M('b'), "ability", "use one of your role's abilities", /* ROLEHACK */
+              doability, AUTOCOMPLETE, NULL },
     { M('a'), "adjust", "adjust inventory letters",
               doorganize, IFBURIED | AUTOCOMPLETE | GENERALCMD, NULL },
     { M('A'), "annotate", "name current level",

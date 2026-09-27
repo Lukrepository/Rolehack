@@ -1,4 +1,5 @@
 /* NetHack 5.0	timeout.c	$NHDT-Date: 1781973070 2026/06/20 16:31:10 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.212 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-27.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2018. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -1987,7 +1988,8 @@ static const ttable timeout_funcs[NUM_TIME_FUNCS] = {
     TTAB(shrink_glob, (timeout_proc) 0, "shrink_glob"),
     /* level timers */
     TTAB(melt_ice_away, (timeout_proc) 0, "melt_ice_away"),
-    /* currently no monster or global timers */
+    /* global timers */
+    TTAB(rh_ability_ready, (timeout_proc) 0, "rh_ability_ready"), /* ROLEHACK */
 };
 #undef TTAB
 

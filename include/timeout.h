@@ -1,4 +1,5 @@
 /* NetHack 5.0	timeout.h	$NHDT-Date: 1781973089 2026/06/20 16:31:29 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.27 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-27.  See ROLEHACK-CHANGES.md. */
 /* Copyright 1994, Dean Luick                                     */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -44,6 +45,8 @@ enum timeout_types {
     FIG_TRANSFORM,
     SHRINK_GLOB,
     MELT_ICE_AWAY,
+    RH_ABILITY_READY, /* ROLEHACK: a RoleMaker ability's cooldown ended;
+                         appended so older saves still load */
 
     NUM_TIME_FUNCS
 };

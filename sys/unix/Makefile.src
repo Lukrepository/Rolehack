@@ -530,7 +530,7 @@ HACKCSRC ?= allmain.c alloc.c apply.c artifact.c attrib.c ball.c bones.c \
 	   spell.c stairs.c steal.c steed.c strutil.c symbols.c sys.c \
 	   teleport.c timeout.c topten.c track.c trap.c u_init.c utf8map.c \
 	   uhitm.c vault.c version.c vision.c weapon.c were.c wield.c \
-	   windows.c wizard.c wizcmds.c worm.c worn.c write.c zap.c
+	   windows.c wizard.c wizcmds.c worm.c worn.c write.c zap.c rhability.c
 
 # all operating-system-dependent .c (for dependencies and such)
 SYSCSRC ?= ../sys/share/pcmain.c ../sys/share/pcsys.c \
@@ -629,7 +629,7 @@ HOBJ ?= $(TARGETPFX)allmain.o $(TARGETPFX)alloc.o \
 	$(TARGETPFX)vault.o $(TARGETPFX)vision.o $(TARGETPFX)weapon.o \
 	$(TARGETPFX)were.o $(TARGETPFX)wield.o $(TARGETPFX)windows.o \
 	$(TARGETPFX)wizard.o $(TARGETPFX)wizcmds.o $(TARGETPFX)worm.o \
-	$(TARGETPFX)worn.o $(TARGETPFX)write.o $(TARGETPFX)zap.o \
+	$(TARGETPFX)worn.o $(TARGETPFX)write.o $(TARGETPFX)zap.o $(TARGETPFX)rhability.o \
 	$(REGEXOBJ) $(RANDOBJ) $(SYSOBJ) $(WINOBJ) \
 	$(HINTOBJ) $(SNDLIBOBJ) $(UUIDOBJ) \
 	$(TARGETPFX)version.o 
@@ -1296,6 +1296,7 @@ $(TARGETPFX)wizcmds.o: wizcmds.c $(HACK_H) ../include/func_tab.h
 $(TARGETPFX)worm.o: worm.c $(HACK_H)
 $(TARGETPFX)worn.o: worn.c $(HACK_H)
 $(TARGETPFX)write.o: write.c $(HACK_H)
+$(TARGETPFX)rhability.o: rhability.c $(HACK_H) ../include/rhability.h
 $(TARGETPFX)zap.o: zap.c $(HACK_H)
 qt_kde0.moc: $(QTn_H) ../win/Qt/qt_kde0.h
 	$(MOCPATH) -o $@ ../win/Qt/qt_kde0.h
