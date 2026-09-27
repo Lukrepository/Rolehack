@@ -11,6 +11,11 @@ export const G90 = 'G90', R90 = 'R90', A90 = 'A90', OFF90 = 'OFF90',
 
 const i = (word, key, face = null, altKey = null) => ({ word, key, face, altKey });
 const alt = (word, key, altKey) => i(word, key, null, altKey);
+// A drawer section's heading: a title over the keys that follow, not a key.
+// It has no key, is never pinned, and the drawer's count leaves it out.
+const head = (title) => ({ word: title, key: null, face: null, altKey: null, heading: true });
+// A command still being tried out: "BETA" in its corner.
+const beta = (word, key) => ({ ...i(word, key), tag: 'BETA' });
 
 const group = (id, title, items) => ({ id, title, items });
 
@@ -38,14 +43,17 @@ export const DROP = group('drop', 'DROP', [
   i('Unpaid', 'Du'), i('Drop all', 'Da'), i('Tip container', 'M-T'),
 ]);
 
-export const FIGHT = group('fight', 'OFFENSE', [
+// COMBAT, EQUIP's drawer titled INVENTORY, INTERACT is APPLY (Lucas, 2026-09-26)
+export const FIGHT = group('fight', 'COMBAT', [
   i('Quiver', 'Q'),
   i('Fight', 'F', R90), i('Kick', '^D', R90), i('Fire', 'f'),
   i('Throw', 't'), i('Zap wand', 'z'), i('Cast spell', 'Z'),
   i('Turn undead', 'M-t'),
+  // Rolehack's #grapple, bound to M-G in the core (cmd.c); appended so nothing moves.
+  i('Grapple', 'M-G', R90),
 ]);
 
-export const EQUIP = group('equip', 'EQUIP', [
+export const EQUIP = group('equip', 'INVENTORY', [
   i('Wield', 'w'), i('Unwield', 'w-', OFF90), i('Swap', 'x'),
   i('Two-weapon', 'X', A90), i('Ready quiver', 'Q'),
   i('Wear armor', 'W'), i('Take off', 'T', OFF90),
@@ -65,44 +73,59 @@ export const USE = group('use', 'USE', [
 ]);
 
 // Intercepted by the overlay; never sent to the core, never pinnable.
-export const SEARCH_MODE = i('Search mode', 's+');
+export const SEARCH_MODE = beta('Search mode', 's+');
 export const CASE_TOGGLE = i('Case on/off', '#case');
 export const STATUS_TOGGLE = i('Status lines', '#status');
 // Web only: the map drawn in tiles or in text.
 export const MAP_TOGGLE = i('Tiles / text', '#mapmode');
 
+// WORLD and GAME are the long tail, for finding a command rather than for
+// speed, in sections by use (Lucas, 2026-09-26; drawer-plan-2026-09-26.html).
 export const WORLD = group('world', 'WORLD', [
-  i('Pick up', ','), i('Open door', 'o'), i('Close door', 'c'), i('Search', 's'),
-  SEARCH_MODE,
-  i('Rest one', '.'), i('Travel', '_'), i('Go down', '>'), i('Go up', '<'),
-  i('Loot box', 'M-l'), i('Force lock', 'M-f'), i('Untrap', 'M-u'), i('Engrave', 'E'),
-  i('Chat', 'M-c'), i('Pay bill', 'p'), i('Sacrifice', 'M-o'), i('Sit', 'M-s'),
-  i('Jump', 'M-j'), i('Teleport', '^T'), i('Ride', 'M-R'), i('Monster power', 'M-m'),
-  i('Wipe face', 'M-w'),
-  i('Adjacent trap', '^'), i('Terrain', '\\b'),
+  head('Getting around'),
+  i('Travel', '_'), i('Go up', '<'), i('Go down', '>'), i('Jump', 'M-j'),
+  i('Teleport', '^T'), i('Ride', 'M-R'),
+  head('Search / wait'),
+  i('Rest one', '.'), i('Search', 's'), SEARCH_MODE,
+  // NetHack's own word for what you can do on your square (#herecmdmenu)
+  head('Here'),
+  i('Pick up', ','), i('Engrave', 'E'), i('Loot box', 'M-l'), i('Pay bill', 'p'),
+  i('Force lock', 'M-f'), i('Sit', 'M-s'), i('Sacrifice', 'M-o'),
+  i('Monster power', 'M-m'), i('Wipe face', 'M-w'),
+  // Commands that ask for a direction; Kick opens boxes and doors too.
+  head('Adjacent'),
+  i('Open door', 'o'), i('Close door', 'c'), i('Kick', '^D'), i('Chat', 'M-c'),
+  i('Untrap', 'M-u'), i('Adjacent trap', '^'),
 ]);
 
 export const GAME = group('game', 'GAME', [
-  i('All commands', '#'),
-  CASE_TOGGLE, STATUS_TOGGLE,
-  i('Options', 'O'), i('All options', 'mO'), i('Save', 'S'), i('Help', '?'),
-  i('Annotate', 'M-A'), i('Call/name', 'C'), i('Name type', 'M-n'), i('Autopickup', '@'),
-  i('Repeat', '^A'), i('Redraw', '^R'), i('Version', 'V'),
-  i('Explore mode', 'M-X'), i('Quit', '#'),
-  i('Overview', 'M-O'), i('Enhance skills', 'M-e'), i('Discoveries', '\\'), i('Attributes', '^X'),
-  i('Genocided', 'M-g'), i('Vanquished', 'M-V'), i('Chronicle', 'v'), i('Conduct', 'M-C'),
-  i('Past messages', '^P'), i('Known spells', '+'), i('All equipment', '*'), i('What is', '/'),
-  // web only, appended so nothing above moves
-  MAP_TOGGLE,
+  head('Knowledge'),
+  i('Discoveries', '\\'), i('Past messages', '^P'), i('Attributes', '^X'), i('Chronicle', 'v'),
+  i('Enhance skills', 'M-e'), i('What is', '/'), i('Known spells', '+'),
+  i('Terrain', '\\b'), i('Overview', 'M-O'), i('Genocided', 'M-g'), i('Vanquished', 'M-V'),
+  i('Conduct', 'M-C'), i('All equipment', '*'),
+  head('Help and commands'),
+  i('All commands', '#'), i('Help', '?'), i('Version', 'V'), i('Repeat', '^A'),
+  head('Save / quit'),
+  i('Save', 'S'), i('Quit', '#'),
+  head('Settings'),
+  i('Options', 'O'), i('All options', 'mO'), i('Autopickup', '@'), i('Explore mode', 'M-X'),
+  head('Names and notes'),
+  i('Call/name', 'C'), i('Name type', 'M-n'), i('Annotate', 'M-A'),
+  // MAP_TOGGLE is web only
+  head('Display'),
+  CASE_TOGGLE, STATUS_TOGGLE, i('Redraw', '^R'), MAP_TOGGLE,
 ]);
 
 export const WIZ_WORLD = [
+  head('Wizard mode'),
   i('Map level', '^F'), i('Detect near', '^E'), i('Create mon', '^G'),
   i('Levelport', '^V'), i('Remake level', '#wizmakemap\\n'),
   i('Where am I', '#wizwhere\\n'), i('Flip level', '#wizfliplevel\\n'),
 ];
 
 export const WIZ_GAME = [
+  head('Wizard mode'),
   i('Wish', '^W'), i('Identify all', '^I'), i('Set intrinsic', '#wizintrinsic\\n'),
   i('Level change', '#levelchange\\n'), i('Polyself', '#polyself\\n'),
   i('Kill monster', '#wizkill\\n'), i('Show stats', '#stats\\n'),
@@ -119,12 +142,12 @@ export const groupById = (id) => GROUPS.get(id);
 // the group's drawer.  fanA0 / fanStep are CSS-convention degrees (0 = east,
 // y down, clockwise); leftSide hubs point their hold hint right.
 const hub = (o) => o;
-export const HUB_ATTACK = hub({ id: 'fight', label: 'OFFENSE', face: R90, quick: i('Inventory', 'i'),
+export const HUB_ATTACK = hub({ id: 'fight', label: 'COMBAT', face: R90, quick: i('Inventory', 'i'),
   fan: [], group: FIGHT, fanA0: 0, fanStep: 0, fanRadius: 0, leftSide: true, labelSize: 7 });
 export const HUB_DROP = hub({ id: 'drop', label: 'DROP', face: TEAL, quick: i('Drop', 'd'),
   fan: [i('Drop type', 'D'), i('From menu', 'Dm'), i('Review first', 'Di', OFF90)], group: DROP,
   fanA0: -64, fanStep: 32, fanRadius: 110, leftSide: true, labelSize: 10 });
-export const HUB_INTERACT = hub({ id: 'apply', label: 'INTERACT', face: G90, quick: i('Apply', 'a'),
+export const HUB_INTERACT = hub({ id: 'apply', label: 'APPLY', face: G90, quick: i('Apply', 'a'),
   fan: [i('Apply tool', 'a'), i('Sit', 'M-s'), i('Dip', 'M-d'), alt('Engrave', 'E', 'E?')], group: USE,
   fanA0: 258, fanStep: -30, fanRadius: 118, leftSide: false, labelSize: 9.5 });
 export const HUB_CONSUME = hub({ id: 'consume', label: 'EAT\nQUAFF\nREAD', face: PINK, quick: i('Eat', 'e'),
@@ -192,7 +215,7 @@ export const wordWithCount = (a, n) => (n > 1 ? `${a.word} ×${n}` : a.word);
 // Pinnable commands: persisted keys become faces again.  Group entries first;
 // hub, fan and radial entries overwrite them with their short labels.
 const PINNABLE = new Map();
-for (const g of GROUPS.values()) for (const it of g.items) PINNABLE.set(it.key, it);
+for (const g of GROUPS.values()) for (const it of g.items) if (!it.heading) PINNABLE.set(it.key, it);
 for (const h of HUBS) for (const it of h.fan) PINNABLE.set(it.key, it);
 for (const it of EQUIP_RADIAL) PINNABLE.set(it.key, it);
 PINNABLE.set('x', i('Swap', 'x'));

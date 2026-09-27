@@ -187,6 +187,12 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
 #drawer .title .k { right: 4px; top: 3px; }
 #drawer .grid { overflow-y: auto; padding: 10px; display: grid; gap: 6px; touch-action: pan-y; }
 #drawer .grid .k { position: relative; }
+/* a section heading: small capitals and a hairline to the right edge (RhDrawer.Heading) */
+#drawer .grid .dhead { grid-column: 1 / -1; height: 20px; display: flex; align-items: flex-end; gap: 8px;
+                       padding: 0 2px 4px; font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase;
+                       color: rgba(255,255,255,.62); }
+#drawer .grid .dhead::after { content: ''; flex: 1; height: 1px; margin-bottom: 4px; background: rgba(255,255,255,.2); }
+#drawer .grid .dhead:not(:first-child) { margin-top: 6px; }
 
 /* the flash */
 #flash { position: absolute; padding: 2px 8px; border-radius: 99px; background: rgba(5,7,13,.92); color: #ffd97a;

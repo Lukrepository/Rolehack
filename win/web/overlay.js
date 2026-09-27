@@ -579,7 +579,9 @@ export class Overlay {
   buildMacroKey(K, slot) {
     const k = new Key(K).face(C.G90);
     this.macroKeys[slot] = k;
-    this.bindHold(k, HUB_HOLD_MS, () => this.editMacro(slot), () => {
+    // while a command is in hand a tap places it here, and a hold does nothing
+    this.bindHold(k, HUB_HOLD_MS, () => { if (!this.assign) this.editMacro(slot); }, () => {
+      if (this.assign) { this.placeMacro(slot); return; }
       const m = P.macros()[slot];
       if (!m.keys) { this.editMacro(slot); return; }
       this.closeChips();
@@ -597,8 +599,23 @@ export class Overlay {
     // Portrait's key row is too narrow for the tag beside a name, so there it
     // gives way to a label with something to read (a macro of spaces keeps it).
     k.tag(this.portrait && slot > 0 && m.keys && (m.name || m.keys).trim() ? '' : `M${slot + 1}`);
+    // every macro is a destination while a command is in hand, from any drawer
+    if (this.assign) { k.placeholder(false).face(C.A90).label('HERE', 8).sub(null); return; }
+    k.face(C.G90);
     if (m.keys) k.placeholder(false).label(m.name || m.keys, 8.5).sub('hold to edit');
     else k.placeholder(true).label('+', 15).sub('macro');
+  }
+
+  // a command in hand becomes the macro: its name and its key sequence
+  placeMacro(slot) {
+    P.saveMacro(slot, this.assign.word, this.assign.key);
+    const fan = this.assignTarget === 3;
+    this.assign = null;
+    this.assignHub = null;
+    if (fan) this.closeFan();
+    this.refreshAllSlots();
+    this.updateHubSubLines();
+    this.syncModal();
   }
 
   editMacro(slot) {
@@ -1072,6 +1089,7 @@ export class Overlay {
       if (hv.hub === C.HUB_ATTACK) this.refreshSlots(hv, true);
       else if (hv.hub === C.HUB_EQUIP) this.refreshSlots(hv, false);
     }
+    for (let n = 0; n < this.macroKeys.length; n++) this.refreshMacroKey(n);
   }
 
   updateHubSubLines() {
@@ -1231,6 +1249,7 @@ export class Overlay {
                               || (hv.hub === C.HUB_EQUIP && this.assignAccepts(false)))) lift.push(hv.satellites);
         if (this.assignAcceptsFan(hv.hub)) lift.push(hv.face.el, hv.fan);
       }
+      for (const k of this.macroKeys) if (k) lift.push(k.el);
     }
     if (!lift.length) { this.scrim.classList.remove('on'); return; }
     this.scrimHint.textContent = this.assign
@@ -1566,12 +1585,15 @@ export class Overlay {
     const extras = this.wizard ? C.wizardExtras(g.id) : null;
     const items = extras ? g.items.concat(extras) : g.items;
     this.drawerTitle.textContent = g.title;
-    this.drawerCountText = `${items.length} commands`;
+    this.drawerCountText = `${items.filter((it) => !it.heading).length} commands`;
     this.setAssigning(false);
     this.drawerGrid.innerHTML = '';
     for (const item of items) {
-      const f = new Key(this.drawerGrid).place(0, 0, 138, 46).face(item.face || C.G90).label(item.word, 11, true)
-        .sub(item.key, true);
+      // a heading spans the grid, so the keys after it start a fresh row
+      if (item.heading) { el('div', 'dhead', this.drawerGrid).textContent = item.word; continue; }
+      const f = new Key(this.drawerGrid).place(0, 0, 138, 46).face(item.face || C.G90).label(item.word, 11, true);
+      // a tag ("BETA") takes the corner the raw key would have
+      if (item.tag) f.sub('', true).tag(item.tag); else f.sub(item.key, true);
       Object.assign(f.el.style, { position: 'relative', left: '0', top: '0', width: '100%' });
       this.bindHold(f, 500, () => this.onDrawerPin(item), () => {
         if (this.assigning) this.onDrawerPin(item);
