@@ -176,6 +176,7 @@ static jmethodID jCreation;     /* Rolehack: character creation's menus */
 static jmethodID jMsgBand, jMsgRows, jMore, jMsgScroll;   /* Rolehack: the message band's --More-- */
 static jmethodID jAnswers;      /* Rolehack: a question's answers on the pad */
 static jmethodID jRuleText, jLoadRules, jSaveRules;   /* Rolehack: message rules (rhrules.c) */
+static jmethodID jGetpos;       /* Rolehack: the pad while a spot is picked */
 
 static boolean quit_if_possible;
 static boolean restoring_msghistory;
@@ -536,6 +537,7 @@ void Java_com_tbd_forkfront_NetHackIO_RunNetHack(JNIEnv* env, jobject thiz, jstr
     jRuleText = rh_optional_method("rhRuleText", "()[B");
     jLoadRules = rh_optional_method("rhLoadRules", "()[B");
     jSaveRules = rh_optional_method("rhSaveRules", "([B)V");
+    jGetpos = rh_optional_method("rhGetpos", "(I)V");
 
     if(!(jReceiveKey && jReceivePosKey && jCreateWindow && jClearWindow && jDisplayWindow &&
             jDestroyWindow && jPutString && jRawPrint && jSetCursorPos && jPrintTile &&
@@ -2295,6 +2297,13 @@ static boolean bMouseLock;
 void lock_mouse_cursor(boolean bLock)
 {
     bMouseLock = bLock;
+    /* Rolehack: getpos() locks it while a spot is picked -- a polearm or
+       Snickersnee applied, farlook, travel -- and the pad then moves the
+       cursor and its centre picks the spot with '.' (Lucas, 2026-09-28) */
+    if(jGetpos)
+    {
+        JNICallV(jGetpos, (int) bLock);
+    }
 }
 
 int and_nh_poskey(coordxy *x, coordxy *y, int *mod)
