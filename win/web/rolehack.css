@@ -114,6 +114,13 @@ body { font-family: var(--capfont); color: #f1e8d5; -webkit-tap-highlight-color:
 #statband .hpbar span { display: inline-block; color: var(--glass); text-shadow: none; padding-left: 1px; }
 #statband .badges { margin-left: auto; display: flex; gap: 4px; }
 #statband .badge { padding: 0 3px; text-shadow: none; }
+/* a style per tier, so it reads without colour (web.js TIER_STYLE; RhBadges.style) */
+#statband .badge.framed { background: var(--bc); color: var(--bf); font-weight: bold;
+                          box-shadow: inset 0 0 0 1px var(--bc), inset 0 0 0 2.2px var(--bf); }
+#statband .badge.solid { background: var(--bc); color: var(--bf); }
+#statband .badge.outline { color: var(--bc); box-shadow: inset 0 0 0 1.2px var(--bc); }
+#statband .badge.plain { color: var(--bc); }
+#statband .hpcrit { color: var(--glass); text-shadow: none; padding: 0 1px; }
 #chips { position: absolute; left: 10px; right: 10px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
 /* a prompt's choices: keycaps a thumb can hit (Parhi's 9.2 mm and more), that
    press down, rather than the small pills they were (Lucas, 2026-09-27) */

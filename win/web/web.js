@@ -15,10 +15,16 @@ import * as P from './prefs.js';
 import * as FB from './feedback.js';
 
 const COLNO = 80, ROWNO = 21;
-// CLR_BLACK .. CLR_WHITE; NO_COLOR (8) draws as gray
-const COLORS = ['#6f6f6f', '#d8453e', '#46a946', '#b5762a', '#4d74dc', '#b049b0',
-                '#3cb1b1', '#c2c2c2', '#c2c2c2', '#ff9a3a', '#6ff06f', '#f3df55',
-                '#78a2ff', '#ff78ff', '#72f2f2', '#ffffff'];
+// CLR_BLACK .. CLR_WHITE; NO_COLOR (8) draws as gray.  Nudged apart for
+// red-green vision (colour vision, layer 1; Lucas, 2026-09-28): the old red,
+// green and brown were one lightness, so to a deuteranope blessed and cursed,
+// and 155 pairs of same-letter monsters, looked alike.  Each colour moved by
+// at most 12 CIEDE2000 and kept its hue and most of its saturation; none of
+// those pairs now falls under 8 for protanopes or deuteranopes.  Searched by
+// the workspace's tools/cvd/cvd_webpal.py; grey and white stay neutral.
+const COLORS = ['#777f81', '#ff6267', '#1a9b54', '#cc5b10', '#2c51ff', '#9c2d8b',
+                '#23adba', '#c6bfbb', '#c6bfbb', '#eea104', '#55ff9f', '#f2fd19',
+                '#34aeff', '#f364c9', '#4ee6fc', '#f8fcf6'];
 const MG_PET = 0x10;
 const MENU_ITEMFLAGS_SELECTED = 1;
 const ATR = { BOLD: 1, DIM: 2, ULINE: 4, BLINK: 5, INVERSE: 7 };
@@ -33,8 +39,25 @@ const CONDITIONS = {
   HOLDING: ['UHold', 0], ICY: ['Icy', 0], SLIPPERY: ['Slip', 0], GLOWHANDS: ['Glow', 0], BAREH: ['Bare', 0],
 };
 const CONDITION_ORDER = Object.keys(CONDITIONS);
-// RhBadges' tiers: critical, serious, warning, info
-const TIER_BG = ['#c2412e', '#d9772b', '#c9a227', '#2f63ad'], TIER_FG = ['#ffffff', '#1a1206', '#1a1206', '#ffffff'];
+// RhBadges' tiers: critical, serious, warning, info.  Each has a style as well
+// as a colour, so it reads without colour vision (colour vision, layer 1; the
+// phone's RhBadges.style): solid, bold and framed; solid; an outline; plain
+// text.  Okabe and Ito's colour-blind-safe hues.
+const TIER_BG = ['#b84a00', '#e69f00', '#f0e442', '#56b4e9'], TIER_FG = ['#ffffff', '#1a1206', '#1a1206', '#1a1206'];
+const TIER_STYLE = ['framed', 'solid', 'outline', 'plain'];
+// HP by tier, as the phone's RhTheme.hpTier() and hpColour(): plain from two
+// thirds up, a warning colour from one third (yellow, or white under the amber
+// and green phosphors, whose own text is too close to yellow for red-green
+// vision), and vermillion in inverse video below that.  The status line and
+// the hero's outline on the map share the steps.
+const PHOS_TEXT = { color: '#d7e3d0', amber: '#f5a93a', green: '#52e472', white: '#cdd4e0' };
+const hpTier = (f) => (f >= 0.66 ? 0 : f >= 0.33 ? 1 : 2);
+function hpColour(tier) {
+  const p = P.get('phosphor');
+  if (tier === 0) return PHOS_TEXT[p] || PHOS_TEXT.color;
+  if (tier === 1) return p === 'amber' || p === 'green' ? '#ffffff' : '#ffe14d';
+  return '#ff6a33';
+}
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
@@ -324,10 +347,16 @@ function renderMap() {
     }
   }
   if (cursor.x >= 0) {
+    // the hero's outline takes the status line's HP steps and colours, and
+    // doubles below a third, as on the phone (colour vision, layer 1)
     const lw = Math.max(1, Math.round(Td / 16));
-    cx.strokeStyle = '#e0b04a';
+    const hpmax = Number(bare('BL_HPMAX'));
+    const tier = hpmax > 0 ? hpTier(clamp(Number(bare('BL_HP')) / hpmax, 0, 1)) : 0;
+    cx.strokeStyle = hpmax > 0 ? hpColour(tier) : '#e0b04a';
     cx.lineWidth = lw;
-    cx.strokeRect(L + cursor.x * Td + lw / 2, Tp + cursor.y * Td + lw / 2, Td - lw, Td - lw);
+    const x0 = L + cursor.x * Td, y0 = Tp + cursor.y * Td;
+    cx.strokeRect(x0 + lw / 2, y0 + lw / 2, Td - lw, Td - lw);
+    if (tier === 2) cx.strokeRect(x0 + 2.5 * lw, y0 + 2.5 * lw, Td - 5 * lw, Td - 5 * lw);
   }
 }
 
@@ -592,7 +621,7 @@ function statusHtml() {
   const frac = clamp(hp / hpmax, 0, 1);
   // HP's colour and the conditions' severities show under every phosphor, as
   // the menu colours do: they are warnings (Lucas, 2026-09-27; RhScreen)
-  const hpColour = frac >= 0.66 ? '#63e07c' : frac >= 0.33 ? '#f5b342' : '#ff5a44';
+  const tier = hpTier(frac), hpCol = hpColour(tier);
   const lab = (l, n) => (bare(n) ? ` ${l}${bare(n)}` : '');
   const tail1 = [bare('BL_LEVELDESC'), bare('BL_GOLD') !== '' ? `$:${bare('BL_GOLD')}` : '', bare('BL_TIME') ? `T:${bare('BL_TIME')}` : '']
     .filter(Boolean).join(' ');
@@ -601,11 +630,14 @@ function statusHtml() {
   const stats = ['St:', 'Dx:', 'Co:', 'In:', 'Wi:', 'Ch:'].map((l, n) =>
     `${l}${bare(['BL_STR', 'BL_DX', 'BL_CO', 'BL_IN', 'BL_WI', 'BL_CH'][n])}`).join(' ');
   const badgeHtml = `<span class="badges">${badges().map((b) =>
-    `<span class="badge" style="background:${TIER_BG[b.tier]};color:${TIER_FG[b.tier]}">${esc(b.text)}</span>`).join('')}</span>`;
+    `<span class="badge ${TIER_STYLE[b.tier]}" style="--bc:${TIER_BG[b.tier]};--bf:${TIER_FG[b.tier]}">${esc(b.text)}</span>`).join('')}</span>`;
   const titleHtml = `<span class="title">${esc(title)}<span class="hpbar" style="width:calc(${(frac * 100).toFixed(1)}% + 1px);`
-    + `background:${hpColour}"><span>${esc(title)}</span></span></span>`;
+    + `background:${hpCol}"><span>${esc(title)}</span></span></span>`;
   const row1 = `<div class="row">${titleHtml}&nbsp;&nbsp;${esc(tail1)}${compact ? badgeHtml : ''}</div>`;
-  const row2 = `<div class="row"><span style="color:${hpColour}">HP:${esc(bare('BL_HP'))}(${esc(bare('BL_HPMAX'))})</span>&nbsp;${esc(tail2)}</div>`;
+  const hpText = `HP:${esc(bare('BL_HP'))}(${esc(bare('BL_HPMAX'))})`;
+  const hpHtml = tier === 2 ? `<span class="hpcrit" style="background:${hpCol}">${hpText}</span>`
+    : `<span style="color:${hpCol}">${hpText}</span>`;
+  const row2 = `<div class="row">${hpHtml}&nbsp;${esc(tail2)}</div>`;
   const row3 = compact ? '' : `<div class="row">${esc(stats)}&nbsp;&nbsp;${badgeHtml}</div>`;
   return row1 + row2 + row3;
 }
