@@ -2199,7 +2199,23 @@ void and_print_glyph(winid wid, coordxy x, coordxy y, const glyph_info *glyphinf
         special &= ~MG_OBJPILE;
     if(!iflags.use_inverse)
         special &= ~MG_DETECT;
-    JNICallV(jPrintTile, wid, x, y, tile, glyphinfo->ttychar, nhcolor_to_RGB(glyphinfo->gm.sym.color), special);
+
+    /* Rolehack (colour vision, layer 3; Lucas, 2026-09-28): the player's
+       glyph: option, drawn as tty draws it -- its colour (R-G-B, or a basic
+       colour) and, under a UTF-8 symset such as Enhanced1, its character.
+       A Unicode character goes up with 0x40000000 set, so the UI never takes
+       it for a byte of the 8-bit symset. */
+    int ch = glyphinfo->ttychar;
+    int rgb = nhcolor_to_RGB(glyphinfo->gm.sym.color);
+    if(iflags.customcolors && glyphinfo->gm.customcolor != 0)
+        rgb = (glyphinfo->gm.customcolor & NH_BASIC_COLOR)
+              ? nhcolor_to_RGB((int) COLORVAL(glyphinfo->gm.customcolor))
+              : (int) (0xFF000000U | COLORVAL(glyphinfo->gm.customcolor));
+#ifdef ENHANCED_SYMBOLS
+    if(glyphinfo->gm.u && glyphinfo->gm.u->utf32ch)
+        ch = (int) (0x40000000U | glyphinfo->gm.u->utf32ch);
+#endif
+    JNICallV(jPrintTile, wid, x, y, tile, ch, rgb, special);
 }
 
 //____________________________________________________________________________________
