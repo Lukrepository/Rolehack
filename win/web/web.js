@@ -45,16 +45,36 @@ const CONDITION_ORDER = Object.keys(CONDITIONS);
 // text.  Okabe and Ito's colour-blind-safe hues.
 const TIER_BG = ['#b84a00', '#e69f00', '#f0e442', '#56b4e9'], TIER_FG = ['#ffffff', '#1a1206', '#1a1206', '#1a1206'];
 const TIER_STYLE = ['framed', 'solid', 'outline', 'plain'];
+// Colour vision (layer 2; Lucas, 2026-09-28): the game's colours for each
+// setting, as the phone's RhTheme.gameColour(); Standard is COLORS above.
+// Protanopia and deuteranopia share one palette, green turned toward cyan so
+// blessed reads apart from cursed; every colour pair that monsters sharing a
+// letter use stays at least 14 CIEDE2000 apart in either vision.  Tritanopia
+// has its own.  Monochrome moves only green, yellow and red (blessed,
+// uncursed, cursed) apart in lightness.  From tools/cvd/cvd_modes.py.
+const RED_GREEN = ['#4c4f4e', '#fe5a6b', '#29b491', '#a57007', '#4881ff', '#7134d5', '#3f98a8', '#c4c5cc',
+                   '#c4c5cc', '#c7b709', '#a0f2a1', '#ffff0c', '#9eb3ff', '#c5166a', '#00c5f6', '#fffff8'];
+const MODE_COLORS = {
+  protanopia: RED_GREEN,
+  deuteranopia: RED_GREEN,
+  tritanopia: ['#4a4f4c', '#fe002a', '#5e8d42', '#a97404', '#9454d8', '#ab1b5b', '#066670', '#aab4b6',
+               '#aab4b6', '#acaa26', '#78ff00', '#fbeb4c', '#2daaf3', '#ff82ba', '#07f4e7', '#f8ffff'],
+  monochrome: ['#777f81', '#fb8f79', '#2d8e44', '#cc5b10', '#2c51ff', '#9c2d8b', '#23adba', '#c6bfbb',
+               '#c6bfbb', '#eea104', '#55ff9f', '#ffff75', '#34aeff', '#f364c9', '#4ee6fc', '#f8fcf6'],
+};
+const gameColour = (clr) => (MODE_COLORS[P.get('colourVision')] || COLORS)[clr];
 // HP by tier, as the phone's RhTheme.hpTier() and hpColour(): plain from two
 // thirds up, a warning colour from one third (yellow, or white under the amber
 // and green phosphors, whose own text is too close to yellow for red-green
 // vision), and vermillion in inverse video below that.  The status line and
 // the hero's outline on the map share the steps.
 const PHOS_TEXT = { color: '#d7e3d0', amber: '#f5a93a', green: '#52e472', white: '#cdd4e0' };
+const PHOS_DIM = { color: '#8c9a88', amber: '#9c6a22', green: '#2c8c46', white: '#7d8698' };
 const hpTier = (f) => (f >= 0.66 ? 0 : f >= 0.33 ? 1 : 2);
 function hpColour(tier) {
   const p = P.get('phosphor');
-  if (tier === 0) return PHOS_TEXT[p] || PHOS_TEXT.color;
+  // monochrome: quiet when well, brighter when hurt, inverse when critical
+  if (tier === 0) return (P.get('colourVision') === 'monochrome' ? PHOS_DIM : PHOS_TEXT)[p] || PHOS_TEXT.color;
   if (tier === 1) return p === 'amber' || p === 'green' ? '#ffffff' : '#ffe14d';
   return '#ff6a33';
 }
@@ -334,7 +354,7 @@ function renderMap() {
         if (doll) cx.drawImage(doll, dx, dy, Td, Td);
         else cx.drawImage(sheet, (c.tile % sheetCols) * 16, Math.floor(c.tile / sheetCols) * 16, 16, 16, dx, dy, Td, Td);
       } else if (c.ch !== 32) {
-        cx.fillStyle = COLORS[c.color];
+        cx.fillStyle = gameColour(c.color);
         cx.fillText(String.fromCharCode(c.ch), dx + Td / 2, dy + Td / 2 + 1);
       }
       if (c.flags & MG_PET) {
@@ -766,7 +786,7 @@ function attrText(text, attr) {
 function tint(clr) {
   if (!(clr >= 0 && clr < 16) || clr === 8) return '';
   if (clr === 7 && P.get('phosphor') !== 'color') return ' style="color:var(--phos-dim)"';
-  return ` style="color:${COLORS[clr]}"`;
+  return ` style="color:${gameColour(clr)}"`;
 }
 function lineHtml(l) {
   return `<div>${attrText(l.text, l.attr) || ' '}</div>`;
@@ -1540,7 +1560,7 @@ try {
   console.warn('tiles', e);   // the text map still works
 }
 buildKeyboard();
-P.onChange((name) => { if (name === 'mapMode' || name === 'zoom') render(); });
+P.onChange((name) => { if (name === 'mapMode' || name === 'zoom' || name === 'colourVision') render(); });
 overlay = new Overlay({
   send,
   glassChanged: (g) => layoutGlass(g),
