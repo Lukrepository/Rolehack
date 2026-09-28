@@ -173,6 +173,7 @@ static jmethodID jHereContext;
 static jmethodID jHeroLook;     /* Rolehack: the paper doll */
 static jmethodID jCreation;     /* Rolehack: character creation's menus */
 static jmethodID jMsgBand, jMsgRows, jMore, jMsgScroll;   /* Rolehack: the message band's --More-- */
+static jmethodID jAnswers;      /* Rolehack: a question's answers on the pad */
 
 static boolean quit_if_possible;
 static boolean restoring_msghistory;
@@ -378,6 +379,30 @@ staticfn void rh_msg_placed(int band, int rows)
     }
 }
 
+/*
+ * Rolehack: a question's answers on the movement pad (RhOverlay.showAnswers),
+ * as the web port has them.  A question asked on the message line reads keys,
+ * and the pad's keys go in as directions, which a key read throws away, so the
+ * pad could not answer "Do you want to see your attributes? [ynq]" (Lucas,
+ * 2026-09-28).  Its letters are sent while it waits; none takes them down.
+ */
+staticfn void rh_answers(const char *choices, char def)
+{
+    char letters[QBUFSZ];
+    int n = 0;
+    jbyteArray jb;
+
+    if(!jAnswers)
+        return;
+    for(; choices && *choices && *choices != '\033' && n < (int) sizeof letters - 1; choices++)
+        if(isalpha((uchar) *choices))
+            letters[n++] = *choices;
+    letters[n] = '\0';
+    jb = create_bytearray(letters);
+    JNICallV(jAnswers, jb, (int) def);
+    destroy_jobject(jb);
+}
+
 //____________________________________________________________________________________
 void Java_com_tbd_forkfront_NetHackIO_RunNetHack(JNIEnv* env, jobject thiz, jstring path, jstring username)
 {
@@ -427,6 +452,7 @@ void Java_com_tbd_forkfront_NetHackIO_RunNetHack(JNIEnv* env, jobject thiz, jstr
     jMsgRows = rh_optional_method("rhMsgRows", "([BI)I");
     jMore = rh_optional_method("rhMore", "(I)V");
     jMsgScroll = rh_optional_method("rhMsgScroll", "(I)V");
+    jAnswers = rh_optional_method("rhAnswers", "([BI)V");
 
     if(!(jReceiveKey && jReceivePosKey && jCreateWindow && jClearWindow && jDisplayWindow &&
             jDestroyWindow && jPutString && jRawPrint && jSetCursorPos && jPrintTile &&
@@ -2330,7 +2356,7 @@ char and_yn_function(const char *question, const char *choices, char def)
         }
         sprintf(message, "%s [%s]", question, choicebuf);
         if(def)
-            sprintf(eos(message), "(%c) ", def);
+            sprintf(eos(message), " (%c) ", def);   /* Rolehack: tty's spacing, "[yn] (n)" */
     }
     else
     {
@@ -2380,6 +2406,7 @@ char and_yn_function(const char *question, const char *choices, char def)
 
     // and_clear_nhwindow(WIN_MESSAGE);
     and_putstr(WIN_MESSAGE, ATR_BOLD, message);
+    rh_answers(choices, def);   /* Rolehack: the answers on the pad */
 
     ch = 0;
     do
@@ -2481,6 +2508,7 @@ char and_yn_function(const char *question, const char *choices, char def)
         }
     }
     while(!ch);
+    rh_answers(NULL, 0);        /* Rolehack: the pad is the pad again */
 
     /* display selection in the message window */
     if(choices)
