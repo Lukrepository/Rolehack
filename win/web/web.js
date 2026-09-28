@@ -353,9 +353,13 @@ function renderMap() {
         const doll = look && x === look[1] && y === look[2] && c.tile === look[3] ? dollCanvas(look) : null;
         if (doll) cx.drawImage(doll, dx, dy, Td, Td);
         else cx.drawImage(sheet, (c.tile % sheetCols) * 16, Math.floor(c.tile / sheetCols) * 16, 16, 16, dx, dy, Td, Td);
-      } else if (c.ch !== 32) {
-        cx.fillStyle = gameColour(c.color);
-        cx.fillText(String.fromCharCode(c.ch), dx + Td / 2, dy + Td / 2 + 1);
+      } else if (c.ch !== 32 || c.u) {
+        // the player's glyph: colour and character (colour vision, layer 3),
+        // as tty draws them; a basic colour still follows Colour vision
+        cx.fillStyle = !(c.custom >= 0) ? gameColour(c.color)
+          : c.custom & 0x1000000 ? gameColour(c.custom & 15)
+          : `#${c.custom.toString(16).padStart(6, '0')}`;
+        cx.fillText(c.u ? String.fromCodePoint(c.u) : String.fromCharCode(c.ch), dx + Td / 2, dy + Td / 2 + 1);
       }
       if (c.flags & MG_PET) {
         const p = Math.max(1, Math.round(Td / 16));
@@ -1121,6 +1125,16 @@ function form(title, fields, buttons) {
         seg.appendChild(b);
       }
       lab.appendChild(seg);
+    } else if (fd.multiline) {
+      const inp = document.createElement('textarea');
+      inp.value = fd.value || '';
+      inp.spellcheck = false;
+      inp.rows = 4;
+      inp.addEventListener('input', () => { values[fd.id] = inp.value; });
+      // Enter makes a new line here; Esc still closes the form
+      inp.addEventListener('keydown', (e) => { if (e.key !== 'Escape') e.stopPropagation(); });
+      values[fd.id] = inp.value;
+      lab.appendChild(inp);
     } else {
       const inp = document.createElement('input');
       inp.value = fd.value || '';
@@ -1380,6 +1394,7 @@ const handlers = {
   shim_print_glyph(win, x, y, gi) {
     if (y < 0 || y >= ROWNO || x < 0 || x >= COLNO) return;
     grid[y][x] = { ch: M._web_glyphinfo(gi, 1), color: M._web_glyphinfo(gi, 2) & 15,
+                   custom: M._web_glyphinfo(gi, 6), u: M._web_glyphinfo(gi, 7),
                    flags: M._web_glyphinfo(gi, 3), tile: M._web_glyphinfo(gi, 4) };
   },
   shim_raw_print(str) { if (str) addMessage(str); },
@@ -1630,6 +1645,9 @@ async function start() {
     const rules = String(P.get('msgRules') || '').split('\n').map((l) => l.split('\t'))
       .filter(([t, p]) => t && p).map(([t, p]) => `MSGTYPE=${t} "${p}"`);
     if (rules.length) rc += `\n# Message rules made in the game (Rolehack; GAME -> Message rules)\n${rules.join('\n')}\n`;
+    // the player's own lines from Settings (colour vision, layer 3: glyph:)
+    const own = String(P.get('userRc') || '').trim();
+    if (own) rc += `\n# Your own options (Settings -> Your option lines)\n${own}\n`;
     rulesKept = true;
   }
   createNetHack({

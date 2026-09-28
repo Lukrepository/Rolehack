@@ -641,6 +641,22 @@ web_glyphinfo(const glyph_info *ginfo, int which)
         return ginfo->gm.tileidx;
     case 5:
         return (int) ginfo->framecolor;
+    case 6:
+        /* Rolehack (colour vision, layer 3): the player's glyph: colour,
+           as tty draws it; -1 for none, a basic colour as 0x1000000 | its
+           index, else R-G-B */
+        if (!iflags.customcolors || !ginfo->gm.customcolor)
+            return -1;
+        if (ginfo->gm.customcolor & NH_BASIC_COLOR)
+            return 0x1000000 | (int) (COLORVAL(ginfo->gm.customcolor) & 15);
+        return (int) COLORVAL(ginfo->gm.customcolor);
+    case 7:
+        /* the Unicode character a UTF-8 symset or the glyph: option gives it */
+#ifdef ENHANCED_SYMBOLS
+        if (ginfo->gm.u && ginfo->gm.u->utf32ch)
+            return (int) ginfo->gm.u->utf32ch;
+#endif
+        return 0;
     }
     return 0;
 }

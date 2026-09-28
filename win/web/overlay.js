@@ -1951,6 +1951,11 @@ export class Overlay {
       seg('msgFont', 'Message font', [['atkinson', 'Hyperlegible'], ['screen', 'Screen font']]),
       seg('msgSize', 'Message size', [['0.85', 'Small'], ['1', 'Standard'], ['1.2', 'Large'], ['1.4', 'Larger']]),
       seg('mapMode', 'Map', [['tiles', 'Tiles'], ['text', 'Text']]),
+      { id: 'userRc', multiline: true, value: P.get('userRc'),
+        label: 'Your option lines, one per line, used from the next start. To recolour a monster on the text map, '
+          + 'start with a symset line (OPTIONS=symset:DECgraphics, or Enhanced1), then e.g. '
+          + 'OPTIONS=glyph:G_male_brown_mold/0-128-255 and the same for G_female_brown_mold (a pet is G_pet_male_ '
+          + 'and G_pet_female_); put :U+2663 before the colour to change its symbol too, with Enhanced1' },
       seg('padCell', 'Movement key size', [['46', '46'], ['52', '52'], ['58', '58 (Parhi)']]),
       seg('labelMode', 'Key labels', [['words', 'Words'], ['keys', 'Keys'], ['both', 'Both']]),
       { seg: 'keyFlash', label: 'Key flash', value: P.get('keyFlash') ? 'on' : 'off', options: [['on', 'On'], ['off', 'Off']] },
@@ -1976,6 +1981,7 @@ export class Overlay {
         put('msgFont', v.msgFont);
         put('msgSize', Number(v.msgSize));
         put('mapMode', v.mapMode);
+        put('userRc', String(v.userRc || '').replace(/\r/g, ''));
         put('padCell', parseInt(v.padCell, 10));
         put('labelMode', v.labelMode);
         put('keyFlash', v.keyFlash === 'on');

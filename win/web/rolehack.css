@@ -375,6 +375,9 @@ input.line::-webkit-calendar-picker-indicator { opacity: .45; cursor: pointer; }
 .form .seg .cap { font-size: 11px; }
 .form .seg .cap > span { min-width: 0; padding: 6px 10px 5px; }
 .form .note { font: 12px/1.35 var(--capfont); color: var(--lip-text); opacity: .85; }
+.form textarea { font: 20px/1.15 var(--screenfont); color: var(--phos); caret-color: var(--phos); background: var(--glass);
+                 border: 1px solid color-mix(in srgb, var(--phos) 30%, transparent); border-radius: 4px; padding: 6px 8px;
+                 resize: vertical; user-select: text; letter-spacing: 0; text-transform: none; }
 
 /* caseless: the windows float as smoked glass, like the bands over the map */
 :root[data-case="off"] .box { background: rgba(7,6,5,.84); box-shadow: 0 0 0 1px rgba(255,255,255,.2), 0 14px 40px rgba(0,0,0,.65); }

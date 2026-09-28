@@ -13,6 +13,7 @@ const DEFAULTS = {
   case: true,
   phosphor: 'color',          // color | amber | green | white
   colourVision: 'standard',   // standard | protanopia | deuteranopia | tritanopia | monochrome
+  userRc: '',                 // the player's own options-file lines, added at the next start
   statusLines: 'full',        // full | compact | hidden
   // pause with --More-- when the message band is full, as tty does; off, the
   // band shows the newest and counts the rest, "+N" (Lucas, 2026-09-28)
