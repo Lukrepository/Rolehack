@@ -9,6 +9,7 @@
 #include "rhdoll.h"
 #include "rhhere.h"
 #include "rhcreate.h"
+#include "rhrules.h"
 #include <string.h>
 
 #ifdef SHIM_GRAPHICS
@@ -267,18 +268,54 @@ web_nhgetch(void)
     return shim_nhgetch();
 }
 
+/* Rolehack: GAME -> Message rules sends RH_KEY_RULES, which the list
+   answers here (rhrules.c) before the next key is read */
 static int
 web_nh_poskey(coordxy *x, coordxy *y, int *mod)
 {
-    web_checkpoint();
-    return shim_nh_poskey(x, y, mod);
+    int c;
+
+    for (;;) {
+        web_checkpoint();
+        c = shim_nh_poskey(x, y, mod);
+        if (c != RH_KEY_RULES)
+            return c;
+        rh_rules_menu();
+    }
+}
+
+/* Rolehack: a long press on a line of the history names it here
+   (web_set_rule_text), and the rule is made once the history has closed */
+static char web_rule_text[BUFSZ];
+
+EMSCRIPTEN_KEEPALIVE void web_set_rule_text(const char *);
+EMSCRIPTEN_KEEPALIVE const char *web_rules_serial(void);
+
+void
+web_set_rule_text(const char *s)
+{
+    (void) strncpy(web_rule_text, s ? s : "", sizeof web_rule_text - 1);
+    web_rule_text[sizeof web_rule_text - 1] = '\0';
+}
+
+/* the rules as the page keeps them, "type<TAB>pattern" a line */
+const char *
+web_rules_serial(void)
+{
+    return rh_rules_serial();
 }
 
 static int
 web_doprev_message(void)
 {
+    int r;
+
     web_checkpoint();
-    return shim_doprev_message();
+    web_rule_text[0] = '\0';
+    r = shim_doprev_message();
+    if (web_rule_text[0])
+        rh_message_rule(web_rule_text);
+    return r;
 }
 
 static char

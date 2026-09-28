@@ -21,6 +21,9 @@ const DEFAULTS = {
   // Atkinson Hyperlegible Next, or the screen's own font; the size a factor
   msgFont: 'atkinson',        // atkinson | screen
   msgSize: 1,                 // 0.85 | 1 | 1.2 | 1.4
+  // the player's message rules (rhrules.c): "type<TAB>pattern" a line, oldest
+  // first, read into ~/.nethackrc as MSGTYPE lines; none to begin with
+  msgRules: '',
   padCell: 58,                // 46 | 52 | 58 (Parhi's 9.2 mm)
   labelMode: 'words',         // words | keys | both
   keyFlash: true,

@@ -1997,6 +1997,7 @@ export class Overlay {
       return;
     }
     if (item === C.MAP_TOGGLE) { this.closeFan(); P.set('mapMode', P.get('mapMode') === 'text' ? 'tiles' : 'text'); return; }
+    if (item === C.MSG_RULES) { this.closeFan(); this.host.rawKey(0xE002); return; }   // rhrules.h RH_KEY_RULES
     this.flashRaw(item.key, from);
     this.closeFan();
     this.host.send(item.key);

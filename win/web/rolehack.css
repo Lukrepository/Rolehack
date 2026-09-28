@@ -270,6 +270,9 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
                 font-size: 22px; line-height: 1.15;
                 touch-action: pan-y; scrollbar-width: thin; scrollbar-color: var(--phos-dim) transparent; }
 .screen .title:not([hidden]) + .body { padding-top: 2px; }
+/* the history's lines: a long press (or a right click) makes a rule */
+.histline { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; border-radius: 2px; }
+.histline.pressing { background: color-mix(in srgb, #ffb347 22%, transparent); }
 
 /* the bezel's deck: what to do, and the keys to do it.  The keys never move
    while a window is up: the hint (which changes -- a count, say) takes only

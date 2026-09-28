@@ -815,16 +815,53 @@ function spacePages() {
 // A text window.  The history opens at its newest line, with keys to page
 // back and on, a window at a time (the message band research, step 4:
 // paging keeps a place where free scrolling loses it).
+// The message rules (rhrules.c): a long press on a line of the history, or a
+// right click, names that line and closes the history; the window port then
+// asks what the rule should do.  The rules live in the core, and this page
+// keeps them from game to game (syncRules; ~/.nethackrc).
+const RH_KEY_RULE = 0xE001;   // rhrules.h
+let ruleFrom = null;
+let rulesKept = false;        // the rc carried the kept rules, so the core's list is whole
+
+function armRuleLines(body) {
+  for (const d of body.children) {
+    const text = d.textContent.trim();
+    if (!text) continue;
+    d.classList.add('histline');
+    let timer = null, x = 0, y = 0;
+    const cancel = () => { clearTimeout(timer); timer = null; d.classList.remove('pressing'); };
+    const choose = () => { cancel(); ruleFrom = text; push({ key: RH_KEY_RULE }); };
+    d.addEventListener('pointerdown', (e) => {
+      x = e.clientX; y = e.clientY;
+      d.classList.add('pressing');
+      timer = setTimeout(choose, 550);
+    });
+    d.addEventListener('pointermove', (e) => { if (timer && Math.hypot(e.clientX - x, e.clientY - y) > 10) cancel(); });
+    for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) d.addEventListener(ev, cancel);
+    d.addEventListener('contextmenu', (e) => { e.preventDefault(); choose(); });
+  }
+}
+
+function syncRules() {
+  if (!rulesKept || !M || !M._web_rules_serial) return;
+  const s = M.UTF8ToString(M._web_rules_serial());
+  if (s !== String(P.get('msgRules') || '')) P.set('msgRules', s);
+}
+
 async function showText(lines, title, history = false) {
   const caps = history
     ? [capButton('Earlier', { key: '<', onTap: pushKey(60) }), capButton('Later', { key: '>', onTap: pushKey(62) })]
     : [];
   caps.push(capButton('OK', { key: 'Enter', amber: true, onTap: pushKey(13) }));
   openModal(title, lines.map(lineHtml).join(''),
-            history ? '< earlier · > later · Enter or Esc closes' : 'Space pages · Enter or Esc closes', caps);
-  if (history) $('modal-body').scrollTop = $('modal-body').scrollHeight;
+            history ? '< > page · long-press a message for a rule · Enter closes' : 'Space pages · Enter or Esc closes', caps);
+  if (history) {
+    $('modal-body').scrollTop = $('modal-body').scrollHeight;
+    armRuleLines($('modal-body'));
+  }
   for (;;) {
     const k = await nextKey();
+    if (history && k === RH_KEY_RULE) break;
     if (pageKey(k) || (k === 32 && spacePages())) continue;
     if (k === 32 || isEnter(k) || k === 27) break;
   }
@@ -1353,6 +1390,7 @@ const handlers = {
     return k;
   },
   async shim_nh_poskey(xp, yp, modp) {
+    syncRules();
     const ev = await nextInput();
     endTurn();
     if (ev.click) {
@@ -1369,7 +1407,10 @@ const handlers = {
   // ^P: the history, newest last, the band's own page in bold at its end
   async shim_doprev_message() {
     const fromBold = history.length - Math.min(page.length, history.length);
+    ruleFrom = null;
     await showText(history.map((text, i) => ({ attr: i >= fromBold ? ATR.BOLD : 0, text })), 'Messages', true);
+    if (ruleFrom) M.ccall('web_set_rule_text', null, ['string'], [ruleFrom]);
+    ruleFrom = null;
     return 0;
   },
   async shim_yn_function(query, resp, def) {
@@ -1563,6 +1604,7 @@ buildKeyboard();
 P.onChange((name) => { if (name === 'mapMode' || name === 'zoom' || name === 'colourVision') render(); });
 overlay = new Overlay({
   send,
+  rawKey: (k) => push({ key: k }),
   glassChanged: (g) => layoutGlass(g),
   form,
   toggleKeyboard: () => showKeyboard(!$('kbd').classList.contains('on')),
@@ -1583,6 +1625,13 @@ async function start() {
   // the phone's options (defaults.nh), read by the game as ~/.nethackrc
   let rc = '';
   try { rc = await (await fetch('defaults.nh')).text(); } catch (e) { console.warn('defaults.nh', e); }
+  // the player's message rules, kept in this browser, go in as MSGTYPE lines
+  if (rc) {
+    const rules = String(P.get('msgRules') || '').split('\n').map((l) => l.split('\t'))
+      .filter(([t, p]) => t && p).map(([t, p]) => `MSGTYPE=${t} "${p}"`);
+    if (rules.length) rc += `\n# Message rules made in the game (Rolehack; GAME -> Message rules)\n${rules.join('\n')}\n`;
+    rulesKept = true;
+  }
   createNetHack({
     preRun: [(mod) => {
       if (rc) {

@@ -84,6 +84,8 @@ export const USE = group('use', 'USE', [
 export const SEARCH_MODE = beta('Search mode', 's+');
 export const CASE_TOGGLE = i('Case on/off', '#case');
 export const STATUS_TOGGLE = i('Status lines', '#status');
+// the message rules' list (rhrules.c): a key only the window port reads
+export const MSG_RULES = i('Message rules', '#rules');
 // Web only: the map drawn in tiles or in text.
 export const MAP_TOGGLE = i('Tiles / text', '#mapmode');
 
@@ -118,6 +120,7 @@ export const GAME = group('game', 'GAME', [
   i('Save', 'S'), i('Quit', 'M-q'),
   head('Settings'),
   i('Options', 'O'), i('All options', 'mO'), i('Autopickup', '@'), i('Explore mode', 'M-X'),
+  MSG_RULES,
   head('Names and notes'),
   i('Call/name', 'C'), i('Name type', 'M-n'), i('Annotate', 'M-A'),
   // MAP_TOGGLE is web only
@@ -249,11 +252,12 @@ PINNABLE.set('T', i('Take off', 'T', OFF90));
 PINNABLE.set('P', i('Put on', 'P'));
 PINNABLE.set('R', i('Remove', 'R', OFF90));
 PINNABLE.set('w', i('Wield', 'w'));
-for (const k of [SEARCH_MODE.key, CASE_TOGGLE.key, STATUS_TOGGLE.key, MAP_TOGGLE.key]) PINNABLE.delete(k);
+for (const k of [SEARCH_MODE.key, CASE_TOGGLE.key, STATUS_TOGGLE.key, MAP_TOGGLE.key, MSG_RULES.key]) PINNABLE.delete(k);
 
 export const pinnable = (key) => (key == null ? null : PINNABLE.get(key) || null);
 export const isIntercepted = (item) =>
-  item === SEARCH_MODE || item === CASE_TOGGLE || item === STATUS_TOGGLE || item === MAP_TOGGLE;
+  item === SEARCH_MODE || item === CASE_TOGGLE || item === STATUS_TOGGLE || item === MAP_TOGGLE
+  || item === MSG_RULES;
 
 // gurrhack's key notation -> key codes: ^X control, M-x meta, \e escape,
 // \n return (10), \b DEL (0x7f).  Cmd.KeySequnece.rebuildSequence(), in JS.
