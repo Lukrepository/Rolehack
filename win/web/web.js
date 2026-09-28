@@ -419,8 +419,9 @@ function statusHtml() {
   const title = bare('BL_TITLE');
   const hp = Number(bare('BL_HP')), hpmax = Number(bare('BL_HPMAX')) || 1;
   const frac = clamp(hp / hpmax, 0, 1);
-  const colour = P.get('phosphor') === 'color';
-  const hpColour = !colour ? 'var(--phos)' : frac >= 0.66 ? '#63e07c' : frac >= 0.33 ? '#f5b342' : '#ff5a44';
+  // HP's colour and the conditions' severities show under every phosphor, as
+  // the menu colours do: they are warnings (Lucas, 2026-09-27; RhScreen)
+  const hpColour = frac >= 0.66 ? '#63e07c' : frac >= 0.33 ? '#f5b342' : '#ff5a44';
   const lab = (l, n) => (bare(n) ? ` ${l}${bare(n)}` : '');
   const tail1 = [bare('BL_LEVELDESC'), bare('BL_GOLD') !== '' ? `$:${bare('BL_GOLD')}` : '', bare('BL_TIME') ? `T:${bare('BL_TIME')}` : '']
     .filter(Boolean).join(' ');
@@ -428,9 +429,8 @@ function statusHtml() {
   const tail2 = `Pw:${bare('BL_ENE')}(${bare('BL_ENEMAX')})${lab('AC:', 'BL_AC')}${xp}${bare('BL_ALIGN') ? `  ${bare('BL_ALIGN')}` : ''}`;
   const stats = ['St:', 'Dx:', 'Co:', 'In:', 'Wi:', 'Ch:'].map((l, n) =>
     `${l}${bare(['BL_STR', 'BL_DX', 'BL_CO', 'BL_IN', 'BL_WI', 'BL_CH'][n])}`).join(' ');
-  const badgeHtml = `<span class="badges">${badges().map((b) => (colour
-    ? `<span class="badge" style="background:${TIER_BG[b.tier]};color:${TIER_FG[b.tier]}">${esc(b.text)}</span>`
-    : `<span class="badge" style="background:var(--phos);color:var(--glass)">${esc(b.text)}</span>`)).join('')}</span>`;
+  const badgeHtml = `<span class="badges">${badges().map((b) =>
+    `<span class="badge" style="background:${TIER_BG[b.tier]};color:${TIER_FG[b.tier]}">${esc(b.text)}</span>`).join('')}</span>`;
   const titleHtml = `<span class="title">${esc(title)}<span class="hpbar" style="width:calc(${(frac * 100).toFixed(1)}% + 1px);`
     + `background:${hpColour}"><span>${esc(title)}</span></span></span>`;
   const row1 = `<div class="row">${titleHtml}&nbsp;&nbsp;${esc(tail1)}${compact ? badgeHtml : ''}</div>`;
@@ -563,8 +563,14 @@ function attrText(text, attr) {
   return cls ? `<span class="${cls}">${esc(text)}</span>` : esc(text);
 }
 // the game's colour for a line, when the screen follows the game's colours
+// Plain text takes the phosphor; the game's colours -- the player's menu
+// colours: blessed, uncursed, cursed -- show under every phosphor, since they
+// carry what the phosphor only dresses (Lucas, 2026-09-27; the phone's
+// RhDialogSkin.itemColour()).  Grey is the phosphor's dim, as on the phone.
 function tint(clr) {
-  return P.get('phosphor') === 'color' && clr >= 0 && clr < 16 && clr !== 8 ? ` style="color:${COLORS[clr]}"` : '';
+  if (!(clr >= 0 && clr < 16) || clr === 8) return '';
+  if (clr === 7 && P.get('phosphor') !== 'color') return ' style="color:var(--phos-dim)"';
+  return ` style="color:${COLORS[clr]}"`;
 }
 function lineHtml(l) {
   return `<div>${attrText(l.text, l.attr) || ' '}</div>`;
