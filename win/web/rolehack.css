@@ -90,14 +90,18 @@ body { font-family: var(--capfont); color: #f1e8d5; -webkit-tap-highlight-color:
 #map { position: absolute; left: 0; top: 0; image-rendering: pixelated; touch-action: none; cursor: crosshair; }
 #bands { position: absolute; pointer-events: none; font-family: var(--screenfont); color: var(--phos); }
 #msgband { position: absolute; left: 0; right: 0; top: 0; background: var(--glass); pointer-events: auto;
+           box-sizing: border-box; overflow: hidden;
            padding: 5px 10px 4px; line-height: 1.23; text-shadow: 0 0 3px color-mix(in srgb, var(--phos) 50%, transparent); }
+/* the rows are broken by web.js (wrapRows), so the page it counts is the page shown */
+#msgband .r { white-space: pre; overflow: hidden; }
 :root[data-case="off"] #msgband { background: rgba(7,10,8,.78); }
 #msgband .old { color: var(--phos-dim); }
-#msgband .more { position: absolute; right: 10px; bottom: 3px; color: #ffb347; }
+/* the last row's right end: --More--, or with the pause off how many went by */
+#msgband .slot { position: absolute; }
+#msgband .more { color: #ffb347; }
 #msgband .moreprompt { color: #090d0a; background: #ffb347; padding: 0 4px; text-shadow: none; }
 /* a question stands out from the messages: amber, inverted, a size up */
-#msgband .ask { display: inline-block; margin-top: 2px; padding: 1px 7px; border-radius: 3px;
-  color: #090d0a; background: #ffb347; text-shadow: none; font-size: 1.15em; }
+#msgband .ask { padding: 0 3px; border-radius: 2px; color: #090d0a; background: #ffb347; text-shadow: none; }
 #statband { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(9,13,10,.6); padding: 3px 10px 4px;
             white-space: pre; text-shadow: 0 0 2.5px color-mix(in srgb, var(--phos) 45%, transparent); }
 #statband .row { display: flex; align-items: center; height: var(--line); }
@@ -251,7 +255,8 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
     repeating-linear-gradient(180deg, rgba(0,0,0,.24) 0px, rgba(0,0,0,.24) 1px, rgba(0,0,0,0) 1px, rgba(0,0,0,0) 3px); }
 .screen .title { flex: none; padding: 10px 18px 4px; color: #ffc166; font-size: 24px; line-height: 1.1; white-space: pre-wrap; }
 .screen .title[hidden] { display: none; }
-.screen .body { padding: 6px 18px 12px; overflow: auto; white-space: pre; font-size: 22px; line-height: 1.15;
+.screen .body { padding: 6px 18px 12px; overflow-x: hidden; overflow-y: auto; white-space: pre-wrap; overflow-wrap: anywhere;
+                font-size: 22px; line-height: 1.15;
                 touch-action: pan-y; scrollbar-width: thin; scrollbar-color: var(--phos-dim) transparent; }
 .screen .title:not([hidden]) + .body { padding-top: 2px; }
 

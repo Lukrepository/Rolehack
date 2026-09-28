@@ -9,7 +9,7 @@
 // forms.  The touch controls are overlay.js.
 import createNetHack from './nethack.js';
 import { setPalette, dressHero, LOOK_LEN } from './doll.js';
-import { Overlay, MSG_BAND, STATUS_BAND, LINE, creationCap } from './overlay.js';
+import { Overlay, STATUS_BAND, LINE, msgRows, msgBand, creationCap } from './overlay.js';
 import { keyCodes } from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
@@ -50,11 +50,9 @@ let grid = blankGrid();
 let cursor = { x: -1, y: -1 };
 let focus = { x: -1, y: -1 };   // cliparound's point, where the core gives one
 let lastFocus = { x: -1, y: -1 };
-const msgs = [];          // { text, fresh }
-const history = [];
+const history = [];      // every message, for ^P (the band's page is below)
 const status = {};        // field name -> { text, color }
 let condMask = 0;
-let promptText = '';
 let moreShown = false;
 let geom = null;          // where the glass is (overlay.js)
 let overlay = null;
@@ -222,18 +220,20 @@ function layoutGlass(g) {
   const bx = r.x - box.x, by = r.y - box.y;
   Object.assign(bands.style, { left: `${bx}px`, top: `${by}px`, width: `${r.w}px`, height: `${r.h}px` });
   bands.style.setProperty('--line', `${LINE * s}px`);
-  $('msgband').style.fontSize = `${11 * 1.35 * s}px`;
-  $('msgband').style.lineHeight = `${LINE * s}px`;
-  $('msgband').style.minHeight = `${MSG_BAND * s}px`;
+  const mb = $('msgband'), band = msgBand(g.portrait);
+  mb.style.fontSize = `${11 * 1.35 * s}px`;
+  mb.style.lineHeight = `${LINE * s}px`;
+  mb.style.height = `${band * s}px`;
+  mb.style.padding = `${5 * s}px ${10 * s}px ${4 * s}px`;
   $('statband').style.fontSize = `${10.5 * 1.35 * s}px`;
   $('statband').style.height = `${statusBandH() * s}px`;
   $('statband').style.display = P.get('statusLines') === 'hidden' ? 'none' : '';
-  $('chips').style.top = `${(MSG_BAND + 6) * s}px`;
+  $('chips').style.top = `${(band + 6) * s}px`;
   // Where the map centres: the glass between its bands; caseless, the whole
   // window -- except in portrait, where the banks take the bottom of the
   // screen and the hero centres in what is left above them (RhOverlay.mapArea)
   view.area = g.caseless && !g.portrait ? { x: 0, y: 0, w: box.w, h: box.h }
-    : { x: bx + 2 * s, y: by + MSG_BAND * s, w: r.w - 4 * s, h: r.h - (MSG_BAND + statusBandH()) * s };
+    : { x: bx + 2 * s, y: by + band * s, w: r.w - 4 * s, h: r.h - (band + statusBandH()) * s };
   const cv = $('map'), dpr = window.devicePixelRatio || 1;
   cv.width = Math.round(box.w * dpr);
   cv.height = Math.round(box.h * dpr);
@@ -381,30 +381,181 @@ function renderMap() {
     P.set('zoom', clamp(view.T * Math.pow(1.1, -e.deltaY / 100), 8, 96));
     render();
   }, { passive: false });
-  // the message band answers a tap only while earlier messages scrolled away
+  // the message band answers a tap at --More--, and while messages went by unshown
   $('msgband').addEventListener('pointerup', () => {
     if (moreShown) push({ key: 32 });
-    else if (hiddenMsgs() > 0) send('^P');
+    else if (lastHidden > 0) send('^P');
   });
 }());
 
 /* ---------- the bands: messages and status (RhScreen) ---------- */
 
-function hiddenMsgs() { return Math.max(0, msgs.filter((m) => m.fresh).length - 3); }
+// The message band is tty's top line, three rows high (two in landscape).
+// Messages fill it a page at a time; when the next one will not fit, it shows
+// --More-- and waits, as tty's update_topl() does when its one line is full
+// (win/tty/topl.c), so nothing the game says leaves the screen unseen (Lucas,
+// 2026-09-28, after the message band research).  A message longer than the
+// band is shown a band at a time.  Esc at --More-- sends the rest of the
+// turn's messages to the history only, until the game next asks for input;
+// the core's urgent messages still break through, and "You die" (tty's
+// WIN_STOP, ATR_URGENT).  With the pause turned off the band shows the newest
+// messages and counts the rest, "+N".  The pauses the game asks for itself,
+// a MSGTYPE=stop rule's among them, stand either way.
+const page = [];          // this page's messages: { text, ask }
+let pageFresh = false;    // new since the player last acted; dimmed once they do
+let unread = false;       // a message from the game is up that no --More-- or input has passed (tty's TOPLINE_NEED_MORE)
+let newPage = true;       // the next message starts a page
+let scrollRow = 0;        // a message longer than the band: the first page row shown
+let msgStop = false;      // Esc at --More--
+let lastHidden = 0;       // with the pause off, how many messages went by unshown
+let measureCx = null;
+
+function bandMetrics() {
+  const mb = $('msgband'), cs = getComputedStyle(mb), s = geom ? geom.s : 1;
+  const width = mb.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  measureCx = measureCx || document.createElement('canvas').getContext('2d');
+  measureCx.font = `${cs.fontSize} ${cs.fontFamily}`;
+  // tty keeps 8 columns of its line for --More-- (topl.c, CO - 8)
+  const slot = measureCx.measureText('--More--').width + 14 * s;
+  return { width, slot, rows: msgRows(!!(geom && geom.portrait)), cx: measureCx };
+}
+
+// A message broken into the band's rows at spaces, as tty breaks a long one;
+// a word wider than a row is broken where it must be.  A page's last row keeps
+// room at its right end for --More--.
+function wrapRows(text, startRow, m) {
+  if (m.width < 40) return [text];      // not laid out yet
+  const out = [];
+  let row = '', r = startRow;
+  const room = () => m.width - ((r % m.rows) === m.rows - 1 ? m.slot : 0);
+  const fits = (t) => m.cx.measureText(t).width <= room();
+  const end = () => { out.push(row.replace(/ +$/, '')); row = ''; r++; };
+  for (const w of text.split(/( +)/)) {
+    if (!w) continue;
+    if (/^ +$/.test(w)) {
+      if (row && fits(row + w)) row += w; else if (row) end();   // a break falls on spaces, and eats them
+      continue;
+    }
+    if (fits(row + w)) { row += w; continue; }
+    if (row) end();
+    let rest = w;
+    while (!fits(rest)) {
+      let n = rest.length - 1;
+      while (n > 1 && !fits(rest.slice(0, n))) n--;
+      row = rest.slice(0, n);
+      end();
+      rest = rest.slice(n);
+    }
+    row = rest;
+  }
+  if (row || !out.length) out.push(row);
+  return out;
+}
+
+function pageRowsOf(entries, m) {
+  const rows = [];
+  for (const e of entries) for (const t of wrapRows(e.text, rows.length, m)) rows.push({ t, ask: !!e.ask });
+  return rows;
+}
+
+const pausing = () => P.get('morePause') !== false;
+
+const ATR_URGENT = 16, ATR_NOHISTORY = 32;   // wintype.h
 
 function renderBands() {
-  const fresh = msgs.filter((m) => m.fresh);
-  const shown = fresh.length ? fresh.slice(-3) : msgs.slice(-1);
-  const more = hiddenMsgs();
-  let html = shown.map((m) => `<div class="${m.fresh ? '' : 'old'}">${esc(m.text)}</div>`).join('');
-  if (promptText) html += `<div class="ask">${esc(promptText)}</div>`;
-  if (moreShown) html += '<span class="moreprompt">--More--</span>';
-  if (more > 0) html += `<span class="more">+${more} ▸</span>`;
+  const m = bandMetrics(), s = geom ? geom.s : 1;
+  let rows;
+  lastHidden = 0;
+  if (pausing()) {
+    rows = pageRowsOf(page, m).slice(scrollRow, scrollRow + m.rows);
+  } else {
+    // the newest messages that fit whole; the newest alone cut short if it is longer
+    let k = page.length;
+    rows = [];
+    while (k > 0) {
+      const trial = pageRowsOf(page.slice(k - 1), m);
+      if (trial.length > m.rows) break;
+      rows = trial;
+      k--;
+    }
+    if (!rows.length && page.length) {
+      rows = pageRowsOf(page.slice(-1), m).slice(0, m.rows);
+      rows[rows.length - 1].t += '…';
+      k = page.length - 1;
+    }
+    lastHidden = k;
+  }
+  let html = rows.map((r) => `<div class="r${pageFresh ? '' : ' old'}">${r.ask ? `<span class="ask">${esc(r.t)}</span>` : esc(r.t)}</div>`).join('');
+  const at = `right:${10 * s}px;bottom:${4 * s}px`;
+  if (moreShown) html += `<span class="slot moreprompt" style="${at}">--More--</span>`;
+  else if (lastHidden > 0) html += `<span class="slot more" style="${at}">+${lastHidden} ▸</span>`;
   $('msgband').innerHTML = html;
-  if (overlay) overlay.setMore(more);
+  if (overlay) overlay.setMore(moreShown ? 1 : lastHidden);
   $('statband').innerHTML = statusHtml();
   fitStatus();
 }
+
+function startPage() { page.length = 0; scrollRow = 0; newPage = false; }
+
+// tty's more(): wait for Space or Enter (a tap on the glass is Space); Esc
+// skips the rest of the turn's messages
+async function more() {
+  moreShown = true;
+  renderBands();
+  for (;;) {
+    const k = await nextKey();
+    if (k === 32 || isEnter(k)) break;
+    if (k === 27) { msgStop = true; break; }
+  }
+  moreShown = false;
+  unread = false;
+}
+
+function remember(text) {
+  history.push(text);
+  if (history.length > 1000) history.splice(0, history.length - 1000);
+}
+
+// A message from the game (putstr to the message window).
+async function putMessage(text, attr = 0) {
+  if (!(attr & ATR_NOHISTORY)) remember(text);
+  if (msgStop && ((attr & ATR_URGENT) || /^You die/.test(text))) { msgStop = false; newPage = true; }
+  if (msgStop) return;
+  if (newPage) startPage();
+  const m = bandMetrics(), pause = pausing() && m.width >= 40;
+  if (pause) {
+    const used = pageRowsOf(page, m).length;
+    if (used > 0 && used + wrapRows(text, used, m).length > scrollRow + m.rows) {
+      await more();
+      startPage();
+    }
+  }
+  page.push({ text });
+  if (page.length > 50) page.shift();
+  pageFresh = true;
+  unread = true;
+  // longer than the band: a band at a time, as long as it isn't skipped
+  if (pause) {
+    while (!msgStop && pageRowsOf(page, m).length - scrollRow > m.rows) {
+      await more();
+      if (!msgStop) scrollRow += m.rows;
+    }
+  }
+  renderBands();
+}
+
+// A line that never waits: the interface's own notes, raw_print, an answered question.
+function addMessage(text) {
+  remember(text);
+  if (newPage) startPage();
+  page.push({ text });
+  if (page.length > 50) page.shift();
+  pageFresh = true;
+}
+
+// The player has acted: the page dims, the next message starts another, and
+// an Esc at --More-- has run its course (tty clears WIN_STOP on input).
+function endTurn() { pageFresh = false; unread = false; newPage = true; msgStop = false; }
 
 const bare = (n) => ((status[n] && status[n].text) || '').trim();
 
@@ -472,13 +623,6 @@ function render() {
   }
 }
 
-function addMessage(text) {
-  msgs.push({ text, fresh: true });
-  history.push(text);
-  if (msgs.length > 50) msgs.shift();
-}
-
-function ageMessages() { for (const m of msgs) m.fresh = false; }
 
 // gold arrives with its map symbol encoded as \GXXXXNNNN; keep the number
 const plainGold = (s) => s.replace(/\\G[0-9a-fA-F]{8}:?/, '');
@@ -1068,18 +1212,18 @@ const handlers = {
     const w = wins.get(win);
     if (!w) return;
     if (w.type === K.WIN_TYPE.NHW_MAP) grid = blankGrid();
-    else if (w.type === K.WIN_TYPE.NHW_MESSAGE) ageMessages();
+    else if (w.type === K.WIN_TYPE.NHW_MESSAGE) { pageFresh = false; unread = false; newPage = true; }
     else w.lines = [];
   },
   async shim_display_nhwindow(win, blocking) {
     const w = wins.get(win);
     if (!w) return;
     if (w.type === K.WIN_TYPE.NHW_MESSAGE) {
-      if (blocking && msgs.some((m) => m.fresh)) {
-        moreShown = true;
-        for (;;) { const k = await nextKey(); if (k === 32 || isEnter(k) || k === 27) break; }
-        moreShown = false;
-        ageMessages();
+      // the game's own --More-- (a MSGTYPE=stop rule's, "You die...", ...)
+      if (blocking && unread && !msgStop) {
+        await more();
+        pageFresh = false;
+        newPage = true;
       }
     } else if ((w.type === K.WIN_TYPE.NHW_TEXT || w.type === K.WIN_TYPE.NHW_MENU) && w.lines.length) {
       await showText(w.lines);
@@ -1093,10 +1237,10 @@ const handlers = {
     const w = wins.get(win);
     if (w && w.type === K.WIN_TYPE.NHW_MAP) cursor = { x, y };
   },
-  shim_putstr(win, attr, str) {
+  async shim_putstr(win, attr, str) {
     const w = wins.get(win);
     if (!w) return;
-    if (w.type === K.WIN_TYPE.NHW_MESSAGE) addMessage(str);
+    if (w.type === K.WIN_TYPE.NHW_MESSAGE) await putMessage(str, attr);
     else w.lines.push({ attr, text: str });
   },
   shim_start_menu(win) {
@@ -1136,12 +1280,12 @@ const handlers = {
   shim_raw_print_bold(str) { if (str) addMessage(str); },
   async shim_nhgetch() {
     const k = await nextKey();
-    ageMessages();
+    endTurn();
     return k;
   },
   async shim_nh_poskey(xp, yp, modp) {
     const ev = await nextInput();
-    ageMessages();
+    endTurn();
     if (ev.click) {
       M.setValue(xp, ev.click.x, 'i16');
       M.setValue(yp, ev.click.y, 'i16');
@@ -1163,7 +1307,19 @@ const handlers = {
     let q = query;
     if (shown) q += ` [${shown}]`;
     if (def) q += ` (${String.fromCharCode(def)})`;
-    promptText = q;
+    // the question joins the band, after a --More-- if the page is full, as
+    // tty's prompt does; a question is never skipped by an Esc
+    msgStop = false;
+    if (newPage) startPage();
+    const m = bandMetrics();
+    if (pausing() && m.width >= 40) {
+      const used = pageRowsOf(page, m).length;
+      if (used > 0 && used + wrapRows(q, used, m).length > scrollRow + m.rows) { await more(); startPage(); }
+    }
+    const asked = { text: q, ask: true };
+    page.push(asked);
+    pageFresh = true;
+    renderBands();
     const direction = /what direction/.test(query);
     if (direction && overlay) overlay.setExpectsDirection(true);
     showChips(promptChoices(query, allowed));
@@ -1186,12 +1342,15 @@ const handlers = {
       if (allowed.includes(ch)) break;
       if (allowed.includes(ch.toLowerCase())) { k = ch.toLowerCase().charCodeAt(0); break; }
     }
-    promptText = '';
+    const at = page.indexOf(asked);
+    if (at >= 0) page.splice(at, 1);
     showChips([]);
     if (onPad) overlay.hideAnswers();
     if (direction && overlay) overlay.setExpectsDirection(false);
-    ageMessages();
-    if (k >= 32 && k < 127) addMessage(`${q} ${String.fromCharCode(k)}`);
+    endTurn();
+    // the answered question stays in view, as tty leaves it on its line, and
+    // the next message takes its place without a --More--
+    if (k >= 32 && k < 127) { addMessage(`${q} ${String.fromCharCode(k)}`); newPage = true; }
     return k > 127 ? 27 : k;
   },
   async shim_getlin(query, bufp) {

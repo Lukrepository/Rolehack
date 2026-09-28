@@ -31,6 +31,11 @@ const PAD_GAP = 8, FIT_FLOOR = 0.7, T_MIN_HOOD = 400;
 const P_ROW_H = 48, P_ROW_GAP = 6, P_FN_KEY = 36, P_FN_KEYS = 8, P_BANK_GAP = 6, P_MIN_GLASS = 300;
 const P_INTERACT_FAN_TURN = 12, P_HOOD_SIDE = 8, P_HOOD_TOP = 10;
 export const MSG_BAND = 36, STATUS_BAND = 48, LINE = 13.5;
+// The message band has a fixed number of rows -- three in portrait, two in
+// landscape (Lucas, 2026-09-28) -- and never grows over the map; what does not
+// fit waits behind --More-- (web.js).  5 above the rows, 4 below, as RhScreen.
+export const msgRows = (portrait) => (portrait ? 3 : 2);
+export const msgBand = (portrait) => 5 + msgRows(portrait) * LINE + 4;
 const HUB_HOLD_MS = 380, CENTRE_HOLD_MS = 420, SLOT_CLEAR_MS = 420, CHIP_HOLD_MS = 360;
 const FLICK_SLOP = 10, FLICK_MIN = 26, FLICK_ARC_SLACK = 15, FLICK_REVEAL_MS = 200;
 const FAN_SIZE = [54, 50, 46, 44, 44, 44], FAN_ROTATE = [0, 0, -11, 9, 0, 0];
@@ -1549,7 +1554,7 @@ export class Overlay {
 
   fitBanner() {
     const w = 260, h = 30;
-    this.banner.place(this.DW / 2 - w / 2, this.glassTop() + MSG_BAND + 6, w, h);
+    this.banner.place(this.DW / 2 - w / 2, this.glassTop() + msgBand(this.portrait) + 6, w, h);
   }
 
   // ---- the context radial, off the pad's centre
@@ -1894,6 +1899,8 @@ export class Overlay {
       { seg: 'case', label: 'Case', value: P.get('case') ? 'on' : 'off', options: [['on', 'Show the case'], ['off', 'Caseless']] },
       seg('phosphor', 'Screen phosphor', [['color', 'Colour'], ['amber', 'Amber'], ['green', 'Green'], ['white', 'White']]),
       seg('statusLines', 'Status lines', [['full', 'Full'], ['compact', 'Compact'], ['hidden', 'Hidden']]),
+      { seg: 'morePause', label: 'When the message band is full', value: P.get('morePause') ? 'on' : 'off',
+        options: [['on', 'Pause (--More--)'], ['off', "Don't pause"]] },
       seg('mapMode', 'Map', [['tiles', 'Tiles'], ['text', 'Text']]),
       seg('padCell', 'Movement key size', [['46', '46'], ['52', '52'], ['58', '58 (Parhi)']]),
       seg('labelMode', 'Key labels', [['words', 'Words'], ['keys', 'Keys'], ['both', 'Both']]),
@@ -1915,6 +1922,7 @@ export class Overlay {
         put('case', v.case === 'on');
         put('phosphor', v.phosphor);
         put('statusLines', v.statusLines);
+        put('morePause', v.morePause === 'on');
         put('mapMode', v.mapMode);
         put('padCell', parseInt(v.padCell, 10));
         put('labelMode', v.labelMode);

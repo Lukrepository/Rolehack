@@ -13,6 +13,9 @@ const DEFAULTS = {
   case: true,
   phosphor: 'color',          // color | amber | green | white
   statusLines: 'full',        // full | compact | hidden
+  // pause with --More-- when the message band is full, as tty does; off, the
+  // band shows the newest and counts the rest, "+N" (Lucas, 2026-09-28)
+  morePause: true,
   padCell: 58,                // 46 | 52 | 58 (Parhi's 9.2 mm)
   labelMode: 'words',         // words | keys | both
   keyFlash: true,
