@@ -1,5 +1,5 @@
 #include <string.h>
-/* Changed for Rolehack by Lucas Ruiz, 2026-09-23 to 2026-09-27.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-23 to 2026-09-28.  See ROLEHACK-CHANGES.md. */
 #include <errno.h>
 #include <jni.h>
 #include <ctype.h>
@@ -68,7 +68,9 @@ int NetHackMain(int argc, char** argv);
 struct window_procs and_procs = {
     WPID(and),
     WC_COLOR | WC_HILITE_PET | WC_INVERSE,  /* window port capability options supported */
-    WC2_HILITE_STATUS | WC2_FLUSH_STATUS,   /* additional window port capability options supported */
+    WC2_HILITE_STATUS | WC2_FLUSH_STATUS
+    | WC2_URGENT_MESG,   /* additional window port capability options supported;
+                            Rolehack: an urgent message ends an Esc at --More-- */
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},   /* color availability */
     and_init_nhwindows,
     and_player_selection,
@@ -170,6 +172,7 @@ static jmethodID jPlayerInfo;
 static jmethodID jHereContext;
 static jmethodID jHeroLook;     /* Rolehack: the paper doll */
 static jmethodID jCreation;     /* Rolehack: character creation's menus */
+static jmethodID jMsgBand, jMsgRows, jMore, jMsgScroll;   /* Rolehack: the message band's --More-- */
 
 static boolean quit_if_possible;
 static boolean restoring_msghistory;
@@ -236,6 +239,145 @@ staticfn jmethodID rh_optional_method(const char *name, const char *sig)
     return id;
 }
 
+/*
+ * Rolehack: the message band pages as tty's top line does.  The band holds a
+ * fixed number of rows (RhScreen: three in portrait, two in landscape); when
+ * the next message will not fit, it shows --More-- and waits, as tty's
+ * update_topl() does (win/tty/topl.c), so nothing the game says leaves the
+ * screen unseen.  The interface measures (rhMsgRows, the wrap it draws with);
+ * the core keeps the page, as tty keeps its line.  Esc at --More-- sends the
+ * rest of the turn's messages to the log only, until the game next asks for
+ * input; urgent messages and "You die" break through (tty's WIN_STOP and
+ * ATR_URGENT).  The core's own --More-- requests (a MSGTYPE=stop rule's,
+ * "You die...") used to be answered by ForkFront at once; they wait now.
+ * With the pause turned off the band shows the newest and counts the rest,
+ * but the core's own requests still wait.  (Lucas, 2026-09-28.)
+ */
+#define RH_LOG_ONLY (1 << 30)   /* NHW_Message.ATTR_LOG_ONLY: the log, not the band */
+static int rh_page_rows;        /* rows this page has used */
+static int rh_scroll;           /* a message longer than the band: the first row shown */
+static boolean rh_new_page = TRUE;  /* the next message starts a page */
+static boolean rh_unread;       /* nothing has acknowledged the page: tty's TOPLINE_NEED_MORE */
+static boolean rh_page_fresh;   /* new since the player last acted; dims when they do */
+static boolean rh_msg_stop;     /* Esc at --More-- */
+static boolean rh_in_more;
+
+/* the band's rows; negative when a full band shouldn't pause; 0, no band (the classic line) */
+staticfn int rh_msg_band(void)
+{
+    if(!(jMsgBand && jMsgRows && jMore && jMsgScroll) || WIN_MESSAGE == WIN_ERR)
+        return 0;
+    return JNICallI(jMsgBand);
+}
+
+staticfn int rh_msg_rows(const char *str, int start)
+{
+    jbyteArray j = create_bytearray(str);
+    int n = JNICallI(jMsgRows, j, start);
+    destroy_jobject(j);
+    return n;
+}
+
+staticfn void rh_start_page(void)
+{
+    JNICallV(jClearWindow, WIN_MESSAGE, 0);
+    rh_page_rows = 0;
+    rh_scroll = 0;
+    rh_new_page = FALSE;
+}
+
+/* tty's more(): Space or Enter goes on, Esc skips the rest of the turn */
+staticfn void rh_more(void)
+{
+    int c;
+
+    rh_in_more = TRUE;
+    JNICallV(jMore, 1);
+    for(;;)
+    {
+        c = and_nhgetch();
+        if(c == ' ' || c == '\n' || c == '\r')
+            break;
+        if(c == '\033')
+        {
+            rh_msg_stop = TRUE;
+            break;
+        }
+    }
+    JNICallV(jMore, 0);
+    rh_in_more = FALSE;
+    rh_unread = FALSE;
+}
+
+/* The player has acted: the page dims, the next message starts another, and
+   an Esc at --More-- has run its course. */
+staticfn void rh_msg_input(void)
+{
+    if(rh_in_more)
+        return;
+    rh_msg_stop = FALSE;
+    rh_unread = FALSE;
+    rh_new_page = TRUE;
+    if(rh_page_fresh && rh_msg_band())
+    {
+        JNICallV(jClearWindow, WIN_MESSAGE, 0);
+    }
+    rh_page_fresh = FALSE;
+}
+
+/* Before a message goes out: wait at --More-- if the band is full.  Returns
+   RH_LOG_ONLY for a message the band should not show. */
+staticfn int rh_msg_place(const char *str, boolean urgent, int *bandp, int *rowsp)
+{
+    int band = rh_msg_band();
+
+    *bandp = band;
+    *rowsp = 0;
+    if(!band)
+        return 0;
+    if(restoring_msghistory)
+        return RH_LOG_ONLY;     /* a restored game's history: into the log, as tty's */
+    if(rh_msg_stop && (urgent || !strncmp(str, "You die", 7)))
+    {
+        rh_msg_stop = FALSE;
+        rh_new_page = TRUE;
+    }
+    if(rh_msg_stop)
+        return RH_LOG_ONLY;
+    if(rh_new_page)
+        rh_start_page();
+    if(band > 0)
+    {
+        int n = rh_msg_rows(str, rh_page_rows);
+
+        if(rh_page_rows > 0 && rh_page_rows + n > rh_scroll + band)
+        {
+            rh_more();
+            rh_start_page();
+            n = rh_msg_rows(str, 0);
+        }
+        *rowsp = n;
+    }
+    return 0;
+}
+
+/* After it has gone out: a message longer than the band, a band at a time. */
+staticfn void rh_msg_placed(int band, int rows)
+{
+    rh_page_rows += rows;
+    rh_unread = TRUE;
+    rh_page_fresh = TRUE;
+    while(band > 0 && !rh_msg_stop && rh_page_rows - rh_scroll > band)
+    {
+        rh_more();
+        if(rh_msg_stop)
+            break;
+        rh_scroll += band;
+        JNICallV(jMsgScroll, rh_scroll);
+        rh_unread = TRUE;
+    }
+}
+
 //____________________________________________________________________________________
 void Java_com_tbd_forkfront_NetHackIO_RunNetHack(JNIEnv* env, jobject thiz, jstring path, jstring username)
 {
@@ -281,6 +423,10 @@ void Java_com_tbd_forkfront_NetHackIO_RunNetHack(JNIEnv* env, jobject thiz, jstr
     jHereContext = rh_optional_method("hereContext", "(I[B)V");
     jHeroLook = rh_optional_method("heroLook", "([I)V");
     jCreation = rh_optional_method("rhCreation", "(III)V");
+    jMsgBand = rh_optional_method("rhMsgBand", "()I");
+    jMsgRows = rh_optional_method("rhMsgRows", "([BI)I");
+    jMore = rh_optional_method("rhMore", "(I)V");
+    jMsgScroll = rh_optional_method("rhMsgScroll", "(I)V");
 
     if(!(jReceiveKey && jReceivePosKey && jCreateWindow && jClearWindow && jDisplayWindow &&
             jDestroyWindow && jPutString && jRawPrint && jSetCursorPos && jPrintTile &&
@@ -565,6 +711,13 @@ void and_clear_nhwindow(winid wid)
 {
     //debuglog("and_clear_nhwindow(%d)", wid);
     JNICallV(jClearWindow, wid, Is_rogue_level(&u.uz));
+    if(wid == WIN_MESSAGE)
+    {
+        /* Rolehack: the next message starts a page; the band dims this one */
+        rh_new_page = TRUE;
+        rh_unread = FALSE;
+        rh_page_fresh = FALSE;
+    }
 }
 
 //____________________________________________________________________________________
@@ -580,6 +733,20 @@ void and_clear_nhwindow(winid wid)
 void and_display_nhwindow(winid wid, boolean blocking)
 {
     //debuglog("display_nhwindow(%d)", wid);
+    if(wid == WIN_MESSAGE && rh_msg_band())
+    {
+        /* Rolehack: the core's own --More-- waits, when something is up that
+           nothing has acknowledged -- as tty's does */
+        JNICallV(jDisplayWindow, wid, FALSE);
+        if(blocking && rh_unread && !rh_msg_stop)
+        {
+            rh_more();
+            rh_new_page = TRUE;
+            JNICallV(jClearWindow, WIN_MESSAGE, 0);
+            rh_page_fresh = FALSE;
+        }
+        return;
+    }
     if(wid != WIN_MESSAGE && /*wid != WIN_STATUS && */wid != WIN_MAP)
         blocking = TRUE;
     JNICallV(jDisplayWindow, wid, blocking);
@@ -726,12 +893,25 @@ void and_putstr_ex(winid wid, int attr, const char *str, int append, int nhcolor
 
 void and_putstr(winid wid, int attr, const char *str)
 {
+    int rh_attr = 0, rh_band = 0, rh_rows = 0;
+
+    if(wid == WIN_MESSAGE && str && *str)
+    {
+        /* Rolehack: the message band's --More--; see rh_msg_place() */
+        boolean urgent = (attr & ATR_URGENT) != 0;
+
+        attr &= ~(ATR_URGENT | ATR_NOHISTORY);
+        rh_attr = rh_msg_place(str, urgent, &rh_band, &rh_rows);
+    }
+
     if(attr)
         attr = 1<<attr;
     else
         attr = text_attribs;
 
-    and_putstr_ex(wid, attr, str, 0, text_color);
+    and_putstr_ex(wid, attr | rh_attr, str, 0, text_color);
+    if(rh_band && !rh_attr)
+        rh_msg_placed(rh_band, rh_rows);
 
     if(wid == NHW_MESSAGE)
     {
@@ -1949,6 +2129,7 @@ int and_nhgetch()
     //debuglog("and_nhgetch");
     int c = JNICallI(jReceiveKey);
 
+    rh_msg_input();     /* Rolehack: the band dims; the next message starts a page */
     quit_if_possible = FALSE;
     if(c == 0x80)
     {
@@ -2000,6 +2181,7 @@ int and_nh_poskey(coordxy *x, coordxy *y, int *mod)
     and_send_here_context(FALSE);    /* Rolehack: after a move that made no status pass */
     a = (*jEnv)->NewIntArray(jEnv, 2);
     int c = JNICallI(jReceivePosKey, bMouseLock, a);
+    rh_msg_input();     /* Rolehack: the band dims; the next message starts a page */
     if(!c)
     {
         int* e = (*jEnv)->GetIntArrayElements(jEnv, a, 0);
