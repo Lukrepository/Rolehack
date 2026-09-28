@@ -177,6 +177,7 @@ static jmethodID jMsgBand, jMsgRows, jMore, jMsgScroll;   /* Rolehack: the messa
 static jmethodID jAnswers;      /* Rolehack: a question's answers on the pad */
 static jmethodID jRuleText, jLoadRules, jSaveRules;   /* Rolehack: message rules (rhrules.c) */
 static jmethodID jGetpos;       /* Rolehack: the pad while a spot is picked */
+static jmethodID jExtCmdName;   /* Rolehack: a command sent by name */
 
 static boolean quit_if_possible;
 static boolean restoring_msghistory;
@@ -538,6 +539,7 @@ void Java_com_tbd_forkfront_NetHackIO_RunNetHack(JNIEnv* env, jobject thiz, jstr
     jLoadRules = rh_optional_method("rhLoadRules", "()[B");
     jSaveRules = rh_optional_method("rhSaveRules", "([B)V");
     jGetpos = rh_optional_method("rhGetpos", "(I)V");
+    jExtCmdName = rh_optional_method("rhExtCmdName", "()[B");
 
     if(!(jReceiveKey && jReceivePosKey && jCreateWindow && jClearWindow && jDisplayWindow &&
             jDestroyWindow && jPutString && jRawPrint && jSetCursorPos && jPrintTile &&
@@ -2245,6 +2247,61 @@ void and_raw_print_bold(const char* str)
     destroy_jobject(jstr);
 }
 
+/*
+ * Rolehack: a command sent by name.  A key or macro written "#levelchange"
+ * and a newline typed the name into the '#' menu, whose letters picked other
+ * commands ("You do not know how to grapple.", then "You don't have anything
+ * to eat.").  The interface now sends RH_KEY_EXTCMD with the name
+ * (NetHackIO.rhExtCmdName).  At the command prompt it goes in as the key for
+ * #, and and_get_ext_cmd() answers with the name instead of the menu;
+ * anywhere else -- a question, getpos() -- it is dropped (Lucas, 2026-09-28).
+ * 0xE001 and 0xE002 are rhrules.h's.
+ */
+#define RH_KEY_EXTCMD 0xE003
+static char rh_ext_name[BUFSZ];
+
+/* the command a name stands for: the whole name, else a beginning only one
+   command has, as tty's typed '#' completes; -1 for none */
+staticfn int rh_ext_index(const char *name)
+{
+    int i, found = -1;
+    size_t n = strlen(name);
+
+    if(!n)
+        return -1;
+    for(i = 0; extcmdlist[i].ef_txt; i++)
+        if(!strcmpi(extcmdlist[i].ef_txt, name))
+            return i;
+    for(i = 0; extcmdlist[i].ef_txt; i++)
+        if(!strncmpi(extcmdlist[i].ef_txt, name, n))
+        {
+            if(found >= 0)
+                return -1;
+            found = i;
+        }
+    return found;
+}
+
+/* the name that came with RH_KEY_EXTCMD, into rh_ext_name */
+staticfn boolean rh_ext_fetch(void)
+{
+    jbyteArray a;
+    char *name;
+
+    rh_ext_name[0] = '\0';
+    if(!jExtCmdName)
+        return FALSE;
+    a = (jbyteArray) JNICallO(jExtCmdName);   /* (the macro ends its own statement) */
+    name = rh_bytes_of(a);
+    if(name)
+    {
+        (void) strncpy(rh_ext_name, name, sizeof rh_ext_name - 1);
+        rh_ext_name[sizeof rh_ext_name - 1] = '\0';
+        free(name);
+    }
+    return rh_ext_name[0] != '\0';
+}
+
 //____________________________________________________________________________________
 //int nhgetch() -- Returns a single character input from the user.
 //      -- In the tty window-port, nhgetch() assumes that tgetch()
@@ -2256,6 +2313,8 @@ int and_nhgetch()
     //debuglog("and_nhgetch");
     int c = JNICallI(jReceiveKey);
 
+    if(c == RH_KEY_EXTCMD)
+        return and_nhgetch();   /* Rolehack: a command by name is no answer */
     rh_msg_input();     /* Rolehack: the band dims; the next message starts a page */
     quit_if_possible = FALSE;
     if(c == 0x80)
@@ -2311,6 +2370,7 @@ int and_nh_poskey(coordxy *x, coordxy *y, int *mod)
     //debuglog("and_nh_poskey");
     jintArray a;
 
+    rh_ext_name[0] = '\0';          /* Rolehack: a name is good for its own key only */
     and_send_hero_look(FALSE);   /* Rolehack: the paper doll */
     and_send_here_context(FALSE);    /* Rolehack: after a move that made no status pass */
     rh_rules_restore();              /* Rolehack: the kept message rules, once */
@@ -2338,6 +2398,16 @@ int and_nh_poskey(coordxy *x, coordxy *y, int *mod)
             c = and_nh_poskey(x, y, mod);
     }
     destroy_jobject(a);
+    if(c == RH_KEY_EXTCMD)
+    {
+        /* Rolehack: a command by name, taken at the command prompt only */
+        char k;
+
+        if(!iflags.in_parse || !rh_ext_fetch())
+            return and_nh_poskey(x, y, mod);
+        k = cmd_from_func(doextcmd);
+        return k ? (uchar) k : '#';
+    }
     if(c == RH_KEY_RULES)
     {
         /* Rolehack: GAME -> Message rules */
@@ -2943,6 +3013,16 @@ int do_ext_cmd_text()
 
 int and_get_ext_cmd()
 {
+    /* Rolehack: a command sent by name (RH_KEY_EXTCMD) needs no menu */
+    if(rh_ext_name[0])
+    {
+        int i = rh_ext_index(rh_ext_name);
+
+        if(i < 0)
+            pline("%s: unknown extended command.", rh_ext_name);
+        rh_ext_name[0] = '\0';
+        return i;
+    }
     /*
      * Rolehack: always menu.  Typing a command name is the worse interaction on
      * a touch device, and the menu's '*' entry reaches the complete extcmdlist
