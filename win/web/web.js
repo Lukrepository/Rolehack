@@ -1400,12 +1400,14 @@ const handlers = {
   shim_raw_print(str) { if (str) addMessage(str); },
   shim_raw_print_bold(str) { if (str) addMessage(str); },
   async shim_nhgetch() {
+    if (overlay && M._web_picking) overlay.setPicking(!!M._web_picking());
     const k = await nextKey();
     endTurn();
     return k;
   },
   async shim_nh_poskey(xp, yp, modp) {
     syncRules();
+    if (overlay && M._web_picking) overlay.setPicking(!!M._web_picking());
     const ev = await nextInput();
     endTurn();
     if (ev.click) {

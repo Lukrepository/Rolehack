@@ -284,6 +284,24 @@ web_nh_poskey(coordxy *x, coordxy *y, int *mod)
     }
 }
 
+/* Rolehack: getpos() says while a spot is picked (a polearm or Snickersnee
+   applied, farlook, travel); the page's pad centre is then '.' */
+static boolean web_getpos;
+
+EMSCRIPTEN_KEEPALIVE int web_picking(void);
+
+void
+lock_mouse_cursor(boolean on)
+{
+    web_getpos = on;
+}
+
+int
+web_picking(void)
+{
+    return web_getpos;
+}
+
 /* Rolehack: a long press on a line of the history names it here
    (web_set_rule_text), and the rule is made once the history has closed */
 static char web_rule_text[BUFSZ];

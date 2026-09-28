@@ -839,10 +839,10 @@ export class Overlay {
         const k = new Key(mold).place(col * pitch, row * pitch, this.padCell, this.padCell).cap(role(ROLE_MOVE));
         if (!key) {
           this.padCentre = k;
-          this.bindHold(k, CENTRE_HOLD_MS, () => { if (!this.fanOpen && !this.answering) this.openContextRadial(); }, () => {
+          this.bindHold(k, CENTRE_HOLD_MS, () => { if (!this.fanOpen && !this.answering && !this.picking) this.openContextRadial(); }, () => {
             if (this.answering) { this.answerPlace(4); return; }
             if (this.fanOpen) { this.layerPlaceTapped(4, k.el); return; }
-            if (this.directionPending()) this.pressDirection('.');
+            if (this.directionPending() || this.picking) this.pressDirection('.');
             else this.execute(this.padCentreCommand(), k.el);
           });
           continue;
@@ -867,10 +867,21 @@ export class Overlay {
   directionPending() { return !!this.armed || this.expectsDirection; }
   padCentreCommand() { return this.hereHas(HERE_OBJECT) ? C.PICKUP : C.SEARCH; }
 
+  // The game is picking a spot (getpos: a polearm or Snickersnee applied,
+  // farlook, travel): the pad moves the cursor and its centre picks the spot
+  // with '.' -- it sent the centre's own command, 's' (Lucas, 2026-09-28).
+  setPicking(on) {
+    if (this.picking === on) return;
+    this.picking = on;
+    if (on) this.closeContextRadial();
+    this.refreshPadCentre();
+  }
+
   refreshPadCentre() {
     const k = this.padCentre;
     if (!k || this.fanOpen || this.answering) return;   // a layer or a question owns the centre
-    if (this.directionPending()) k.label('HERE', 8).sub('.', true);
+    if (this.picking) k.label('PICK', 8).sub('.', true);
+    else if (this.directionPending()) k.label('HERE', 8).sub('.', true);
     else if (this.hereHas(HERE_OBJECT)) k.label('PICK UP', 8).sub(',', true);
     else k.label('REST', 9).sub('hold · context');
   }
@@ -883,7 +894,7 @@ export class Overlay {
       return;
     }
     // search mode pads each step with searches, never while the core wants a direction
-    if (P.get('searchMode') && !this.expectsDirection) {
+    if (P.get('searchMode') && !this.expectsDirection && !this.picking) {
       const n = P.get('searchCount'), s = n > 1 ? `${n}s` : 's';
       this.host.send(P.get('searchBefore') ? s + dir : dir + s);
       return;

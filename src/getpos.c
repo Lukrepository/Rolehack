@@ -4,6 +4,11 @@
 
 #include "hack.h"
 
+#ifdef SHIM_GRAPHICS
+/* Rolehack: lock_mouse_cursor is the web shim's (winshim.c) */
+extern void lock_mouse_cursor(boolean);
+#endif
+
 extern const char what_is_a_location[]; /* from pager.c */
 
 staticfn void getpos_toggle_hilite_state(void);
@@ -852,7 +857,9 @@ getpos(coord *ccp, boolean force, const char *goal)
 #endif
     curs(WIN_MAP, cx, cy);
     flush_screen(0);
-#ifdef MACOS9
+#if defined(MACOS9) || defined(SHIM_GRAPHICS)
+    /* Rolehack: the web's window port hears it too (winshim.c), so its
+       pad's centre picks the spot (Lucas, 2026-09-28) */
     lock_mouse_cursor(TRUE);
 #endif
     lock_mouse_buttons(TRUE);
@@ -1149,7 +1156,7 @@ getpos(coord *ccp, boolean force, const char *goal)
         flush_screen(0);
     }
  exitgetpos:
-#ifdef MACOS9
+#if defined(MACOS9) || defined(SHIM_GRAPHICS)
     lock_mouse_cursor(FALSE);
 #endif
     lock_mouse_buttons(FALSE);
