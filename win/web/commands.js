@@ -261,6 +261,37 @@ export const isIntercepted = (item) =>
 
 // gurrhack's key notation -> key codes: ^X control, M-x meta, \e escape,
 // \n return (10), \b DEL (0x7f).  Cmd.KeySequnece.rebuildSequence(), in JS.
+// Rolehack: the keys as events for the page's queue, where "#name" and a
+// newline is one command by name (RH_KEY_EXTCMD, winshim.c).  Typed into the
+// '#' menu, its letters picked other commands (Lucas, 2026-09-28).
+export const RH_KEY_EXTCMD = 0xE003;
+
+export function keyEvents(seq) {
+  const out = [];
+  let plain = '';
+  const flush = () => { for (const key of keyCodes(plain)) out.push({ key }); plain = ''; };
+  for (let n = 0; n < seq.length;) {
+    const ch = seq[n];
+    let len = 1;
+    if (ch === '^' && seq.length - n >= 2 && seq[n + 1] !== ' ') len = 2;
+    else if (ch === 'M' && seq.length - n >= 3 && seq[n + 1] === '-' && seq[n + 2] !== ' ') len = 3;
+    else if (ch === '\\' && seq.length - n >= 2 && 'enb'.includes(seq[n + 1])) len = 2;
+    else if (ch === '#') {
+      const m = /^#([A-Za-z0-9]+)(?:\n|\\n)/.exec(seq.slice(n));
+      if (m) {
+        flush();
+        out.push({ key: RH_KEY_EXTCMD, ext: m[1] });
+        n += m[0].length;
+        continue;
+      }
+    }
+    plain += seq.slice(n, n + len);
+    n += len;
+  }
+  flush();
+  return out;
+}
+
 export function keyCodes(seq) {
   const out = [];
   for (let n = 0; n < seq.length; n++) {

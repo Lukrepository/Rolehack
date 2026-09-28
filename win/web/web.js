@@ -10,7 +10,7 @@
 import createNetHack from './nethack.js';
 import { setPalette, dressHero, LOOK_LEN } from './doll.js';
 import { Overlay, STATUS_BAND, LINE, msgRows, msgBandPx, msgTextPx, MSG_LEADING, resetTextScale, creationCap } from './overlay.js';
-import { keyCodes } from './commands.js';
+import { keyEvents } from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
 
@@ -166,9 +166,10 @@ window.addEventListener('keydown', (e) => {
   push({ key: k });
 });
 
-// the overlay's commands, in gurrhack's notation, go in as keys
+// the overlay's commands, in gurrhack's notation, go in as keys; "#name" and
+// a newline goes whole, with its name (keyEvents, commands.js)
 function send(seq) {
-  for (const k of keyCodes(seq)) push({ key: k });
+  for (const ev of keyEvents(seq)) push(ev);
 }
 
 /* ---------- the glass: map, zoom, pan ---------- */
@@ -1416,6 +1417,7 @@ const handlers = {
       M.setValue(modp, ev.click.mod, 'i32');
       return 0;
     }
+    if (ev.ext && M._web_set_ext_name) M.ccall('web_set_ext_name', null, ['string'], [ev.ext]);
     return ev.key;
   },
   shim_nhbell() {

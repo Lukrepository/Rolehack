@@ -261,11 +261,59 @@ web_select_menu(winid window, int how, MENU_ITEM_P **menu_list)
     return shim_select_menu(window, how, menu_list);
 }
 
+/* Rolehack: a command sent by name (below web_nhgetch(); 0xE001 and 0xE002
+   are rhrules.h's) */
+#define RH_KEY_EXTCMD 0xE003
+static char web_ext_name[BUFSZ];
+
 static int
 web_nhgetch(void)
 {
-    web_checkpoint();
-    return shim_nhgetch();
+    int c;
+
+    do {
+        web_checkpoint();
+        c = shim_nhgetch();
+    } while (c == RH_KEY_EXTCMD);   /* Rolehack: a command by name is no answer */
+    return c;
+}
+
+/* Rolehack: a command sent by name.  A key or macro written "#levelchange"
+   and a newline typed the name into the '#' menu, whose letters picked other
+   commands.  The page now sends RH_KEY_EXTCMD with the name
+   (web_set_ext_name()); at the command prompt it goes in as the key for #,
+   and web_get_ext_cmd() answers with the name instead of the menu; anywhere
+   else it is dropped (Lucas, 2026-09-28).  As the phone's winandroid.c;
+   RH_KEY_EXTCMD and web_ext_name are above web_nhgetch(). */
+EMSCRIPTEN_KEEPALIVE void web_set_ext_name(const char *);
+
+void
+web_set_ext_name(const char *s)
+{
+    (void) strncpy(web_ext_name, s ? s : "", sizeof web_ext_name - 1);
+    web_ext_name[sizeof web_ext_name - 1] = '\0';
+}
+
+/* the command a name stands for: the whole name, else a beginning only one
+   command has, as tty's typed '#' completes; -1 for none */
+static int
+rh_ext_index(const char *name)
+{
+    int i, found = -1;
+    size_t n = strlen(name);
+
+    if (!n)
+        return -1;
+    for (i = 0; extcmdlist[i].ef_txt; i++)
+        if (!strcmpi(extcmdlist[i].ef_txt, name))
+            return i;
+    for (i = 0; extcmdlist[i].ef_txt; i++)
+        if (!strncmpi(extcmdlist[i].ef_txt, name, n)) {
+            if (found >= 0)
+                return -1;
+            found = i;
+        }
+    return found;
 }
 
 /* Rolehack: GAME -> Message rules sends RH_KEY_RULES, which the list
@@ -277,7 +325,17 @@ web_nh_poskey(coordxy *x, coordxy *y, int *mod)
 
     for (;;) {
         web_checkpoint();
+        web_ext_name[0] = '\0';   /* a name is good for its own key only */
         c = shim_nh_poskey(x, y, mod);
+        if (c == RH_KEY_EXTCMD) {
+            char k;
+
+            /* a command by name, taken at the command prompt only */
+            if (!iflags.in_parse || !web_ext_name[0])
+                continue;
+            k = cmd_from_func(doextcmd);
+            return k ? (uchar) k : '#';
+        }
         if (c != RH_KEY_RULES)
             return c;
         rh_rules_menu();
@@ -401,6 +459,15 @@ static int
 web_get_ext_cmd(void)
 {
     web_checkpoint();
+    /* Rolehack: a command sent by name (RH_KEY_EXTCMD) needs no menu */
+    if (web_ext_name[0]) {
+        int i = rh_ext_index(web_ext_name);
+
+        if (i < 0)
+            pline("%s: unknown extended command.", web_ext_name);
+        web_ext_name[0] = '\0';
+        return i;
+    }
     return web_ext_cmd_menu(FALSE);
 }
 
