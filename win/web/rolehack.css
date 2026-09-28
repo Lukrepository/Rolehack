@@ -4,12 +4,16 @@
    #case and #keys are design dp (the layers are scaled as a whole). */
 
 @font-face { font-family: 'VT323'; src: url('fonts/VT323-Regular.ttf') format('truetype'); font-display: swap; }
+/* the message band's face: the Braille Institute's, made to be told apart at a glance */
+@font-face { font-family: 'Atkinson Hyperlegible Next'; src: url('fonts/AtkinsonHyperlegibleNext-Variable.ttf') format('truetype');
+             font-weight: 200 800; font-display: swap; }
 @font-face { font-family: 'Plex Condensed'; src: url('fonts/IBMPlexSansCondensed-SemiBold.ttf') format('truetype');
              font-weight: 600; font-display: swap; }
 
 :root {
   --capfont: 'Plex Condensed', 'Arial Narrow', sans-serif;
   --screenfont: 'VT323', 'Cascadia Mono', Consolas, monospace;
+  --msgfont: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
   --case-top: #e8dfc8; --case-bot: #d5c9ab;
   --hood-top: #3a322b; --hood-bot: #221d19;
   --well-top: #171411; --well-bot: #241f1b;

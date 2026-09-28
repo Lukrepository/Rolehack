@@ -9,7 +9,7 @@
 // forms.  The touch controls are overlay.js.
 import createNetHack from './nethack.js';
 import { setPalette, dressHero, LOOK_LEN } from './doll.js';
-import { Overlay, STATUS_BAND, LINE, msgRows, msgBand, creationCap } from './overlay.js';
+import { Overlay, STATUS_BAND, LINE, msgRows, msgBandPx, msgTextPx, MSG_LEADING, resetTextScale, creationCap } from './overlay.js';
 import { keyCodes } from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
@@ -220,20 +220,24 @@ function layoutGlass(g) {
   const bx = r.x - box.x, by = r.y - box.y;
   Object.assign(bands.style, { left: `${bx}px`, top: `${by}px`, width: `${r.w}px`, height: `${r.h}px` });
   bands.style.setProperty('--line', `${LINE * s}px`);
-  const mb = $('msgband'), band = msgBand(g.portrait);
-  mb.style.fontSize = `${11 * 1.35 * s}px`;
-  mb.style.lineHeight = `${LINE * s}px`;
-  mb.style.height = `${band * s}px`;
+  // the message band: its own face and size (overlay.js msgTextPx), a fixed
+  // number of rows, and the map below it
+  resetTextScale();
+  const mb = $('msgband'), bandPx = msgBandPx(g.portrait, s), textPx = msgTextPx();
+  mb.style.fontFamily = P.get('msgFont') === 'screen' ? 'var(--screenfont)' : 'var(--msgfont)';
+  mb.style.fontSize = `${textPx}px`;
+  mb.style.lineHeight = `${textPx * MSG_LEADING}px`;
+  mb.style.height = `${bandPx}px`;
   mb.style.padding = `${5 * s}px ${10 * s}px ${4 * s}px`;
   $('statband').style.fontSize = `${10.5 * 1.35 * s}px`;
   $('statband').style.height = `${statusBandH() * s}px`;
   $('statband').style.display = P.get('statusLines') === 'hidden' ? 'none' : '';
-  $('chips').style.top = `${(band + 6) * s}px`;
+  $('chips').style.top = `${bandPx + 6 * s}px`;
   // Where the map centres: the glass between its bands; caseless, the whole
   // window -- except in portrait, where the banks take the bottom of the
   // screen and the hero centres in what is left above them (RhOverlay.mapArea)
   view.area = g.caseless && !g.portrait ? { x: 0, y: 0, w: box.w, h: box.h }
-    : { x: bx + 2 * s, y: by + band * s, w: r.w - 4 * s, h: r.h - (band + statusBandH()) * s };
+    : { x: bx + 2 * s, y: by + bandPx, w: r.w - 4 * s, h: r.h - bandPx - statusBandH() * s };
   const cv = $('map'), dpr = window.devicePixelRatio || 1;
   cv.width = Math.round(box.w * dpr);
   cv.height = Math.round(box.h * dpr);
@@ -1482,6 +1486,9 @@ function gamesKept() {
 
 try {
   await loadTiles();
+  // the band measures its rows with the font it draws them in (wrapRows), so
+  // the face must be in before the first message
+  try { await document.fonts.load(`16px "Atkinson Hyperlegible Next"`); } catch (e) { /* the fallback measures itself */ }
 } catch (e) {
   console.warn('tiles', e);   // the text map still works
 }

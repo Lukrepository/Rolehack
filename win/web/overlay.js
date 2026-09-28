@@ -35,7 +35,48 @@ export const MSG_BAND = 36, STATUS_BAND = 48, LINE = 13.5;
 // landscape (Lucas, 2026-09-28) -- and never grows over the map; what does not
 // fit waits behind --More-- (web.js).  5 above the rows, 4 below, as RhScreen.
 export const msgRows = (portrait) => (portrait ? 3 : 2);
-export const msgBand = (portrait) => 5 + msgRows(portrait) * LINE + 4;
+
+// The message band's text (Lucas, 2026-09-28; step 3 of the message band
+// research).  Sized by its x-height, 9.5 CSS px: 0.25 degrees at a phone's
+// 36 cm, the research's target, over reading science's 0.2 degree critical
+// print size -- VT323 at the old size gave about 0.14.  The x-heights are the
+// fonts' own (OS/2 tables), so either face reads the same size.  Times the
+// player's size and the system's text size, but not the case's scale: the
+// text keeps its size when the case shrinks to fit the window.
+const MSG_X = 9.5;
+const X_HEIGHT = { atkinson: 0.496, vt323: 0.400 };
+export const MSG_LEADING = 1.35;
+
+// The system's text size: iOS's Dynamic Type where there is one (every iOS
+// browser is WebKit, whose -apple-system-body is 17 px at the default size),
+// else the browser's own default font size over its usual 16.
+let osScale = null;
+export function osTextScale() {
+  if (osScale !== null) return osScale;
+  let scale = 1;
+  try {
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;font-size:medium';
+    document.body.appendChild(probe);
+    scale = parseFloat(getComputedStyle(probe).fontSize) / 16;
+    if (navigator.maxTouchPoints > 0) {
+      probe.style.font = '-apple-system-body';
+      if (probe.style.font) scale = parseFloat(getComputedStyle(probe).fontSize) / 17;
+    }
+    probe.remove();
+  } catch (e) { scale = 1; }
+  osScale = clamp(scale || 1, 0.8, 2);
+  return osScale;
+}
+export function resetTextScale() { osScale = null; }
+
+export function msgTextPx() {
+  const face = P.get('msgFont') === 'screen' ? 'vt323' : 'atkinson';
+  return MSG_X / X_HEIGHT[face] * (Number(P.get('msgSize')) || 1) * osTextScale();
+}
+
+// The band's height in CSS px: its rows, and 5 above and 4 below at the case's scale.
+export const msgBandPx = (portrait, s) => (5 + 4) * s + msgRows(portrait) * msgTextPx() * MSG_LEADING;
 const HUB_HOLD_MS = 380, CENTRE_HOLD_MS = 420, SLOT_CLEAR_MS = 420, CHIP_HOLD_MS = 360;
 const FLICK_SLOP = 10, FLICK_MIN = 26, FLICK_ARC_SLACK = 15, FLICK_REVEAL_MS = 200;
 const FAN_SIZE = [54, 50, 46, 44, 44, 44], FAN_ROTATE = [0, 0, -11, 9, 0, 0];
@@ -304,6 +345,7 @@ export class Overlay {
     P.onChange((name) => {
       if (['style', 'case', 'padCell', 'labelMode', 'phosphor'].includes(name)) this.rebuild();
       if (name === 'statusLines') this.host.glassChanged(this.geom);
+      if (name === 'msgFont' || name === 'msgSize') this.rebuild();
     });
     if (document.fonts) document.fonts.ready.then(() => this.rebuild());
     this.rebuild();
@@ -1554,7 +1596,7 @@ export class Overlay {
 
   fitBanner() {
     const w = 260, h = 30;
-    this.banner.place(this.DW / 2 - w / 2, this.glassTop() + msgBand(this.portrait) + 6, w, h);
+    this.banner.place(this.DW / 2 - w / 2, this.glassTop() + msgBandPx(this.portrait, this.s) / this.s + 6, w, h);
   }
 
   // ---- the context radial, off the pad's centre
@@ -1901,6 +1943,8 @@ export class Overlay {
       seg('statusLines', 'Status lines', [['full', 'Full'], ['compact', 'Compact'], ['hidden', 'Hidden']]),
       { seg: 'morePause', label: 'When the message band is full', value: P.get('morePause') ? 'on' : 'off',
         options: [['on', 'Pause (--More--)'], ['off', "Don't pause"]] },
+      seg('msgFont', 'Message font', [['atkinson', 'Hyperlegible'], ['screen', 'Screen font']]),
+      seg('msgSize', 'Message size', [['0.85', 'Small'], ['1', 'Standard'], ['1.2', 'Large'], ['1.4', 'Larger']]),
       seg('mapMode', 'Map', [['tiles', 'Tiles'], ['text', 'Text']]),
       seg('padCell', 'Movement key size', [['46', '46'], ['52', '52'], ['58', '58 (Parhi)']]),
       seg('labelMode', 'Key labels', [['words', 'Words'], ['keys', 'Keys'], ['both', 'Both']]),
@@ -1923,6 +1967,8 @@ export class Overlay {
         put('phosphor', v.phosphor);
         put('statusLines', v.statusLines);
         put('morePause', v.morePause === 'on');
+        put('msgFont', v.msgFont);
+        put('msgSize', Number(v.msgSize));
         put('mapMode', v.mapMode);
         put('padCell', parseInt(v.padCell, 10));
         put('labelMode', v.labelMode);
