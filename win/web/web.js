@@ -385,10 +385,13 @@ function renderMap() {
     P.set('zoom', clamp(view.T * Math.pow(1.1, -e.deltaY / 100), 8, 96));
     render();
   }, { passive: false });
-  // the message band answers a tap at --More--, and while messages went by unshown
+  // A tap on the message band opens the history, always: a band that answers
+  // only sometimes teaches that it never does (the message band research,
+  // step 4).  At --More-- the tap is Space.  Not while a question waits on the
+  // band or the pad, where a key would be taken as the answer.
   $('msgband').addEventListener('pointerup', () => {
     if (moreShown) push({ key: 32 });
-    else if (lastHidden > 0) send('^P');
+    else if (!page.some((e) => e.ask) && !(overlay && overlay.answering)) send('^P');
   });
 }());
 
@@ -515,9 +518,11 @@ async function more() {
   unread = false;
 }
 
+// 256 messages, as the phone's log keeps (ForkFront's NHW_Message)
+const HISTORY_MAX = 256;
 function remember(text) {
   history.push(text);
-  if (history.length > 1000) history.splice(0, history.length - 1000);
+  if (history.length > HISTORY_MAX) history.splice(0, history.length - HISTORY_MAX);
 }
 
 // A message from the game (putstr to the message window).
@@ -755,9 +760,17 @@ function spacePages() {
   return true;
 }
 
-async function showText(lines, title) {
-  openModal(title, lines.map(lineHtml).join(''), 'Space pages · Enter or Esc closes',
-            [capButton('OK', { key: 'Enter', amber: true, onTap: pushKey(13) })]);
+// A text window.  The history opens at its newest line, with keys to page
+// back and on, a window at a time (the message band research, step 4:
+// paging keeps a place where free scrolling loses it).
+async function showText(lines, title, history = false) {
+  const caps = history
+    ? [capButton('Earlier', { key: '<', onTap: pushKey(60) }), capButton('Later', { key: '>', onTap: pushKey(62) })]
+    : [];
+  caps.push(capButton('OK', { key: 'Enter', amber: true, onTap: pushKey(13) }));
+  openModal(title, lines.map(lineHtml).join(''),
+            history ? '< earlier · > later · Enter or Esc closes' : 'Space pages · Enter or Esc closes', caps);
+  if (history) $('modal-body').scrollTop = $('modal-body').scrollHeight;
   for (;;) {
     const k = await nextKey();
     if (pageKey(k) || (k === 32 && spacePages())) continue;
@@ -1301,8 +1314,10 @@ const handlers = {
   shim_nhbell() {
     $('glass').animate([{ filter: 'brightness(1.8)' }, { filter: 'none' }], 150);
   },
+  // ^P: the history, newest last, the band's own page in bold at its end
   async shim_doprev_message() {
-    await showText(history.slice(-60).map((text) => ({ attr: 0, text })), 'Messages');
+    const fromBold = history.length - Math.min(page.length, history.length);
+    await showText(history.map((text, i) => ({ attr: i >= fromBold ? ATR.BOLD : 0, text })), 'Messages', true);
     return 0;
   },
   async shim_yn_function(query, resp, def) {
