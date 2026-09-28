@@ -5,6 +5,7 @@
 #include <ctype.h>
 
 #include "hack.h"
+#include "rhrules.h"   /* Rolehack: message rules */
 #include "func_tab.h"   /* for extended commands */
 #include "dlb.h"
 
@@ -174,6 +175,7 @@ static jmethodID jHeroLook;     /* Rolehack: the paper doll */
 static jmethodID jCreation;     /* Rolehack: character creation's menus */
 static jmethodID jMsgBand, jMsgRows, jMore, jMsgScroll;   /* Rolehack: the message band's --More-- */
 static jmethodID jAnswers;      /* Rolehack: a question's answers on the pad */
+static jmethodID jRuleText, jLoadRules, jSaveRules;   /* Rolehack: message rules (rhrules.c) */
 
 static boolean quit_if_possible;
 static boolean restoring_msghistory;
@@ -403,6 +405,84 @@ staticfn void rh_answers(const char *choices, char def)
     destroy_jobject(jb);
 }
 
+/*
+ * Rolehack: message rules (win/share/rhrules.c; the message band research,
+ * step 5).  A long press on a line of the history closes it and sends
+ * RH_KEY_RULE, and the line's text is fetched here; GAME -> Message rules
+ * sends RH_KEY_RULES at the command prompt.  The rules are kept in the app's
+ * settings (rhMsgRules) from game to game: loaded at the first command
+ * prompt, saved whenever they change.  The options file's own MSGTYPE lines
+ * load as they always did, first.
+ */
+static boolean rh_rules_restored;
+
+staticfn char *rh_bytes_of(jbyteArray a)
+{
+    jsize len;
+    char *buf;
+
+    if(!a)
+        return 0;
+    len = (*jEnv)->GetArrayLength(jEnv, a);
+    buf = (char *) alloc((unsigned) len + 1);
+    (*jEnv)->GetByteArrayRegion(jEnv, a, 0, len, (jbyte *) buf);
+    buf[len] = '\0';
+    destroy_jobject(a);
+    return buf;
+}
+
+staticfn void rh_rules_restore(void)
+{
+    char *kept;
+    jbyteArray a;
+
+    if(rh_rules_restored || !jLoadRules || !jSaveRules)
+        return;
+    rh_rules_restored = TRUE;
+    a = (jbyteArray) JNICallO(jLoadRules);   /* (the macro ends its own statement) */
+    kept = rh_bytes_of(a);
+    if(kept)
+    {
+        rh_rules_load(kept);
+        free(kept);
+    }
+}
+
+staticfn void rh_rules_sync(void)
+{
+    static char *last;
+    const char *now;
+    jbyteArray jb;
+
+    if(!rh_rules_restored)
+        return;     /* an empty list before the kept one is in must not replace it */
+    now = rh_rules_serial();
+    if(last && !strcmp(last, now))
+        return;
+    if(last)
+        free(last);
+    last = dupstr(now);
+    jb = create_bytearray(now);
+    JNICallV(jSaveRules, jb);
+    destroy_jobject(jb);
+}
+
+staticfn void rh_rule_from_log(void)
+{
+    char *text;
+    jbyteArray a;
+
+    if(!jRuleText)
+        return;
+    a = (jbyteArray) JNICallO(jRuleText);
+    text = rh_bytes_of(a);
+    if(text)
+    {
+        rh_message_rule(text);
+        free(text);
+    }
+}
+
 //____________________________________________________________________________________
 void Java_com_tbd_forkfront_NetHackIO_RunNetHack(JNIEnv* env, jobject thiz, jstring path, jstring username)
 {
@@ -453,6 +533,9 @@ void Java_com_tbd_forkfront_NetHackIO_RunNetHack(JNIEnv* env, jobject thiz, jstr
     jMore = rh_optional_method("rhMore", "(I)V");
     jMsgScroll = rh_optional_method("rhMsgScroll", "(I)V");
     jAnswers = rh_optional_method("rhAnswers", "([BI)V");
+    jRuleText = rh_optional_method("rhRuleText", "()[B");
+    jLoadRules = rh_optional_method("rhLoadRules", "()[B");
+    jSaveRules = rh_optional_method("rhSaveRules", "([B)V");
 
     if(!(jReceiveKey && jReceivePosKey && jCreateWindow && jClearWindow && jDisplayWindow &&
             jDestroyWindow && jPutString && jRawPrint && jSetCursorPos && jPrintTile &&
@@ -2205,6 +2288,8 @@ int and_nh_poskey(coordxy *x, coordxy *y, int *mod)
 
     and_send_hero_look(FALSE);   /* Rolehack: the paper doll */
     and_send_here_context(FALSE);    /* Rolehack: after a move that made no status pass */
+    rh_rules_restore();              /* Rolehack: the kept message rules, once */
+    rh_rules_sync();                 /* ... and kept again when they change */
     a = (*jEnv)->NewIntArray(jEnv, 2);
     int c = JNICallI(jReceivePosKey, bMouseLock, a);
     rh_msg_input();     /* Rolehack: the band dims; the next message starts a page */
@@ -2228,6 +2313,12 @@ int and_nh_poskey(coordxy *x, coordxy *y, int *mod)
             c = and_nh_poskey(x, y, mod);
     }
     destroy_jobject(a);
+    if(c == RH_KEY_RULES)
+    {
+        /* Rolehack: GAME -> Message rules */
+        rh_rules_menu();
+        return and_nh_poskey(x, y, mod);
+    }
     return c;
 }
 
@@ -2247,7 +2338,9 @@ int and_doprev_message()
 {
 //  debuglog("and_doprev_message");
     JNICallV(jShowLog, 1);
-    and_nhgetch();
+    /* Rolehack: a long press on a line makes a message rule from it */
+    if(and_nhgetch() == RH_KEY_RULE)
+        rh_rule_from_log();
     return 0;
 }
 

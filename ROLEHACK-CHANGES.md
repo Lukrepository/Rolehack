@@ -30,6 +30,7 @@ notices before each release.
 | `include/optlist.h` | changed | 2026-09-25 | notice in file |
 | `include/patchlevel.h` | changed | 2026-09-25 | notice in file |
 | `include/rhability.h` | added | 2026-09-27 | notice in file |
+| `include/rhrules.h` | added | 2026-09-28 | notice in file |
 | `include/skills.h` | changed | 2026-08-16 | notice in file |
 | `include/timeout.h` | changed | 2026-09-27 | notice in file |
 | `src/artifact.c` | changed | 2026-08-21 to 2026-09-23 | notice in file |
@@ -57,7 +58,7 @@ notices before each release.
 | `src/uhitm.c` | changed | 2026-08-16 to 2026-09-27 | notice in file |
 | `src/weapon.c` | changed | 2026-09-23 to 2026-09-27 | notice in file |
 | `src/zap.c` | changed | 2026-09-27 | notice in file |
-| `sys/android/Makefile.src` | changed | 2026-08-19 | notice in file |
+| `sys/android/Makefile.src` | changed | 2026-08-19 to 2026-09-28 | notice in file |
 | `sys/android/Makefile.top` | changed | 2026-08-19 | notice in file |
 | `sys/android/app/AndroidManifest.xml` | changed | 2026-09-24 to 2026-09-25 | notice in file |
 | `sys/android/app/assets/ver` | changed | 2026-08-21 to 2026-09-25 | cannot carry a comment; listed here |
@@ -76,5 +77,6 @@ notices before each release.
 | `tools/dressing-room/outfit.py` | added | 2026-09-26 | notice in file |
 | `tools/dressing-room/rolehack-dressing-room.html` | added | 2026-09-26 | notice in file |
 | `tools/dressing-room/template.html` | added | 2026-09-26 | notice in file |
+| `win/share/rhrules.c` | added | 2026-09-28 | notice in file |
 | `win/share/monsters.txt` | changed | 2026-08-04 to 2026-09-26 | notice in file |
 | `win/share/objects.txt` | changed | 2026-09-25 | notice in file |
