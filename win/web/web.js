@@ -258,8 +258,14 @@ function placeView() {
     view.panX = view.panY = 0;
     lastFocus = { x: f.x, y: f.y };
   }
+  // At rest the map is centred where it fits and follows the hero, kept to its
+  // edges, where it does not.  A drag moves it from there as far as the finger
+  // goes -- past the edges into the dark, as the phone's map does (ForkFront's
+  // pan(), unbounded) -- until the hero moves.  It was kept inside the edges,
+  // and could not move at all along a side it fits (Lucas, 2026-09-27: at most
+  // zooms "I can't move the map down").
   const axis = (len, avail, start, fc, pan) => (len <= avail ? start + (avail - len) / 2
-    : clamp(start + avail / 2 - (fc + 0.5) * T + pan, start + avail - len, start));
+    : clamp(start + avail / 2 - (fc + 0.5) * T, start + avail - len, start)) + pan;
   view.left = axis(mapW, a.w, a.x, f.x, view.panX);
   view.top = axis(mapH, a.h, a.y, f.y, view.panY);
 }
@@ -275,6 +281,11 @@ function renderMap() {
   cx.imageSmoothingEnabled = false;
   cx.fillStyle = '#000';
   cx.fillRect(0, 0, cv.width, cv.height);
+  // the edge of the level, as the phone draws it (ForkFront's drawBorder(), at
+  // its default opacity): a 2-pixel line just outside the map's 80 x 21
+  cx.strokeStyle = 'rgb(39,39,48)';
+  cx.lineWidth = 2;
+  cx.strokeRect(L - 4 + 1, Tp - 4 + 1, COLNO * Td + 8 - 2, ROWNO * Td + 8 - 2);
   const tiles = P.get('mapMode') !== 'text' && sheet;
   const look = tiles ? heroLook() : null;
   if (!tiles) {
