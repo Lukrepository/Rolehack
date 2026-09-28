@@ -1940,7 +1940,9 @@ export class Overlay {
       seg('style', 'Style', [['terminal', 'Terminal'], ['light', 'Terminal (light)'], ['gamecube', 'GameCube']]),
       { seg: 'case', label: 'Case', value: P.get('case') ? 'on' : 'off', options: [['on', 'Show the case'], ['off', 'Caseless']] },
       seg('phosphor', 'Screen phosphor', [['color', 'Colour'], ['amber', 'Amber'], ['green', 'Green'], ['white', 'White']]),
-      seg('colourVision', "Colour vision: the game's colours in menus, messages and the text map (tiles are unchanged for now)",
+      seg('colourVision', "Colour vision: the game's colours in menus, messages and the text map. Protanopia and "
+        + 'deuteranopia share a red-green palette and tritanopia has its own; monochrome changes only blessed, '
+        + 'uncursed, cursed and HP, by brightness. Tiles are unchanged for now',
         [['standard', 'Standard'], ['protanopia', 'Protanopia'], ['deuteranopia', 'Deuteranopia'],
          ['tritanopia', 'Tritanopia'], ['monochrome', 'Monochrome']]),
       seg('statusLines', 'Status lines', [['full', 'Full'], ['compact', 'Compact'], ['hidden', 'Hidden']]),
