@@ -866,11 +866,53 @@ const pausing = () => P.get('morePause') !== false;
 
 const ATR_URGENT = 16, ATR_NOHISTORY = 32;   // wintype.h
 
+// Twin banks lay the band out again when the window turns or the text size
+// changes, often with a page up and the game at --More--: the band's width
+// and rows change under a page that is part read.  Its rows are broken again
+// for the new band, and scrollRow, which counted rows of the old one, would
+// point elsewhere -- past the page's end, where the band showed nothing (a
+// long first message, Message size 1.4, a 640x360 phone turned to portrait).
+// So the place the band showed from is kept as the letters before it (a row
+// breaks only at spaces, or inside a word too long for it, so the letters
+// stay put), found again in the new rows, and taken back to the start of its
+// band's worth, so --More-- keeps its room on a band's last row.  The page
+// may show a row again; it never skips one.  At a --More--, whatever the new
+// band leaves below it is paged once the player answers (moreToEnd,
+// putMessage).  A --More-- that a band of more rows no longer needs still
+// waits for its answer: gone by itself, the tap the player meant for it
+// would land on the map as a travel, or open the history.  With no --More--
+// up, the band shows the page's end, the band's worth that holds its newest
+// row: a fight's four messages on a portrait band of 4 rows, the phone turned
+// to landscape's 3, showed only the first three, and the newest never came
+// back (the review, 2026-10-02).
+// Switching the Layout setting with a page up lays the band out again too,
+// either way, so it re-finds its place the same; classic's own re-layouts
+// keep its rows as they were.
+let scrollMark = null;    // { key, twin, row, letters }: the band's metrics and scrollRow's place at the last render
+const lettersOf = (row) => row.t.replace(/\s+/g, '').length;
+function keepScroll(m) {
+  const twin = !!(geom && geom.twin), mark = scrollMark;
+  const key = `${twin} ${m.width} ${m.rows} ${m.slot} ${m.cx.font}`;
+  let all = null;
+  const rows = () => (all = all || pageRowsOf(page, m));
+  if (mark && mark.key !== key && mark.row === scrollRow && (twin || mark.twin)) {
+    if (scrollRow) {
+      // the row that now holds the first letter the band showed
+      let r = 0, n = 0;
+      while (r < rows().length - 1 && n + lettersOf(all[r]) <= mark.letters) n += lettersOf(all[r++]);
+      scrollRow = Math.floor(r / m.rows) * m.rows;
+    }
+    if (!moreShown && rows().length - scrollRow > m.rows) scrollRow = Math.floor((all.length - 1) / m.rows) * m.rows;
+  }
+  scrollMark = { key, twin, row: scrollRow, letters: scrollRow ? rows().slice(0, scrollRow).reduce((a, q) => a + lettersOf(q), 0) : 0 };
+}
+
 function renderBands() {
   const m = bandMetrics(), s = geom ? geom.s : 1;
   let rows;
   lastHidden = 0;
   if (pausing()) {
+    keepScroll(m);
     rows = pageRowsOf(page, m).slice(scrollRow, scrollRow + m.rows);
   } else {
     // the newest messages that fit whole; the newest alone cut short if it is longer
@@ -915,6 +957,17 @@ async function more() {
   unread = false;
 }
 
+// --More--, then, in twin banks, again for each band's worth of the page that
+// a re-layout meanwhile left below the band (keepScroll), so a page is never
+// put away with rows the band has not shown.  Classic waits once, as before.
+async function moreToEnd() {
+  await more();
+  for (let m = bandMetrics(); geom && geom.twin && !msgStop && pageRowsOf(page, m).length - scrollRow > m.rows; m = bandMetrics()) {
+    scrollRow += m.rows;
+    await more();
+  }
+}
+
 // 256 messages, as the phone's log keeps (ForkFront's NHW_Message)
 const HISTORY_MAX = 256;
 function remember(text) {
@@ -928,12 +981,19 @@ async function putMessage(text, attr = 0) {
   if (msgStop && ((attr & ATR_URGENT) || /^You die/.test(text))) { msgStop = false; newPage = true; }
   if (msgStop) return;
   if (newPage) startPage();
-  const m = bandMetrics(), pause = pausing() && m.width >= 40;
+  let m = bandMetrics();
+  const pause = pausing() && m.width >= 40;
+  // twin banks: the band the player answered --More-- on may have been laid
+  // out again meanwhile (keepScroll), and the rows go on in the new one; so
+  // may a page begun in twin banks and switched to classic
+  const twinPage = !!(geom && geom.twin);
+  const again = () => { if (twinPage || (geom && geom.twin)) m = bandMetrics(); };
   if (pause) {
     const used = pageRowsOf(page, m).length;
     if (used > 0 && used + wrapRows(text, used, m).length > scrollRow + m.rows) {
-      await more();
+      await moreToEnd();
       startPage();
+      again();
     }
   }
   page.push({ text });
@@ -944,7 +1004,14 @@ async function putMessage(text, attr = 0) {
   if (pause) {
     while (!msgStop && pageRowsOf(page, m).length - scrollRow > m.rows) {
       await more();
-      if (!msgStop) scrollRow += m.rows;
+      again();
+      // A band laid out again at the --More-- may show the rest already: the
+      // place re-found (keepScroll) starts a band of more rows that reaches
+      // the message's end, and a step on would show nothing (a 390-class
+      // phone turned to portrait inside a long message; the review,
+      // 2026-10-02).  Classic's band never changes here, so it steps on.
+      if (msgStop || pageRowsOf(page, m).length - scrollRow <= m.rows) break;
+      scrollRow += m.rows;
     }
   }
   renderBands();
@@ -1710,7 +1777,7 @@ const handlers = {
     if (w.type === K.WIN_TYPE.NHW_MESSAGE) {
       // the game's own --More-- (a MSGTYPE=stop rule's, "You die...", ...)
       if (blocking && unread && !msgStop) {
-        await more();
+        await moreToEnd();
         pageFresh = false;
         newPage = true;
       }
@@ -1817,7 +1884,7 @@ const handlers = {
     const m = bandMetrics();
     if (pausing() && m.width >= 40) {
       const used = pageRowsOf(page, m).length;
-      if (used > 0 && used + wrapRows(q, used, m).length > scrollRow + m.rows) { await more(); startPage(); }
+      if (used > 0 && used + wrapRows(q, used, m).length > scrollRow + m.rows) { await moreToEnd(); startPage(); }
     }
     const asked = { text: q, ask: true };
     page.push(asked);
