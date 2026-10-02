@@ -348,7 +348,42 @@ export class Overlay {
       if (name === 'msgFont' || name === 'msgSize') this.rebuild();
     });
     if (document.fonts) document.fonts.ready.then(() => this.rebuild());
+    this.guardClicks();
     this.rebuild();
+  }
+
+  // A key acts on its pointerup, and the browser's click for the same touch
+  // comes after it, on whatever is under the finger by then: a window the key
+  // has just opened.  Wherever a key and a window's control share a place,
+  // the click presses the control: with the twin banks layout's keys,
+  // INVENTORY's list closed as it opened (a long inventory's ESC lies under
+  // the key) and MENU's tap turned the case back on (the Settings form's Case
+  // row lies under it; the review, 2026-10-02).  So a click that ends a touch
+  // begun on a key and lands outside the keys is dropped, in every layout: it
+  // can only press something the finger never went down on.  A click from
+  // the keyboard has no pointer and passes.
+  guardClicks() {
+    const fromKey = new Map();   // pointerId -> when that touch, begun on a key, lifted (0: still down)
+    let last = null;
+    window.addEventListener('pointerdown', (e) => {
+      if (this.keysEl.contains(e.target)) fromKey.set(e.pointerId, 0);
+      else fromKey.delete(e.pointerId);
+    }, true);
+    window.addEventListener('pointerup', (e) => {
+      if (fromKey.has(e.pointerId)) { fromKey.set(e.pointerId, performance.now()); last = e.pointerId; }
+    }, true);
+    window.addEventListener('click', (e) => {
+      // the click names its pointer (Chrome); a browser whose click does not
+      // takes the last touch that lifted
+      const named = e.pointerType && typeof e.pointerId === 'number' && e.pointerId >= 0;
+      if (!named && !e.detail) return;
+      const id = named ? e.pointerId : last, up = fromKey.get(id);
+      if (up === undefined) return;
+      fromKey.delete(id);
+      if (!up || performance.now() - up > 1000 || this.keysEl.contains(e.target)) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }, true);
   }
 
   // ---- state from the game
