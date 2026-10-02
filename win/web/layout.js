@@ -160,6 +160,12 @@ export const DEFAULTS = {
   prevTier: null,      // the last tier, for hysteresis
   halo: 12,            // guard band round each bank (section 6); also the least gap from a band to a key
   ring: 20,            // confirm ring inside the map next to a halo
+  // 'auto': the header as section 10 places it -- side by side once the glass is 818 dp
+  // wide, over the banks when that shows more of the level.  'stacked': messages over the
+  // status at the top of the glass, always, and never over the banks: the shape the web's
+  // #glass has today, which the page asks for until it lays the bands out apart (Lucas,
+  // 2026-10-02: the twin banks on the page, the header stacked in the glass for now).
+  header: 'auto',
 };
 
 // The message band: 5 dp above, 4 below, then its rows.
@@ -272,6 +278,7 @@ function heightFit(base, Sh, Sw, st) {
 // null when the header would not be side by side (the width after side insets and the
 // cutout) or cannot fit.  free: nothing had to give.
 function overFit(base, Sh, Sw, Lw, st, rowsL) {
+  if (st.header === 'stacked') return null;      // the header stays in the glass
   const cut = st.avoidCutout;
   const padL = Math.max(4 + st.sides.l, cut), padR = Math.max(4 + st.sides.r, cut);
   if (Lw - padL - padR < HEADER_SIDE) return null;
@@ -485,7 +492,7 @@ function placeBanks(W, H, M, st, table) {
 // ---------------------------------------------------------------------------------------
 function header(x, y, w, rows, st, statusExtra = 0) {
   const BH = bandH(rows, st.msgRowH);
-  if (w >= HEADER_SIDE) {
+  if (w >= HEADER_SIDE && st.header !== 'stacked') {
     const h = Math.max(BH, st.statusH);
     const mw = Math.min(MSG_MAX, w - st.statusW - 6);
     return {
@@ -695,6 +702,7 @@ function settled(W, H, settings) {
   st.cellAspect = pos(st.cellAspect, 1);
   for (const k of ['cellColumns', 'fitFloor', 'cellMax', 'tabletCellMax', 'deskCellMax', 'deskWideCellMax', 'halo', 'ring', 'statusW', 'shortScreenRows']) st[k] = pos(st[k], DEFAULTS[k]);
   st.msgRows = { landscape: Math.max(1, Math.round(num(st.msgRows.landscape, 2))), portrait: Math.max(1, Math.round(num(st.msgRows.portrait, 3))) };
+  st.header = st.header === 'stacked' ? 'stacked' : 'auto';
   const b = st.budget;
   st.budget = b && num(b.w, 0) > 0 && num(b.h, 0) > 0 ? { w: b.w, h: b.h, l: num(b.l, 0) > 0 ? b.l : Math.max(W, H) } : null;
   // the landscape side insets: remembered, or this window's own when it is landscape

@@ -335,6 +335,41 @@ test('the left-handed layout mirrors the right-handed one', () => {
   assert.deepEqual(out, []);
 });
 
+// ---- the page's stacked header
+
+// The page lays the bands out in #glass, messages over the status, until it
+// can lay them out apart (the twin banks on the page, Lucas, 2026-10-02), and
+// asks for that with header 'stacked': then no band stands beside another or
+// over the banks, every band lies in the glass, and a window whose header is
+// stacked in the glass anyway (every phone at the default cell) lays out just
+// as it does by default -- unless the plan squeezed the banks for a header
+// over them in the other orientation (mapCell 'rows'), which 'stacked' never
+// does.
+test("header 'stacked' keeps the bands stacked in the glass", () => {
+  const out = [];
+  const inside = (b, g) => b.x >= g.x - 0.01 && b.y >= g.y - 0.01 && b.x + b.w <= g.x + g.w + 0.01 && b.y + b.h <= g.y + g.h + 0.01;
+  const stacked = (S) => S.bands.length === 2 && Math.abs(S.bands[0].x - S.bands[1].x) <= 0.01
+    && Math.abs(S.bands[0].w - S.bands[1].w) <= 0.01 && S.bands[1].y >= S.bands[0].y + S.bands[0].h - 0.01
+    && S.bands.every((b) => inside(b, S.glass));
+  const windows = [...PHONES, ...TABLETS, ...FOLDABLES].flatMap(([S, L]) => [[L, S], [S, L]]);
+  let sideBySide = 0, same = 0;
+  for (const [W, H] of [...windows, [1366, 768], [1280, 800], [1920, 1080], [2560, 1440]]) {
+    for (const pointer of ['touch', 'mouse']) {
+      for (const st of [{}, { mapCell: 'rows' }, { padKey: 46, hand: 'left' }]) {
+        const what = `${W}x${H} ${pointer} ${JSON.stringify(st)}`;
+        const r = layout(W, H, pointer, { ...st, header: 'stacked' }), a = layout(W, H, pointer, st);
+        checkResult(r, `${what} stacked`);
+        if (!r.usable) continue;
+        if (!stacked(r.spec)) out.push(`${what}: the bands are not stacked in the glass`);
+        if (a.usable && stacked(a.spec) && !a.info.M.over) { out.push(...specDiff(r.spec, a.spec).map((d) => `${what}: ${d}`)); same++; } else sideBySide++;
+      }
+    }
+  }
+  assert.deepEqual(out, []);
+  // the option has something to do: tablets and the desk put the header side by side by default
+  assert.ok(sideBySide > 10 && same > 100, `${sideBySide} side by side by default, ${same} stacked anyway`);
+});
+
 // ---- 5. the page imports the file as it is
 
 test('layout.js is a plain module: no imports, no DOM, no node', () => {

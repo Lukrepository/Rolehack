@@ -41,6 +41,10 @@ and it imports every `*.test.mjs` here. Naming the files also works:
   offsets from its own bottom corner. Lucas's uneven phone (896x443 / 443x939)
   gets this from its remembered budget;
 - the left-handed layout is the right-handed one mirrored;
+- with `header: 'stacked'`, the page's setting while it keeps the bands in
+  `#glass`, messages over the status, no band stands beside another or over
+  the banks, and a window whose header is stacked in the glass anyway lays out
+  as it does by default;
 - `layout.js` stays a plain module, with no imports, no DOM and nothing from node.
 
 ## Where the fixtures come from
