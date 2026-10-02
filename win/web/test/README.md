@@ -1,0 +1,72 @@
+# The web port's tests
+
+Tests for the pieces of the page that run without a browser. Today that is
+`../layout.js`, the "guarded twin banks" layout rule. They use node's own test
+runner and assertions, so there is nothing to install.
+
+## Running them
+
+From the top of the checkout:
+
+    node --test win/web/test/
+
+This needs node 20.19 or later, or 22.7 or later. Those versions load
+`layout.js` as an ES module because of its syntax, even though its name ends in
+`.js` and there is no `package.json`. Node 21 does not, and fails on the import.
+`index.js` makes the directory form work. Node 20 searches the directory for
+test files. Node 21 and later run the directory as a module, which is
+`index.js`, and it imports every `*.test.mjs` here. Naming the files also works:
+
+    node --test win/web/test/*.test.mjs
+
+`layout.test.mjs` checks that:
+
+- `layout()` reproduces the design's golden screens (`fixtures/`) within 0.5 dp:
+  every control, band, map area, glass, panel and pop-up, and the fit;
+- it never throws over a sweep of windows, pointers and settings (nonsense
+  included). Everything it calls usable has no key off screen, on another key,
+  on the map or under a band. With plain settings, every window 660 dp or more
+  on its short side is usable;
+- a window and the same window turned get the same banks: every key keeps its
+  offsets from its own bottom corner. Lucas's uneven phone (896x443 / 443x939)
+  gets this from its remembered budget;
+- the left-handed layout is the right-handed one mirrored;
+- `layout.js` stays a plain module, with no imports, no DOM and nothing from node.
+
+## Where the fixtures come from
+
+`fixtures/` holds verbatim copies of the twin banks design's golden specs
+(design v2, 2 October 2026):
+
+- `spec.json`: the 15 scored screens;
+- `spec-*.json`: the design folder's `variants/spec-*.json`. These are the same
+  rule under one changed setting: combat on the left thumb, left-handed,
+  Android's text cells, 46 and 52 dp keys, and `mapCell: 'rows'`.
+
+Each one was written by the design folder's `layout-cli.mjs`. It runs the
+design's `layout.js`, which is `win/web/layout.js` with a different header
+comment. The `*.report.json` files next to them are the harness's scores, not
+layout results, so they are not copied.
+
+## Refreshing them when the design changes the rule
+
+1. In the design folder, regenerate the specs with `node layout-cli.mjs`. It
+   rewrites `spec.json` and `variants/`. The design's CI gate is
+   `node checks/sweep.mjs`.
+2. Copy the rule into the repo. Take the design's `layout.js` from its first
+   `// ---` block onward and put it under the header comment of
+   `win/web/layout.js`.
+3. Copy the specs:
+
+       cp <design>/spec.json <design>/variants/spec-*.json win/web/test/fixtures/
+       rm win/web/test/fixtures/*.report.json
+
+4. Check the settings table. If `layout-cli.mjs` changed its `SCREENS`, `PAIRS`
+   or `VARIANTS`, make the same change at the top of `layout.test.mjs`. The
+   first test fails when a fixture has no settings there, or the other way round.
+5. Run the tests. To check that the repo's copy passes the design's own gate, run
+   `RH_LAYOUT=<repo>/win/web/layout.js node checks/sweep.mjs` in the design
+   folder.
+
+Never regenerate the fixtures from `win/web/layout.js` itself. They are there
+to catch the page's copy of the rule drifting from the design.

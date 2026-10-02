@@ -1,0 +1,7230 @@
+{
+ "name": "v2, combatThumb L (COMBAT, FLICK, PIN 2 on the walking thumb)",
+ "notes": "Guarded twin corner banks, v2. Each thumb owns one 3x6 bank anchored to its bottom corner; every size and offset comes from the short and long sides (or the remembered tab budget), never the orientation. The pad keeps the chosen size wherever it fits (58 -> 52 -> 46 dp only on short sides). A 12 dp halo round each bank snaps or swallows near misses, at least 24 dp separate the banks in portrait, and every band stays 12 dp clear of every key. One map cell per device: on phones the cell that shows at least 34 columns in landscape with all 21 rows where they fit (about 13 dp), with spare height turned into message rows and status bars; tablets show the whole level when it fits at 12 dp or more. The header stacks in the glass unless sitting over the banks shows more rows. Counts, context candidates and the pad-centre list are layers on the pad; the only pop-ups are the flick legend, the layer name pill and the drawer, all inside the map. Desk: the same banks at 40 dp docked under the whole level with keyboard legends.",
+ "retired": {},
+ "screens": {
+  "896x443": {
+   "W": 896,
+   "H": 443,
+   "pointer": "touch",
+   "source": "v2 layout(): tier phone, S 443, glass between, pad 58 dp, pitch 66, right columns 58 dp, m 18, mb 18, g 8, gap 27, upper 48/6, map cell 13.41 dp (columns; pans; 34x21 cells), msg rows 3",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 18,
+     "y": 367,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 84,
+     "y": 367,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 150,
+     "y": 367,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 18,
+     "y": 301,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer)",
+     "x": 84,
+     "y": 301,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 150,
+     "y": 301,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 18,
+     "y": 235,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 84,
+     "y": 235,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 150,
+     "y": 235,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 18,
+     "y": 179,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub)",
+     "x": 84,
+     "y": 179,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker)",
+     "x": 150,
+     "y": 179,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap)",
+     "x": 18,
+     "y": 125,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro)",
+     "x": 84,
+     "y": 125,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default)",
+     "x": 150,
+     "y": 125,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST)",
+     "x": 18,
+     "y": 75,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 84,
+     "y": 75,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY)",
+     "x": 150,
+     "y": 75,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub)",
+     "x": 820,
+     "y": 367,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap)",
+     "x": 754,
+     "y": 367,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub)",
+     "x": 688,
+     "y": 367,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub)",
+     "x": 820,
+     "y": 301,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts)",
+     "x": 754,
+     "y": 301,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook)",
+     "x": 688,
+     "y": 301,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 820,
+     "y": 235,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove)",
+     "x": 754,
+     "y": 235,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove)",
+     "x": 688,
+     "y": 235,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 820,
+     "y": 179,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 754,
+     "y": 179,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 688,
+     "y": 179,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer",
+     "x": 820,
+     "y": 125,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer",
+     "x": 754,
+     "y": 125,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings)",
+     "x": 688,
+     "y": 125,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 820,
+     "y": 75,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard)",
+     "x": 754,
+     "y": 75,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 688,
+     "y": 75,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swiped up out of the REST slot; hold once out: counts ×100–×400)",
+     "x": 18,
+     "y": 75,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 218,
+    "y": 2,
+    "w": 460,
+    "h": 439
+   },
+   "mapArea": {
+    "x": 220,
+    "y": 156.57,
+    "w": 456,
+    "h": 281.65
+   },
+   "bands": [
+    {
+     "name": "messages (3 rows; MORE lamp at the right end)",
+     "x": 220,
+     "y": 4,
+     "w": 456,
+     "h": 86.57
+    },
+    {
+     "name": "status (3 lines + HP/Pw bars)",
+     "x": 220,
+     "y": 92.57,
+     "w": 456,
+     "h": 62
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 224,
+     "y": 160.57,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 276,
+     "y": 160.57,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 224,
+     "y": 410.22,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 238,
+     "y": 160.57,
+     "w": 420,
+     "h": 273.65
+    }
+   ],
+   "chrome": [],
+   "decor": [
+    {
+     "name": "left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 6,
+     "y": 63,
+     "w": 214,
+     "h": 374
+    },
+    {
+     "name": "right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 676,
+     "y": 63,
+     "w": 214,
+     "h": 374
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 220,
+     "y": 156.57,
+     "w": 20,
+     "h": 268.43
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 656,
+     "y": 156.57,
+     "w": 20,
+     "h": 268.43
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 58,
+    "padSetting": 58,
+    "rightColumns": 58,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "443x939": {
+   "W": 443,
+   "H": 939,
+   "pointer": "touch",
+   "source": "v2 layout(): tier phone, S 443, glass above, pad 58 dp, pitch 66, right columns 58 dp, m 18, mb 18, g 8, gap 27, upper 48/6, map cell 13.41 dp (columns; pans; 32.43x21 cells), msg rows 4",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 18,
+     "y": 863,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 84,
+     "y": 863,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 150,
+     "y": 863,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 18,
+     "y": 797,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer)",
+     "x": 84,
+     "y": 797,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 150,
+     "y": 797,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 18,
+     "y": 731,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 84,
+     "y": 731,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 150,
+     "y": 731,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 18,
+     "y": 675,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub)",
+     "x": 84,
+     "y": 675,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker)",
+     "x": 150,
+     "y": 675,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap)",
+     "x": 18,
+     "y": 621,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro)",
+     "x": 84,
+     "y": 621,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default)",
+     "x": 150,
+     "y": 621,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST)",
+     "x": 18,
+     "y": 571,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 84,
+     "y": 571,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY)",
+     "x": 150,
+     "y": 571,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub)",
+     "x": 367,
+     "y": 863,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap)",
+     "x": 301,
+     "y": 863,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub)",
+     "x": 235,
+     "y": 863,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub)",
+     "x": 367,
+     "y": 797,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts)",
+     "x": 301,
+     "y": 797,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook)",
+     "x": 235,
+     "y": 797,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 367,
+     "y": 731,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove)",
+     "x": 301,
+     "y": 731,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove)",
+     "x": 235,
+     "y": 731,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 367,
+     "y": 675,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 301,
+     "y": 675,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 235,
+     "y": 675,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer",
+     "x": 367,
+     "y": 621,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer",
+     "x": 301,
+     "y": 621,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings)",
+     "x": 235,
+     "y": 621,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 367,
+     "y": 571,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard)",
+     "x": 301,
+     "y": 571,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 235,
+     "y": 571,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swiped up out of the REST slot; hold once out: counts ×100–×400)",
+     "x": 18,
+     "y": 571,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 2,
+    "y": 2,
+    "w": 439,
+    "h": 559
+   },
+   "mapArea": {
+    "x": 4,
+    "y": 182.43,
+    "w": 435,
+    "h": 281.65
+   },
+   "bands": [
+    {
+     "name": "messages (4 rows; MORE lamp at the right end)",
+     "x": 4,
+     "y": 4,
+     "w": 435,
+     "h": 112.43
+    },
+    {
+     "name": "status (3 lines + HP/Pw bars)",
+     "x": 4,
+     "y": 118.43,
+     "w": 435,
+     "h": 62
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 65,
+     "y": 416.07,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 117,
+     "y": 416.07,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 8,
+     "y": 436.07,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 11.5,
+     "y": 186.43,
+     "w": 420,
+     "h": 273.65
+    }
+   ],
+   "chrome": [
+    {
+     "name": "panel: message log (the history under the band's rows; a tap opens it all)",
+     "x": 4,
+     "y": 468.07,
+     "w": 435,
+     "h": 90.93
+    }
+   ],
+   "decor": [
+    {
+     "name": "left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 6,
+     "y": 559,
+     "w": 214,
+     "h": 374
+    },
+    {
+     "name": "right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 223,
+     "y": 559,
+     "w": 214,
+     "h": 374
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 58,
+    "padSetting": 58,
+    "rightColumns": 58,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "640x360": {
+   "W": 640,
+   "H": 360,
+   "pointer": "touch",
+   "source": "v2 layout(): tier phone, S 360, glass between, pad 58 dp, pitch 61, right columns 44.67 dp, m 8, mb 8, g 3, gap 24, upper 44/3, map cell 12 dp (columns; pans; 23.33x19.94 cells), msg rows 2",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 8,
+     "y": 294,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 69,
+     "y": 294,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 130,
+     "y": 294,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 8,
+     "y": 233,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer)",
+     "x": 69,
+     "y": 233,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 130,
+     "y": 233,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 8,
+     "y": 172,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 69,
+     "y": 172,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 130,
+     "y": 172,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 8,
+     "y": 125,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub)",
+     "x": 69,
+     "y": 125,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker)",
+     "x": 130,
+     "y": 125,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap)",
+     "x": 8,
+     "y": 78,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro)",
+     "x": 69,
+     "y": 78,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default)",
+     "x": 130,
+     "y": 78,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST)",
+     "x": 8,
+     "y": 31,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 69,
+     "y": 31,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY)",
+     "x": 130,
+     "y": 31,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub)",
+     "x": 587.33,
+     "y": 294,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap)",
+     "x": 539.67,
+     "y": 294,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub)",
+     "x": 492,
+     "y": 294,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub)",
+     "x": 587.33,
+     "y": 233,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts)",
+     "x": 539.67,
+     "y": 233,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook)",
+     "x": 492,
+     "y": 233,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 587.33,
+     "y": 172,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove)",
+     "x": 539.67,
+     "y": 172,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove)",
+     "x": 492,
+     "y": 172,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 587.33,
+     "y": 125,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 539.67,
+     "y": 125,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 492,
+     "y": 125,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer",
+     "x": 587.33,
+     "y": 78,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer",
+     "x": 539.67,
+     "y": 78,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings)",
+     "x": 492,
+     "y": 78,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 587.33,
+     "y": 31,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard)",
+     "x": 539.67,
+     "y": 31,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 492,
+     "y": 31,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swiped up out of the REST slot; hold once out: counts ×100–×400)",
+     "x": 8,
+     "y": 31,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 198,
+    "y": 2,
+    "w": 284,
+    "h": 356
+   },
+   "mapArea": {
+    "x": 200,
+    "y": 116.71,
+    "w": 280,
+    "h": 239.29
+   },
+   "bands": [
+    {
+     "name": "messages (2 rows; MORE lamp at the right end)",
+     "x": 200,
+     "y": 4,
+     "w": 280,
+     "h": 60.71
+    },
+    {
+     "name": "status (3 lines)",
+     "x": 200,
+     "y": 66.71,
+     "w": 280,
+     "h": 48
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 204,
+     "y": 120.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 256,
+     "y": 120.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 204,
+     "y": 328,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 206,
+     "y": 120.71,
+     "w": 268,
+     "h": 231.29
+    }
+   ],
+   "chrome": [],
+   "decor": [
+    {
+     "name": "left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 0,
+     "y": 19,
+     "w": 200,
+     "h": 341
+    },
+    {
+     "name": "right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 480,
+     "y": 19,
+     "w": 160,
+     "h": 341
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 200,
+     "y": 116.71,
+     "w": 20,
+     "h": 235.29
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 460,
+     "y": 116.71,
+     "w": 20,
+     "h": 235.29
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 58,
+    "padSetting": 58,
+    "rightColumns": 44.67,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "360x640": {
+   "W": 360,
+   "H": 640,
+   "pointer": "touch",
+   "source": "v2 layout(): tier phone, S 360, glass above, pad 58 dp, pitch 61, right columns 44.67 dp, m 8, mb 8, g 3, gap 24, upper 44/3, map cell 12 dp (columns; pans; 29.33x15.19 cells), msg rows 2",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 8,
+     "y": 574,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 69,
+     "y": 574,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 130,
+     "y": 574,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 8,
+     "y": 513,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer)",
+     "x": 69,
+     "y": 513,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 130,
+     "y": 513,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 8,
+     "y": 452,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 69,
+     "y": 452,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 130,
+     "y": 452,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 8,
+     "y": 405,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub)",
+     "x": 69,
+     "y": 405,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker)",
+     "x": 130,
+     "y": 405,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap)",
+     "x": 8,
+     "y": 358,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro)",
+     "x": 69,
+     "y": 358,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default)",
+     "x": 130,
+     "y": 358,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST)",
+     "x": 8,
+     "y": 311,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 69,
+     "y": 311,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY)",
+     "x": 130,
+     "y": 311,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub)",
+     "x": 307.33,
+     "y": 574,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap)",
+     "x": 259.67,
+     "y": 574,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub)",
+     "x": 212,
+     "y": 574,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub)",
+     "x": 307.33,
+     "y": 513,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts)",
+     "x": 259.67,
+     "y": 513,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook)",
+     "x": 212,
+     "y": 513,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 307.33,
+     "y": 452,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove)",
+     "x": 259.67,
+     "y": 452,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove)",
+     "x": 212,
+     "y": 452,
+     "w": 44.67,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 307.33,
+     "y": 405,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 259.67,
+     "y": 405,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 212,
+     "y": 405,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer",
+     "x": 307.33,
+     "y": 358,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer",
+     "x": 259.67,
+     "y": 358,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings)",
+     "x": 212,
+     "y": 358,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 307.33,
+     "y": 311,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard)",
+     "x": 259.67,
+     "y": 311,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 212,
+     "y": 311,
+     "w": 44.67,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swiped up out of the REST slot; hold once out: counts ×100–×400)",
+     "x": 8,
+     "y": 311,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 2,
+    "y": 2,
+    "w": 356,
+    "h": 299
+   },
+   "mapArea": {
+    "x": 4,
+    "y": 116.71,
+    "w": 352,
+    "h": 182.29
+   },
+   "bands": [
+    {
+     "name": "messages (2 rows; MORE lamp at the right end)",
+     "x": 4,
+     "y": 4,
+     "w": 352,
+     "h": 60.71
+    },
+    {
+     "name": "status (3 lines)",
+     "x": 4,
+     "y": 66.71,
+     "w": 352,
+     "h": 48
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 50,
+     "y": 251,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 102,
+     "y": 251,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 8,
+     "y": 271,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 10,
+     "y": 120.71,
+     "w": 340,
+     "h": 174.29
+    }
+   ],
+   "chrome": [],
+   "decor": [
+    {
+     "name": "left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 0,
+     "y": 299,
+     "w": 200,
+     "h": 341
+    },
+    {
+     "name": "right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 200,
+     "y": 299,
+     "w": 160,
+     "h": 341
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 4,
+     "y": 279,
+     "w": 196,
+     "h": 20
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 200,
+     "y": 279,
+     "w": 156,
+     "h": 20
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 58,
+    "padSetting": 58,
+    "rightColumns": 44.67,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "915x412": {
+   "W": 915,
+   "H": 412,
+   "pointer": "touch",
+   "source": "v2 layout(): tier phone, S 412, glass between, pad 58 dp, pitch 64, right columns 55.33 dp, m 12, mb 12, g 6, gap 24, upper 44/3, map cell 13.87 dp (columns; pans; 36.26x21 cells), msg rows 2",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 12,
+     "y": 342,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 76,
+     "y": 342,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 140,
+     "y": 342,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 12,
+     "y": 278,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer)",
+     "x": 76,
+     "y": 278,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 140,
+     "y": 278,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 12,
+     "y": 214,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 76,
+     "y": 214,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 140,
+     "y": 214,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 12,
+     "y": 164,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub)",
+     "x": 76,
+     "y": 164,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker)",
+     "x": 140,
+     "y": 164,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap)",
+     "x": 12,
+     "y": 117,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro)",
+     "x": 76,
+     "y": 117,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default)",
+     "x": 140,
+     "y": 117,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST)",
+     "x": 12,
+     "y": 70,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 76,
+     "y": 70,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY)",
+     "x": 140,
+     "y": 70,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub)",
+     "x": 847.67,
+     "y": 342,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap)",
+     "x": 786.33,
+     "y": 342,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub)",
+     "x": 725,
+     "y": 342,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub)",
+     "x": 847.67,
+     "y": 278,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts)",
+     "x": 786.33,
+     "y": 278,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook)",
+     "x": 725,
+     "y": 278,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 847.67,
+     "y": 214,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove)",
+     "x": 786.33,
+     "y": 214,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove)",
+     "x": 725,
+     "y": 214,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 847.67,
+     "y": 164,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 786.33,
+     "y": 164,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 725,
+     "y": 164,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer",
+     "x": 847.67,
+     "y": 117,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer",
+     "x": 786.33,
+     "y": 117,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings)",
+     "x": 725,
+     "y": 117,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 847.67,
+     "y": 70,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard)",
+     "x": 786.33,
+     "y": 70,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 725,
+     "y": 70,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swiped up out of the REST slot; hold once out: counts ×100–×400)",
+     "x": 12,
+     "y": 70,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 208,
+    "y": 2,
+    "w": 507,
+    "h": 408
+   },
+   "mapArea": {
+    "x": 210,
+    "y": 116.71,
+    "w": 503,
+    "h": 291.29
+   },
+   "bands": [
+    {
+     "name": "messages (2 rows; MORE lamp at the right end)",
+     "x": 210,
+     "y": 4,
+     "w": 503,
+     "h": 60.71
+    },
+    {
+     "name": "status (3 lines)",
+     "x": 210,
+     "y": 66.71,
+     "w": 503,
+     "h": 48
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 214,
+     "y": 120.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 266,
+     "y": 120.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 214,
+     "y": 380,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 251.5,
+     "y": 120.71,
+     "w": 420,
+     "h": 283.29
+    }
+   ],
+   "chrome": [],
+   "decor": [
+    {
+     "name": "left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 0,
+     "y": 58,
+     "w": 210,
+     "h": 354
+    },
+    {
+     "name": "right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 713,
+     "y": 58,
+     "w": 202,
+     "h": 354
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 210,
+     "y": 116.71,
+     "w": 20,
+     "h": 283.29
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 693,
+     "y": 116.71,
+     "w": 20,
+     "h": 283.29
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 58,
+    "padSetting": 58,
+    "rightColumns": 55.33,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "412x915": {
+   "W": 412,
+   "H": 915,
+   "pointer": "touch",
+   "source": "v2 layout(): tier phone, S 412, glass above, pad 58 dp, pitch 64, right columns 55.33 dp, m 12, mb 12, g 6, gap 24, upper 44/3, map cell 13.87 dp (columns; pans; 29.13x21 cells), msg rows 4",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 12,
+     "y": 845,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 76,
+     "y": 845,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 140,
+     "y": 845,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 12,
+     "y": 781,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer)",
+     "x": 76,
+     "y": 781,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 140,
+     "y": 781,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 12,
+     "y": 717,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 76,
+     "y": 717,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 140,
+     "y": 717,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 12,
+     "y": 667,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub)",
+     "x": 76,
+     "y": 667,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker)",
+     "x": 140,
+     "y": 667,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap)",
+     "x": 12,
+     "y": 620,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro)",
+     "x": 76,
+     "y": 620,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default)",
+     "x": 140,
+     "y": 620,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST)",
+     "x": 12,
+     "y": 573,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 76,
+     "y": 573,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY)",
+     "x": 140,
+     "y": 573,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub)",
+     "x": 344.67,
+     "y": 845,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap)",
+     "x": 283.33,
+     "y": 845,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub)",
+     "x": 222,
+     "y": 845,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub)",
+     "x": 344.67,
+     "y": 781,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts)",
+     "x": 283.33,
+     "y": 781,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook)",
+     "x": 222,
+     "y": 781,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 344.67,
+     "y": 717,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove)",
+     "x": 283.33,
+     "y": 717,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove)",
+     "x": 222,
+     "y": 717,
+     "w": 55.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 344.67,
+     "y": 667,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 283.33,
+     "y": 667,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 222,
+     "y": 667,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer",
+     "x": 344.67,
+     "y": 620,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer",
+     "x": 283.33,
+     "y": 620,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings)",
+     "x": 222,
+     "y": 620,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 344.67,
+     "y": 573,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard)",
+     "x": 283.33,
+     "y": 573,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 222,
+     "y": 573,
+     "w": 55.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swiped up out of the REST slot; hold once out: counts ×100–×400)",
+     "x": 12,
+     "y": 573,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 2,
+    "y": 2,
+    "w": 408,
+    "h": 561
+   },
+   "mapArea": {
+    "x": 4,
+    "y": 182.43,
+    "w": 404,
+    "h": 291.29
+   },
+   "bands": [
+    {
+     "name": "messages (4 rows; MORE lamp at the right end)",
+     "x": 4,
+     "y": 4,
+     "w": 404,
+     "h": 112.43
+    },
+    {
+     "name": "status (3 lines + HP/Pw bars)",
+     "x": 4,
+     "y": 118.43,
+     "w": 404,
+     "h": 62
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 57,
+     "y": 425.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 109,
+     "y": 425.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 8,
+     "y": 445.71,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 10,
+     "y": 186.43,
+     "w": 392,
+     "h": 283.29
+    }
+   ],
+   "chrome": [
+    {
+     "name": "panel: message log (the history under the band's rows; a tap opens it all)",
+     "x": 4,
+     "y": 477.71,
+     "w": 404,
+     "h": 83.29
+    }
+   ],
+   "decor": [
+    {
+     "name": "left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 0,
+     "y": 561,
+     "w": 210,
+     "h": 354
+    },
+    {
+     "name": "right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 210,
+     "y": 561,
+     "w": 202,
+     "h": 354
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 58,
+    "padSetting": 58,
+    "rightColumns": 55.33,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "844x390": {
+   "W": 844,
+   "H": 390,
+   "pointer": "touch",
+   "source": "v2 layout(): tier phone, S 390, glass between, pad 58 dp, pitch 62, right columns 53.33 dp, m 8, mb 8, g 4, gap 24, upper 44/3, map cell 12.82 dp (columns; pans; 35.4x21 cells), msg rows 2",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 8,
+     "y": 324,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 70,
+     "y": 324,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 132,
+     "y": 324,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 8,
+     "y": 262,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer)",
+     "x": 70,
+     "y": 262,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 132,
+     "y": 262,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 8,
+     "y": 200,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 70,
+     "y": 200,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 132,
+     "y": 200,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 8,
+     "y": 152,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub)",
+     "x": 70,
+     "y": 152,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker)",
+     "x": 132,
+     "y": 152,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap)",
+     "x": 8,
+     "y": 105,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro)",
+     "x": 70,
+     "y": 105,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default)",
+     "x": 132,
+     "y": 105,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST)",
+     "x": 8,
+     "y": 58,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 70,
+     "y": 58,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY)",
+     "x": 132,
+     "y": 58,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub)",
+     "x": 782.67,
+     "y": 324,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap)",
+     "x": 725.33,
+     "y": 324,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub)",
+     "x": 668,
+     "y": 324,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub)",
+     "x": 782.67,
+     "y": 262,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts)",
+     "x": 725.33,
+     "y": 262,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook)",
+     "x": 668,
+     "y": 262,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 782.67,
+     "y": 200,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove)",
+     "x": 725.33,
+     "y": 200,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove)",
+     "x": 668,
+     "y": 200,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 782.67,
+     "y": 152,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 725.33,
+     "y": 152,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 668,
+     "y": 152,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer",
+     "x": 782.67,
+     "y": 105,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer",
+     "x": 725.33,
+     "y": 105,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings)",
+     "x": 668,
+     "y": 105,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 782.67,
+     "y": 58,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard)",
+     "x": 725.33,
+     "y": 58,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 668,
+     "y": 58,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swiped up out of the REST slot; hold once out: counts ×100–×400)",
+     "x": 8,
+     "y": 58,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 200,
+    "y": 2,
+    "w": 458,
+    "h": 386
+   },
+   "mapArea": {
+    "x": 202,
+    "y": 116.71,
+    "w": 454,
+    "h": 269.29
+   },
+   "bands": [
+    {
+     "name": "messages (2 rows; MORE lamp at the right end)",
+     "x": 202,
+     "y": 4,
+     "w": 454,
+     "h": 60.71
+    },
+    {
+     "name": "status (3 lines)",
+     "x": 202,
+     "y": 66.71,
+     "w": 454,
+     "h": 48
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 206,
+     "y": 120.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 258,
+     "y": 120.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 206,
+     "y": 358,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 219,
+     "y": 120.71,
+     "w": 420,
+     "h": 261.29
+    }
+   ],
+   "chrome": [],
+   "decor": [
+    {
+     "name": "left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 0,
+     "y": 46,
+     "w": 202,
+     "h": 344
+    },
+    {
+     "name": "right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 656,
+     "y": 46,
+     "w": 188,
+     "h": 344
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 202,
+     "y": 116.71,
+     "w": 20,
+     "h": 265.29
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 636,
+     "y": 116.71,
+     "w": 20,
+     "h": 265.29
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 58,
+    "padSetting": 58,
+    "rightColumns": 53.33,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "390x844": {
+   "W": 390,
+   "H": 844,
+   "pointer": "touch",
+   "source": "v2 layout(): tier phone, S 390, glass above, pad 58 dp, pitch 62, right columns 53.33 dp, m 8, mb 8, g 4, gap 24, upper 44/3, map cell 12.82 dp (columns; pans; 29.79x21 cells), msg rows 4",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 8,
+     "y": 778,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 70,
+     "y": 778,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 132,
+     "y": 778,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 8,
+     "y": 716,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer)",
+     "x": 70,
+     "y": 716,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 132,
+     "y": 716,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 8,
+     "y": 654,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 70,
+     "y": 654,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 132,
+     "y": 654,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 8,
+     "y": 606,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub)",
+     "x": 70,
+     "y": 606,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker)",
+     "x": 132,
+     "y": 606,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap)",
+     "x": 8,
+     "y": 559,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro)",
+     "x": 70,
+     "y": 559,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default)",
+     "x": 132,
+     "y": 559,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST)",
+     "x": 8,
+     "y": 512,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 70,
+     "y": 512,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY)",
+     "x": 132,
+     "y": 512,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub)",
+     "x": 328.67,
+     "y": 778,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap)",
+     "x": 271.33,
+     "y": 778,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub)",
+     "x": 214,
+     "y": 778,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub)",
+     "x": 328.67,
+     "y": 716,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts)",
+     "x": 271.33,
+     "y": 716,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook)",
+     "x": 214,
+     "y": 716,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 328.67,
+     "y": 654,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove)",
+     "x": 271.33,
+     "y": 654,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove)",
+     "x": 214,
+     "y": 654,
+     "w": 53.33,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 328.67,
+     "y": 606,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 271.33,
+     "y": 606,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 214,
+     "y": 606,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer",
+     "x": 328.67,
+     "y": 559,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer",
+     "x": 271.33,
+     "y": 559,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings)",
+     "x": 214,
+     "y": 559,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 328.67,
+     "y": 512,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard)",
+     "x": 271.33,
+     "y": 512,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 214,
+     "y": 512,
+     "w": 53.33,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swiped up out of the REST slot; hold once out: counts ×100–×400)",
+     "x": 8,
+     "y": 512,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 2,
+    "y": 2,
+    "w": 386,
+    "h": 500
+   },
+   "mapArea": {
+    "x": 4,
+    "y": 182.43,
+    "w": 382,
+    "h": 269.29
+   },
+   "bands": [
+    {
+     "name": "messages (4 rows; MORE lamp at the right end)",
+     "x": 4,
+     "y": 4,
+     "w": 382,
+     "h": 112.43
+    },
+    {
+     "name": "status (3 lines + HP/Pw bars)",
+     "x": 4,
+     "y": 118.43,
+     "w": 382,
+     "h": 62
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 51,
+     "y": 403.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 103,
+     "y": 403.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 8,
+     "y": 423.71,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 10,
+     "y": 186.43,
+     "w": 370,
+     "h": 261.29
+    }
+   ],
+   "chrome": [],
+   "decor": [
+    {
+     "name": "left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 0,
+     "y": 500,
+     "w": 202,
+     "h": 344
+    },
+    {
+     "name": "right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 202,
+     "y": 500,
+     "w": 188,
+     "h": 344
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 58,
+    "padSetting": 58,
+    "rightColumns": 53.33,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "1024x768": {
+   "W": 1024,
+   "H": 768,
+   "pointer": "touch",
+   "source": "v2 layout(): tier tablet, S 768, glass above, pad 58 dp, pitch 66, right columns 58 dp, m 18, mb 18, g 8, gap 352, upper 48/6, map cell 12.5 dp (columns; whole level; 80x21 cells), msg rows 4",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 18,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 84,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 150,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 18,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer)",
+     "x": 84,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 150,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 18,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 84,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 150,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 18,
+     "y": 504,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub)",
+     "x": 84,
+     "y": 504,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker)",
+     "x": 150,
+     "y": 504,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap)",
+     "x": 18,
+     "y": 450,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro)",
+     "x": 84,
+     "y": 450,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default)",
+     "x": 150,
+     "y": 450,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST)",
+     "x": 18,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 84,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY)",
+     "x": 150,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub)",
+     "x": 948,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap)",
+     "x": 882,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub)",
+     "x": 816,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub)",
+     "x": 948,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts)",
+     "x": 882,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook)",
+     "x": 816,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 948,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove)",
+     "x": 882,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove)",
+     "x": 816,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 948,
+     "y": 504,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 882,
+     "y": 504,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 816,
+     "y": 504,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer",
+     "x": 948,
+     "y": 450,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer",
+     "x": 882,
+     "y": 450,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings)",
+     "x": 816,
+     "y": 450,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 948,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard)",
+     "x": 882,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 816,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swiped up out of the REST slot; hold once out: counts ×100–×400)",
+     "x": 18,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 2,
+    "y": 2,
+    "w": 1020,
+    "h": 388
+   },
+   "mapArea": {
+    "x": 12,
+    "y": 118.43,
+    "w": 1000,
+    "h": 262.5
+   },
+   "bands": [
+    {
+     "name": "messages (4 rows; MORE lamp at the right end)",
+     "x": 4,
+     "y": 4,
+     "w": 598,
+     "h": 112.43
+    },
+    {
+     "name": "status (3 lines, then HP and Pw bars)",
+     "x": 608,
+     "y": 4,
+     "w": 412,
+     "h": 112.43
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 65,
+     "y": 332.93,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 117,
+     "y": 332.93,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 16,
+     "y": 352.93,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 302,
+     "y": 122.43,
+     "w": 420,
+     "h": 254.5
+    }
+   ],
+   "chrome": [
+    {
+     "name": "panel: message log (history, newest last)",
+     "x": 220,
+     "y": 400,
+     "w": 288,
+     "h": 350
+    },
+    {
+     "name": "panel: inventory (a copy of the INVENTORY list; the key stays in its bank)",
+     "x": 516,
+     "y": 400,
+     "w": 288,
+     "h": 350
+    }
+   ],
+   "decor": [
+    {
+     "name": "left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 6,
+     "y": 388,
+     "w": 214,
+     "h": 374
+    },
+    {
+     "name": "right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 804,
+     "y": 388,
+     "w": 214,
+     "h": 374
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 12,
+     "y": 360.93,
+     "w": 208,
+     "h": 20
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 804,
+     "y": 360.93,
+     "w": 208,
+     "h": 20
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 58,
+    "padSetting": 58,
+    "rightColumns": 58,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "768x1024": {
+   "W": 768,
+   "H": 1024,
+   "pointer": "touch",
+   "source": "v2 layout(): tier tablet, S 768, glass above, pad 58 dp, pitch 66, right columns 58 dp, m 18, mb 18, g 8, gap 352, upper 48/6, map cell 12.5 dp (columns; pans; 60.8x21 cells), msg rows 3",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 18,
+     "y": 948,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 84,
+     "y": 948,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 150,
+     "y": 948,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 18,
+     "y": 882,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer)",
+     "x": 84,
+     "y": 882,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 150,
+     "y": 882,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 18,
+     "y": 816,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 84,
+     "y": 816,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 150,
+     "y": 816,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 18,
+     "y": 760,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub)",
+     "x": 84,
+     "y": 760,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker)",
+     "x": 150,
+     "y": 760,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap)",
+     "x": 18,
+     "y": 706,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro)",
+     "x": 84,
+     "y": 706,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default)",
+     "x": 150,
+     "y": 706,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST)",
+     "x": 18,
+     "y": 656,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 84,
+     "y": 656,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY)",
+     "x": 150,
+     "y": 656,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub)",
+     "x": 692,
+     "y": 948,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap)",
+     "x": 626,
+     "y": 948,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub)",
+     "x": 560,
+     "y": 948,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub)",
+     "x": 692,
+     "y": 882,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts)",
+     "x": 626,
+     "y": 882,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook)",
+     "x": 560,
+     "y": 882,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 692,
+     "y": 816,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove)",
+     "x": 626,
+     "y": 816,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove)",
+     "x": 560,
+     "y": 816,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 692,
+     "y": 760,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 626,
+     "y": 760,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 560,
+     "y": 760,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer",
+     "x": 692,
+     "y": 706,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer",
+     "x": 626,
+     "y": 706,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings)",
+     "x": 560,
+     "y": 706,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 692,
+     "y": 656,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard)",
+     "x": 626,
+     "y": 656,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 560,
+     "y": 656,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swiped up out of the REST slot; hold once out: counts ×100–×400)",
+     "x": 18,
+     "y": 656,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 2,
+    "y": 2,
+    "w": 764,
+    "h": 644
+   },
+   "mapArea": {
+    "x": 4,
+    "y": 142.57,
+    "w": 760,
+    "h": 262.5
+   },
+   "bands": [
+    {
+     "name": "messages (3 rows; MORE lamp at the right end)",
+     "x": 4,
+     "y": 4,
+     "w": 760,
+     "h": 86.57
+    },
+    {
+     "name": "status (3 lines)",
+     "x": 4,
+     "y": 92.57,
+     "w": 760,
+     "h": 48
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 65,
+     "y": 357.07,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 117,
+     "y": 357.07,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 8,
+     "y": 377.07,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 174,
+     "y": 146.57,
+     "w": 420,
+     "h": 254.5
+    }
+   ],
+   "chrome": [
+    {
+     "name": "panel: message log (history, newest last)",
+     "x": 4,
+     "y": 409.07,
+     "w": 760,
+     "h": 234.93
+    },
+    {
+     "name": "panel: inventory (a copy of the INVENTORY list; the key stays in its bank)",
+     "x": 220,
+     "y": 656,
+     "w": 328,
+     "h": 350
+    }
+   ],
+   "decor": [
+    {
+     "name": "left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 6,
+     "y": 644,
+     "w": 214,
+     "h": 374
+    },
+    {
+     "name": "right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 548,
+     "y": 644,
+     "w": 214,
+     "h": 374
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 58,
+    "padSetting": 58,
+    "rightColumns": 58,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "1180x820": {
+   "W": 1180,
+   "H": 820,
+   "pointer": "touch",
+   "source": "v2 layout(): tier tablet, S 820, glass above, pad 58 dp, pitch 66, right columns 58 dp, m 18, mb 18, g 8, gap 404, upper 48/6, map cell 14.5 dp (columns; whole level; 80x21 cells), msg rows 4",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 18,
+     "y": 744,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 84,
+     "y": 744,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 150,
+     "y": 744,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 18,
+     "y": 678,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer)",
+     "x": 84,
+     "y": 678,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 150,
+     "y": 678,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 18,
+     "y": 612,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 84,
+     "y": 612,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 150,
+     "y": 612,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 18,
+     "y": 556,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub)",
+     "x": 84,
+     "y": 556,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker)",
+     "x": 150,
+     "y": 556,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap)",
+     "x": 18,
+     "y": 502,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro)",
+     "x": 84,
+     "y": 502,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default)",
+     "x": 150,
+     "y": 502,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST)",
+     "x": 18,
+     "y": 452,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 84,
+     "y": 452,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY)",
+     "x": 150,
+     "y": 452,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub)",
+     "x": 1104,
+     "y": 744,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap)",
+     "x": 1038,
+     "y": 744,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub)",
+     "x": 972,
+     "y": 744,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub)",
+     "x": 1104,
+     "y": 678,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts)",
+     "x": 1038,
+     "y": 678,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook)",
+     "x": 972,
+     "y": 678,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 1104,
+     "y": 612,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove)",
+     "x": 1038,
+     "y": 612,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove)",
+     "x": 972,
+     "y": 612,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 1104,
+     "y": 556,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 1038,
+     "y": 556,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 972,
+     "y": 556,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer",
+     "x": 1104,
+     "y": 502,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer",
+     "x": 1038,
+     "y": 502,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings)",
+     "x": 972,
+     "y": 502,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 1104,
+     "y": 452,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard)",
+     "x": 1038,
+     "y": 452,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 972,
+     "y": 452,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swiped up out of the REST slot; hold once out: counts ×100–×400)",
+     "x": 18,
+     "y": 452,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 2,
+    "y": 2,
+    "w": 1176,
+    "h": 440
+   },
+   "mapArea": {
+    "x": 10,
+    "y": 118.43,
+    "w": 1160,
+    "h": 304.5
+   },
+   "bands": [
+    {
+     "name": "messages (4 rows; MORE lamp at the right end)",
+     "x": 4,
+     "y": 4,
+     "w": 754,
+     "h": 112.43
+    },
+    {
+     "name": "status (3 lines, then HP and Pw bars)",
+     "x": 764,
+     "y": 4,
+     "w": 412,
+     "h": 112.43
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 65,
+     "y": 374.93,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 117,
+     "y": 374.93,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 14,
+     "y": 394.93,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 380,
+     "y": 122.43,
+     "w": 420,
+     "h": 296.5
+    }
+   ],
+   "chrome": [
+    {
+     "name": "panel: message log (history, newest last)",
+     "x": 220,
+     "y": 452,
+     "w": 366,
+     "h": 350
+    },
+    {
+     "name": "panel: inventory (a copy of the INVENTORY list; the key stays in its bank)",
+     "x": 594,
+     "y": 452,
+     "w": 366,
+     "h": 350
+    }
+   ],
+   "decor": [
+    {
+     "name": "left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 6,
+     "y": 440,
+     "w": 214,
+     "h": 374
+    },
+    {
+     "name": "right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 960,
+     "y": 440,
+     "w": 214,
+     "h": 374
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 10,
+     "y": 402.93,
+     "w": 210,
+     "h": 20
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 960,
+     "y": 402.93,
+     "w": 210,
+     "h": 20
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 58,
+    "padSetting": 58,
+    "rightColumns": 58,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "1366x768": {
+   "W": 1366,
+   "H": 768,
+   "pointer": "touch",
+   "source": "v2 layout(): tier tablet, S 768, glass above, pad 58 dp, pitch 66, right columns 58 dp, m 18, mb 18, g 8, gap 352, upper 48/6, map cell 15 dp (columns; whole level; 80x21 cells), msg rows 2",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 18,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 84,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 150,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 18,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer)",
+     "x": 84,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 150,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 18,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 84,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 150,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 18,
+     "y": 504,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub)",
+     "x": 84,
+     "y": 504,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker)",
+     "x": 150,
+     "y": 504,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap)",
+     "x": 18,
+     "y": 450,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro)",
+     "x": 84,
+     "y": 450,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default)",
+     "x": 150,
+     "y": 450,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST)",
+     "x": 18,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 84,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY)",
+     "x": 150,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub)",
+     "x": 1290,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap)",
+     "x": 1224,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub)",
+     "x": 1158,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub)",
+     "x": 1290,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts)",
+     "x": 1224,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook)",
+     "x": 1158,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 1290,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove)",
+     "x": 1224,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove)",
+     "x": 1158,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 1290,
+     "y": 504,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 1224,
+     "y": 504,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 1158,
+     "y": 504,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer",
+     "x": 1290,
+     "y": 450,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer",
+     "x": 1224,
+     "y": 450,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings)",
+     "x": 1158,
+     "y": 450,
+     "w": 58,
+     "h": 48,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 1290,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard)",
+     "x": 1224,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 1158,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swiped up out of the REST slot; hold once out: counts ×100–×400)",
+     "x": 18,
+     "y": 400,
+     "w": 58,
+     "h": 44,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 2,
+    "y": 2,
+    "w": 1362,
+    "h": 388
+   },
+   "mapArea": {
+    "x": 83,
+    "y": 66.71,
+    "w": 1200,
+    "h": 315
+   },
+   "bands": [
+    {
+     "name": "messages (2 rows; MORE lamp at the right end)",
+     "x": 4,
+     "y": 4,
+     "w": 940,
+     "h": 60.71
+    },
+    {
+     "name": "status (3 lines, then HP and Pw bars)",
+     "x": 950,
+     "y": 4,
+     "w": 412,
+     "h": 60.71
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 87,
+     "y": 333.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 139,
+     "y": 333.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 87,
+     "y": 353.71,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 473,
+     "y": 70.71,
+     "w": 420,
+     "h": 307
+    }
+   ],
+   "chrome": [
+    {
+     "name": "panel: message log (history, newest last)",
+     "x": 220,
+     "y": 400,
+     "w": 459,
+     "h": 350
+    },
+    {
+     "name": "panel: inventory (a copy of the INVENTORY list; the key stays in its bank)",
+     "x": 687,
+     "y": 400,
+     "w": 459,
+     "h": 350
+    }
+   ],
+   "decor": [
+    {
+     "name": "left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 6,
+     "y": 388,
+     "w": 214,
+     "h": 374
+    },
+    {
+     "name": "right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond)",
+     "x": 1146,
+     "y": 388,
+     "w": 214,
+     "h": 374
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 83,
+     "y": 361.71,
+     "w": 137,
+     "h": 20
+    },
+    {
+     "name": "confirm ring (when a tap would travel: a map tap here previews; a second tap walks)",
+     "x": 1146,
+     "y": 361.71,
+     "w": 137,
+     "h": 20
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 58,
+    "padSetting": 58,
+    "rightColumns": 58,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "1280x800": {
+   "W": 1280,
+   "H": 800,
+   "pointer": "mouse",
+   "source": "v2 layout(): tier desk, dock 288x244 centred under the map, keys 40 dp with keyboard legends, map cell 15 dp (whole level; 80x21 cells)",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b [b]",
+     "x": 496,
+     "y": 599.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j [j]",
+     "x": 542,
+     "y": 599.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n [n]",
+     "x": 588,
+     "y": 599.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h [h]",
+     "x": 496,
+     "y": 553.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer) [.]",
+     "x": 542,
+     "y": 553.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l [l]",
+     "x": 588,
+     "y": 553.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y [y]",
+     "x": 496,
+     "y": 507.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k [k]",
+     "x": 542,
+     "y": 507.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u [u]",
+     "x": 588,
+     "y": 507.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P [^P]",
+     "x": 496,
+     "y": 467.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub) [d]",
+     "x": 542,
+     "y": 467.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker) [⌃;4]",
+     "x": 588,
+     "y": 467.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap) [F]",
+     "x": 496,
+     "y": 429.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro) [⌃;f]",
+     "x": 542,
+     "y": 429.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default) [⌃;5]",
+     "x": 588,
+     "y": 429.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST) [20s]",
+     "x": 496,
+     "y": 395.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro [⌃;1]",
+     "x": 542,
+     "y": 395.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY) [#offer]",
+     "x": 588,
+     "y": 395.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub) [a]",
+     "x": 744,
+     "y": 599.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap) [s]",
+     "x": 698,
+     "y": 599.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub) [i]",
+     "x": 652,
+     "y": 599.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub) [e]",
+     "x": 744,
+     "y": 553.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts) [⌃;c]",
+     "x": 698,
+     "y": 553.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook) [:]",
+     "x": 652,
+     "y": 553.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x [x]",
+     "x": 744,
+     "y": 507.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove) [R]",
+     "x": 698,
+     "y": 507.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove) [T]",
+     "x": 652,
+     "y": 507.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w [w]",
+     "x": 744,
+     "y": 467.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P [P]",
+     "x": 698,
+     "y": 467.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W [W]",
+     "x": 652,
+     "y": 467.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer [⌃;g]",
+     "x": 744,
+     "y": 429.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer [⌃;w]",
+     "x": 698,
+     "y": 429.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings) [⌃;m]",
+     "x": 652,
+     "y": 429.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro [⌃;3]",
+     "x": 744,
+     "y": 395.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard) [⌃;k]",
+     "x": 698,
+     "y": 395.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro [⌃;2]",
+     "x": 652,
+     "y": 395.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST [⌃;z]",
+     "x": 496,
+     "y": 395.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 2,
+    "y": 2,
+    "w": 1276,
+    "h": 383.71
+   },
+   "mapArea": {
+    "x": 40,
+    "y": 68.71,
+    "w": 1200,
+    "h": 315
+   },
+   "bands": [
+    {
+     "name": "messages (2 rows; MORE lamp at the right end)",
+     "x": 4,
+     "y": 4,
+     "w": 854,
+     "h": 60.71
+    },
+    {
+     "name": "status (3 lines, then HP and Pw bars)",
+     "x": 864,
+     "y": 4,
+     "w": 412,
+     "h": 60.71
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 514,
+     "y": 335.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 566,
+     "y": 335.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 44,
+     "y": 355.71,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 430,
+     "y": 72.71,
+     "w": 420,
+     "h": 307
+    }
+   ],
+   "chrome": [
+    {
+     "name": "panel: message log (history, newest last)",
+     "x": 4,
+     "y": 395.71,
+     "w": 480,
+     "h": 400.29
+    },
+    {
+     "name": "panel: inventory (a copy of the INVENTORY list; the key stays in the dock)",
+     "x": 796,
+     "y": 395.71,
+     "w": 480,
+     "h": 400.29
+    },
+    {
+     "name": "panel: key legend (the Ctrl+; prefix routes to layers, drawers, macros, flicks)",
+     "x": 496,
+     "y": 651.71,
+     "w": 288,
+     "h": 144.29
+    }
+   ],
+   "decor": [
+    {
+     "name": "dock well",
+     "x": 490,
+     "y": 389.71,
+     "w": 300,
+     "h": 256
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 40,
+    "padSetting": 40,
+    "rightColumns": 40,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "1920x1080": {
+   "W": 1920,
+   "H": 1080,
+   "pointer": "mouse",
+   "source": "v2 layout(): tier desk, dock 288x244 centred under the map, keys 40 dp with keyboard legends, map cell 23 dp (whole level; 80x21 cells)",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b [b]",
+     "x": 816,
+     "y": 767.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j [j]",
+     "x": 862,
+     "y": 767.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n [n]",
+     "x": 908,
+     "y": 767.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h [h]",
+     "x": 816,
+     "y": 721.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer) [.]",
+     "x": 862,
+     "y": 721.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l [l]",
+     "x": 908,
+     "y": 721.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y [y]",
+     "x": 816,
+     "y": 675.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k [k]",
+     "x": 862,
+     "y": 675.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u [u]",
+     "x": 908,
+     "y": 675.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P [^P]",
+     "x": 816,
+     "y": 635.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub) [d]",
+     "x": 862,
+     "y": 635.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker) [⌃;4]",
+     "x": 908,
+     "y": 635.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap) [F]",
+     "x": 816,
+     "y": 597.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro) [⌃;f]",
+     "x": 862,
+     "y": 597.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default) [⌃;5]",
+     "x": 908,
+     "y": 597.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST) [20s]",
+     "x": 816,
+     "y": 563.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro [⌃;1]",
+     "x": 862,
+     "y": 563.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY) [#offer]",
+     "x": 908,
+     "y": 563.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub) [a]",
+     "x": 1064,
+     "y": 767.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap) [s]",
+     "x": 1018,
+     "y": 767.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub) [i]",
+     "x": 972,
+     "y": 767.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub) [e]",
+     "x": 1064,
+     "y": 721.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts) [⌃;c]",
+     "x": 1018,
+     "y": 721.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook) [:]",
+     "x": 972,
+     "y": 721.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x [x]",
+     "x": 1064,
+     "y": 675.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove) [R]",
+     "x": 1018,
+     "y": 675.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove) [T]",
+     "x": 972,
+     "y": 675.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w [w]",
+     "x": 1064,
+     "y": 635.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P [P]",
+     "x": 1018,
+     "y": 635.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W [W]",
+     "x": 972,
+     "y": 635.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer [⌃;g]",
+     "x": 1064,
+     "y": 597.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer [⌃;w]",
+     "x": 1018,
+     "y": 597.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings) [⌃;m]",
+     "x": 972,
+     "y": 597.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro [⌃;3]",
+     "x": 1064,
+     "y": 563.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard) [⌃;k]",
+     "x": 1018,
+     "y": 563.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro [⌃;2]",
+     "x": 972,
+     "y": 563.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST [⌃;z]",
+     "x": 816,
+     "y": 563.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 2,
+    "y": 2,
+    "w": 1916,
+    "h": 551.71
+   },
+   "mapArea": {
+    "x": 40,
+    "y": 68.71,
+    "w": 1840,
+    "h": 483
+   },
+   "bands": [
+    {
+     "name": "messages (2 rows; MORE lamp at the right end)",
+     "x": 4,
+     "y": 4,
+     "w": 960,
+     "h": 60.71
+    },
+    {
+     "name": "status (3 lines, then HP and Pw bars)",
+     "x": 970,
+     "y": 4,
+     "w": 946,
+     "h": 60.71
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 834,
+     "y": 503.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 886,
+     "y": 503.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 44,
+     "y": 523.71,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 750,
+     "y": 195.71,
+     "w": 420,
+     "h": 352
+    }
+   ],
+   "chrome": [
+    {
+     "name": "panel: message log (history, newest last)",
+     "x": 4,
+     "y": 563.71,
+     "w": 800,
+     "h": 512.29
+    },
+    {
+     "name": "panel: inventory (a copy of the INVENTORY list; the key stays in the dock)",
+     "x": 1116,
+     "y": 563.71,
+     "w": 800,
+     "h": 512.29
+    },
+    {
+     "name": "panel: key legend (the Ctrl+; prefix routes to layers, drawers, macros, flicks)",
+     "x": 816,
+     "y": 819.71,
+     "w": 288,
+     "h": 256.29
+    }
+   ],
+   "decor": [
+    {
+     "name": "dock well",
+     "x": 810,
+     "y": 557.71,
+     "w": 300,
+     "h": 256
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 40,
+    "padSetting": 40,
+    "rightColumns": 40,
+    "degraded": false,
+    "reasons": []
+   }
+  },
+  "2560x1440": {
+   "W": 2560,
+   "H": 1440,
+   "pointer": "mouse",
+   "source": "v2 layout(): tier desk, dock 288x244 centred under the map, keys 40 dp with keyboard legends, map cell 31 dp (whole level; 80x21 cells)",
+   "controls": [
+    {
+     "id": "pad_b",
+     "label": "↙ b [b]",
+     "x": 1136,
+     "y": 935.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j [j]",
+     "x": 1182,
+     "y": 935.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n [n]",
+     "x": 1228,
+     "y": 935.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h [h]",
+     "x": 1136,
+     "y": 889.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer) [.]",
+     "x": 1182,
+     "y": 889.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l [l]",
+     "x": 1228,
+     "y": 889.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y [y]",
+     "x": 1136,
+     "y": 843.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k [k]",
+     "x": 1182,
+     "y": 843.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u [u]",
+     "x": 1228,
+     "y": 843.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P [^P]",
+     "x": 1136,
+     "y": 803.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP (hub) [d]",
+     "x": 1182,
+     "y": 803.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (empty by default: a tap opens the picker) [⌃;4]",
+     "x": 1228,
+     "y": 803.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (hub; ARMED lamp on the cap) [F]",
+     "x": 1136,
+     "y": 765.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro) [⌃;f]",
+     "x": 1182,
+     "y": 765.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (Fire by default) [⌃;5]",
+     "x": 1228,
+     "y": 765.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "rest",
+     "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST) [20s]",
+     "x": 1136,
+     "y": 731.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro [⌃;1]",
+     "x": 1182,
+     "y": 731.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY) [#offer]",
+     "x": 1228,
+     "y": 731.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY (hub) [a]",
+     "x": 1384,
+     "y": 935.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap) [s]",
+     "x": 1338,
+     "y": 935.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY (hub) [i]",
+     "x": 1292,
+     "y": 935.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (hub) [e]",
+     "x": 1384,
+     "y": 889.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts) [⌃;c]",
+     "x": 1338,
+     "y": 889.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook) [:]",
+     "x": 1292,
+     "y": 889.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x [x]",
+     "x": 1384,
+     "y": 843.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R (asks: paranoid_confirmation:+Remove) [R]",
+     "x": 1338,
+     "y": 843.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T (asks: paranoid_confirmation:+Remove) [T]",
+     "x": 1292,
+     "y": 843.71,
+     "w": 40,
+     "h": 40,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w [w]",
+     "x": 1384,
+     "y": 803.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P [P]",
+     "x": 1338,
+     "y": 803.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W [W]",
+     "x": 1292,
+     "y": 803.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "game",
+     "label": "GAME drawer [⌃;g]",
+     "x": 1384,
+     "y": 765.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD drawer [⌃;w]",
+     "x": 1338,
+     "y": 765.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU (settings) [⌃;m]",
+     "x": 1292,
+     "y": 765.71,
+     "w": 40,
+     "h": 34,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro [⌃;3]",
+     "x": 1384,
+     "y": 731.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS (soft keyboard) [⌃;k]",
+     "x": 1338,
+     "y": 731.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro [⌃;2]",
+     "x": 1292,
+     "y": 731.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST [⌃;z]",
+     "x": 1136,
+     "y": 731.71,
+     "w": 40,
+     "h": 30,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 2,
+    "y": 2,
+    "w": 2556,
+    "h": 719.71
+   },
+   "mapArea": {
+    "x": 40,
+    "y": 68.71,
+    "w": 2480,
+    "h": 651
+   },
+   "bands": [
+    {
+     "name": "messages (2 rows; MORE lamp at the right end)",
+     "x": 4,
+     "y": 4,
+     "w": 960,
+     "h": 60.71
+    },
+    {
+     "name": "status (3 lines, then HP and Pw bars)",
+     "x": 970,
+     "y": 4,
+     "w": 1586,
+     "h": 60.71
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 1154,
+     "y": 671.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
+     "x": 1206,
+     "y": 671.71,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "layer name pill (drawn while a layer is up; inside the map, never over keys)",
+     "x": 44,
+     "y": 691.71,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "owner": "world",
+     "label": "drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen)",
+     "x": 1070,
+     "y": 363.71,
+     "w": 420,
+     "h": 352
+    }
+   ],
+   "chrome": [
+    {
+     "name": "panel: message log (history, newest last)",
+     "x": 4,
+     "y": 731.71,
+     "w": 1120,
+     "h": 704.29
+    },
+    {
+     "name": "panel: inventory (a copy of the INVENTORY list; the key stays in the dock)",
+     "x": 1436,
+     "y": 731.71,
+     "w": 1120,
+     "h": 704.29
+    },
+    {
+     "name": "panel: key legend (the Ctrl+; prefix routes to layers, drawers, macros, flicks)",
+     "x": 1136,
+     "y": 987.71,
+     "w": 288,
+     "h": 448.29
+    }
+   ],
+   "decor": [
+    {
+     "name": "dock well",
+     "x": 1130,
+     "y": 725.71,
+     "w": 300,
+     "h": 256
+    }
+   ],
+   "fit": {
+    "level": "full",
+    "pad": 40,
+    "padSetting": 40,
+    "rightColumns": 40,
+    "degraded": false,
+    "reasons": []
+   }
+  }
+ }
+}
