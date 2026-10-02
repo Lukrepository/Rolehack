@@ -9,7 +9,8 @@
 // forms.  The touch controls are overlay.js.
 import createNetHack from './nethack.js';
 import { setPalette, dressHero, LOOK_LEN } from './doll.js';
-import { Overlay, STATUS_BAND, LINE, msgRows, msgBandPx, msgTextPx, MSG_LEADING, resetTextScale, creationCap } from './overlay.js';
+import { Overlay, STATUS_BAND, LINE, msgRows, msgBandPx, msgTextPx, MSG_LEADING, resetTextScale, creationCap,
+  GHOST_CONFIRM_MS } from './overlay.js';
 import { keyEvents } from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
@@ -111,6 +112,8 @@ const queue = [];
 let waiter = null;
 
 function push(ev) {
+  // a key while the ghost deck previews a cell: the preview was not what was meant
+  if (ghostPreview && ev.key !== undefined) clearGhostPreview(false);
   if (waiter) { const w = waiter; waiter = null; w(ev); } else queue.push(ev);
 }
 
@@ -257,7 +260,11 @@ const statusBandH = () => ({ hidden: 0, compact: STATUS_BAND - LINE }[P.get('sta
 // the glass and centres between its bands; caseless, it fills the window.
 function layoutGlass(g) {
   geom = g;
+  if (g.twin) { layoutTwinGlass(g); return; }
   const gl = $('glass'), bands = $('bands'), s = g.s, r = g.glass;
+  // what twin banks set and classic does not (layoutTwinGlass)
+  $('statband').style.top = '';
+  $('map').style.left = $('map').style.top = '';
   const box = g.caseless ? { x: 0, y: 0, w: g.W, h: g.H } : r;
   Object.assign(gl.style, { left: `${box.x}px`, top: `${box.y}px`, width: `${box.w}px`, height: `${box.h}px`,
                             borderRadius: g.caseless ? '0' : `${r.r}px` });
@@ -291,6 +298,47 @@ function layoutGlass(g) {
   cv.height = Math.round(box.h * dpr);
   cv.style.width = `${cv.width / dpr}px`;
   cv.style.height = `${cv.height / dpr}px`;
+  render();
+}
+
+// Twin banks (overlay.js, layout.js): the glass where the layout puts it, the
+// bands stacked at its top -- messages, then the status -- at the layout's own
+// rects, and the canvas exactly the map area, so the map draws inside it and
+// nothing outside it is map: a tap beside it lands on the case, the bands or
+// the bezel, never on a cell.  The canvas's edges sit on device pixels, so its
+// store maps a pixel to a pixel (the tap drift, layoutGlass above), each moved
+// inward to the next one, so it never reaches past the map area.
+function layoutTwinGlass(g) {
+  const gl = $('glass'), bands = $('bands'), r = g.glass, m = g.map, mb = g.msgBand, sb = g.statusBand;
+  const dpr = window.devicePixelRatio || 1, snap = (v) => Math.round(v * dpr) / dpr;
+  const gx = snap(r.x), gy = snap(r.y);
+  Object.assign(gl.style, { left: `${gx}px`, top: `${gy}px`, width: `${snap(r.x + r.w) - gx}px`, height: `${snap(r.y + r.h) - gy}px`,
+                            borderRadius: `${r.r}px` });
+  Object.assign(bands.style, { left: `${mb.x - gx}px`, top: `${mb.y - gy}px`, width: `${mb.w}px`, height: `${sb.y + sb.h - mb.y}px` });
+  bands.style.setProperty('--line', `${LINE}px`);
+  resetTextScale();
+  const msg = $('msgband'), textPx = msgTextPx();
+  msg.style.fontFamily = P.get('msgFont') === 'screen' ? 'var(--screenfont)' : 'var(--msgfont)';
+  msg.style.fontSize = `${textPx}px`;
+  msg.style.lineHeight = `${textPx * MSG_LEADING}px`;
+  msg.style.height = `${mb.h}px`;
+  msg.style.padding = '5px 10px 4px';
+  const st = $('statband');
+  st.style.fontSize = `${10.5 * 1.35}px`;
+  st.style.top = `${sb.y - mb.y}px`;
+  st.style.height = `${sb.h}px`;
+  st.style.display = P.get('statusLines') === 'hidden' ? 'none' : '';
+  // a prompt's choices at the top of the map, as they are under the band in classic
+  $('chips').style.top = `${m.y - mb.y + 6}px`;
+  const cv = $('map'), inF = (v) => Math.ceil(v * dpr - 1e-6) / dpr, inL = (v) => Math.floor(v * dpr + 1e-6) / dpr;
+  const cx = inF(m.x), cy = inF(m.y);
+  cv.width = Math.max(1, Math.round((inL(m.x + m.w) - cx) * dpr));
+  cv.height = Math.max(1, Math.round((inL(m.y + m.h) - cy) * dpr));
+  cv.style.left = `${cx - gx}px`;
+  cv.style.top = `${cy - gy}px`;
+  cv.style.width = `${cv.width / dpr}px`;
+  cv.style.height = `${cv.height / dpr}px`;
+  view.area = { x: 0, y: 0, w: cv.width / dpr, h: cv.height / dpr };
   render();
 }
 
@@ -335,11 +383,37 @@ function toDevicePx(v) {
   return Math.round(v * dpr) / dpr;
 }
 
+// the factor a twin banks pinch under way has reached (setZoom), 0 between pinches
+let pinchFactor = 0;
+
 function tileSize() {
+  // Twin banks: the device's one map cell (layout.js), the same in both
+  // orientations, times twin's own zoom factor -- the pinch's while fingers
+  // are down -- in classic's 8 to 96 px (the design's section 11).  Classic's
+  // zoom is not read here: it is classic's, and a pinch in twin never writes it.
+  if (geom && geom.twin && geom.cell > 0) {
+    const f = pinchFactor || Number(P.get('zoomFactor')) || 1;
+    return clamp(geom.cell * f, 8, 96);
+  }
   const z = Number(P.get('zoom')) || 0;
   if (z > 0) return z;
   // fit the level's height, within reason
   return view.area ? clamp(Math.floor(view.area.h / ROWNO), 12, 48) : 24;
+}
+
+// A pinch or the wheel asks for a cell of px CSS px.  Classic stores it as
+// its zoom, as it always has, the pinch on every move; twin banks store it as
+// a factor of the map cell, the pinch's on its lift (live: still moving, kept
+// in pinchFactor), not on every move (the design's section 11).
+function setZoom(px, live) {
+  if (!(geom && geom.twin && geom.cell > 0)) { P.set('zoom', clamp(px, 8, 96)); return; }
+  const f = clamp(px, 8, 96) / geom.cell;
+  if (live) { pinchFactor = f; render(); } else { pinchFactor = 0; P.set('zoomFactor', f); }
+}
+function endPinch() {
+  const f = pinchFactor;
+  pinchFactor = 0;
+  if (f && geom && geom.twin) P.set('zoomFactor', f);
 }
 
 // view.T is the drawn cell and view.left and view.top sit on device pixels, so
@@ -432,6 +506,46 @@ function renderMap() {
     cx.strokeRect(x0 + lw / 2, y0 + lw / 2, Td - lw, Td - lw);
     if (tier === 2) cx.strokeRect(x0 + 2.5 * lw, y0 + 2.5 * lw, Td - 5 * lw, Td - 5 * lw);
   }
+  if (ghostPreview) {
+    // the ghost deck's preview: the cell a second tap walks to
+    const lw = Math.max(1, Math.round(Td / 12));
+    cx.strokeStyle = '#ffb347';
+    cx.lineWidth = lw;
+    cx.setLineDash([2 * lw, lw]);
+    cx.strokeRect(L + ghostPreview.x * Td + lw / 2, Tp + ghostPreview.y * Td + lw / 2, Td - lw, Td - lw);
+    cx.setLineDash([]);
+  }
+}
+
+// Twin banks' ghost deck (overlay.js ghostAt; the design's section 6, item
+// 8): in landscape a map tap on the spot of one of the old deck's keys --
+// COMBAT, PIN 2, FLICK, LOOK, CONTEXT -- previews instead of travelling,
+// whenever it would travel: while the core waits for a command, not at
+// --More--, in getpos or under a window.  The cell is outlined and the old
+// key points to its new place; a second tap on the same cell within 2 s
+// walks.  A preview that goes unconfirmed -- it times out, or the next tap or
+// key is something else -- is a catch: the player meant the old key.
+let commandWait = false;    // the core is in nh_poskey for a command: a map tap would travel
+let ghostPreview = null;    // { x, y, timer }: the cell a preview outlines
+
+function clearGhostPreview(confirmed) {
+  if (!ghostPreview) return;
+  clearTimeout(ghostPreview.timer);
+  ghostPreview = null;
+  if (!confirmed && overlay) overlay.ghostCaught();
+  renderMap();
+}
+
+// true when the tap was taken as a preview, and is not to travel
+function ghostTap(e, x, y) {
+  if (ghostPreview && ghostPreview.x === x && ghostPreview.y === y) { clearGhostPreview(true); return false; }
+  if (ghostPreview) clearGhostPreview(false);
+  const g = commandWait && overlay && overlay.ghostAt(e.clientX, e.clientY);
+  if (!g) return false;
+  ghostPreview = { x, y, timer: setTimeout(() => clearGhostPreview(false), GHOST_CONFIRM_MS) };
+  overlay.ghostShow(g);
+  renderMap();
+  return true;
 }
 
 // Taps travel, drags pan, two fingers or the wheel zoom.
@@ -457,8 +571,10 @@ function renderMap() {
     if (pinch && pts.size === 2) {
       const [a, b] = [...pts.values()];
       const d = Math.hypot(a.x - b.x, a.y - b.y);
-      P.set('zoom', clamp(pinch.T * (d / pinch.d), 8, 96));
-      render();
+      // classic writes its zoom as the fingers move, as it always has; twin
+      // banks keep the factor in hand and write it on the lift
+      setZoom(pinch.T * (d / pinch.d), true);
+      if (!geom || !geom.twin) render();
       return;
     }
     if (pts.size === 1 && panStart) {
@@ -473,7 +589,7 @@ function renderMap() {
   const up = (e) => {
     if (!pts.has(e.pointerId)) return;
     pts.delete(e.pointerId);
-    if (pts.size < 2) pinch = null;
+    if (pts.size < 2 && pinch) { pinch = null; endPinch(); }
     if (pts.size || moved) return;
     // a tap: a --More-- or a text window's wait is answered, else it is a click on the map
     if (moreShown) { push({ key: 32 }); return; }
@@ -482,16 +598,16 @@ function renderMap() {
     const r = cv.getBoundingClientRect();
     const x = Math.floor((e.clientX - r.left - view.left) / view.T);
     const y = Math.floor((e.clientY - r.top - view.top) / view.T);
-    if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO) push({ click: { x, y, mod: 1 } });
+    if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO && !ghostTap(e, x, y)) push({ click: { x, y, mod: 1 } });
   };
   cv.addEventListener('pointerup', up);
-  cv.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); pinch = null; });
+  cv.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); if (pts.size < 2 && pinch) { pinch = null; endPinch(); } });
   cv.addEventListener('wheel', (e) => {
     e.preventDefault();
     // Each notch scales the cell asked for (tileSize()), not the drawn one: the
     // drawn cell is that floored to device pixels, so a trackpad's small steps
     // scaled from it would each be floored away and the map never grow.
-    P.set('zoom', clamp(tileSize() * Math.pow(1.1, -e.deltaY / 100), 8, 96));
+    setZoom(tileSize() * Math.pow(1.1, -e.deltaY / 100), false);
     render();
   }, { passive: false });
   // A tap on the message band opens the history, always: a band that answers
@@ -501,6 +617,19 @@ function renderMap() {
   $('msgband').addEventListener('pointerup', () => {
     if (moreShown) push({ key: 32 });
     else if (!page.some((e) => e.ask) && !(overlay && overlay.answering)) send('^P');
+  });
+  // Twin banks: the canvas is the map area alone, so the status lines and the
+  // glass round the map are #glass itself, which answered nothing.  At
+  // --More-- a tap there is Space, as a tap anywhere on classic's glass is
+  // (the design's section 6; the review, 2026-10-02); elsewhere it does
+  // nothing, as before.  The map and the message band answer for themselves.
+  const gl = $('glass'), own = (e) => e.target !== cv && !$('msgband').contains(e.target) && !e.target.closest('button');
+  let glassDown = null;
+  gl.addEventListener('pointerdown', (e) => { glassDown = own(e) ? e.pointerId : null; });
+  gl.addEventListener('pointerup', (e) => {
+    const down = glassDown;
+    glassDown = null;
+    if (down === e.pointerId && own(e) && geom && geom.twin && moreShown) push({ key: 32 });
   });
 }());
 
@@ -533,7 +662,7 @@ function bandMetrics() {
   measureCx.font = `${cs.fontSize} ${cs.fontFamily}`;
   // tty keeps 8 columns of its line for --More-- (topl.c, CO - 8)
   const slot = measureCx.measureText('--More--').width + 14 * s;
-  return { width, slot, rows: msgRows(!!(geom && geom.portrait)), cx: measureCx };
+  return { width, slot, rows: geom && geom.twin ? geom.msgRows : msgRows(!!(geom && geom.portrait)), cx: measureCx };
 }
 
 // A message broken into the band's rows at spaces, as tty breaks a long one;
@@ -1463,8 +1592,12 @@ const handlers = {
   },
   async shim_nh_poskey(xp, yp, modp) {
     syncRules();
-    if (overlay && M._web_picking) overlay.setPicking(!!M._web_picking());
+    const picking = !!(M._web_picking && M._web_picking());
+    if (overlay && M._web_picking) overlay.setPicking(picking);
+    // a map tap now would travel (getpos takes it as the spot instead)
+    commandWait = !picking;
     const ev = await nextInput();
+    commandWait = false;
     endTurn();
     if (ev.click) {
       M.setValue(xp, ev.click.x, 'i16');
@@ -1571,6 +1704,8 @@ const handlers = {
     let text = ptr ? M.UTF8ToString(ptr) : '';
     if (name === 'BL_GOLD') text = plainGold(text);
     status[name] = { text: text.trim(), color };
+    // the turn counter, for the ghost deck's sessions (overlay.js setTurn)
+    if (name === 'BL_TIME' && overlay) overlay.setTurn(parseInt(text, 10));
   },
 };
 
@@ -1675,7 +1810,7 @@ try {
   console.warn('tiles', e);   // the text map still works
 }
 buildKeyboard();
-P.onChange((name) => { if (name === 'mapMode' || name === 'zoom' || name === 'colourVision') render(); });
+P.onChange((name) => { if (['mapMode', 'zoom', 'zoomFactor', 'colourVision'].includes(name)) render(); });
 overlay = new Overlay({
   send,
   rawKey: (k) => push({ key: k }),
@@ -1704,6 +1839,17 @@ async function start() {
     const rules = String(P.get('msgRules') || '').split('\n').map((l) => l.split('\t'))
       .filter(([t, p]) => t && p).map(([t, p]) => `MSGTYPE=${t} "${p}"`);
     if (rules.length) rc += `\n# Message rules made in the game (Rolehack; GAME -> Message rules)\n${rules.join('\n')}\n`;
+    // Twin banks put Take off and Remove right over the action pad, so they
+    // always ask which item, even with one candidate (the design's section
+    // 16; src/options.c optfn_paranoid_confirmation): the + keeps the
+    // defaults, Pray's confirmation among them.  Only for twin banks, so
+    // classic plays as it always has.  The options file is written once a
+    // start, and a game restored from its save keeps the confirmations it
+    // was saved with (restore.c restores flags), so the line reaches the
+    // games started with it: a change of layout, the next new game.  Before
+    // the player's own lines, which come last so that they win: their own
+    // paranoid_confirmation (none, say) stands over this one.
+    if (P.get('layout') !== 'classic') rc += '\n# Twin banks: T and R always ask (Rolehack; Settings -> Layout)\nOPTIONS=paranoid_confirmation:+Remove\n';
     // the player's own lines from Settings (colour vision, layer 3: glyph:)
     const own = String(P.get('userRc') || '').trim();
     if (own) rc += `\n# Your own options (Settings -> Your option lines)\n${own}\n`;

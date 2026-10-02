@@ -1,7 +1,8 @@
 /* Written for Rolehack by Lucas Ruiz, 2026-09-26.
    The web page's terminal: the case, keycaps, glass and popups.  Keycap and
    case recipes are the "Rolehack Terminal Mode" design canvas's; sizes in
-   #case and #keys are design dp (the layers are scaled as a whole). */
+   #case and #keys are design dp (classic scales the layers as a whole; twin
+   banks, data-ui="twin", lay them out in CSS px with no scale). */
 
 @font-face { font-family: 'VT323'; src: url('fonts/VT323-Regular.ttf') format('truetype'); font-display: swap; }
 /* the message band's face: the Braille Institute's, made to be told apart at a glance */
@@ -53,6 +54,14 @@ body { font-family: var(--capfont); color: #f1e8d5; -webkit-tap-highlight-color:
        user-select: none; -webkit-user-select: none; touch-action: none; }
 
 #app { position: fixed; inset: 0; }
+/* Twin banks take the window's size from this root (overlay.js watchTwin):
+   the small viewport, which keeps still while a browser's toolbar comes and
+   goes, so no key moves under a thumb for it.  While the setting is twin
+   banks, a window that falls back to classic included. */
+:root[data-svh] #app { inset: auto; left: 0; top: 0; width: 100%; height: 100vh; height: 100svh; }
+/* the safe-area insets, read from its padding (overlay.js safeInsets) */
+#insetprobe { position: fixed; left: 0; top: 0; width: 0; height: 0; visibility: hidden; pointer-events: none;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
 .layer { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
 /* the case under the glass; caseless, the wells over a map that fills the window */
 #case { z-index: 0; } #glass { z-index: 1; } #keys { z-index: 2; }
@@ -86,6 +95,11 @@ body { font-family: var(--capfont); color: #f1e8d5; -webkit-tap-highlight-color:
 :root[data-case="off"] #case .lip { justify-content: center; }
 :root[data-case="off"] #case .lip .lamps { padding: 3px 10px; border-radius: 8px; background: rgba(7,6,5,.7); color: #d9d1bd; }
 :root[data-case="off"] #case .lip .plate { display: none; }
+/* twin banks: a bank's well reaches as far as its guard halo, 12 dp round the
+   keys, and its rim is the halo's edge (the design's section 6) */
+#case .well.twin { border-radius: 14px;
+  box-shadow: inset 0 2px 6px var(--well-shade), inset 0 -1px 0 rgba(255,255,255,.06),
+              0 1px 0 rgba(255,255,255,.35), 0 0 0 1.5px rgba(0,0,0,.22); }
 
 /* ---- the glass */
 #glass { position: absolute; overflow: hidden; background: #000;
@@ -122,6 +136,11 @@ body { font-family: var(--capfont); color: #f1e8d5; -webkit-tap-highlight-color:
 #statband .badge.plain { color: var(--bc); }
 #statband .hpcrit { color: var(--glass); text-shadow: none; padding: 0 1px; }
 #chips { position: absolute; left: 10px; right: 10px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
+/* twin banks: the MORE lamp, from the lip to the message band's right end */
+#morelamp { display: none; }
+:root[data-ui="twin"] #morelamp { display: block; position: absolute; right: 3px; top: 6px; width: 5px; height: 12px;
+  border-radius: 2px; background: #173a1d; box-shadow: inset 0 1px 1px rgba(0,0,0,.6); pointer-events: none; }
+:root[data-ui="twin"] #morelamp.on { background: #6dff7a; box-shadow: 0 0 6px #6dff7a, 0 0 2px #c9ffd0; }
 /* a prompt's choices: keycaps a thumb can hit (Parhi's 9.2 mm and more), that
    press down, rather than the small pills they were (Lucas, 2026-09-27) */
 #chips button { pointer-events: auto; font-family: var(--screenfont); font-size: 24px; min-width: 52px; height: 48px; padding: 0 12px;
@@ -165,6 +184,13 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
 .k .lamp { position: absolute; top: 4px; right: 4px; width: 10px; height: 4px; border-radius: 2px; background: #4a3413;
            box-shadow: inset 0 1px 1px rgba(0,0,0,.6); }
 .k .lamp.on { background: #ffb347; box-shadow: 0 0 6px #ffb347; }
+/* twin banks: ARMED on the key that armed, and the pad tinted red while it is */
+.k .lamp.armed { background: #4a1712; }
+.k .lamp.armed.on { background: #ff5a44; box-shadow: 0 0 6px #ff5a44, 0 0 2px #ffc2b8; }
+.padmold.armed .k .tp::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: rgba(255,70,50,.26); box-shadow: inset 0 0 0 1.5px rgba(255,90,68,.75); }
+/* the ghost deck: the key an old spot's tap meant, lit for a moment */
+.k.ghostlit .tp { box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 0 2px #ffb347, 0 0 12px #ffb347; }
 .k.lit .lg { color: #ffc166; text-shadow: 0 0 5px rgba(255,170,60,.75); }
 .k svg { display: block; }
 .k.pressed .tp { transform: translateY(var(--sink)); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 1px rgba(0,0,0,.2); }
@@ -180,6 +206,8 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
 .well-slot .dots { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: flex; gap: 2.5px; pointer-events: none; }
 .well-slot .dots i { width: 3.6px; height: 3.6px; border-radius: 50%; background: rgba(255,255,255,.35); }
 .well-slot .dots i.on { background: rgba(255,255,255,.9); }
+/* twin banks: the strip stands on end, Long rest swiped up from under REST */
+.well-slot.v .dots { flex-direction: column; }
 
 /* popups over the scrim: full-size containers that only their keys make live */
 #keys > .pop { position: absolute; pointer-events: none; inset: 0; }
@@ -198,6 +226,13 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
 #keys > .layerframe.on { display: block; }
 .layerframe b { position: absolute; left: 10px; top: -9px; padding: 1px 7px; border-radius: 8px; background: var(--acc);
   color: #111; font-size: 9.5px; font-weight: 700; letter-spacing: .12em; white-space: nowrap; }
+/* twin banks: the layer's name on a pill inside the map, never over a key
+   (the design's section 8); the frame keeps only its line */
+:root[data-ui="twin"] .layerframe b { display: none; }
+#keys > .layerpill { position: absolute; display: none; pointer-events: none; align-items: center; padding: 0 9px;
+  border-radius: 12px; background: var(--acc); color: #111; font-size: 9.5px; font-weight: 700; letter-spacing: .12em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#keys > .layerpill.on { display: flex; }
 /* the flick key: a rubber nub standing out of the case (RhFace.drawNub) */
 .k.nub .sk, .k.nub .fr, .k.nub .rk { display: none; }
 .k.nub .sh { border-radius: 50%; background: rgba(0,0,0,.85); box-shadow: none; }
@@ -213,6 +248,13 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
 .chiprow { position: absolute; display: flex; gap: 4px; padding: 4px; background: #04070e; border-radius: 4px; }
 .chiprow .k { position: relative; flex: none; }
 .chiprow .k.dim { opacity: .66; }
+/* twin banks: a row of keys inside the map, wrapping upward on a narrow map */
+.chiprow.twinpop { flex-wrap: wrap-reverse; }
+/* the ghost deck's flash: the old key's name, and an arrow to where it went */
+#keys > .ghost { position: absolute; display: none; align-items: center; gap: 4px; padding: 3px 6px 3px 10px; border-radius: 99px;
+  background: rgba(5,7,13,.92); color: #ffd97a; box-shadow: 0 0 0 1.5px #ffb347; pointer-events: none;
+  font: 700 11px var(--capfont); letter-spacing: .08em; white-space: nowrap; }
+#keys > .ghost.on { display: flex; }
 #banner { position: absolute; transform: translateX(-50%); }
 
 /* the drawer */
@@ -248,6 +290,10 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
    that does the same on the front skirt. */
 #modal, #formwrap { position: fixed; inset: 0; background: rgba(2,4,9,.74); display: flex; align-items: center;
          justify-content: center; padding: 16px 16px calc(16px + var(--kbd-room, 0px)); z-index: 50; }
+/* twin banks: the windows lift clear of the system's keyboard too (visualViewport;
+   overlay.js watchTwin), which never lays the keys out again */
+:root[data-ui="twin"] #modal, :root[data-ui="twin"] #formwrap {
+  padding-bottom: calc(16px + max(var(--kbd-room, 0px), var(--vv-room, 0px))); }
 #formwrap { z-index: 55; }
 #modal[hidden], #formwrap[hidden] { display: none; }
 .box { position: relative; display: flex; flex-direction: column; max-width: min(920px, 100%); max-height: 100%;

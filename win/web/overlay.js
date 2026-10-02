@@ -15,11 +15,27 @@
 // banks side by side along the bottom, each ending in a 3x3 pad.  Nothing in
 // a bank moves between the two; turning the window rebuilds in place.
 //
+// Twin banks (Lucas, 2026-10-02: the setting "Layout: twin banks / classic",
+// twin by default).  The same keys -- the same Key objects, bindings,
+// gestures, hubs, pins, macros and flick -- placed where layout.js's layout()
+// puts them: each thumb's 3x6 bank in its own bottom corner, every size and
+// offset from the device's short and long sides (or the budget remembered for
+// the display mode), never from the orientation, in CSS px with no scale.
+// The movement pad keeps the player's key size; the glass takes the rectangle
+// the banks leave.  The case paints the two wells and the glass's bezel; the
+// hood and the lip go, and their lamps move onto the keys they describe.
+// Everything that popped up over keys opens inside the map instead, and a
+// rebuild -- a resize, a turn -- keeps whatever was open or armed.  A window
+// with no room for twin banks shows classic, and the setting stays twin.
+// Classic is the board above, as it was; nothing here changes it.
+//
 // Key feedback -- a vibration, the click, both or neither -- is feedback.js.
 
 import * as C from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
+import { textMetrics } from './layout.js';
+import { budgetedLayout } from './viewer.js';
 
 // ---- geometry, design dp (RhCase, RhOverlay, RhScreen)
 const MARGIN = 8, WELL_PAD = 10, DECK_H = 66, DECK_KEY = 52, HOOD_TOP = 14, HOOD_SIDE = 16,
@@ -85,6 +101,23 @@ const CHIP_SIZE = 44, CHIP_GAP = 4, CHIP_GAP_ABOVE = 7, CHIP_ROW_W = 5 * CHIP_SI
 const SAT_SIZE = 44, CAND_RADIUS = 100, CAND_SIZE = 54;
 const MAX_COUNT = 32767;
 const HIDE_LONG_MS = 4000;
+
+// ---- twin banks: layout.js's control ids for the keys built below
+const TWIN_PAD = ['pad_y', 'pad_k', 'pad_u', 'pad_h', 'pad_centre', 'pad_l', 'pad_b', 'pad_j', 'pad_n'];   // C.PAD_KEYS' order
+const TWIN_HUB = { fight: 'combat', drop: 'drop', apply: 'apply', consume: 'eat', equip: 'inventory' };
+const TWIN_EQUIP = ['eq_wear', 'eq_puton', 'eq_wield', 'eq_takeoff', 'eq_remove', 'eq_swap'];   // C.EQUIP_SLOT_DEFAULT's cells
+const TWIN_STRIP = ['look', 'context', 'search'];
+const TWIN_TOP = ['menu', 'world', 'game', 'keys'];   // C.TOP_RIGHT's order
+const TWIN_PINS = ['pin1', 'pin2'];                   // COMBAT's points
+const TWIN_MACROS = ['m1', 'm2', 'm3'];
+const POP_PAD = 4;        // a pop-up's distance inside the map area's edge
+// The ghost deck (the design's section 6, item 8): the old deck keys' spots
+// take 8 dp round them, a preview waits 2 s for its second tap, a session ends
+// after 30 minutes without input and counts once 100 turns are played in it,
+// and three sessions in a row with nothing caught retire it.
+const GHOST_SLOP = 8, GHOST_FLASH_MS = 1400;
+export const GHOST_CONFIRM_MS = 2000;
+const SESSION_IDLE_MS = 30 * 60 * 1000, SESSION_TURNS = 100, GHOST_SESSIONS = 3;
 
 // here-context flags (include/rhhere.h)
 export const HERE_OBJECT = 0x01, HERE_STAIRS_DOWN = 0x02, HERE_STAIRS_UP = 0x04, ADJ_CLOSED_DOOR = 0x08,
@@ -179,6 +212,14 @@ const rad = (d) => (d * Math.PI) / 180;
 
 const fitQueue = new Set();
 let fitScheduled = false;
+// Twin banks fit the skirt's hold hint to the key as well: the right bank's
+// columns narrow to 44.7 dp on a 360 dp phone, where "TAP TO FILL" read "AP
+// TO FIL" (the review, 2026-10-02).  An overflowing hint gives way to its
+// last word, then shrinks, down to 6 px.  Classic's skirts are left as they are.
+let skirtFit = false;
+const SKIRT_SHORT = { 'tap to fill': 'fill', 'hold to fill': 'fill', 'pick a count': 'count', 'pick a place': 'place',
+  'pick a point': 'point', 'pick a cell': 'cell', 'tap to pick': 'pick', 'pick one': 'pick', 'tap = all': 'all',
+  'set ×n': '×n', '3 places': '3' };
 function scheduleFit(k) {
   fitQueue.add(k);
   if (fitScheduled) return;
@@ -286,6 +327,8 @@ class Key {
       else if (hold === 'hold to edit') hold = 'edit';
     }
     this.fr.textContent = hold;
+    this.holdText = hold;
+    if (skirtFit) scheduleFit(this);
     return this;
   }
 
@@ -299,10 +342,11 @@ class Key {
 
   placeholder(on) { this.isPh = on; this.el.classList.toggle('ph', on); this.paint(); return this; }
 
-  lamp(state) {
+  // a lamp on the keycap: amber, or red for ARMED (cls 'armed'); null takes it off
+  lamp(state, cls = '') {
     let l = this.tp.querySelector('.lamp');
     if (state === null) { if (l) l.remove(); return this; }
-    if (!l) l = el('span', 'lamp', this.tp);
+    if (!l) l = el('span', cls ? `lamp ${cls}` : 'lamp', this.tp);
     l.classList.toggle('on', state);
     return this;
   }
@@ -315,7 +359,9 @@ class Key {
 
   // RhFace.fitLabel: shrink the legend until it fits the face
   fit() {
-    if (!this.el.isConnected || ARROW_DEG[this.text] !== undefined) return;
+    if (!this.el.isConnected) return;
+    if (skirtFit) this.fitSkirt();
+    if (ARROW_DEG[this.text] !== undefined) return;
     let size = this.size;
     this.lg.style.fontSize = `${size}px`;
     const avail = this.tp.clientWidth - 4, availH = this.tp.clientHeight - 2;
@@ -324,6 +370,22 @@ class Key {
     while (size > 5 && (this.lg.scrollWidth > avail || this.lg.scrollHeight > availH)) {
       size *= 0.92;
       this.lg.style.fontSize = `${size}px`;
+    }
+  }
+
+  // the skirt's hold hint, in twin banks (skirtFit)
+  fitSkirt() {
+    const fr = this.fr, t = this.holdText || '';
+    if (this.frSize === undefined) this.frSize = parseFloat(fr.style.fontSize) || 0;   // INVENTORY's 6.5
+    fr.style.fontSize = this.frSize ? `${this.frSize}px` : '';
+    fr.textContent = t;
+    if (!t || fr.clientWidth <= 0) return;   // hidden: fitted when shown
+    const over = () => fr.scrollWidth > fr.clientWidth + 0.5;
+    if (over() && SKIRT_SHORT[t]) fr.textContent = SKIRT_SHORT[t];
+    let size = parseFloat(getComputedStyle(fr).fontSize) || 7.5;
+    while (size > 6 && over()) {
+      size = Math.max(6, size * 0.92);
+      fr.style.fontSize = `${size}px`;
     }
   }
 }
@@ -341,14 +403,21 @@ export class Overlay {
     this.expectsDirection = false;
     this.more = 0;
     this.status = {};
-    window.addEventListener('resize', () => this.rebuild());
+    this.twin = null;         // twin banks' layout, while they are what is shown
+    this.twinSig = '';        // the controls of the last twin build, for keeping state across rebuilds
+    // Classic lays out again on every resize, as it always has.  Twin banks
+    // take their size from the svh root's ResizeObserver (watchTwin()).
+    window.addEventListener('resize', () => { if (this.wantsTwin()) this.requestRebuild(); else this.rebuild(); });
     P.onChange((name) => {
-      if (['style', 'case', 'padCell', 'labelMode', 'phosphor'].includes(name)) this.rebuild();
-      if (name === 'statusLines') this.host.glassChanged(this.geom);
+      if (['style', 'case', 'padCell', 'labelMode', 'phosphor', 'layout'].includes(name)) this.rebuild();
+      // the status band's height is an input to twin banks' layout
+      if (name === 'statusLines') { if (this.twin) this.rebuild(); else this.host.glassChanged(this.geom); }
       if (name === 'msgFont' || name === 'msgSize') this.rebuild();
     });
     if (document.fonts) document.fonts.ready.then(() => this.rebuild());
     this.guardClicks();
+    this.watchTwin();
+    this.startGhostSession();
     this.rebuild();
   }
 
@@ -405,7 +474,22 @@ export class Overlay {
 
   // ---- layout
   rebuild() {
-    const W = window.innerWidth, H = window.innerHeight;
+    // the root is sized in svh whenever the setting is twin, a window that
+    // falls back to classic included, so that falling back never resizes it
+    if (this.wantsTwin()) { document.documentElement.dataset.svh = ''; this.rebuildTwin(); return; }
+    delete document.documentElement.dataset.svh;
+    this.setViewportFit(false);
+    document.documentElement.dataset.ui = 'classic';
+    this.twinSig = '';
+    this.rebuildClassic(window.innerWidth, window.innerHeight);
+  }
+
+  wantsTwin() { return P.get('layout') !== 'classic'; }
+
+  // The classic board: the case and its scale, everything rebuilt from nothing.
+  rebuildClassic(W, H) {
+    this.twin = null;
+    skirtFit = false;
     this.padCell = clamp(Number(P.get('padCell')) || 58, 40, 72);
     this.padBox = 3 * this.padCell + 2 * PAD_GAP;
     this.caseless = !P.get('case');
@@ -445,6 +529,408 @@ export class Overlay {
     this.host.glassChanged(this.geom);
   }
 
+  // ---- twin banks: what the page reads, then layout() (the design's section 12)
+
+  // The window's size comes from the root sized in svh (#app, rolehack.css):
+  // the small viewport, which keeps still while a browser's toolbar comes and
+  // goes.  Not visualViewport: that changes with the soft keyboard and with a
+  // pinch, and the keys under a thumb must move for neither; it only lifts the
+  // forms clear of the system's keyboard.  A display mode's change (a tab, the
+  // installed app, fullscreen) lays out again with that mode's budget.
+  watchTwin() {
+    this.pointersDown = new Set();
+    this.rebuildPending = false;
+    const app = $('app');
+    if (window.ResizeObserver) new ResizeObserver(() => { if (this.wantsTwin()) this.requestRebuild(); }).observe(app);
+    // in the capture phase, before any key stops the event
+    window.addEventListener('pointerdown', (e) => { this.pointersDown.add(e.pointerId); this.noteInput(); }, true);
+    const up = (e) => {
+      this.pointersDown.delete(e.pointerId);
+      if (!this.pointersDown.size && this.rebuildPending) setTimeout(() => this.requestRebuild(), 0);
+    };
+    window.addEventListener('pointerup', up, true);
+    window.addEventListener('pointercancel', up, true);
+    window.addEventListener('keydown', () => this.noteInput(), true);
+    document.addEventListener('focusout', () => { if (this.rebuildPending) setTimeout(() => this.requestRebuild(), 0); });
+    const again = () => { if (this.wantsTwin()) this.requestRebuild(); };
+    document.addEventListener('fullscreenchange', again);
+    if (window.matchMedia) {
+      for (const mode of ['fullscreen', 'standalone', 'browser']) {
+        const mq = matchMedia(`(display-mode: ${mode})`);
+        if (mq.addEventListener) mq.addEventListener('change', again);
+      }
+    }
+    const vv = window.visualViewport;
+    if (vv) {
+      const lift = () => document.documentElement.style.setProperty('--vv-room',
+        `${Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop))}px`);
+      vv.addEventListener('resize', lift);
+      vv.addEventListener('scroll', lift);
+    }
+  }
+
+  // Never under a finger nor while a text field has the focus (the soft
+  // keyboard is up, and the field would move under the typing): the layout
+  // waits, and runs when the finger lifts or the field lets go.  A finger
+  // that never reports its lift holds it back for 2.5 s at most.
+  twinBusy() {
+    const a = document.activeElement;
+    if (a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') && a.offsetParent !== null) return true;
+    return this.pointersDown.size > 0 && performance.now() - this.pendingSince < 2500;
+  }
+
+  requestRebuild() {
+    if (!this.rebuildPending) this.pendingSince = performance.now();
+    if (this.geom && this.twinBusy()) {
+      this.rebuildPending = true;
+      clearTimeout(this.pendingTimer);
+      this.pendingTimer = setTimeout(() => { if (this.rebuildPending) this.requestRebuild(); }, 400);
+      return;
+    }
+    this.rebuildPending = false;
+    clearTimeout(this.pendingTimer);
+    // a resize and the root's observer often ask together: one rebuild a frame
+    if (this.rebuildFrame) return;
+    this.rebuildFrame = requestAnimationFrame(() => { this.rebuildFrame = 0; this.rebuild(); });
+  }
+
+  // viewport-fit=cover, only while the layout is twin banks: classic keeps
+  // the viewport it has always had, which pads for no safe area
+  setViewportFit(on) {
+    const m = document.querySelector('meta[name="viewport"]');
+    if (!m) return;
+    const parts = m.content.split(',').map((p) => p.trim()).filter((p) => p && !/^viewport-fit\b/.test(p));
+    if (on) parts.push('viewport-fit=cover');
+    const v = parts.join(', ');
+    if (v !== m.content) m.content = v;
+  }
+
+  // the safe-area insets, from a probe padded with env(safe-area-inset-*)
+  safeInsets() {
+    if (!this.insetProbe) {
+      this.insetProbe = el('div', '', document.body);
+      this.insetProbe.id = 'insetprobe';
+    }
+    const cs = getComputedStyle(this.insetProbe), px = (v) => Math.max(0, parseFloat(v) || 0);
+    return { l: px(cs.paddingLeft), r: px(cs.paddingRight), t: px(cs.paddingTop), b: px(cs.paddingBottom) };
+  }
+
+  displayMode() {
+    const mm = (q) => !!(window.matchMedia && matchMedia(q).matches);
+    if (document.fullscreenElement || mm('(display-mode: fullscreen)')) return 'fullscreen';
+    if (mm('(display-mode: standalone)') || navigator.standalone) return 'standalone';
+    return 'browser';
+  }
+
+  // A touch screen starts with thumb banks; with none, the desk dock.  Never
+  // pointer: coarse alone, nor the user agent (the design's section 12; the
+  // switching on the input in use comes later).
+  pointerKind() {
+    const coarse = !!(window.matchMedia && matchMedia('(any-pointer: coarse)').matches);
+    return coarse || navigator.maxTouchPoints > 0 ? 'touch' : 'mouse';
+  }
+
+  // The budget: what this display mode has shown in each orientation of the
+  // whole device -- the portrait width, the landscape height and width, the
+  // landscape side insets -- kept in this browser (prefs budgets), so a
+  // phone's two orientations get the same banks and the same map cell in a
+  // tab, where the toolbar makes the window uneven.  viewer.js decides which
+  // windows use it and teach it, and when the screen may stand in for the
+  // orientation not seen yet; the layout comes back with it, and what the
+  // window taught is stored only once that layout is usable.
+  twinLayout(W, H, pointer, settings, insets, mode) {
+    const all = P.get('budgets') || {};
+    const scr = { w: Number(screen.width) || W, h: Number(screen.height) || H };
+    const out = budgetedLayout(W, H, pointer, settings, scr, insets, all[mode]);
+    if (out.learn) P.set('budgets', { ...all, [mode]: out.learn });
+    return out;
+  }
+
+  rebuildTwin() {
+    // the first build cannot wait; any later one waits for the finger or the field
+    if (this.geom && this.twinBusy()) { this.requestRebuild(); return; }
+    this.setViewportFit(true);
+    const root = document.documentElement.dataset;
+    const box = $('app').getBoundingClientRect();
+    const W = box.width || window.innerWidth, H = box.height || window.innerHeight;
+    const pointer = this.pointerKind(), mode = this.displayMode(), insets = this.safeInsets();
+    const padKey = clamp(Number(P.get('padCell')) || 58, 40, 72);
+    // the message rows as the page sets them (msgTextPx) and the status band
+    // as web.js draws it: inputs to the rule, so it never puts text over a key
+    resetTextScale();
+    const text = textMetrics({ msgFont: P.get('msgFont') === 'screen' ? 'screen' : 'atkinson',
+      msgSize: Number(P.get('msgSize')) || 1, textScale: osTextScale(), xHeight: MSG_X });
+    const statusH = { hidden: 0, compact: STATUS_BAND - LINE }[P.get('statusLines')] ?? STATUS_BAND;
+    const base = {
+      padKey, insets, msgRowH: text.msgRowH, statusH,
+      prevTier: this.twinTier || null,
+      // the bands stay stacked in #glass, messages over the status, for now
+      header: 'stacked',
+    };
+    const { r, budget, sideInsets, used } = this.twinLayout(W, H, pointer, base, insets, mode);
+    const settings = { ...base, budget, sideInsets };
+    if (!r || !r.spec || !r.usable) {
+      // No room for twin banks and a map (a near-square split screen): classic
+      // for this window, the setting kept; twin banks come back with the room.
+      const rs = (r && r.spec && r.spec.fit.reasons) || [];
+      this.twinFallback = (rs.find((x) => /^unusable/.test(x)) || rs[0] || 'the layout gave no result')
+        .replace(/^unusable, the page shows classic: /, '');
+      root.ui = 'classic';
+      this.twinSig = '';
+      this.rebuildClassic(W, H);
+      return;
+    }
+    this.twinFallback = null;
+    root.ui = 'twin';
+    skirtFit = true;
+    const S = r.spec;
+    // Control ids are stable: a rebuild with the same controls keeps what is
+    // armed, open or being assigned; only a control gone resets it
+    const sig = S.controls.map((c) => c.id).sort().join(' ');
+    const snap = this.twin && sig === this.twinSig ? this.snapshot() : null;
+    this.twin = { spec: S, info: r.info, W, H, pointer, mode, settings, budget: used, reason: r.reason,
+      ctl: new Map(S.controls.map((c) => [c.id, c])), keys: new Map() };
+    this.twinSig = sig;
+    this.twinTier = r.info.tier;
+
+    this.padCell = padKey;
+    this.padBox = 3 * this.padCell + 2 * PAD_GAP;
+    this.caseless = !P.get('case');
+    this.portrait = H > W;
+    root.skin = { light: 'light', gamecube: 'gamecube' }[P.get('style')] || 'terminal';
+    root.case = this.caseless ? 'off' : 'on';
+    root.phosphor = P.get('phosphor');
+    root.layout = this.portrait ? 'portrait' : 'landscape';
+    // CSS px, as layout() gives them: no scale
+    this.s = 1;
+    this.DW = W;
+    this.DH = H;
+    for (const layer of [this.caseEl, this.keysEl]) {
+      layer.style.width = `${W}px`;
+      layer.style.height = `${H}px`;
+      layer.style.transform = '';
+    }
+    this.caseEl.innerHTML = '';
+    this.keysEl.innerHTML = '';
+    this.resetState();
+    this.buildTwinCase();
+    this.buildKeys();
+    if (snap) this.restoreState(snap);
+    this.ghostSpots = this.portrait ? [] : this.classicDeck(W, H);
+
+    const [msgBand, statusBand] = S.bands;
+    this.geom = {
+      s: 1, W, H, twin: true, caseless: this.caseless, portrait: this.portrait,
+      glass: { ...S.glass, r: this.caseless ? 0 : 10 },
+      map: S.mapArea, msgBand, statusBand, msgRows: r.info.fill.rows_msg, cell: r.info.T,
+    };
+    this.host.glassChanged(this.geom);
+  }
+
+  // a twin control's rect, from the layout
+  tw(id) { const c = this.twin.ctl.get(id); return { x: c.x, y: c.y, w: c.w, h: c.h }; }
+  // the key built for a control, for the lamps, the ghost deck and the checks
+  twinKey(id, k) { if (this.twin) { this.twin.keys.set(id, k); (k.el || k).dataset.tw = id; } return k; }
+  twinEl(id) {
+    const k = this.twin && this.twin.keys.get(id);
+    return k ? k.el || k : null;
+  }
+  // which side of the map a control's pop-up opens on: its own thumb's
+  twinSide(id) { const c = this.twin && this.twin.ctl.get(id); return c ? c.thumb : 'C'; }
+
+  // A pop-up's place inside the map area, never over a key: along the map's
+  // bottom edge on the side of the key it belongs to.  Until the layers paint
+  // these on the pad, the count rows, the pad centre's list and the context
+  // candidates open here; a row longer than the map is wide wraps upward.
+  twinPop(el_, side) {
+    const m = this.twin.spec.mapArea;
+    Object.assign(el_.style, {
+      left: side === 'R' ? 'auto' : `${m.x + POP_PAD}px`,
+      right: side === 'R' ? `${this.DW - (m.x + m.w - POP_PAD)}px` : 'auto',
+      top: 'auto', bottom: `${this.DH - (m.y + m.h - POP_PAD)}px`, maxWidth: `${m.w - 2 * POP_PAD}px`,
+    });
+    if (side !== 'L' && side !== 'R') { el_.style.left = `${m.x + m.w / 2}px`; el_.style.transform = 'translateX(-50%)'; }
+    el_.classList.add('twinpop');
+    return el_;
+  }
+
+  // ---- twin banks: what a rebuild keeps (control ids are stable)
+  snapshot() {
+    const hubId = (hv) => (hv && hv.hub ? hv.hub.id : null);
+    return {
+      armed: this.armed, armedBy: this.armedBy,
+      fanOpen: this.fanOpen, radialOpen: this.radialOpen, ctxRadialOpen: this.ctxRadialOpen,
+      candOpen: this.candOpen, chipsOpen: this.chipsOpen,
+      assign: this.assign, assignTarget: this.assignTarget, assignHub: this.assignHub,
+      drawerOpen: this.drawerOpen, drawerHub: this.drawerHub, assigning: !!this.assigning,
+      assignPrompt: this.assigning && this.drawerCount ? this.drawerCount.textContent : null,
+      fill: this.fill ? { hub: hubId(this.fill.hv), attack: this.fill.attack, n: this.fill.n } : null,
+      drawerScroll: this.drawerGrid ? this.drawerGrid.scrollTop : 0,
+      restRevealed: !!(this.restWell && this.restWell.revealed),
+    };
+  }
+
+  restoreState(s) {
+    if (s.assign) {
+      // a command in hand: its destinations light again (pickUp, without its closing)
+      this.assign = s.assign;
+      this.assignTarget = s.assignTarget;
+      this.assignHub = s.assignHub;
+      if (s.assignTarget === 3) {
+        const hv = this.hubView(s.assignHub);
+        if (hv) { this.fanOpen = hv.hub.id; hv.face.lit(true); }
+      }
+    }
+    if (s.fanOpen && !this.fanOpen) {
+      const hv = this.hubView(s.fanOpen);
+      if (hv) {
+        this.fanOpen = hv.hub.id;
+        this.paintLayer(hv.hub);
+        hv.face.lit(true).sub('tap = all');
+        if (hv.hub === C.HUB_ATTACK) this.refreshSlots(hv, true);
+      }
+    }
+    if (s.radialOpen === FLICK_ID) {
+      this.radialOpen = FLICK_ID;
+      const radial = this.radials.get(FLICK_ID);
+      if (radial) radial.style.display = '';
+    }
+    if (s.chipsOpen) this.chipsOpen = s.chipsOpen;
+    if (s.candOpen && this.candidates.length > 1) this.toggleCandidates();
+    if (s.ctxRadialOpen) this.openContextRadial();
+    if (s.drawerOpen) {
+      this.openDrawer(s.drawerOpen, s.drawerHub ? C.HUBS.find((h) => h.id === s.drawerHub.id) || null : null);
+      if (s.fill) {
+        const hv = this.hubView(s.fill.hub);
+        if (hv) this.fill = { hv, attack: s.fill.attack, n: s.fill.n };
+      }
+      if (s.assigning) this.setAssigning(true, s.assignPrompt || undefined);
+      this.drawerGrid.scrollTop = s.drawerScroll;
+    }
+    if (s.armed) {
+      this.armed = s.armed;
+      this.armedBy = s.armedBy;
+      this.refreshPadCentre();
+      this.banner.label(`${s.armed.word.toUpperCase()} — PICK A DIRECTION`, 10).show(true);
+      this.fitBanner();
+    }
+    if (s.restRevealed) this.scrollWell(true);
+    this.refreshAllSlots();
+    this.updateHubSubLines();
+    this.refreshContextStrip();
+    this.updateLamps();
+    this.syncModal();
+  }
+
+  // ---- the ghost deck (the design's section 6, item 8).  On twin banks in
+  // landscape, today's deck keys -- COMBAT, PIN 2, FLICK, LOOK, CONTEXT --
+  // have gone from the bottom of the screen to the right bank, and their old
+  // spots are map.  A map tap on one (its rect and 8 dp round it), whenever
+  // the tap would travel, previews instead: the old key's name flashes there
+  // with an arrow to its new home and web.js outlines the cell; a second tap
+  // on the same cell within 2 s walks.  A preview left unconfirmed is a
+  // catch: the player meant the old key.  A session starts with the page or
+  // a new game, ends after 30 minutes without input, and counts once 100
+  // turns are played in it while the deck could act -- twin banks in
+  // landscape, the deck on: turns played in classic or in portrait, where no
+  // tap can be caught, count for nothing, or a player who kept classic for a
+  // while, or began in portrait, would find the deck retired before ever
+  // meeting it (the review, 2026-10-02).  Three sessions that count in a row
+  // with no catch retire the deck, and Settings brings it back.  A player who
+  // taps to travel is never held back by it: a confirmed preview counts for
+  // nothing.
+  ghostState() { return { on: true, clean: 0, session: null, ...(P.get('ghostDeck') || {}) }; }
+  ghostOn() { return this.ghostState().on !== false; }
+  setGhostOn(on) { P.set('ghostDeck', { ...this.ghostState(), on, clean: 0 }); }
+  // whether a tap could be caught now: what a session's turns count
+  ghostLive() { return !!(this.twin && !this.portrait && this.ghostSpots && this.ghostSpots.length && this.ghostOn()); }
+
+  // the session before is counted, and a new one begins
+  nextGhostSession(g) {
+    const was = g.session && { ...g.session, turns: Math.max(g.session.turns || 0, this.liveTurns || 0) };
+    this.liveTurns = 0;
+    if (was && was.turns >= SESSION_TURNS) {
+      g.clean = was.caught ? 0 : (g.clean || 0) + 1;
+      if (g.clean >= GHOST_SESSIONS) g.on = false;
+    }
+    g.session = { turns: 0, caught: false };
+    return g;
+  }
+  startGhostSession() {
+    this.lastInput = Date.now();
+    this.lastTurn = null;
+    P.set('ghostDeck', this.nextGhostSession(this.ghostState()));
+  }
+  noteInput() {
+    const now = Date.now();
+    if (now - (this.lastInput || now) > SESSION_IDLE_MS) P.set('ghostDeck', this.nextGhostSession(this.ghostState()));
+    this.lastInput = now;
+  }
+  // The game's turn counter (web.js, from the status line).  The turns since
+  // the last report count while the deck is live; a turn lower than the last
+  // is a new game, and a new session.
+  setTurn(t) {
+    if (!(t >= 0)) return;
+    const last = this.lastTurn;
+    this.lastTurn = t;
+    if (last === null || last === undefined || t === last) return;
+    if (t < last) { P.set('ghostDeck', this.nextGhostSession(this.ghostState())); return; }
+    if (!this.ghostLive()) return;
+    // kept here, and stored each time it passes another ten turns
+    const was = this.liveTurns || 0, turns = was + (t - last);
+    this.liveTurns = turns;
+    if (Math.floor(turns / 10) === Math.floor(was / 10)) return;
+    const g = this.ghostState();
+    P.set('ghostDeck', { ...g, session: { caught: false, ...(g.session || {}), turns } });
+  }
+  ghostCaught() {
+    const g = this.ghostState();
+    if (g.session && !g.session.caught) P.set('ghostDeck', { ...g, session: { ...g.session, caught: true } });
+  }
+
+  // Today's landscape deck, as classic lays it out in this window (its scale
+  // and all), in CSS px: the spots a thumb has learned.
+  classicDeck(W, H) {
+    const g = Object.create(Overlay.prototype);
+    Object.assign(g, { padCell: this.padCell, padBox: this.padBox, caseless: this.caseless, portrait: false });
+    const s = Math.min(1, Math.max(FIT_FLOOR, Math.min(W / g.needW(), H / g.needH())));
+    g.s = s; g.DW = W / s; g.DH = H / s;
+    const at = (b) => ({ x: b.x * s - GHOST_SLOP, y: b.y * s - GHOST_SLOP, w: b.w * s + 2 * GHOST_SLOP, h: b.h * s + 2 * GHOST_SLOP });
+    const A = C.HUB_ATTACK;
+    return [
+      { id: 'combat', name: 'COMBAT', r: at(g.cb(g.hubW(A), g.hubH(A), g.hubCx(A), g.hubCy(A))) },
+      { id: 'pin2', name: 'PIN 2', r: at(g.termAttackSlot(1)) },
+      { id: 'flick', name: 'FLICK', r: at(g.termAttackSlot(2)) },
+      { id: 'look', name: 'LOOK', r: at(g.termStripBox(0)) },
+      { id: 'context', name: 'CONTEXT', r: at(g.termStripBox(1)) },
+    ];
+  }
+
+  // the old deck spot under a map tap, while the deck is on
+  ghostAt(x, y) {
+    if (!this.twin || this.portrait || !this.ghostOn() || !this.ghostSpots) return null;
+    return this.ghostSpots.find((g) => x >= g.r.x && x <= g.r.x + g.r.w && y >= g.r.y && y <= g.r.y + g.r.h) || null;
+  }
+
+  ghostShow(g) {
+    const e = this.ghostEl, k = this.twinEl(g.id);
+    if (!e || !k) return;
+    const kr = k.getBoundingClientRect(), m = this.twin.spec.mapArea;
+    const fx = g.r.x + g.r.w / 2, fy = g.r.y + g.r.h / 2;
+    const deg = (Math.atan2(kr.x + kr.width / 2 - fx, -(kr.y + kr.height / 2 - fy)) * 180) / Math.PI;
+    e.innerHTML = `<b>${g.name}</b>${ARROW_SVG(deg)}`;
+    e.classList.add('on');
+    const w = e.offsetWidth, h = e.offsetHeight;
+    // above the tapped spot, so the outlined cell under the thumb stays in view
+    e.style.left = `${clamp(fx - w / 2, m.x + POP_PAD, m.x + m.w - POP_PAD - w)}px`;
+    e.style.top = `${clamp(fy - h - 22, m.y + POP_PAD, m.y + m.h - POP_PAD - h)}px`;
+    if (this.ghostLit && this.ghostLit !== k) this.ghostLit.classList.remove('ghostlit');
+    this.ghostLit = k;
+    k.classList.add('ghostlit');
+    clearTimeout(this.ghostTimer);
+    this.ghostTimer = setTimeout(() => { e.classList.remove('on'); k.classList.remove('ghostlit'); }, GHOST_FLASH_MS);
+  }
+
   resetState() {
     P.macros();   // first run with the flick key moves the retired third point's command first
     this.atkSlotKeys = (P.get('atkSlots') || C.ATK_SLOT_DEFAULT).slice(0, C.ATK_SLOT_DEFAULT.length);
@@ -460,6 +946,7 @@ export class Overlay {
     this.drawerOpen = null;
     this.drawerHub = null;
     this.armed = null;
+    this.armedBy = null;      // twin banks: the key that armed, whose ARMED lamp is lit
     this.ctxRadialOpen = false;
     this.radialOpen = null;
     this.radials = new Map();
@@ -583,10 +1070,50 @@ export class Overlay {
   }
 
   updateLamps() {
+    if (this.twin) { this.twinLamps(); return; }
     if (!this.lamps) return;
     this.lamps.querySelector('.search').classList.toggle('on', !!P.get('searchMode'));
     this.lamps.querySelector('.armed').classList.toggle('on', !!this.armed);
     this.lamps.querySelector('.more').classList.toggle('on', this.more > 0);
+  }
+
+  // ---- the twin banks' case: the two wells, each as far as its bank's guard
+  // halo reaches, their rims the halo's edge (the design's section 6), and the
+  // glass's bezel (rolehack.css).  The hood and the lip go; their lamps move
+  // onto the keys (twinLamps).  Caseless, there are no wells: the keys stand
+  // on the dark, and the rects are the same.
+  buildTwinCase() {
+    this.lamps = null;
+    if (!this.caseless) {
+      for (const d of this.twin.spec.decor) {
+        if (!/\bwell\b/.test(d.name)) continue;
+        const e = el('div', 'well twin', this.caseEl);
+        Object.assign(e.style, { left: `${d.x}px`, top: `${d.y}px`, width: `${d.w}px`, height: `${d.h}px` });
+      }
+    }
+    if (!$('morelamp')) {
+      const m = el('span', '', $('bands'));
+      m.id = 'morelamp';
+      m.title = 'MORE';
+    }
+  }
+
+  // Twin banks' lamps sit on what they describe (the design's section 10):
+  // SEARCH's on the SEARCH keycap, ARMED on the key that armed -- COMBAT, or
+  // the pin that holds Fight -- and MORE at the right end of the message band.
+  twinLamps() {
+    const k = (id) => this.twin.keys.get(id);
+    // and while Fight is armed the pad tints red (the design's section 10)
+    if (this.padMold) this.padMold.classList.toggle('armed', !!this.armed);
+    if (k('search')) k('search').lamp(!!P.get('searchMode'));
+    for (const id of ['combat', ...TWIN_PINS]) {
+      if (!k(id)) continue;
+      const on = !!this.armed && (this.armedBy || 'combat') === id;
+      // COMBAT keeps its lamp, dark until it arms; a pin's shows only while lit
+      k(id).lamp(id === 'combat' || on ? on : null, 'armed');
+    }
+    const more = $('morelamp');
+    if (more) more.classList.toggle('on', this.more > 0);
   }
 
   // ---- the keys, in RhOverlay.build()'s order (it is the z order)
@@ -606,37 +1133,55 @@ export class Overlay {
     this.scrim.id = 'scrim';
     this.scrim.style.zIndex = 5;
     this.scrimHint = el('div', 'hint', this.scrim);
-    this.scrimHint.style.top = `${this.glassTop() + 6}px`;
+    if (this.twin) {
+      // twin banks: at the top of the map, between the banks or over them
+      const m = this.twin.spec.mapArea;
+      Object.assign(this.scrimHint.style, { top: `${m.y + 6}px`, left: `${m.x + m.w / 2}px`, maxWidth: `${m.w - 8}px` });
+    } else {
+      this.scrimHint.style.top = `${this.glassTop() + 6}px`;
+    }
     this.scrim.addEventListener('pointerup', (e) => { e.preventDefault(); this.dismissPopups(); });
     this.scrim.addEventListener('pointerdown', (e) => e.preventDefault());
     this.buildDrawer(K);
     this.flashEl = el('div', '', K);
     this.flashEl.id = 'flash';
     this.flashEl.style.zIndex = 30;
+    if (this.twin) {
+      // the ghost deck's flash, over the old key's spot (ghostShow)
+      this.ghostEl = el('div', 'ghost', K);
+      this.ghostEl.style.zIndex = 31;
+    }
     this.refreshContextStrip();
     this.refreshRestFaces();
     this.refreshPadCentre();
     this.recomputeContext();
     if (this.answering) this.paintAnswers();
+    if (this.twin) this.twinLamps();
   }
 
   // Rest (with Long rest in its scroll well), Msgs and macro 1: the left bank's top rows.
   buildRestAndMsgs(K) {
-    const inn = this.termInner(), P_ = this.portrait;
-    // the scroll well: landscape, the left bank's top row; portrait, the key row's first slot
-    const at = P_ ? this.pFnBox(0) : this.tl(this.termWideKey(), T_ROW1_H, inn, inn);
+    const inn = this.termInner(), P_ = this.portrait, T = this.twin;
+    // the scroll well: landscape, the left bank's top row; portrait, the key row's first slot;
+    // twin banks, REST's place in the left bank's top strip
+    const at = T ? this.tw('rest') : P_ ? this.pFnBox(0) : this.tl(this.termWideKey(), T_ROW1_H, inn, inn);
     const wide = at.w, h = at.h;
     const slot = el('div', 'well-slot', K);
     Object.assign(slot.style, { left: `${at.x}px`, top: `${at.y}px`, width: `${wide}px`, height: `${h}px` });
     const strip = el('div', 'strip', slot);
-    strip.style.width = `${2 * wide + T_GAP}px`;
+    // Twin banks: Long rest is swiped UP out of REST's slot (Lucas, 2026-10-02:
+    // the design's choice stands), so the strip stands on end, Long rest under
+    // REST; a vertical swipe also stays clear of Android's sideways Back.
+    if (T) { slot.classList.add('v'); strip.style.width = `${wide}px`; strip.style.height = `${2 * h + T_GAP}px`; }
+    else strip.style.width = `${2 * wide + T_GAP}px`;
     this.restFace = new Key(strip).place(0, 0, wide, h).face(C.A90);
-    this.longFace = new Key(strip).place(wide + T_GAP, 0, wide, h).cap(longRestCap());
+    this.longFace = new Key(strip).place(T ? 0 : wide + T_GAP, T ? h + T_GAP : 0, wide, h).cap(longRestCap());
     this.restFace.lg.style.paddingRight = '14px';
     this.longFace.lg.style.paddingRight = '14px';
     const dots = el('div', 'dots', slot);
     dots.innerHTML = '<i class="on"></i><i></i>';
-    this.restWell = { slot, strip, dots, revealed: false, pinned: false, timer: 0, wide };
+    this.restWell = { slot, strip, dots, revealed: false, pinned: false, timer: 0, wide, vertical: !!T, len: T ? h : wide };
+    if (T) { this.twinKey('rest', slot); this.twinKey('longrest', this.longFace); }
     this.bindScrollWell(this.restWell);
     this.bindHold(this.restFace, CHIP_HOLD_MS, () => this.openRestChips(C.CTX_REST), () => {
       this.closeChips();
@@ -648,45 +1193,53 @@ export class Overlay {
       this.scrollWell(false);
     });
 
-    const prev = new Key(K).box(P_ ? this.pFnBox(1) : this.tl(T_KEY, T_ROW1_H, inn + this.padBox - T_KEY, inn))
+    const prev = new Key(K).box(T ? this.tw('msgs') : P_ ? this.pFnBox(1) : this.tl(T_KEY, T_ROW1_H, inn + this.padBox - T_KEY, inn))
       .face(C.VIOLET).label(this.labelFor(C.PREV_MSGS), 9).sub(this.subKeyFor(C.PREV_MSGS), true);
     this.bindTap(prev, () => this.execute(C.PREV_MSGS, prev.el));
+    this.twinKey('msgs', prev);
 
     // macro 1: under Msgs in landscape; beside SACRIFICE, over DROP, in portrait
     const macro = this.buildMacroKey(K, 0);
-    macro.box(P_ ? this.lb(this.termWideKey(), P_ROW_H, inn + T_KEY + T_GAP, this.pRowBottom(1))
+    macro.box(T ? this.tw('m1') : P_ ? this.lb(this.termWideKey(), P_ROW_H, inn + T_KEY + T_GAP, this.pRowBottom(1))
                  : this.tl(this.termWideKey(), T_KEY, inn + T_KEY + T_GAP, this.termRow2Top()));
     this.row2 = [macro];
+    this.twinKey('m1', macro);
 
-    // Rest's chips: under the slot in landscape, above the key row in portrait
-    const chips = P_ ? this.lb(CHIP_ROW_W + 8, CHIP_SIZE + 8, inn, this.pFnBottom() + P_FN_KEY + CHIP_GAP_ABOVE)
-                     : this.tl(CHIP_ROW_W + 8, CHIP_SIZE + 8, inn, inn + T_ROW1_H + T_GAP);
+    // Rest's chips: under the slot in landscape, above the key row in portrait;
+    // twin banks, inside the map on REST's side
+    const chips = T ? { side: this.twinSide('rest') }
+      : P_ ? this.lb(CHIP_ROW_W + 8, CHIP_SIZE + 8, inn, this.pFnBottom() + P_FN_KEY + CHIP_GAP_ABOVE)
+           : this.tl(CHIP_ROW_W + 8, CHIP_SIZE + 8, inn, inn + T_ROW1_H + T_GAP);
     this.restChips = this.buildCountRow(K, C.CTX_REST, chips);
     this.longChips = this.buildCountRow(K, C.CTX_LONG_REST, chips);
   }
 
+  // The strip slides with the finger: sideways in classic, Long rest coming in
+  // from the right; up and down in twin banks (w.vertical), from below.
   bindScrollWell(w) {
     let x0 = 0, y0 = 0, t0 = 0, dragging = false, id = null;
-    const travel = () => w.wide + T_GAP;
+    const travel = () => (w.len || w.wide) + T_GAP;
     const cur = () => (w.revealed ? -travel() : 0);
+    const axis = w.vertical ? 'translateY' : 'translateX';
     w.slot.addEventListener('pointerdown', (e) => { x0 = e.clientX; y0 = e.clientY; t0 = cur(); dragging = false; id = e.pointerId; }, true);
     w.slot.addEventListener('pointermove', (e) => {
       if (e.pointerId !== id) return;
       const dx = (e.clientX - x0) / this.s, dy = (e.clientY - y0) / this.s;
-      if (!dragging && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+      const along = w.vertical ? dy : dx, across = w.vertical ? dx : dy;
+      if (!dragging && Math.abs(along) > 8 && Math.abs(along) > Math.abs(across)) {
         // the key under the finger gets a cancel: no tap, no hold
         dragging = true;
         clearTimeout(w.timer);
         for (const k of [this.restFace, this.longFace]) k.cancelGesture && k.cancelGesture();
         w.strip.classList.add('drag');
       }
-      if (dragging) w.strip.style.transform = `translateX(${clamp(t0 + dx, -travel(), 0)}px)`;
+      if (dragging) w.strip.style.transform = `${axis}(${clamp(t0 + along, -travel(), 0)}px)`;
     }, true);
     const end = (e) => {
       if (e.pointerId !== id || !dragging) return;
       dragging = false;
       w.strip.classList.remove('drag');
-      const m = /translateX\((-?[\d.]+)px\)/.exec(w.strip.style.transform);
+      const m = /translate[XY]\((-?[\d.]+)px\)/.exec(w.strip.style.transform);
       this.scrollWell((m ? parseFloat(m[1]) : 0) < -travel() / 2);
     };
     w.slot.addEventListener('pointerup', end, true);
@@ -698,7 +1251,7 @@ export class Overlay {
     if (!w) return;
     w.revealed = revealed;
     clearTimeout(w.timer);
-    w.strip.style.transform = `translateX(${revealed ? -(w.wide + T_GAP) : 0}px)`;
+    w.strip.style.transform = `${w.vertical ? 'translateY' : 'translateX'}(${revealed ? -((w.len || w.wide) + T_GAP) : 0}px)`;
     const [a, b] = w.dots.children;
     a.classList.toggle('on', !revealed);
     b.classList.toggle('on', revealed);
@@ -729,7 +1282,7 @@ export class Overlay {
     const m = P.macros()[slot];
     // Portrait's key row is too narrow for the tag beside a name, so there it
     // gives way to a label with something to read (a macro of spaces keeps it).
-    k.tag(this.portrait && slot > 0 && m.keys && (m.name || m.keys).trim() ? '' : `M${slot + 1}`);
+    k.tag(!this.twin && this.portrait && slot > 0 && m.keys && (m.name || m.keys).trim() ? '' : `M${slot + 1}`);
     // every macro is a destination while a command is in hand, from any drawer
     if (this.assign && !this.flickPlacing()) { k.placeholder(false).face(C.A90).label('HERE', 8).sub(null); return; }
     k.face(C.JADE);
@@ -774,6 +1327,10 @@ export class Overlay {
 
   // Macros 2 and 3, in the two keys above Search; portrait, the key row's right end.
   buildRightMacros(K) {
+    if (this.twin) {
+      for (const slot of [1, 2]) this.twinKey(TWIN_MACROS[slot], this.buildMacroKey(K, slot).box(this.tw(TWIN_MACROS[slot])));
+      return;
+    }
     if (this.portrait) {
       for (const slot of [1, 2]) this.buildMacroKey(K, slot).box(this.pFnBox(5 + slot));
       return;
@@ -789,7 +1346,7 @@ export class Overlay {
 
   // The left bank's middle row takes the centre of whatever the height leaves.
   placeRow2() {
-    if (this.portrait) return;
+    if (this.portrait || this.twin) return;
     const row1Bottom = this.termInner() + T_ROW1_H;
     const row3Top = this.DH - this.termRow3Bottom() - T_KEY;
     const top = Math.max(this.termRow2Top(), (row1Bottom + row3Top - T_KEY) / 2);
@@ -799,7 +1356,8 @@ export class Overlay {
   // ---- counts
   buildCountRow(K, act, box) {
     const row = el('div', 'chiprow', K);
-    Object.assign(row.style, { left: `${box.x}px`, top: `${box.y}px`, display: 'none' });
+    if (box.side) { this.twinPop(row, box.side); row.style.display = 'none'; }   // twin banks: inside the map
+    else Object.assign(row.style, { left: `${box.x}px`, top: `${box.y}px`, display: 'none' });
     const chips = [];
     for (const value of act.counts) {
       const chip = new Key(row).place(0, 0, CHIP_SIZE, CHIP_SIZE).face(C.A90).label(`×${value}`, 11, true);
@@ -864,14 +1422,18 @@ export class Overlay {
   // ---- the numpad
   buildNumpad(K) {
     const pitch = this.padCell + PAD_GAP, left = this.termInner();
-    const mold = el('div', '', K);
+    const mold = el('div', this.twin ? 'padmold' : '', K);
     this.padMold = mold;
-    const box = this.lb(this.padBox, this.padBox, left, this.termInner());
+    // twin banks: the mold round the pad's nine rects as layout() gives them
+    const cells = this.twin ? TWIN_PAD.map((id) => this.tw(id)) : null;
+    const box = this.twin ? bounds(cells) : this.lb(this.padBox, this.padBox, left, this.termInner());
     Object.assign(mold.style, { position: 'absolute', left: `${box.x}px`, top: `${box.y}px`, width: `${box.w}px`, height: `${box.h}px` });
     for (let row = 0; row < 3; row++) {
       for (let col = 0; col < 3; col++) {
         const idx = row * 3 + col, key = C.PAD_KEYS[idx];
-        const k = new Key(mold).place(col * pitch, row * pitch, this.padCell, this.padCell).cap(role(ROLE_MOVE));
+        const k = (cells ? new Key(mold).place(cells[idx].x - box.x, cells[idx].y - box.y, cells[idx].w, cells[idx].h)
+          : new Key(mold).place(col * pitch, row * pitch, this.padCell, this.padCell)).cap(role(ROLE_MOVE));
+        this.twinKey(TWIN_PAD[idx], k);
         if (!key) {
           this.padCentre = k;
           this.bindHold(k, CENTRE_HOLD_MS, () => { if (!this.fanOpen && !this.answering && !this.picking) this.openContextRadial(); }, () => {
@@ -895,8 +1457,17 @@ export class Overlay {
     // the frame and name chip round the pad while a layer is up
     const f = el('div', 'layerframe', K);
     el('b', '', f);
-    Object.assign(f.style, { left: `${box.x - 5}px`, top: `${box.y - 5}px`, width: `${box.w + 10}px`, height: `${box.h + 10}px` });
+    // twin banks: the frame no further out than half the gap to the row above,
+    // and its name on the layout's pill, inside the map (the design's section 8)
+    const out = this.twin ? Math.min(5, this.twin.info.M.g / 2) : 5;
+    Object.assign(f.style, { left: `${box.x - out}px`, top: `${box.y - out}px`, width: `${box.w + 2 * out}px`, height: `${box.h + 2 * out}px` });
     this.layerFrame = f;
+    this.layerPill = null;
+    const pill = this.twin && this.twin.spec.popups.find((p) => p.owner === 'pad_centre');
+    if (pill) {
+      this.layerPill = el('div', 'layerpill', K);
+      Object.assign(this.layerPill.style, { left: `${pill.x}px`, top: `${pill.y}px`, maxWidth: `${pill.w}px`, height: `${pill.h}px` });
+    }
   }
 
   directionPending() { return !!this.armed || this.expectsDirection; }
@@ -1023,11 +1594,14 @@ export class Overlay {
     else if (hub === C.HUB_CONSUME) hv.face.cap(role(ROLE_CONSUME));
     else if (hub === C.HUB_EQUIP) hv.face.defaultCap(role(ROLE_INVENTORY));
     hv.face.sub(this.hubIdleSub(hub));
+    if (this.twin) this.twinKey(TWIN_HUB[hub.id], hv.face);
     if (hub === C.HUB_EQUIP) {
       // the inventory bar over the matrix; portrait, the action pad's bottom-left cell
-      hv.face.box(this.portrait ? this.pCell(0, 2) : this.tr(this.padBox, T_EQ_BAR, this.termInner(), this.termEqTop()))
+      hv.face.box(this.twin ? this.tw('inventory') : this.portrait ? this.pCell(0, 2) : this.tr(this.padBox, T_EQ_BAR, this.termInner(), this.termEqTop()))
         .sub(this.hubIdleSub(hub)).tag('i');
       hv.face.fr.style.fontSize = '6.5px';
+    } else if (this.twin) {
+      hv.face.box(this.tw(TWIN_HUB[hub.id]));
     } else {
       hv.face.box(this.cb(this.hubW(hub), this.hubH(hub), this.hubCx(hub), this.hubCy(hub)));
     }
@@ -1060,7 +1634,7 @@ export class Overlay {
   buildSlotGroup(K, hv, attack) {
     hv.satellites = el('div', 'pop', K);
     for (let n = 0; n < C.ATK_SLOT_DEFAULT.length; n++) {
-      const slot = new Key(hv.satellites).box(this.termAttackSlot(n));
+      const slot = this.twinKey(TWIN_PINS[n], new Key(hv.satellites).box(this.twin ? this.tw(TWIN_PINS[n]) : this.termAttackSlot(n)));
       hv.slotFaces.push(slot);
       this.bindSlot(hv, slot, attack, n);
     }
@@ -1075,9 +1649,9 @@ export class Overlay {
       const right = this.termInner() + (2 - col) * (cellW + T_GAP);
       const top = this.termEqTop() + T_EQ_BAR + 8 + row * (T_EQ_CELL_H + T_GAP);
       // portrait: the two rows over the action pad, put-on verbs on top
-      const at = this.portrait ? this.rb(cellW, P_ROW_H, right, this.pRowBottom(1 - row))
+      const at = this.twin ? this.tw(TWIN_EQUIP[n]) : this.portrait ? this.rb(cellW, P_ROW_H, right, this.pRowBottom(1 - row))
                                : this.tr(cellW, T_EQ_CELL_H, right, top);
-      const slot = new Key(hv.satellites).box(at).defaultCap(role(ROLE_INVENTORY));
+      const slot = this.twinKey(TWIN_EQUIP[n], new Key(hv.satellites).box(at).defaultCap(role(ROLE_INVENTORY)));
       hv.slotFaces.push(slot);
       this.bindSlot(hv, slot, false, n);
     }
@@ -1092,7 +1666,10 @@ export class Overlay {
     }, () => {
       if (this.assignAccepts(attack)) { this.placeAssignment(attack, n); return; }
       const item = this.slotItem(attack, n);
-      if (!item) return;   // empty: a tap does nothing; the hold fills it
+      // Empty: in classic a tap does nothing and the hold fills it; in twin
+      // banks the tap opens the picker too (Lucas, 2026-10-02: the design's
+      // choice stands, an empty pin is a picker)
+      if (!item) { if (this.twin) this.fillSlot(hv, attack, n); return; }
       if (attack) this.fireFromHub(C.HUB_ATTACK, item, slot.el);
       else this.execute(item, slot.el);
     });
@@ -1102,12 +1679,16 @@ export class Overlay {
 
   refreshSlots(hv, attack) {
     const taking = this.assignAccepts(attack);
-    const hidden = !taking && (hv.hub.id === this.fanOpen || hv.hub.id === this.radialOpen);
+    // classic hid the points beside COMBAT while its fan was out over them;
+    // twin banks' layer paints the pad, so the pins stay, dimmed under the
+    // scrim as every other key is (the design's section 14: faces change
+    // label, never place)
+    const hidden = !this.twin && !taking && (hv.hub.id === this.fanOpen || hv.hub.id === this.radialOpen);
     hv.slotFaces.forEach((slot, n) => {
       const item = this.slotItem(attack, n);
       slot.show(!hidden);
       if (taking) slot.placeholder(false).face(C.A90).label('HERE', 8).sub(null);
-      else if (!item) slot.placeholder(true).label('+', 15).sub('hold to fill');
+      else if (!item) slot.placeholder(true).label('+', 15).sub(this.twin ? 'tap to fill' : 'hold to fill');
       else slot.placeholder(false).face(item.face || C.G90).label(this.labelFor(item), attack ? 7.5 : 9).sub(item.key, true);
     });
   }
@@ -1239,6 +1820,14 @@ export class Overlay {
       this.openDrawer(hv.hub.group.id, hv.hub);
       return;
     }
+    // Twin banks: a second tap on COMBAT, while it holds Fight armed, disarms
+    // it, as the banner's tap does.  Today's landscape M3 spot is COMBAT now,
+    // and a tap there from habit arms Fight (the design's section 15).
+    if (this.twin && hv.hub === C.HUB_ATTACK && this.armed && this.armedBy === 'combat') {
+      this.disarm();
+      this.host.send('\\e');
+      return;
+    }
     this.fireFromHub(hv.hub, hv.hub.quick, hv.face.el);   // COMBAT's Fight arms the pad
   }
 
@@ -1290,6 +1879,16 @@ export class Overlay {
     fr.style.setProperty('--acc', accent);
     fr.firstChild.textContent = title;
     fr.classList.add('on');
+    if (this.layerPill) {
+      this.layerPill.style.setProperty('--acc', accent);
+      this.layerPill.textContent = title;
+      this.layerPill.classList.add('on');
+    }
+  }
+
+  hideFrame() {
+    if (this.layerFrame) this.layerFrame.classList.remove('on');
+    if (this.layerPill) this.layerPill.classList.remove('on');
   }
 
   // ---- a question's answers on the pad (Lucas, 2026-09-27: in landscape they
@@ -1338,7 +1937,7 @@ export class Overlay {
   hideAnswers() {
     if (!this.answering) return;
     this.answering = null;
-    if (this.layerFrame) this.layerFrame.classList.remove('on');
+    this.hideFrame();
     this.restorePad();
   }
 
@@ -1391,7 +1990,7 @@ export class Overlay {
     const was = this.hubView(this.fanOpen);
     this.fanOpen = null;
     this.restorePad();
-    if (this.layerFrame) this.layerFrame.classList.remove('on');
+    this.hideFrame();
     if (was) {
       was.face.lit(false).sub(this.hubIdleSub(was.hub));
       if (was.hub === C.HUB_ATTACK) this.refreshSlots(was, true);
@@ -1411,8 +2010,33 @@ export class Overlay {
     const radial = el('div', 'pop', K);
     radial.style.display = 'none';
     this.radials.set(FLICK_ID, radial);
-    const c = this.flickCentre(), bearings = C.FLICK_BEARING, n = bearings.length;
-    // the flick's wedges, drawn behind the nodes
+    const c = this.twin ? null : this.flickCentre(), bearings = C.FLICK_BEARING, n = bearings.length;
+    // Twin banks: no wedges round the key, which would paint over its
+    // neighbours; the two nodes are the layout's legend inside the map, at
+    // its edge nearest FLICK, lit by the stroke and tapped or held as the
+    // radial's nodes are (the design's section 7)
+    const legend = this.twin ? this.twin.spec.popups.filter((p) => p.owner === 'flick') : null;
+    if (legend) this.wedges = [];
+    else this.buildFlickWedges(radial, c, bearings, n);
+    this.flickNodes = bearings.map((deg, w) => {
+      const slot = P.FLICK_TAP + 1 + w;
+      const node = legend
+        ? new Key(radial).box(legend[w] || { x: this.twin.spec.mapArea.x + POP_PAD + w * (SAT_SIZE + 8), y: this.twin.spec.mapArea.y + POP_PAD, w: SAT_SIZE, h: SAT_SIZE })
+        : new Key(radial).place(c.x + Math.cos(rad(deg)) * C.FLICK_RADIUS - SAT_SIZE / 2, c.y + Math.sin(rad(deg)) * C.FLICK_RADIUS - SAT_SIZE / 2, SAT_SIZE, SAT_SIZE);
+      this.bindHold(node, HUB_HOLD_MS, () => { if (!this.assign) this.editMacro(slot); }, () => {
+        if (this.assign) { this.placeMacro(slot); return; }
+        this.closeRadial();
+        this.runOrEditMacro(slot, node.el);
+      });
+      return node;
+    });
+    const face = this.twinKey('flick', new Key(K).nub(true).box(this.twin ? this.tw('flick') : this.termAttackSlot(2)).face(C.JADE).tag('FLICK'));
+    this.flickFace = face;
+    this.bindFlickKey(face, bearings);
+  }
+
+  // the flick's wedges, drawn behind the nodes
+  buildFlickWedges(radial, c, bearings, n) {
     const [lo, hi] = flickWedges(bearings, n);
     const rIn = c.w / 2 + 5, rOut = C.FLICK_RADIUS + SAT_SIZE / 2 + 12;
     const svgNS = 'http://www.w3.org/2000/svg';
@@ -1432,19 +2056,9 @@ export class Overlay {
     }
     radial.appendChild(svg);
     this.setWedge(-1);
-    this.flickNodes = bearings.map((deg, w) => {
-      const slot = P.FLICK_TAP + 1 + w;
-      const x = c.x + Math.cos(rad(deg)) * C.FLICK_RADIUS, y = c.y + Math.sin(rad(deg)) * C.FLICK_RADIUS;
-      const node = new Key(radial).place(x - SAT_SIZE / 2, y - SAT_SIZE / 2, SAT_SIZE, SAT_SIZE);
-      this.bindHold(node, HUB_HOLD_MS, () => { if (!this.assign) this.editMacro(slot); }, () => {
-        if (this.assign) { this.placeMacro(slot); return; }
-        this.closeRadial();
-        this.runOrEditMacro(slot, node.el);
-      });
-      return node;
-    });
-    const face = new Key(K).nub(true).box(this.termAttackSlot(2)).face(C.JADE).tag('FLICK');
-    this.flickFace = face;
+  }
+
+  bindFlickKey(face, bearings) {
     this.bindFlick(face, bearings,
       () => { if (!this.assign) this.openFlickRadial(); },
       () => {
@@ -1543,7 +2157,7 @@ export class Overlay {
     if (!this.scrim) return;
     for (const e of this.keysEl.querySelectorAll('.lift, .lift2')) e.classList.remove('lift', 'lift2');
     const lift = [];
-    if (this.fanOpen) { const hv = this.hubView(this.fanOpen); if (hv) lift.push(hv.face.el, this.padMold, this.layerFrame); }
+    if (this.fanOpen) { const hv = this.hubView(this.fanOpen); if (hv) lift.push(hv.face.el, this.padMold, this.layerFrame, this.layerPill); }
     if (this.radialOpen) {
       const hv = this.hubView(this.radialOpen);
       if (hv) lift.push(hv.face.el);
@@ -1563,7 +2177,7 @@ export class Overlay {
       for (const hv of this.hubs) {
         if (hv.satellites && ((hv.hub === C.HUB_ATTACK && this.assignAccepts(true))
                               || (hv.hub === C.HUB_EQUIP && this.assignAccepts(false)))) lift.push(hv.satellites);
-        if (this.assignAcceptsFan(hv.hub)) lift.push(hv.face.el, this.padMold, this.layerFrame);
+        if (this.assignAcceptsFan(hv.hub)) lift.push(hv.face.el, this.padMold, this.layerFrame, this.layerPill);
       }
       if (!this.flickPlacing()) for (const k of this.macroKeys) if (k) lift.push(k.el);
     }
@@ -1618,6 +2232,8 @@ export class Overlay {
     this.closeFan();
     this.closeDrawer();
     this.armed = cmd;
+    // twin banks: ARMED lights on the pin that armed, else on COMBAT
+    this.armedBy = (from && from.dataset && TWIN_PINS.includes(from.dataset.tw)) ? from.dataset.tw : 'combat';
     this.flashRaw(cmd.key, from);
     this.updateLamps();
     this.refreshPadCentre();
@@ -1628,6 +2244,7 @@ export class Overlay {
   disarm() {
     if (!this.armed) return;
     this.armed = null;
+    this.armedBy = null;
     this.updateLamps();
     this.refreshPadCentre();
     this.banner.show(false);
@@ -1642,6 +2259,12 @@ export class Overlay {
 
   fitBanner() {
     const w = 260, h = 30;
+    if (this.twin) {
+      // twin banks: at the top of the map, never over a key
+      const m = this.twin.spec.mapArea, ww = Math.min(w, m.w - 2 * POP_PAD);
+      this.banner.place(m.x + (m.w - ww) / 2, m.y + POP_PAD, ww, h);
+      return;
+    }
     this.banner.place(this.DW / 2 - w / 2, this.glassTop() + msgBandPx(this.portrait, this.s) / this.s + 6, w, h);
   }
 
@@ -1662,6 +2285,21 @@ export class Overlay {
     this.closeDrawer();
     this.closeRadial();
     this.ctxRadialEl.innerHTML = '';
+    if (this.twin) {
+      // twin banks: a row inside the map on the pad's side, never over a key,
+      // until the HERE layer paints these places on the pad
+      const row = this.twinPop(el('div', 'chiprow', this.ctxRadialEl), this.twinSide('pad_centre'));
+      C.CTX_RADIAL.forEach((act) => {
+        const k = new Key(row).place(0, 0, CTX_RADIAL_SIZE, CTX_RADIAL_SIZE)
+          .label(this.labelForAction(act), 9.5).sub(this.subKeyForAction(act), true);
+        k.el.style.position = 'relative';
+        this.bindTap(k, () => { this.closeContextRadial(); this.runAction(act, k.el); });
+      });
+      this.ctxRadialOpen = true;
+      this.ctxRadialEl.style.display = '';
+      this.syncModal();
+      return;
+    }
     const cx = this.termInner() + this.padBox / 2, cy = this.Y(this.termInner() + this.padBox / 2);
     const r = this.ctxRadialRadius();
     C.CTX_RADIAL.forEach((act, n) => {
@@ -1694,11 +2332,13 @@ export class Overlay {
   termStripBox(n) {
     // portrait: LOOK ends the action pad's top row, the context key is its
     // centre, and SEARCH sits under it, beside INTERACT
+    if (this.twin) return this.tw(TWIN_STRIP[n]);
     if (this.portrait) return n === 0 ? this.pCell(2, 0) : n === 1 ? this.pCell(1, 1) : this.pCell(1, 2);
     if (n === 2) return this.rb(this.padBox - T_RIGHT_COL - T_GAP, T_SEARCH_H, this.termInner() + T_RIGHT_COL + T_GAP, this.termInner());
     return this.rb(this.termStripW(), DECK_KEY, this.termStripRight(n), this.termDeckBottom());
   }
   termChipBox(n) {
+    if (this.twin) return { side: this.twinSide(TWIN_STRIP[n]) };
     if (this.portrait) {
       return this.rb(CHIP_ROW_W + 8, CHIP_SIZE + 8, this.termInner(),
         this.pCellBottom(n) + this.padCell + CHIP_GAP_ABOVE);
@@ -1712,6 +2352,7 @@ export class Overlay {
     for (let n = 0; n < 3; n++) {
       const k = new Key(K).box(this.termStripBox(n)).label('', 9.5);
       this.ctxStrip.push(k);
+      this.twinKey(TWIN_STRIP[n], k);
       // Search (slot 2) is the strip's only counted action, so its row saves there
       this.chipRows.push(this.buildCountRow(K, C.CTX_SEARCH, this.termChipBox(n)));
       this.bindHold(k, CHIP_HOLD_MS, () => {
@@ -1756,6 +2397,21 @@ export class Overlay {
     this.closeContextRadial();
     this.candEl.innerHTML = '';
     const n = this.candidates.length;
+    if (this.twin) {
+      // twin banks: a row inside the map on CONTEXT's side, never over a key,
+      // until the HERE layer takes them
+      const row = this.twinPop(el('div', 'chiprow', this.candEl), this.twinSide('context'));
+      this.candidates.forEach((act, k) => {
+        const f = new Key(row).place(0, 0, CAND_SIZE, CAND_SIZE)
+          .face(k === 0 ? C.A90 : C.G90).label(act.word, 8.5).sub(act.key, true);
+        f.el.style.position = 'relative';
+        this.bindTap(f, () => { this.closeCandidates(); this.runAction(act, f.el); });
+      });
+      this.candEl.style.display = '';
+      this.candOpen = true;
+      this.refreshContextStrip();
+      return;
+    }
     const cx = this.X(this.portrait ? this.pCellCx(1) : -(this.termStripRight(1) + this.termStripW() / 2));
     const cy = this.Y(this.portrait ? this.pCellCy(1) : this.termDeckBottom() + DECK_KEY / 2);
     const spread = n <= 2 ? 60 : n === 3 ? 45 : 36, a0 = 270 - (spread * (n - 1)) / 2;
@@ -1838,9 +2494,9 @@ export class Overlay {
   // ---- SACRIFICE (hold: pray), the left bank's second row
   buildPray(K) {
     // landscape, the left bank's second row; portrait, its top row, over DROP
-    const at = this.portrait ? this.lb(T_KEY, P_ROW_H, this.termInner(), this.pRowBottom(1))
+    const at = this.twin ? this.tw('sacrifice') : this.portrait ? this.lb(T_KEY, P_ROW_H, this.termInner(), this.pRowBottom(1))
                              : this.tl(T_KEY, T_KEY, this.termInner(), this.termRow2Top());
-    const f = new Key(K).box(at).face(C.A90).label('SACRIFICE', 7.5).sub('hold · pray');
+    const f = this.twinKey('sacrifice', new Key(K).box(at).face(C.A90).label('SACRIFICE', 7.5).sub('hold · pray'));
     this.row2.push(f);
     this.bindHold(f, HUB_HOLD_MS, () => this.execute(C.PRAY, f.el), () => this.execute(C.SACRIFICE, f.el));
   }
@@ -1852,8 +2508,8 @@ export class Overlay {
     for (let s = n - 1; s >= 0; s--) {
       const spec = C.TOP_RIGHT[s];
       // portrait: the key row's middle four
-      const at = this.portrait ? this.pFnBox(2 + s) : this.tr(w, T_ROW1_H, right, this.termInner());
-      const f = new Key(K).box(at).label(spec.label, 9);
+      const at = this.twin ? this.tw(TWIN_TOP[s]) : this.portrait ? this.pFnBox(2 + s) : this.tr(w, T_ROW1_H, right, this.termInner());
+      const f = this.twinKey(TWIN_TOP[s], new Key(K).box(at).label(spec.label, 9));
       this.bindTap(f, () => {
         if (spec.groupId === 'menu') this.openSettings();
         else if (spec.groupId === 'keyboard') this.host.toggleKeyboard();
@@ -1872,9 +2528,18 @@ export class Overlay {
     const scrim = el('div', 'dscrim', d);
     scrim.addEventListener('pointerup', (e) => { e.preventDefault(); this.closeDrawer(); });
     const panel = el('div', 'panel', d);
-    // portrait: 604 does not fit a phone's width, so three columns in 420 (RhDrawer, narrow)
-    Object.assign(panel.style, { top: '58px', width: this.portrait ? '420px' : '604px',
-      maxHeight: `${Math.min(this.portrait ? 520 : 342, this.DH - 70)}px` });
+    const at = this.twin && this.twin.spec.popups.find((p) => p.owner === 'world');
+    if (at) {
+      // Twin banks (the design's section 9): three columns on every screen,
+      // min(420, the map's width - 12) wide and at most 352 tall, scrolling;
+      // bottom-anchored and centred in the map area, so never over a key
+      Object.assign(panel.style, { left: `${at.x}px`, width: `${at.w}px`, transform: 'none',
+        bottom: `${this.DH - (at.y + at.h)}px`, maxHeight: `${at.h}px` });
+    } else {
+      // portrait: 604 does not fit a phone's width, so three columns in 420 (RhDrawer, narrow)
+      Object.assign(panel.style, { top: '58px', width: this.portrait ? '420px' : '604px',
+        maxHeight: `${Math.min(this.portrait ? 520 : 342, this.DH - 70)}px` });
+    }
     const title = el('div', 'title', panel);
     this.drawerTitle = el('b', '', title);
     this.drawerCount = el('span', '', title);
@@ -1888,7 +2553,7 @@ export class Overlay {
     this.bindTap(defaults, () => this.confirmRestoreDefaults());
     this.defaultsKey = defaults;
     this.drawerGrid = el('div', 'grid', panel);
-    this.drawerGrid.style.gridTemplateColumns = `repeat(${this.portrait ? 3 : 4}, minmax(0, 1fr))`;
+    this.drawerGrid.style.gridTemplateColumns = `repeat(${this.twin || this.portrait ? 3 : 4}, minmax(0, 1fr))`;
     this.drawerEl = d;
   }
 
@@ -2002,6 +2667,19 @@ export class Overlay {
           + 'start with a symset line (OPTIONS=symset:DECgraphics, or Enhanced1), then e.g. '
           + 'OPTIONS=glyph:G_male_brown_mold/0-128-255 and the same for G_female_brown_mold (a pet is G_pet_male_ '
           + 'and G_pet_female_); put :U+2663 before the colour to change its symbol too, with Enhanced1' },
+      // Lucas, 2026-10-02: twin banks by default, classic kept as it was.  When
+      // this window has no room for twin banks, or squeezes them, the first
+      // reason why is said here, in a line, never in a pop-up (the design's
+      // section 12).
+      seg('layout', `Layout: twin banks puts each thumb's keys in its own bottom corner, the same in both orientations; `
+        + `classic is the case as it was${this.twinFallback ? `. This window shows classic: ${firstReason(this.twinFallback)}`
+          : this.twin && this.twin.spec.fit.degraded ? `. Twin banks here are squeezed: ${firstReason(this.twin.reason)}` : ''}`,
+        [['twin', 'Twin banks'], ['classic', 'Classic']]),
+      { seg: 'ghostDeck', label: 'Old key spots (twin banks, landscape): a map tap where COMBAT, PIN 2, FLICK, LOOK or CONTEXT sat '
+          + 'on the old deck shows where the key went, and a second tap on the same place walks there. It retires itself '
+          + 'after three sessions in a row, each of 100 turns or more played in twin banks in landscape, in which no '
+          + 'preview went without its second tap',
+        value: this.ghostOn() ? 'on' : 'off', options: [['on', 'On'], ['off', 'Retired']] },
       seg('padCell', 'Movement key size', [['46', '46'], ['52', '52'], ['58', '58 (Parhi)']]),
       seg('labelMode', 'Key labels', [['words', 'Words'], ['keys', 'Keys'], ['both', 'Both']]),
       { seg: 'keyFlash', label: 'Key flash', value: P.get('keyFlash') ? 'on' : 'off', options: [['on', 'On'], ['off', 'Off']] },
@@ -2015,7 +2693,8 @@ export class Overlay {
         onPick: (val) => FB.preview(Number(val)) },
       { note: 'Zoom the map with the mouse wheel or a pinch; drag it to look around.  Esc closes an open fan or drawer.' },
     ], [
-      { label: 'Reset zoom', run: () => { P.set('zoom', 0); this.host.glassChanged(this.geom); } },
+      // twin banks keep their own zoom, a factor of the map cell (web.js tileSize)
+      { label: 'Reset zoom', run: () => { P.set(this.twin ? 'zoomFactor' : 'zoom', this.twin ? 1 : 0); this.host.glassChanged(this.geom); } },
       { label: 'Done', primary: true, run: (v) => {
         const put = (k, val) => { if (P.get(k) !== val) P.set(k, val); };
         put('style', v.style);
@@ -2029,6 +2708,8 @@ export class Overlay {
         put('mapMode', v.mapMode);
         put('userRc', String(v.userRc || '').replace(/\r/g, ''));
         put('padCell', parseInt(v.padCell, 10));
+        if ((v.ghostDeck === 'on') !== this.ghostOn()) this.setGhostOn(v.ghostDeck === 'on');
+        put('layout', v.layout === 'classic' ? 'classic' : 'twin');
         put('labelMode', v.labelMode);
         put('keyFlash', v.keyFlash === 'on');
         put('touchKeyboard', v.touchKeyboard === 'on');
@@ -2074,6 +2755,12 @@ export class Overlay {
       y = (r.top - kr.top) / this.s - 22;
     }
     f.classList.add('on');
+    if (this.twin) {
+      // twin banks: on the map's edge nearest the key, never over a key
+      const m = this.twin.spec.mapArea;
+      x = clamp(x, m.x + POP_PAD + f.offsetWidth / 2, m.x + m.w - POP_PAD - f.offsetWidth / 2);
+      y = clamp(y, m.y + POP_PAD, m.y + m.h - POP_PAD - f.offsetHeight);
+    }
     f.style.left = `${x - f.offsetWidth / 2}px`;
     f.style.top = `${Math.max(2, y)}px`;
     clearTimeout(this.flashTimer);
@@ -2221,6 +2908,16 @@ export class Overlay {
     });
     e.addEventListener('pointercancel', () => { key.press(false); if (revealed) this.closeRadial(); reset(); });
   }
+}
+
+// a layout reason's first clause, for a settings line
+const firstReason = (r) => String(r || '').split('; ')[0];
+
+// the smallest rect holding them all
+function bounds(rs) {
+  const x0 = Math.min(...rs.map((r) => r.x)), y0 = Math.min(...rs.map((r) => r.y));
+  const x1 = Math.max(...rs.map((r) => r.x + r.w)), y1 = Math.max(...rs.map((r) => r.y + r.h));
+  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
 }
 
 // The flick's wedge edges for a bearing set: each wedge runs halfway to its

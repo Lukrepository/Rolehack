@@ -6,6 +6,17 @@
 # dumplog: this build has no DUMPLOG, and the option was an error at every
 # start ("Unknown option 'dumplog'", 2026-09-27).
 # web.js writes this to ~/.nethackrc; NETHACKOPTIONS still adds !perm_invent.
+#
+# With the twin banks layout (Settings -> Layout, the default; Lucas,
+# 2026-10-02) Take off and Remove sit right over the action pad, so web.js's
+# start() adds the line below after this file (before the player's own option
+# lines, so that theirs win), and T and R always ask which item, even when
+# only one applies.  The + keeps the defaults -- Pray's confirmation among
+# them -- and adds Remove (Takeoff is its synonym).  It is not set here so
+# that classic plays exactly as it always has.  A game restored from its save
+# keeps the confirmations it was saved with, so the line reaches the games
+# started with it.
+#OPTIONS=paranoid_confirmation:+Remove
 
 # Sample config file for Android NetHack
 # A '#' at the beginning of a line means the rest of the

@@ -1,8 +1,9 @@
 # The web port's tests
 
-Tests for the pieces of the page that run without a browser. Today that is
-`../layout.js`, the "guarded twin banks" layout rule. They use node's own test
-runner and assertions, so there is nothing to install.
+Tests for the pieces of the page that run without a browser. Today those are
+`../layout.js`, the "guarded twin banks" layout rule, and `../viewer.js`, the
+budget the page remembers for it. They use node's own test runner and
+assertions, so there is nothing to install.
 
 ## Running them
 
@@ -46,6 +47,22 @@ and it imports every `*.test.mjs` here. Naming the files also works:
   the banks, and a window whose header is stacked in the glass anyway lays out
   as it does by default;
 - `layout.js` stays a plain module, with no imports, no DOM and nothing from node.
+
+`viewer.test.mjs` checks the remembered budget (`viewer.js`) with the rule
+itself, as the page uses them:
+
+- a first visit in a window that is not the whole device turned lays out as
+  that window does with no budget: Lucas's phone in split screen (443x460,
+  which comes back unusable, so the page shows classic) and other splits, a
+  touch PC's portrait windows, and the phones whose browser bars differ
+  between the orientations (an iPhone's Safari, Android's three-button bar);
+- in Lucas's tab, a first portrait visit gets the very banks it keeps after
+  the first turn;
+- a temporary window (a short landscape one, a landscape split, a narrow
+  portrait one, a split half, the split screen) changes nothing for the full
+  windows after it: not a key, not the map cell, not the stored budget;
+- a desktop window teaches nothing, and the landscape height is learnt from
+  the device turned and only grows.
 
 ## Where the fixtures come from
 

@@ -25,6 +25,25 @@ const DEFAULTS = {
   // the player's message rules (rhrules.c): "type<TAB>pattern" a line, oldest
   // first, read into ~/.nethackrc as MSGTYPE lines; none to begin with
   msgRules: '',
+  // The touch interface's layout (Lucas, 2026-10-02): 'twin', the guarded twin
+  // banks -- each thumb its own 3x6 bank in its bottom corner, the same in
+  // both orientations (layout.js) -- or 'classic', the case and deck as they
+  // were, kept as they were.  A window with no room for twin banks shows
+  // classic without changing this.
+  layout: 'twin',             // twin | classic
+  // Twin banks remember the window each display mode has shown in each
+  // orientation of the whole device, so a phone's two orientations get the
+  // same banks (the design's section 12; viewer.js says which windows teach
+  // it): { browser|standalone|fullscreen: { w, h, l, sl, sr, pw, lh } } -- the
+  // portrait width w, the landscape height h and width l, the landscape side
+  // insets sl and sr; pw marks w and lh marks h, l, sl and sr as seen, not
+  // estimated from the screen.
+  budgets: {},
+  // The ghost deck (the design's section 6, item 8): while it is on, a map tap
+  // on one of the old landscape deck keys' spots previews instead of
+  // travelling.  It retires itself after three sessions in a row in which no
+  // preview went unconfirmed; MENU -> Settings brings it back.
+  ghostDeck: { on: true, clean: 0, session: null },
   padCell: 58,                // 46 | 52 | 58 (Parhi's 9.2 mm)
   labelMode: 'words',         // words | keys | both
   keyFlash: true,
@@ -32,6 +51,10 @@ const DEFAULTS = {
   clickVolume: 60,
   mapMode: 'tiles',           // tiles | text
   zoom: 0,                    // tile size in CSS px; 0 = fit the level's height
+  // Twin banks' own zoom (the design's section 11): a factor of the device's
+  // map cell, so it carries across windows and both orientations share it;
+  // it starts at 1, not from classic's zoom, which twin never reads nor writes
+  zoomFactor: 1,
   searchMode: false, searchBefore: true, searchCount: 1,
   // the on-screen keyboard for anything typed: for a touch screen whose own
   // keyboard is put away (Lucas, 2026-09-27) -- chosen, never guessed, since a
