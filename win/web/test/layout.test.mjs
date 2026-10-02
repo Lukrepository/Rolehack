@@ -370,6 +370,33 @@ test("header 'stacked' keeps the bands stacked in the glass", () => {
   assert.ok(sideBySide > 10 && same > 100, `${sideBySide} side by side by default, ${same} stacked anyway`);
 });
 
+// ---- the status lines hidden
+
+// With the status lines hidden (Settings, Status lines: Hidden) the page asks
+// for no status band (statusH 0) and draws none, so the rule keeps no room for
+// HP and Pw bars under lines that are not there: 14 dp kept for them stood
+// empty between the messages and the map (the review, 2026-10-02).  With the
+// lines shown the bars come as before.
+test('no room for bars under hidden status lines', () => {
+  const out = [];
+  let bars = 0;
+  const windows = [...PHONES, ...TABLETS].flatMap(([S, L]) => [[L, S], [S, L]]);
+  for (const [W, H] of windows) {
+    for (const st of [{}, { mapCell: 'rows' }]) {
+      const hid = layout(W, H, 'touch', { ...st, statusH: 0 }), shown = layout(W, H, 'touch', st);
+      checkResult(hid, `${W}x${H} hidden`);
+      if (!hid.usable) continue;
+      // a stacked header's status band (a side-by-side one stands beside the messages,
+      // as tall as they are, and grants nothing)
+      const [msg, status] = hid.spec.bands, stacked = Math.abs(status.x - msg.x) <= 0.01;
+      if (stacked && status.h > 0.01) out.push(`${W}x${H} ${JSON.stringify(st)}: ${status.name}, ${status.h} dp, with the lines hidden`);
+      if (shown.usable && shown.spec.bands[1].name === 'status (3 lines + HP/Pw bars)') bars++;
+    }
+  }
+  assert.deepEqual(out, []);
+  assert.ok(bars > 0, 'no window got bars with the lines shown');
+});
+
 // ---- 5. the page imports the file as it is
 
 test('layout.js is a plain module: no imports, no DOM, no node', () => {

@@ -866,7 +866,9 @@ function fillGlass(G, T, a, tier, st, rows0, P, W, H) {
           : b.x === msgBand.x && b.y > msgBand.y ? { ...b, y: b.y + grow } : { ...b, h: b.h + grow }));
         y0 += grow; spare -= grow;
       }
-      if (!G.hd.sideBySide && spare >= 14) {                // HP and Pw bars under the status lines
+      // HP and Pw bars under the status lines -- none where the player hid the lines
+      // (statusH 0): the band is not drawn, and 14 dp kept for it stood empty over the map
+      if (!G.hd.sideBySide && spare >= 14 && st.statusH > 0) {
         bands = bands.map((b, i) => (i === 1 ? { ...b, name: 'status (3 lines + HP/Pw bars)', h: b.h + 14 } : b));
         y0 += 14; spare -= 14;
       }
