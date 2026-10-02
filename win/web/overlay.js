@@ -433,25 +433,37 @@ export class Overlay {
   // begun on a key and lands outside the keys is dropped, in every layout: it
   // can only press something the finger never went down on.  A click from
   // the keyboard has no pointer and passes.
+  //
+  // The glass acts on its pointerup too -- a prompt's chips, the message
+  // band (Space at --More--, else the history), the status band and the
+  // bezel at --More--, a map tap -- and so do the bands where they stand over
+  // the banks, out of the glass.  A chip's answer opens the next window under
+  // the finger as readily: EAT on a corpse asked "eat it?", the 'n' chip's
+  // tap opened "What do you want to eat?" under it and its click took the
+  // food ration (the review, 2026-10-02).  So a touch begun there is held to
+  // the place it began in the same way, in every layout.
   guardClicks() {
-    const fromKey = new Map();   // pointerId -> when that touch, begun on a key, lifted (0: still down)
+    const from = new Map();   // pointerId -> { at: where the touch began, up: when it lifted (0: still down) }
     let last = null;
+    const places = () => [this.keysEl, $('bands'), $('glass')];
     window.addEventListener('pointerdown', (e) => {
-      if (this.keysEl.contains(e.target)) fromKey.set(e.pointerId, 0);
-      else fromKey.delete(e.pointerId);
+      const at = places().find((q) => q && q.contains(e.target));
+      if (at) from.set(e.pointerId, { at, up: 0 });
+      else from.delete(e.pointerId);
     }, true);
     window.addEventListener('pointerup', (e) => {
-      if (fromKey.has(e.pointerId)) { fromKey.set(e.pointerId, performance.now()); last = e.pointerId; }
+      const t = from.get(e.pointerId);
+      if (t) { t.up = performance.now(); last = e.pointerId; }
     }, true);
     window.addEventListener('click', (e) => {
       // the click names its pointer (Chrome); a browser whose click does not
       // takes the last touch that lifted
       const named = e.pointerType && typeof e.pointerId === 'number' && e.pointerId >= 0;
       if (!named && !e.detail) return;
-      const id = named ? e.pointerId : last, up = fromKey.get(id);
-      if (up === undefined) return;
-      fromKey.delete(id);
-      if (!up || performance.now() - up > 1000 || this.keysEl.contains(e.target)) return;
+      const id = named ? e.pointerId : last, t = from.get(id);
+      if (!t) return;
+      from.delete(id);
+      if (!t.up || performance.now() - t.up > 1000 || t.at.contains(e.target)) return;
       e.preventDefault();
       e.stopImmediatePropagation();
     }, true);
