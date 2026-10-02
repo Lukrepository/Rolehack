@@ -282,12 +282,57 @@ function layoutGlass(g) {
   // screen and the hero centres in what is left above them (RhOverlay.mapArea)
   view.area = g.caseless && !g.portrait ? { x: 0, y: 0, w: box.w, h: box.h }
     : { x: bx + 2 * s, y: by + bandPx, w: r.w - 4 * s, h: r.h - bandPx - statusBandH() * s };
+  // The canvas is exactly as big as its backing store, a device pixel to a
+  // pixel, so what renderMap draws at a device pixel shows at that pixel and
+  // the tap maths in CSS px finds it there.  Stretched to box.w, the store was
+  // up to half a device pixel off across the glass, and resampled.
   const cv = $('map'), dpr = window.devicePixelRatio || 1;
   cv.width = Math.round(box.w * dpr);
   cv.height = Math.round(box.h * dpr);
-  cv.style.width = `${box.w}px`;
-  cv.style.height = `${box.h}px`;
+  cv.style.width = `${cv.width / dpr}px`;
+  cv.style.height = `${cv.height / dpr}px`;
   render();
+}
+
+// The canvas's store and the drawn cell are in device pixels, and
+// devicePixelRatio can change with no resize: the window taken to a screen of
+// another density, or the system's scaling changed.  The glass is laid out
+// again then; the keys are in CSS px and stay as they are.  A resolution query
+// matches only the ratio it was made at, so each change makes the next one.
+(function watchDensity() {
+  if (!window.matchMedia) return;
+  const mq = matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+  const changed = () => {
+    if (mq.removeEventListener) mq.removeEventListener('change', changed);
+    else mq.removeListener(changed);
+    if (geom) layoutGlass(geom);
+    watchDensity();
+  };
+  if (mq.addEventListener) mq.addEventListener('change', changed);
+  else mq.addListener(changed);   // Safari before 14
+}());
+
+// The cell the map is drawn at, in CSS px.  renderMap draws in whole device
+// pixels, so a cell of T CSS px is floor(T x dpr) of them, which is this many
+// CSS px; placement, the border, the cursor, the pinch and the tap handler
+// all take this one cell.  They took T while the drawing took round(T x dpr),
+// and the two grids drifted apart by the difference each column: on Lucas's
+// phone in portrait (dpr 2.4375, T 17, drawn 16.82) a tap on the drawn centre
+// of any column past 46 read as the cell to its left, and the hero walked
+// there (the layout audit's section 4.5, 2026-09-29).  Floored, not rounded,
+// so the drawn cell is never larger than asked and a cell fitted to the
+// level's 21 rows still fits them (the twin banks design, its section 11).
+// The 1e-6 keeps a cell that is already whole device pixels (a pinch starts
+// from one) from losing one to the floating point.
+function drawnCell(T) {
+  const dpr = window.devicePixelRatio || 1;
+  return Math.max(4, Math.floor(T * dpr + 1e-6)) / dpr;
+}
+
+// a length in CSS px moved to the nearest device pixel, where renderMap draws
+function toDevicePx(v) {
+  const dpr = window.devicePixelRatio || 1;
+  return Math.round(v * dpr) / dpr;
 }
 
 function tileSize() {
@@ -297,8 +342,10 @@ function tileSize() {
   return view.area ? clamp(Math.floor(view.area.h / ROWNO), 12, 48) : 24;
 }
 
+// view.T is the drawn cell and view.left and view.top sit on device pixels, so
+// the grid placed here is the grid drawn, to the pixel.
 function placeView() {
-  const a = view.area, T = view.T = tileSize();
+  const a = view.area, T = view.T = drawnCell(tileSize());
   const mapW = COLNO * T, mapH = ROWNO * T;
   // follow the hero: the core's cursor sits on it whenever it waits for a command
   const f = focus.x >= 0 ? focus : cursor.x >= 0 ? cursor : { x: 40, y: 10 };
@@ -314,8 +361,8 @@ function placeView() {
   // zooms "I can't move the map down").
   const axis = (len, avail, start, fc, pan) => (len <= avail ? start + (avail - len) / 2
     : clamp(start + avail / 2 - (fc + 0.5) * T, start + avail - len, start)) + pan;
-  view.left = axis(mapW, a.w, a.x, f.x, view.panX);
-  view.top = axis(mapH, a.h, a.y, f.y, view.panY);
+  view.left = toDevicePx(axis(mapW, a.w, a.x, f.x, view.panX));
+  view.top = toDevicePx(axis(mapH, a.h, a.y, f.y, view.panY));
 }
 
 const HEART = ['.X.X.', 'XXXXX', '.XXX.', '..X..'];
@@ -324,7 +371,9 @@ function renderMap() {
   if (!view.area) return;
   placeView();
   const cv = $('map'), cx = cv.getContext('2d'), dpr = window.devicePixelRatio || 1;
-  const Td = Math.max(4, Math.round(view.T * dpr)), L = Math.round(view.left * dpr), Tp = Math.round(view.top * dpr);
+  // whole device pixels already (placeView); the rounding only clears the
+  // floating point
+  const Td = Math.round(view.T * dpr), L = Math.round(view.left * dpr), Tp = Math.round(view.top * dpr);
   cx.setTransform(1, 0, 0, 1, 0, 0);
   cx.imageSmoothingEnabled = false;
   cx.fillStyle = '#000';
@@ -397,6 +446,7 @@ function renderMap() {
     if (pts.size === 1) { moved = false; panStart = { x: e.clientX, y: e.clientY, px: view.panX, py: view.panY }; }
     if (pts.size === 2) {
       const [a, b] = [...pts.values()];
+      // the cell as drawn: the fingers grow what they see
       pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), T: view.T };
       moved = true;
     }
@@ -427,6 +477,8 @@ function renderMap() {
     if (pts.size || moved) return;
     // a tap: a --More-- or a text window's wait is answered, else it is a click on the map
     if (moreShown) { push({ key: 32 }); return; }
+    // the grid as drawn: view.T is the drawn cell, view.left and view.top sit
+    // on device pixels (placeView)
     const r = cv.getBoundingClientRect();
     const x = Math.floor((e.clientX - r.left - view.left) / view.T);
     const y = Math.floor((e.clientY - r.top - view.top) / view.T);
@@ -436,7 +488,10 @@ function renderMap() {
   cv.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); pinch = null; });
   cv.addEventListener('wheel', (e) => {
     e.preventDefault();
-    P.set('zoom', clamp(view.T * Math.pow(1.1, -e.deltaY / 100), 8, 96));
+    // Each notch scales the cell asked for (tileSize()), not the drawn one: the
+    // drawn cell is that floored to device pixels, so a trackpad's small steps
+    // scaled from it would each be floored away and the map never grow.
+    P.set('zoom', clamp(tileSize() * Math.pow(1.1, -e.deltaY / 100), 8, 96));
     render();
   }, { passive: false });
   // A tap on the message band opens the history, always: a band that answers
