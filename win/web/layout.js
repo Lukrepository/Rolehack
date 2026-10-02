@@ -161,10 +161,11 @@ export const DEFAULTS = {
   halo: 12,            // guard band round each bank (section 6); also the least gap from a band to a key
   ring: 20,            // confirm ring inside the map next to a halo
   // 'auto': the header as section 10 places it -- side by side once the glass is 818 dp
-  // wide, over the banks when that shows more of the level.  'stacked': messages over the
-  // status at the top of the glass, always, and never over the banks: the shape the web's
-  // #glass has today, which the page asks for until it lays the bands out apart (Lucas,
-  // 2026-10-02: the twin banks on the page, the header stacked in the glass for now).
+  // wide, over the banks when that shows more of the level.  The web page lays its bands
+  // out where 'auto' puts them (web.js layoutTwinGlass).  'stacked': messages over the
+  // status at the top of the glass, always, and never over the banks: the shape of a
+  // header that is one block in the glass, as the page's was until it laid the bands out
+  // apart (2026-10-02) and as Android's RhScreen still is.
   header: 'auto',
 };
 

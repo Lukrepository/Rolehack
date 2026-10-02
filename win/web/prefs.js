@@ -55,6 +55,11 @@ const DEFAULTS = {
   // map cell, so it carries across windows and both orientations share it;
   // it starts at 1, not from classic's zoom, which twin never reads nor writes
   zoomFactor: 1,
+  // Twin banks' map cell, the device's one (the design's section 11):
+  // 'columns', the cell that shows at least today's 34 landscape columns with
+  // all 21 rows where the screen allows, or 'rows', the bigger cell whose 21
+  // rows fill the landscape height (and the header over the banks)
+  mapCell: 'columns',         // columns | rows
   searchMode: false, searchBefore: true, searchCount: 1,
   // the on-screen keyboard for anything typed: for a touch screen whose own
   // keyboard is put away (Lucas, 2026-09-27) -- chosen, never guessed, since a

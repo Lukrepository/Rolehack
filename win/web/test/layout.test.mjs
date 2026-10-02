@@ -335,16 +335,16 @@ test('the left-handed layout mirrors the right-handed one', () => {
   assert.deepEqual(out, []);
 });
 
-// ---- the page's stacked header
+// ---- the stacked header
 
-// The page lays the bands out in #glass, messages over the status, until it
-// can lay them out apart (the twin banks on the page, Lucas, 2026-10-02), and
-// asks for that with header 'stacked': then no band stands beside another or
-// over the banks, every band lies in the glass, and a window whose header is
-// stacked in the glass anyway (every phone at the default cell) lays out just
-// as it does by default -- unless the plan squeezed the banks for a header
-// over them in the other orientation (mapCell 'rows'), which 'stacked' never
-// does.
+// A header that is one block in the glass, messages over the status -- the
+// page's until it laid its bands out apart (2026-10-02), and Android's
+// RhScreen -- asks for that with header 'stacked': then no band stands beside
+// another or over the banks, every band lies in the glass, and a window whose
+// header is stacked in the glass anyway (every phone at the default cell) lays
+// out just as it does by default -- unless the plan squeezed the banks for a
+// header over them in the other orientation (mapCell 'rows'), which 'stacked'
+// never does.
 test("header 'stacked' keeps the bands stacked in the glass", () => {
   const out = [];
   const inside = (b, g) => b.x >= g.x - 0.01 && b.y >= g.y - 0.01 && b.x + b.w <= g.x + g.w + 0.01 && b.y + b.h <= g.y + g.h + 0.01;

@@ -262,8 +262,9 @@ function layoutGlass(g) {
   geom = g;
   if (g.twin) { layoutTwinGlass(g); return; }
   const gl = $('glass'), bands = $('bands'), s = g.s, r = g.glass;
-  // what twin banks set and classic does not (layoutTwinGlass)
-  $('statband').style.top = '';
+  // what twin banks set and classic does not (layoutTwinGlass): the bands back
+  // in the glass, in their place before the tube, and each band's own rect
+  untwinBands();
   $('map').style.left = $('map').style.top = '';
   const box = g.caseless ? { x: 0, y: 0, w: g.W, h: g.H } : r;
   Object.assign(gl.style, { left: `${box.x}px`, top: `${box.y}px`, width: `${box.w}px`, height: `${box.h}px`,
@@ -301,45 +302,142 @@ function layoutGlass(g) {
   render();
 }
 
-// Twin banks (overlay.js, layout.js): the glass where the layout puts it, the
-// bands stacked at its top -- messages, then the status -- at the layout's own
-// rects, and the canvas exactly the map area, so the map draws inside it and
-// nothing outside it is map: a tap beside it lands on the case, the bands or
-// the bezel, never on a cell.  The canvas's edges sit on device pixels, so its
+// Twin banks (overlay.js, layout.js): the glass where the layout puts it and
+// the canvas exactly the map area, so the map draws inside it and nothing
+// outside it is map: a tap beside it lands on the case, the bands or the
+// bezel, never on a cell.  The canvas's edges sit on device pixels, so its
 // store maps a pixel to a pixel (the tap drift, layoutGlass above), each moved
-// inward to the next one, so it never reaches past the map area.
+// inward to the next one, so it never reaches past the map area -- but for
+// an axis where the level drawn at the device's cell is the map area's whole
+// length, a whole-level screen's or a 21-row cell's.  Moved inward, the canvas
+// was a device pixel short of the level there, so the level was cut by that
+// pixel and followed the hero instead of standing centred (1366x768 at 1x,
+// every 2x tablet; the review, 2026-10-02); there both edges move outward,
+// by under a device pixel each, into the glass's own margin.
+//
+// The header is laid out band by band, each at the layout's own rect (the
+// design's section 10): stacked at the top of the glass, messages over the
+// status; side by side once the glass is wide enough, messages on the left; or
+// over the banks, side by side across the top of the screen, where that shows
+// more of the level (the map cell 'rows').  In the glass the bands stay under
+// its tube, as classic's do; over the banks they leave it for the case, each
+// band a pane of glass of its own, and the rule keeps them 12 dp clear of
+// every key.  The message band's rows are the layout's -- the spare height it
+// gives them, up to 4 -- and its width is the width it is drawn at: both are
+// what the game's messages are paged by (bandMetrics), so --More-- comes
+// exactly when the band shown is full.  A prompt's choices open at the top of
+// the map, as they open under the band in classic.
 function layoutTwinGlass(g) {
   const gl = $('glass'), bands = $('bands'), r = g.glass, m = g.map, mb = g.msgBand, sb = g.statusBand;
   const dpr = window.devicePixelRatio || 1, snap = (v) => Math.round(v * dpr) / dpr;
   const gx = snap(r.x), gy = snap(r.y);
   Object.assign(gl.style, { left: `${gx}px`, top: `${gy}px`, width: `${snap(r.x + r.w) - gx}px`, height: `${snap(r.y + r.h) - gy}px`,
                             borderRadius: `${r.r}px` });
-  Object.assign(bands.style, { left: `${mb.x - gx}px`, top: `${mb.y - gy}px`, width: `${mb.w}px`, height: `${sb.y + sb.h - mb.y}px` });
-  bands.style.setProperty('--line', `${LINE}px`);
+  // the bands' layer: the glass, or the whole window when they stand over the
+  // banks -- after the glass and before the keys, so over the case, under a key
+  const over = !!g.headerOver;
+  if (!over) untwinBands();
+  else if (bands.parentNode !== $('app')) $('app').insertBefore(bands, $('keys'));
+  if (over) bands.dataset.over = ''; else delete bands.dataset.over;
+  const ox = over ? 0 : gx, oy = over ? 0 : gy;
+  Object.assign(bands.style, { left: '0px', top: '0px', width: over ? `${g.W}px` : '100%', height: over ? `${g.H}px` : '100%',
+                               zIndex: over ? '1' : '' });
+  // a rect of the layout's, its edges on device pixels, in the layer's own px
+  const place = (e, q) => {
+    const x = snap(q.x), y = snap(q.y);
+    Object.assign(e.style, { left: `${x - ox}px`, top: `${y - oy}px`, width: `${snap(q.x + q.w) - x}px`,
+                             height: `${snap(q.y + q.h) - y}px`, right: 'auto', bottom: 'auto' });
+  };
+  // the status lines at the system's text size, as the layout sized their band
+  const ts = g.textScale || 1;
+  bands.style.setProperty('--line', `${LINE * ts}px`);
   resetTextScale();
   const msg = $('msgband'), textPx = msgTextPx();
   msg.style.fontFamily = P.get('msgFont') === 'screen' ? 'var(--screenfont)' : 'var(--msgfont)';
   msg.style.fontSize = `${textPx}px`;
   msg.style.lineHeight = `${textPx * MSG_LEADING}px`;
-  msg.style.height = `${mb.h}px`;
+  place(msg, mb);
   msg.style.padding = '5px 10px 4px';
   const st = $('statband');
-  st.style.fontSize = `${10.5 * 1.35}px`;
-  st.style.top = `${sb.y - mb.y}px`;
-  st.style.height = `${sb.h}px`;
+  st.style.fontSize = `${10.5 * 1.35 * ts}px`;
+  place(st, sb);
+  st.style.padding = `${3 * ts}px 10px ${4 * ts}px`;
   st.style.display = P.get('statusLines') === 'hidden' ? 'none' : '';
-  // a prompt's choices at the top of the map, as they are under the band in classic
-  $('chips').style.top = `${m.y - mb.y + 6}px`;
-  const cv = $('map'), inF = (v) => Math.ceil(v * dpr - 1e-6) / dpr, inL = (v) => Math.floor(v * dpr + 1e-6) / dpr;
-  const cx = inF(m.x), cy = inF(m.y);
-  cv.width = Math.max(1, Math.round((inL(m.x + m.w) - cx) * dpr));
-  cv.height = Math.max(1, Math.round((inL(m.y + m.h) - cy) * dpr));
+  // the MORE lamp at the message band's right end (overlay.js twinLamps)
+  const lamp = $('morelamp');
+  if (lamp) Object.assign(lamp.style, { left: `${snap(mb.x + mb.w) - 8 - ox}px`, top: `${snap(mb.y) + 6 - oy}px`, right: 'auto' });
+  // A prompt's choices: at the top of the map, or its bottom (placeChips),
+  // never past its edges.  Where there are more than the map holds, they
+  // scroll (sizeChips).
+  chipEdges = { top: m.y + 6 - oy, bottom: m.y + m.h - 6 - oy };
+  Object.assign($('chips').style, { left: `${m.x + 6 - ox}px`, top: `${chipEdges.top}px`, width: `${m.w - 12}px`,
+                                    right: 'auto', maxHeight: `${Math.max(48, m.h - 12)}px` });
+  sizeChips();
+  const cv = $('map'), up = (v) => Math.ceil(v * dpr - 1e-6) / dpr, down = (v) => Math.floor(v * dpr + 1e-6) / dpr;
+  // an axis's edges: inward, or outward where only that holds the level's n cells
+  const edges = (a, len, n) => {
+    const need = n * drawnCell(g.cell || 0) - 1e-6;
+    return down(a + len) - up(a) < need && up(a + len) - down(a) >= need ? [down(a), up(a + len)] : [up(a), down(a + len)];
+  };
+  const [cx, cx1] = edges(m.x, m.w, COLNO), [cy, cy1] = edges(m.y, m.h, ROWNO);
+  cv.width = Math.max(1, Math.round((cx1 - cx) * dpr));
+  cv.height = Math.max(1, Math.round((cy1 - cy) * dpr));
   cv.style.left = `${cx - gx}px`;
   cv.style.top = `${cy - gy}px`;
   cv.style.width = `${cv.width / dpr}px`;
   cv.style.height = `${cv.height / dpr}px`;
   view.area = { x: 0, y: 0, w: cv.width / dpr, h: cv.height / dpr };
+  placeChips();
   render();
+}
+
+// Twin banks: a prompt's choices stand at the top of the map, or at its
+// bottom where at the top they would cover the hero or a cell beside it --
+// the door a "Kick it?" asks about -- as they would on a level's top rows,
+// which a map centred where the level fits always shows under them (the
+// review, 2026-10-02: in portrait the chips hid both the hero and the door).
+// Where they cover it either way, at the top.  The hero stays put while a
+// prompt waits, so they are placed as they open (showChips) and when the
+// glass is laid out again.
+let chipEdges = null;     // the chips' top at the map's top, their bottom at its bottom, in their layer's px
+function placeChips() {
+  const c = $('chips');
+  if (!(geom && geom.twin) || !chipEdges) return;
+  c.style.top = `${chipEdges.top}px`;
+  if (!c.children.length || !view.area) return;
+  placeView();
+  const f = viewFocus(), T = view.T, cv = $('map').getBoundingClientRect();
+  const hx = cv.left + view.left + (f.x - 1) * T, hy = cv.top + view.top + (f.y - 1) * T;   // the hero's 3x3 cells
+  const covers = () => [...c.children].some((b) => {
+    const q = b.getBoundingClientRect();
+    return q.right > hx && q.left < hx + 3 * T && q.bottom > hy && q.top < hy + 3 * T;
+  });
+  if (!covers()) return;
+  c.style.top = `${chipEdges.bottom - c.offsetHeight}px`;
+  if (covers()) c.style.top = `${chipEdges.top}px`;
+}
+
+// The bands as classic has them, one block in the glass before its tube, and
+// nothing of twin banks' own rects left on them (layoutGlass sets the rest).
+function untwinBands() {
+  const gl = $('glass'), bands = $('bands');
+  if (bands.parentNode !== gl) gl.insertBefore(bands, $('tube'));
+  delete bands.dataset.over;
+  bands.style.zIndex = '';
+  for (const id of ['msgband', 'statband', 'chips', 'morelamp']) {
+    const e = $(id);
+    if (!e) continue;
+    for (const k of ['left', 'top', 'width', 'right', 'bottom', 'maxHeight', 'padding']) e.style[k] = '';
+    e.classList.remove('scroll');
+  }
+}
+
+// Twin banks: choices that run past the bottom of the map scroll, and only
+// then take the touches between them (a drag there scrolls); otherwise the map
+// under the empty part of their row still pans.
+function sizeChips() {
+  const c = $('chips');
+  c.classList.toggle('scroll', !!(geom && geom.twin) && c.scrollHeight > c.clientHeight + 1);
 }
 
 // The canvas's store and the drawn cell are in device pixels, and
@@ -371,10 +469,12 @@ function layoutTwinGlass(g) {
 // so the drawn cell is never larger than asked and a cell fitted to the
 // level's 21 rows still fits them (the twin banks design, its section 11).
 // The 1e-6 keeps a cell that is already whole device pixels (a pinch starts
-// from one) from losing one to the floating point.
-function drawnCell(T) {
+// from one) from losing one to the floating point.  Never under 4 device
+// pixels, but for twin banks' overview, which fits the whole level wherever it
+// is: under 4 px wide on a 280 dp map.
+function drawnCell(T, least = 4) {
   const dpr = window.devicePixelRatio || 1;
-  return Math.max(4, Math.floor(T * dpr + 1e-6)) / dpr;
+  return Math.max(least, Math.floor(T * dpr + 1e-6)) / dpr;
 }
 
 // a length in CSS px moved to the nearest device pixel, where renderMap draws
@@ -416,13 +516,21 @@ function endPinch() {
   if (f && geom && geom.twin) P.set('zoomFactor', f);
 }
 
+// Twin banks' overview (the design's section 11): while two fingers rest on
+// the map, the whole level fitted to the map area (glassGestures).
+let overview = false;
+
+// the cell the view follows, the hero's: the core's cursor sits on it
+// whenever it waits for a command
+const viewFocus = () => (focus.x >= 0 ? focus : cursor.x >= 0 ? cursor : { x: 40, y: 10 });
+
 // view.T is the drawn cell and view.left and view.top sit on device pixels, so
-// the grid placed here is the grid drawn, to the pixel.
+// the grid placed here is the grid drawn, to the pixel.  In the overview the
+// level fits both ways, so it is centred, and a pan in hand waits for the lift.
 function placeView() {
-  const a = view.area, T = view.T = drawnCell(tileSize());
+  const a = view.area, T = view.T = overview ? drawnCell(Math.min(a.w / COLNO, a.h / ROWNO), 1) : drawnCell(tileSize());
   const mapW = COLNO * T, mapH = ROWNO * T;
-  // follow the hero: the core's cursor sits on it whenever it waits for a command
-  const f = focus.x >= 0 ? focus : cursor.x >= 0 ? cursor : { x: 40, y: 10 };
+  const f = viewFocus();
   if (f.x !== lastFocus.x || f.y !== lastFocus.y) {   // it moved: any pan ends
     view.panX = view.panY = 0;
     lastFocus = { x: f.x, y: f.y };
@@ -435,8 +543,8 @@ function placeView() {
   // zooms "I can't move the map down").
   const axis = (len, avail, start, fc, pan) => (len <= avail ? start + (avail - len) / 2
     : clamp(start + avail / 2 - (fc + 0.5) * T, start + avail - len, start)) + pan;
-  view.left = toDevicePx(axis(mapW, a.w, a.x, f.x, view.panX));
-  view.top = toDevicePx(axis(mapH, a.h, a.y, f.y, view.panY));
+  view.left = toDevicePx(axis(mapW, a.w, a.x, f.x, overview ? 0 : view.panX));
+  view.top = toDevicePx(axis(mapH, a.h, a.y, f.y, overview ? 0 : view.panY));
 }
 
 const HEART = ['.X.X.', 'XXXXX', '.XXX.', '..X..'];
@@ -549,10 +657,28 @@ function ghostTap(e, x, y) {
 }
 
 // Taps travel, drags pan, two fingers or the wheel zoom.
+//
+// Twin banks tell two fingers' gestures apart (the design's section 11).
+// Two fingers that land and keep within OVERVIEW_SLOP of where they landed
+// for OVERVIEW_MS show the whole level, fitted to the map area, until they
+// lift: a glance at the level from any zoom.  A change in their spread of
+// more than PINCH_SLOP first makes it a pinch, as it always was, from the
+// spread they landed at, so the map grows with the fingers as before; fingers
+// that slide together without spreading are neither, and may still pinch.
+// Once two fingers are down, the gesture is theirs: the one left after a lift
+// neither pans nor taps.  Classic pinches from the first move, as it always
+// has, and has no overview.
+const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
 (function glassGestures() {
   const cv = $('map');
   const pts = new Map();
-  let moved = false, pinch = null, panStart = null;
+  let moved = false, pinch = null, panStart = null, two = null;
+  // the two-finger gesture under way ends: its pinch is written, its timer stopped
+  const endTwo = () => {
+    if (pinch) { pinch = null; endPinch(); }
+    if (two) { clearTimeout(two.timer); two = null; }
+  };
+  const endOverview = () => { if (overview && !pts.size) { overview = false; renderMap(); } };
   cv.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     try { cv.setPointerCapture(e.pointerId); } catch (x) { /* synthetic */ }
@@ -560,14 +686,37 @@ function ghostTap(e, x, y) {
     if (pts.size === 1) { moved = false; panStart = { x: e.clientX, y: e.clientY, px: view.panX, py: view.panY }; }
     if (pts.size === 2) {
       const [a, b] = [...pts.values()];
+      moved = true;
+      if (geom && geom.twin) {
+        // where each finger landed, their spread and the cell as drawn
+        two = { at: new Map([...pts].map(([id, q]) => [id, { ...q }])), d: Math.hypot(a.x - b.x, a.y - b.y), T: view.T, still: true };
+        two.timer = setTimeout(() => {
+          if (!two || !two.still || pinch || pts.size !== 2) return;
+          overview = true;
+          renderMap();
+        }, OVERVIEW_MS);
+        panStart = null;
+        return;
+      }
       // the cell as drawn: the fingers grow what they see
       pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), T: view.T };
-      moved = true;
     }
   });
   cv.addEventListener('pointermove', (e) => {
     if (!pts.has(e.pointerId)) return;
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (two && pts.size === 2 && !overview) {
+      const [a, b] = [...pts.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      for (const [id, q] of pts) {
+        const at = two.at.get(id);
+        if (!at || Math.hypot(q.x - at.x, q.y - at.y) > OVERVIEW_SLOP) two.still = false;
+      }
+      if (!pinch && Math.abs(d - two.d) > PINCH_SLOP) pinch = { d: two.d, T: two.T };
+      if (pinch) setZoom(pinch.T * (d / pinch.d), true);
+      return;
+    }
+    if (overview || (two && !panStart)) return;
     if (pinch && pts.size === 2) {
       const [a, b] = [...pts.values()];
       const d = Math.hypot(a.x - b.x, a.y - b.y);
@@ -589,7 +738,8 @@ function ghostTap(e, x, y) {
   const up = (e) => {
     if (!pts.has(e.pointerId)) return;
     pts.delete(e.pointerId);
-    if (pts.size < 2 && pinch) { pinch = null; endPinch(); }
+    if (pts.size < 2 && (pinch || two)) endTwo();
+    endOverview();
     if (pts.size || moved) return;
     // a tap: a --More-- or a text window's wait is answered, else it is a click on the map
     if (moreShown) { push({ key: 32 }); return; }
@@ -601,7 +751,7 @@ function ghostTap(e, x, y) {
     if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO && !ghostTap(e, x, y)) push({ click: { x, y, mod: 1 } });
   };
   cv.addEventListener('pointerup', up);
-  cv.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); if (pts.size < 2 && pinch) { pinch = null; endPinch(); } });
+  cv.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); if (pts.size < 2 && (pinch || two)) endTwo(); endOverview(); });
   cv.addEventListener('wheel', (e) => {
     e.preventDefault();
     // Each notch scales the cell asked for (tileSize()), not the drawn one: the
@@ -623,13 +773,22 @@ function ghostTap(e, x, y) {
   // --More-- a tap there is Space, as a tap anywhere on classic's glass is
   // (the design's section 6; the review, 2026-10-02); elsewhere it does
   // nothing, as before.  The map and the message band answer for themselves.
-  const gl = $('glass'), own = (e) => e.target !== cv && !$('msgband').contains(e.target) && !e.target.closest('button');
-  let glassDown = null;
+  // The status band answers for itself, wherever the layout put it: in the
+  // glass, or over the banks, where no glass lies under it.
+  const gl = $('glass'), sb = $('statband');
+  const own = (e) => e.target !== cv && !$('msgband').contains(e.target) && !sb.contains(e.target) && !e.target.closest('button');
+  let glassDown = null, statDown = null;
   gl.addEventListener('pointerdown', (e) => { glassDown = own(e) ? e.pointerId : null; });
   gl.addEventListener('pointerup', (e) => {
     const down = glassDown;
     glassDown = null;
     if (down === e.pointerId && own(e) && geom && geom.twin && moreShown) push({ key: 32 });
+  });
+  sb.addEventListener('pointerdown', (e) => { statDown = e.pointerId; });
+  sb.addEventListener('pointerup', (e) => {
+    const down = statDown;
+    statDown = null;
+    if (down === e.pointerId && geom && geom.twin && moreShown) push({ key: 32 });
   });
 }());
 
@@ -848,18 +1007,41 @@ function statusHtml() {
     : `<span style="color:${hpCol}">${hpText}</span>`;
   const row2 = `<div class="row">${hpHtml}&nbsp;${esc(tail2)}</div>`;
   const row3 = compact ? '' : `<div class="row">${esc(stats)}&nbsp;&nbsp;${badgeHtml}</div>`;
-  return row1 + row2 + row3;
+  return row1 + row2 + row3 + barsHtml(frac, hpCol);
+}
+
+// Twin banks: HP and Pw as bars under the status lines, wherever the layout
+// leaves the status band the room -- the 14 dp of height the level does not
+// need that layout.js fillGlass hands it, or a side-by-side band standing as
+// tall as the message rows beside it (the design's section 10).  A track and
+// its fill, each named, so they read without colour; HP takes the status
+// line's colour steps, Pw the game's bright blue.  The names grow with the
+// system's text size, as the lines over them do, up to the bars' own height
+// (the review, 2026-10-02: 11 px beside status lines twice that).  None in
+// classic.
+const BARS_MIN = 10, BARS_H = 14, BARS_TEXT = 11;
+function barsHtml(frac, hpCol) {
+  if (!(geom && geom.twin && geom.statusBand)) return '';
+  const room = geom.statusBand.h - (geom.statusLinesH || 0);
+  if (room < BARS_MIN) return '';
+  const en = Number(bare('BL_ENE')), enmax = Number(bare('BL_ENEMAX'));
+  const pw = enmax > 0 ? clamp(en / enmax, 0, 1) : 0;
+  const h = Math.min(BARS_H, room), text = Math.min(BARS_TEXT * (geom.textScale || 1), h);
+  const bar = (name, f, colour) => `<span class="bar"><b>${name}</b><span class="track">`
+    + `<span class="fill" style="width:${(f * 100).toFixed(1)}%;background:${colour}"></span></span></span>`;
+  return `<div class="bars" style="height:${h}px;--bartext:${text}px">${bar('HP', frac, hpCol)}${bar('Pw', pw, gameColour(12))}</div>`;
 }
 
 // the lines shrink together until the widest fits
 function fitStatus() {
   const sb = $('statband');
   if (!geom || sb.style.display === 'none') return;
-  const base = 10.5 * 1.35 * geom.s;
+  // twin banks: at the system's text size, as the layout sized the band
+  const base = 10.5 * 1.35 * (geom.twin ? geom.textScale || 1 : geom.s);
   sb.style.fontSize = `${base}px`;
   const avail = sb.clientWidth - 20 * geom.s;
   let widest = 0;
-  for (const r of sb.children) widest = Math.max(widest, r.scrollWidth);
+  for (const r of sb.querySelectorAll('.row')) widest = Math.max(widest, r.scrollWidth);
   if (widest > avail && avail > 0) sb.style.fontSize = `${base * Math.max(0.6, avail / widest)}px`;
 }
 
@@ -900,7 +1082,7 @@ function promptChoices(query, allowed) {
 function showChips(choices) {
   const c = $('chips');
   c.innerHTML = '';
-  if (!choices.length) return;
+  if (!choices.length) { sizeChips(); placeChips(); return; }
   for (const ch of choices) {
     const b = document.createElement('button');
     b.textContent = ch;
@@ -916,6 +1098,8 @@ function showChips(choices) {
   x.addEventListener('pointerleave', () => x.classList.remove('pressed'));
   x.addEventListener('pointerup', (e) => { e.preventDefault(); x.classList.remove('pressed'); FB.up(); push({ key: 27 }); });
   c.appendChild(x);
+  sizeChips();
+  placeChips();
 }
 
 /* ---------- modal windows ---------- */

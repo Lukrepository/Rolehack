@@ -413,6 +413,8 @@ export class Overlay {
       // the status band's height is an input to twin banks' layout
       if (name === 'statusLines') { if (this.twin) this.rebuild(); else this.host.glassChanged(this.geom); }
       if (name === 'msgFont' || name === 'msgSize') this.rebuild();
+      // twin banks' map cell is decided with the banks (layout.js deviceCell)
+      if (name === 'mapCell' && this.wantsTwin()) this.rebuild();
     });
     if (document.fonts) document.fonts.ready.then(() => this.rebuild());
     this.guardClicks();
@@ -656,16 +658,25 @@ export class Overlay {
     const pointer = this.pointerKind(), mode = this.displayMode(), insets = this.safeInsets();
     const padKey = clamp(Number(P.get('padCell')) || 58, 40, 72);
     // the message rows as the page sets them (msgTextPx) and the status band
-    // as web.js draws it: inputs to the rule, so it never puts text over a key
+    // as web.js draws it: inputs to the rule, so it never puts text over a key.
+    // In twin banks the status lines follow the system's text size too, as the
+    // message rows do (the design's section 10: 48 dp times the text size);
+    // classic's stay at the case's scale.
     resetTextScale();
+    const textScale = osTextScale();
     const text = textMetrics({ msgFont: P.get('msgFont') === 'screen' ? 'screen' : 'atkinson',
-      msgSize: Number(P.get('msgSize')) || 1, textScale: osTextScale(), xHeight: MSG_X });
-    const statusH = { hidden: 0, compact: STATUS_BAND - LINE }[P.get('statusLines')] ?? STATUS_BAND;
+      msgSize: Number(P.get('msgSize')) || 1, textScale, xHeight: MSG_X });
+    const statusH = textScale * ({ hidden: 0, compact: STATUS_BAND - LINE }[P.get('statusLines')] ?? STATUS_BAND);
+    // The header goes where the rule puts it: stacked at the top of the glass,
+    // side by side once the glass is wide enough (a tablet, a laptop), or over
+    // the banks when that shows more of the level -- with the map cell
+    // 'rows', whenever it fits.  web.js lays the bands out apart, so the page
+    // no longer asks for the header stacked, as it did while the bands stayed
+    // one block in #glass (layout.js DEFAULTS.header).
     const base = {
       padKey, insets, msgRowH: text.msgRowH, statusH,
+      mapCell: P.get('mapCell') === 'rows' ? 'rows' : 'columns',
       prevTier: this.twinTier || null,
-      // the bands stay stacked in #glass, messages over the status, for now
-      header: 'stacked',
     };
     const { r, budget, sideInsets, used } = this.twinLayout(W, H, pointer, base, insets, mode);
     const settings = { ...base, budget, sideInsets };
@@ -718,11 +729,16 @@ export class Overlay {
     if (snap) this.restoreState(snap);
     this.ghostSpots = this.portrait ? [] : this.classicDeck(W, H);
 
+    // The bands are the layout's, messages first: the message band's rows and
+    // width are what web.js pages the game's messages by (bandMetrics), so
+    // --More-- comes exactly when the band shown is full.  headerOver: the
+    // bands stand over the banks, outside the glass, each its own pane.
     const [msgBand, statusBand] = S.bands;
     this.geom = {
       s: 1, W, H, twin: true, caseless: this.caseless, portrait: this.portrait,
       glass: { ...S.glass, r: this.caseless ? 0 : 10 },
       map: S.mapArea, msgBand, statusBand, msgRows: r.info.fill.rows_msg, cell: r.info.T,
+      headerOver: !!r.info.G.over, textScale, statusLinesH: statusH,
     };
     this.host.glassChanged(this.geom);
   }
@@ -2675,6 +2691,12 @@ export class Overlay {
         + `classic is the case as it was${this.twinFallback ? `. This window shows classic: ${firstReason(this.twinFallback)}`
           : this.twin && this.twin.spec.fit.degraded ? `. Twin banks here are squeezed: ${firstReason(this.twin.reason)}` : ''}`,
         [['twin', 'Twin banks'], ['classic', 'Classic']]),
+      // the design's section 11 and its test 5: today's columns by default,
+      // the bigger glyphs of the earlier rule a choice; a pinch zooms either
+      seg('mapCell', "Map cell (twin banks): Columns shows at least today's 34 of the level's 80 columns in landscape, "
+        + 'with all 21 rows, where the screen allows; Rows draws bigger tiles that fill the landscape height with the '
+        + '21 rows, so fewer columns show. The same size in both orientations',
+        [['columns', 'Columns'], ['rows', 'Rows']]),
       { seg: 'ghostDeck', label: 'Old key spots (twin banks, landscape): a map tap where COMBAT, PIN 2, FLICK, LOOK or CONTEXT sat '
           + 'on the old deck shows where the key went, and a second tap on the same place walks there. It retires itself '
           + 'after three sessions in a row, each of 100 turns or more played in twin banks in landscape, in which no '
@@ -2710,6 +2732,7 @@ export class Overlay {
         put('padCell', parseInt(v.padCell, 10));
         if ((v.ghostDeck === 'on') !== this.ghostOn()) this.setGhostOn(v.ghostDeck === 'on');
         put('layout', v.layout === 'classic' ? 'classic' : 'twin');
+        put('mapCell', v.mapCell === 'rows' ? 'rows' : 'columns');
         put('labelMode', v.labelMode);
         put('keyFlash', v.keyFlash === 'on');
         put('touchKeyboard', v.touchKeyboard === 'on');
