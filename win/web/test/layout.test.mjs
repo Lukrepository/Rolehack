@@ -7,9 +7,16 @@
 //
 // What the page leans on:
 //  1. layout() still lays out the design's golden screens as the design did:
-//     every control, band, map area, glass, panel and pop-up of the 15 scored
-//     screens and the six variants (fixtures/, copied from the design's
-//     spec.json and variants/) within half a dp;
+//     every control, band, map area, glass, panel, pop-up and decor rect (the
+//     bank wells with their guard halos, and the confirm ring: the hit layers
+//     of the near-miss guard, section 6) of the 15 scored screens and the six
+//     variants (fixtures/, copied from the design's spec.json and variants/)
+//     within half a dp; and the same of the edge windows (fixtures/edge.json,
+//     written by edge-cli.mjs from the design's layout.js), where the rule has
+//     to give way -- the pad stepping 58 -> 52 -> 46, the right columns
+//     narrowing, the last resort, unusable -- each also held to the design's
+//     own numbers (edge-cli.mjs's EDGE): usable, the fit's level, pad and right
+//     columns, and the gap between the banks;
 //  2. it never throws, over a sweep of windows, pointers and settings, nonsense
 //     included; whatever it calls usable has no key off screen, on a key, on
 //     the map or under a band; and only small or near-square windows come back
@@ -27,6 +34,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { layout, collisions } from '../layout.js';
+import { EDGE, summary, expectDiff } from './edge-cli.mjs';
 
 const FIXTURES = new URL('./fixtures/', import.meta.url);
 const TOL = 0.5;          // dp: the fixtures are rounded to 0.01, the rule may drift less than this
@@ -95,6 +103,7 @@ function specDiff(got, want) {
   out.push(...listDiff('band', got.bands, want.bands, (b) => b.name));
   out.push(...listDiff('panel', got.chrome, want.chrome, (p) => p.name));
   out.push(...listDiff('popup', got.popups, want.popups, (p) => `${p.owner}: ${p.label.split(':')[0]}`));
+  out.push(...listDiff('decor', got.decor, want.decor, (d) => d.name.split(' (')[0]));
   for (const k of ['level', 'pad', 'rightColumns', 'degraded']) {
     if (got.fit[k] !== want.fit[k] && !(typeof want.fit[k] === 'number' && Math.abs(got.fit[k] - want.fit[k]) <= TOL)) {
       out.push(`fit.${k} ${got.fit[k]} (golden ${want.fit[k]})`);
@@ -105,10 +114,12 @@ function specDiff(got, want) {
 
 // ---- 1. the golden screens
 
+const EDGE_FILE = 'edge.json';
+
 test('the fixtures are the design\'s screens and variants', () => {
   const files = fs.readdirSync(FIXTURES).filter((f) => f.endsWith('.json')).sort();
-  assert.deepEqual(files, Object.keys(VARIANTS).sort(), 'a fixture with no settings here, or settings with no fixture');
-  for (const f of files) {
+  assert.deepEqual(files, [...Object.keys(VARIANTS), EDGE_FILE].sort(), 'a fixture with no settings here, or settings with no fixture');
+  for (const f of files.filter((n) => n !== EDGE_FILE)) {
     const fx = JSON.parse(fs.readFileSync(new URL(f, FIXTURES), 'utf8'));
     assert.deepEqual(Object.keys(fx.screens), SCREENS, `${f}: the screens layout-cli.mjs scores`);
   }
@@ -128,6 +139,27 @@ for (const [file, settings] of Object.entries(VARIANTS)) {
     }
   });
 }
+
+// The edge windows: every case in EDGE is in the fixture, made for the same
+// window and settings, and the other way round.
+test(`layout() reproduces ${EDGE_FILE}, the windows where the rule gives way, within ${TOL} dp`, async (t) => {
+  const fx = JSON.parse(fs.readFileSync(new URL(EDGE_FILE, FIXTURES), 'utf8'));
+  assert.deepEqual(Object.keys(fx.screens), Object.keys(EDGE), `${EDGE_FILE}: the cases edge-cli.mjs writes (rerun it)`);
+  for (const [name, c] of Object.entries(EDGE)) {
+    await t.test(name, () => {
+      const want = fx.screens[name];
+      assert.deepEqual({ W: want.W, H: want.H, pointer: want.pointer, settings: want.settings },
+        { W: c.W, H: c.H, pointer: c.pointer, settings: c.settings }, `${EDGE_FILE} was made for another window or settings (rerun edge-cli.mjs)`);
+      const r = layout(c.W, c.H, c.pointer, c.settings);
+      assert.ok(r.spec, `no spec: ${r.reason}`);
+      const got = summary(r);
+      assert.deepEqual(expectDiff(got, c.expect), [], `${c.why}: not the design's numbers`);
+      assert.equal(got.usable, want.usable, `usable (golden ${want.usable})`);
+      assert.ok(Math.abs(got.gap - want.gap) <= TOL, `the gap between the banks ${got.gap} (golden ${want.gap})`);
+      assert.deepEqual(specDiff(r.spec, want.spec), []);
+    });
+  }
+});
 
 // ---- 2. never throws
 
