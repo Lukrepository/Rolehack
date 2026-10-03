@@ -1091,26 +1091,41 @@ export class Overlay {
 
   // A hold of the old SACRIFICE spot, from its touch to its lift.  The lift's
   // verdict waits for the key's own lift (a capture listener runs first): a
-  // hold of 380 ms that set nothing (holdUsed) is the habit -- where
-  // SACRIFICE went shows, and the next pad tap's 1.5 s begin.  A count
-  // picked by a slide, or a count layer left up to be tapped, was meant.
-  // GAME's drawer, which the lift opens in portrait, is no use of the hold:
-  // the flash still says where SACRIFICE went, and the drawer's backdrop
-  // takes the y (habitSwallows lets it).
+  // hold of 380 ms that set nothing is the habit -- where SACRIFICE went
+  // shows, and the next pad tap's 1.5 s begin.  What a hold did with its
+  // time was meant, and holdMeant() marks the hold's own record, by its
+  // pointer, so the other thumb's hold meanwhile marks nothing:
+  //  - a count picked by a slide, or a count layer left up to be tapped
+  //    (countHold);
+  //  - REST's strip slid to show or put away Long rest (bindScrollWell): a
+  //    slow swipe of it in landscape flashed SACRIFICE, ate the next step
+  //    and marked the session caught (the layers stage's re-check,
+  //    2026-10-03);
+  //  - a key's own hold, M1's macro editor or a hub's layer, where its key
+  //    reaches into the spot's 8 dp (bindHold).
+  // A key whose lift is its tap -- GAME, the whole spot in portrait and at
+  // 640x360, up to a third of it on a phone in landscape; WORLD at its edge
+  // -- set nothing by the hold: the flash says, over the drawer the tap
+  // opened, where SACRIFICE went, and the drawer's backdrop takes the y
+  // (habitSwallows lets it).
   prayHabit(e) {
     const r = this.habitSpots && this.habitSpots.pray;
     if (!r || !this.twin || !this.ghostOn()) return;
     if (!(e.clientX >= r.x && e.clientX <= r.x + r.w && e.clientY >= r.y && e.clientY <= r.y + r.h)) return;
-    this.prayHold = { id: e.pointerId, at: performance.now() };
-    this.holdUsed = null;
+    this.prayHold = { id: e.pointerId, at: performance.now(), meant: false };
+  }
+  // the touch's hold did something with its time: no habit
+  holdMeant(id) {
+    if (this.prayHold && this.prayHold.id === id) this.prayHold.meant = true;
   }
   prayLift(e) {
     const hold = this.prayHold;
     if (!hold || hold.id !== e.pointerId) return;
-    this.prayHold = null;
-    if (e.type !== 'pointerup' || performance.now() - hold.at < HUB_HOLD_MS) return;
+    if (e.type !== 'pointerup' || performance.now() - hold.at < HUB_HOLD_MS) { this.prayHold = null; return; }
+    // kept till the key's own lift has run, which may yet mark it (countHold)
     setTimeout(() => {
-      if (this.holdUsed === hold.id || !this.twin) return;
+      if (this.prayHold === hold) this.prayHold = null;
+      if (hold.meant || !this.twin) return;
       this.habit = { kind: 'pray', until: performance.now() + HABIT_MS };
       this.prayShow();
     }, 0);
@@ -1838,9 +1853,9 @@ export class Overlay {
         this.padHover(null);
         const place = this.padPlaceAt(ev.clientX, ev.clientY);
         // a hold that picked or stays up was meant (prayLift's habit)
-        if (place === 4 || COUNT_PLACES.includes(place)) { this.holdUsed = ev.pointerId; this.countPick(place); return; }
+        if (place === 4 || COUNT_PLACES.includes(place)) { this.holdMeant(ev.pointerId); this.countPick(place); return; }
         if (ms < COUNT_STICKY_MS) { this.closePadLayer(); return; }
-        this.holdUsed = ev.pointerId;
+        this.holdMeant(ev.pointerId);
         L.sticky = true;
         this.armIdle();
       },
@@ -2069,8 +2084,11 @@ export class Overlay {
       const dx = (e.clientX - x0) / this.s, dy = (e.clientY - y0) / this.s;
       const along = w.vertical ? dy : dx, across = w.vertical ? dx : dy;
       if (!dragging && Math.abs(along) > 8 && Math.abs(along) > Math.abs(across)) {
-        // the key under the finger gets a cancel: no tap, no hold
+        // the key under the finger gets a cancel: no tap, no hold; and the
+        // touch was REST's own swipe, however slow, not the old Pray hold on
+        // its spot (prayLift)
         dragging = true;
+        this.holdMeant(e.pointerId);
         clearTimeout(w.timer);
         for (const k of [this.restFace, this.longFace]) k.cancelGesture && k.cancelGesture();
         w.strip.classList.add('drag');
@@ -3697,6 +3715,10 @@ export class Overlay {
       const id = ev.pointerId;
       pending = setTimeout(() => {
         pending = 0; justOpened = true; FB.held(); onHold();
+        // the hold did its key's work (M1's editor, a hub's layer), so it was
+        // no old Pray hold (prayLift); a layer held open (opts) is judged by
+        // its release, where a count layer that closes unused is the habit
+        if (!(opts && opts.release)) this.holdMeant(id);
         // Twin banks: a hold that took its own key away spends the rest of
         // the touch.  A drawer's item held to pin it closes the drawer under
         // the finger and puts up the scrim round the lit places, and the
