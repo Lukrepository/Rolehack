@@ -881,30 +881,38 @@ const ATR_URGENT = 16, ATR_NOHISTORY = 32;   // wintype.h
 // putMessage).  A --More-- that a band of more rows no longer needs still
 // waits for its answer: gone by itself, the tap the player meant for it
 // would land on the map as a travel, or open the history.  With no --More--
-// up, the band shows the page's end, the band's worth that holds its newest
-// row: a fight's four messages on a portrait band of 4 rows, the phone turned
-// to landscape's 3, showed only the first three, and the newest never came
-// back (the review, 2026-10-02).
+// up, the band shows the page's last rows, as many as it holds: a fight's
+// four messages on a portrait band of 4 rows, the phone turned to
+// landscape's 3, showed only the first three, and the newest never came back
+// (the review, 2026-10-02); and the band's worth that held the newest row
+// could begin inside the newest message, where a narrower band wraps it onto
+// a second row, and show only its tail, the rest of the band empty -- "jackal
+// corpse." of a kill on the 360x640 phone turned to landscape, or a
+// question's "[ynq] (n)" alone, which no tap on the band brings back (the
+// re-check, 2026-10-03).  Those rows need not begin a band's worth: a
+// --More-- that comes on the same page before the player acts sees to its
+// room first (moreRoom).
 // Switching the Layout setting with a page up lays the band out again too,
 // either way, so it re-finds its place the same; classic's own re-layouts
 // keep its rows as they were.
-let scrollMark = null;    // { key, twin, row, letters }: the band's metrics and scrollRow's place at the last render
+let scrollMark = null;    // { key, twin, row, last, letters }: the band's metrics and scrollRow's place at the last render (last: the page's last rows, put there at rest)
 const lettersOf = (row) => row.t.replace(/\s+/g, '').length;
 function keepScroll(m) {
   const twin = !!(geom && geom.twin), mark = scrollMark;
   const key = `${twin} ${m.width} ${m.rows} ${m.slot} ${m.cx.font}`;
-  let all = null;
+  let all = null, last = !!(mark && mark.last && mark.row === scrollRow);
   const rows = () => (all = all || pageRowsOf(page, m));
   if (mark && mark.key !== key && mark.row === scrollRow && (twin || mark.twin)) {
-    if (scrollRow) {
+    last = !moreShown;
+    if (last) scrollRow = Math.max(0, rows().length - m.rows);
+    else if (scrollRow) {
       // the row that now holds the first letter the band showed
       let r = 0, n = 0;
       while (r < rows().length - 1 && n + lettersOf(all[r]) <= mark.letters) n += lettersOf(all[r++]);
       scrollRow = Math.floor(r / m.rows) * m.rows;
     }
-    if (!moreShown && rows().length - scrollRow > m.rows) scrollRow = Math.floor((all.length - 1) / m.rows) * m.rows;
   }
-  scrollMark = { key, twin, row: scrollRow, letters: scrollRow ? rows().slice(0, scrollRow).reduce((a, q) => a + lettersOf(q), 0) : 0 };
+  scrollMark = { key, twin, row: scrollRow, last, letters: scrollRow ? rows().slice(0, scrollRow).reduce((a, q) => a + lettersOf(q), 0) : 0 };
 }
 
 function renderBands() {
@@ -957,12 +965,33 @@ async function more() {
   unread = false;
 }
 
+// A page at rest, laid out again, shows its last rows (keepScroll), and they
+// need not begin a band's worth, whose last row alone keeps --More--'s room
+// at its right end (wrapRows).  More messages may come on that page before
+// the player acts -- after a text window, in an occupation's turns -- and
+// their --More-- would stand over the end of the band's last row.  So when
+// that row leaves no room, the band goes back to the start of its band's
+// worth, and moreToEnd pages on from there: the page shows rows again, and
+// skips none.  True when it went back.  Classic's own turns keep its rows as
+// they were, and its --More-- where it stood.
+function moreRoom() {
+  const m = bandMetrics(), off = scrollRow % m.rows;
+  if (!off || m.width < 40 || !(scrollMark && scrollMark.last && scrollMark.row === scrollRow)) return false;
+  const rows = pageRowsOf(page, m).slice(scrollRow, scrollRow + m.rows);
+  if (rows.length < m.rows || m.cx.measureText(rows[m.rows - 1].t).width <= m.width - m.slot) return false;
+  scrollRow -= off;
+  return true;
+}
+
 // --More--, then, in twin banks, again for each band's worth of the page that
 // a re-layout meanwhile left below the band (keepScroll), so a page is never
-// put away with rows the band has not shown.  Classic waits once, as before.
+// put away with rows the band has not shown.  Classic waits once, as before,
+// unless its band went back for the --More--'s room (moreRoom: a page laid
+// out in twin banks, the Layout setting switched with it at rest).
 async function moreToEnd() {
+  const back = moreRoom();
   await more();
-  for (let m = bandMetrics(); geom && geom.twin && !msgStop && pageRowsOf(page, m).length - scrollRow > m.rows; m = bandMetrics()) {
+  for (let m = bandMetrics(); (back || (geom && geom.twin)) && !msgStop && pageRowsOf(page, m).length - scrollRow > m.rows; m = bandMetrics()) {
     scrollRow += m.rows;
     await more();
   }
