@@ -223,6 +223,23 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
 .k.pressed .sh { top: 1px; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
 /* an empty pin key is a keycap like any other, its legend dimmed (RhFace: alpha 110) */
 .k.ph .lg { opacity: .43; }
+/* twin banks: a key's box is its hit cell, the keycap drawn inset in it
+   (overlay.js Key.cell; the design's section 6).  The keycap takes no touch
+   of its own: the cell does.  Hit-testable, its small boxes were what
+   Chrome's touch adjustment aimed for, and a touch 2 px inside the pad's
+   cell went to MSGS above it (the layers stage, 2026-10-03).  Its
+   own class: .cap is the windows' keycap (capButton), whose rules would
+   dress it -- their colours and a 46 px least width. */
+.k > .kcap { position: absolute; display: block; pointer-events: none; }
+/* a layer's place that does nothing this turn: HERE's, or a count layer's blanks */
+.k.dimmed .tp { filter: brightness(.55) saturate(.35); }
+.k.dimmed .lg { opacity: .45; }
+/* the near-miss guard's hit areas: the halo under each bank's cells and the
+   action pad's seams over its keys, invisible but for a swallow's 150 ms
+   flash -- the halo's edge, or the seam -- with a light tick */
+#keys > .halo, #keys > .seam { position: absolute; touch-action: none; }
+#keys > .halo.flash { box-shadow: inset 0 0 0 1.5px rgba(255,179,71,.9), inset 0 0 8px rgba(255,179,71,.35); }
+#keys > .seam.flash { background: rgba(255,179,71,.4); border-radius: 2px; }
 
 /* the Rest / Long rest slot: a strip that slides sideways */
 .well-slot { position: absolute; overflow: hidden; touch-action: none; }
@@ -274,8 +291,6 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
 .chiprow { position: absolute; display: flex; gap: 4px; padding: 4px; background: #04070e; border-radius: 4px; }
 .chiprow .k { position: relative; flex: none; }
 .chiprow .k.dim { opacity: .66; }
-/* twin banks: a row of keys inside the map, wrapping upward on a narrow map */
-.chiprow.twinpop { flex-wrap: wrap-reverse; }
 /* the ghost deck's flash: the old key's name, and an arrow to where it went */
 #keys > .ghost { position: absolute; display: none; align-items: center; gap: 4px; padding: 3px 6px 3px 10px; border-radius: 99px;
   background: rgba(5,7,13,.92); color: #ffd97a; box-shadow: 0 0 0 1.5px #ffb347; pointer-events: none;

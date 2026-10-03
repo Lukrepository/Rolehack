@@ -66,6 +66,9 @@ const DEFAULTS = {
   // keyboard can be attached and still out of reach
   touchKeyboard: false,
   atkSlots: null, equipSlots: null, counts: {}, macros: null,
+  // twin banks' attack pins, their own: PIN 2 starts on Fire there, classic's
+  // stays empty (overlay.js twinPins)
+  atkSlotsTwin: null,
 };
 
 const cache = {};
@@ -119,6 +122,7 @@ export function macros() {
 // DEFAULTS (RhPrefs.restoreKeys / restoreMacros)
 export function restoreKeys(hubIds) {
   unset('atkSlots');
+  unset('atkSlotsTwin');
   unset('equipSlots');
   for (const id of hubIds) unset(`layer_${id}`);
 }

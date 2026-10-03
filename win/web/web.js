@@ -10,7 +10,7 @@
 import createNetHack from './nethack.js';
 import { setPalette, dressHero, LOOK_LEN } from './doll.js';
 import { Overlay, STATUS_BAND, LINE, msgRows, msgBandPx, msgTextPx, MSG_LEADING, resetTextScale, creationCap,
-  GHOST_CONFIRM_MS } from './overlay.js';
+  GHOST_CONFIRM_MS, RING_REACH } from './overlay.js';
 import { keyEvents } from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
@@ -634,13 +634,17 @@ function renderMap() {
 // walks.  A preview that goes unconfirmed -- it times out, or the next tap or
 // key is something else -- is a catch: the player meant the old key.
 let commandWait = false;    // the core is in nh_poskey for a command: a map tap would travel
-let ghostPreview = null;    // { x, y, timer }: the cell a preview outlines
+// { x, y, timer, ring }: the cell a preview outlines, the ghost deck's or
+// (ring) the confirm ring's
+let ghostPreview = null;
 
 function clearGhostPreview(confirmed) {
   if (!ghostPreview) return;
-  clearTimeout(ghostPreview.timer);
+  const was = ghostPreview;
+  clearTimeout(was.timer);
   ghostPreview = null;
-  if (!confirmed && overlay) overlay.ghostCaught();
+  // only the ghost deck counts its catches; the ring's lapse is no habit
+  if (!confirmed && !was.ring && overlay) overlay.ghostCaught();
   renderMap();
 }
 
@@ -648,10 +652,69 @@ function clearGhostPreview(confirmed) {
 function ghostTap(e, x, y) {
   if (ghostPreview && ghostPreview.x === x && ghostPreview.y === y) { clearGhostPreview(true); return false; }
   if (ghostPreview) clearGhostPreview(false);
-  const g = commandWait && overlay && overlay.ghostAt(e.clientX, e.clientY);
+  const g = wouldTravel() && overlay && overlay.ghostAt(e.clientX, e.clientY);
   if (!g) return false;
   ghostPreview = { x, y, timer: setTimeout(() => clearGhostPreview(false), GHOST_CONFIRM_MS) };
   overlay.ghostShow(g);
+  renderMap();
+  return true;
+}
+
+// Twin banks' near-miss guard on the map (the design's section 6; overlay.js
+// has its halos and seams).  It acts while a map tap would travel -- the core
+// waits for a command (commandWait), Fight armed included, since the overlay
+// holds the F until the pad gives the direction, or the core is busy, in a
+// travel or a count's turns, and the tap waits in the queue for the next
+// command it will travel to -- and nowhere else: at --More-- a tap is Space,
+// in getpos it picks the spot, and in a direction prompt nextKey() drops
+// clicks, so a map tap answers nothing there.  A tap during a travel went to
+// the queue unguarded, and the next command took it as the next travel, ring
+// and all (the layers stage's review, 2026-10-03).
+//  - Fight armed: any map tap disarms it and goes no further; it neither
+//    walks nor aims.
+//  - A layer up: a map tap only closes it (the scrim takes it first).
+//  - For 200 ms after a drawer, a layer's ALL, a modal, a menu or a
+//    prompt's chips close, every map tap is swallowed: a bounce or a second
+//    tap on an item would otherwise fall through and walk.
+//  - The confirm ring, the 20 dp of map next to a halo (32 dp from a
+//    keycap): a tap there does not walk, it outlines its cell, and a second
+//    tap on the same cell within 2 s walks; anything else clears it.  For 120
+//    ms after a key lifts, a ring tap is swallowed outright: a bounce lands
+//    beside the key.  Deeper in the map a tap walks at once, as it always has.
+//  - The ghost deck's old spots preview the same way (ghostTap).
+// The 120 and 200 ms are timed from when the tap landed (down, its
+// pointerdown's time), not from its lift: a thumb's tap stays down 50 to 100
+// ms, so a second tap that landed 150 ms after a drawer closed lifted past
+// the 200 and walked (the layers stage's review, 2026-10-03).  A tap that
+// landed before the key lifted or the window closed, and lifted after, is
+// held to them too.  True when the tap is not to travel.
+const RING_AFTER_KEY_MS = 120, AFTER_CLOSE_MS = 200;
+let closedAt = -1e9;        // when a drawer, modal, form, menu or chip row last closed
+function windowClosed() { closedAt = performance.now(); }
+
+// a map tap now would travel: the core waits for a command, or it is busy and
+// no question or spot is waiting, so the tap queues for its next command
+const wouldTravel = () => commandWait || (!waiter && !(overlay && overlay.picking));
+
+function guardTap(e, x, y, inLevel, down) {
+  if (!overlay || !wouldTravel()) return false;
+  if (overlay.armed) {
+    overlay.disarm();
+    overlay.noteGuard('disarm', e);
+    return true;
+  }
+  if (overlay.layerUp()) { overlay.dismissPopups(); return true; }
+  if (down - closedAt < AFTER_CLOSE_MS) { overlay.noteGuard('closing', e); return true; }
+  const d = overlay.keyDistance(e.clientX, e.clientY);
+  const ring = d !== null && d <= RING_REACH;
+  if (ring && down - overlay.keyUpAt < RING_AFTER_KEY_MS) { overlay.noteGuard('bounce', e); return true; }
+  if (!inLevel) { clearGhostPreview(false); return true; }
+  // a preview's second tap on its cell walks; any other tap clears it (ghostTap)
+  if (ghostPreview && ghostPreview.x === x && ghostPreview.y === y) { clearGhostPreview(true); return false; }
+  if (ghostTap(e, x, y)) return true;
+  if (!ring) return false;
+  ghostPreview = { x, y, ring: true, timer: setTimeout(() => clearGhostPreview(false), GHOST_CONFIRM_MS) };
+  overlay.noteGuard('ring', e);
   renderMap();
   return true;
 }
@@ -673,6 +736,7 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
   const cv = $('map');
   const pts = new Map();
   let moved = false, pinch = null, panStart = null, two = null;
+  let downAt = 0;           // when a tap's one finger landed (guardTap times from it)
   // the two-finger gesture under way ends: its pinch is written, its timer stopped
   const endTwo = () => {
     if (pinch) { pinch = null; endPinch(); }
@@ -683,7 +747,11 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
     e.preventDefault();
     try { cv.setPointerCapture(e.pointerId); } catch (x) { /* synthetic */ }
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (pts.size === 1) { moved = false; panStart = { x: e.clientX, y: e.clientY, px: view.panX, py: view.panY }; }
+    if (pts.size === 1) {
+      moved = false;
+      panStart = { x: e.clientX, y: e.clientY, px: view.panX, py: view.panY };
+      downAt = e.timeStamp || performance.now();
+    }
     if (pts.size === 2) {
       const [a, b] = [...pts.values()];
       moved = true;
@@ -748,7 +816,11 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
     const r = cv.getBoundingClientRect();
     const x = Math.floor((e.clientX - r.left - view.left) / view.T);
     const y = Math.floor((e.clientY - r.top - view.top) / view.T);
-    if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO && !ghostTap(e, x, y)) push({ click: { x, y, mod: 1 } });
+    const inLevel = x >= 0 && x < COLNO && y >= 0 && y < ROWNO;
+    // twin banks' guard, which an armed Fight's disarming tap may give off the
+    // level too; classic's ghostTap never previews (no ghost deck)
+    if (geom && geom.twin ? guardTap(e, x, y, inLevel, downAt) || !inLevel : !inLevel || ghostTap(e, x, y)) return;
+    push({ click: { x, y, mod: 1 } });
   };
   cv.addEventListener('pointerup', up);
   cv.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); if (pts.size < 2 && (pinch || two)) endTwo(); endOverview(); });
@@ -1175,6 +1247,10 @@ function promptChoices(query, allowed) {
   return [...new Set(out)].slice(0, 40);
 }
 
+// A chip's tap closes the row as a window's tap does (windowClosed): the
+// chips sit over the map, and a bounce or a double tap on one, the row gone
+// under it, walked the hero to the chip's place once the core was back at a
+// command (the layers stage's review, 2026-10-03).
 function showChips(choices) {
   const c = $('chips');
   c.innerHTML = '';
@@ -1184,7 +1260,7 @@ function showChips(choices) {
     b.textContent = ch;
     b.addEventListener('pointerdown', () => { b.classList.add('pressed'); FB.press(); });
     b.addEventListener('pointerleave', () => b.classList.remove('pressed'));
-    b.addEventListener('pointerup', (e) => { e.preventDefault(); b.classList.remove('pressed'); FB.up(); push({ key: ch.charCodeAt(0) }); });
+    b.addEventListener('pointerup', (e) => { e.preventDefault(); b.classList.remove('pressed'); FB.up(); windowClosed(); push({ key: ch.charCodeAt(0) }); });
     c.appendChild(b);
   }
   const x = document.createElement('button');
@@ -1192,7 +1268,7 @@ function showChips(choices) {
   x.textContent = 'Esc';
   x.addEventListener('pointerdown', () => { x.classList.add('pressed'); FB.press(); });
   x.addEventListener('pointerleave', () => x.classList.remove('pressed'));
-  x.addEventListener('pointerup', (e) => { e.preventDefault(); x.classList.remove('pressed'); FB.up(); push({ key: 27 }); });
+  x.addEventListener('pointerup', (e) => { e.preventDefault(); x.classList.remove('pressed'); FB.up(); windowClosed(); push({ key: 27 }); });
   c.appendChild(x);
   sizeChips();
   placeChips();
@@ -1234,6 +1310,7 @@ function setHint(text, count = false) {
   $('modal-hint').classList.toggle('count', count);
 }
 function closeModal() {
+  if (!$('modal').hidden) windowClosed();
   $('modal').hidden = true;
   // character creation's keys go with the window (creationKeys)
   const keys = $('ckeys');
@@ -1623,6 +1700,7 @@ function form(title, fields, buttons) {
   const done = (b) => {
     box.parentElement.hidden = true;
     formOpen = null;
+    windowClosed();
     if (touch) showKeyboard(false);
     if (b && b.run) b.run(values);
   };
@@ -2097,7 +2175,14 @@ overlay = new Overlay({
   glassChanged: (g) => layoutGlass(g),
   form,
   toggleKeyboard: () => showKeyboard(!$('kbd').classList.contains('on')),
+  // twin banks' guard steps aside where a tap means something else: at
+  // --More--, under a menu, a text window or a form (getpos is the overlay's)
+  guardsAside: () => moreShown || !$('modal').hidden || !$('formwrap').hidden,
+  windowClosed,
 });
+// what the near-miss guard did, for the near-miss test on a device (the
+// design's section 18, test 2), from the browser's console
+globalThis.rolehackGuardLog = () => (overlay && overlay.guardLog) || [];
 // build.json, written by build.sh: the commit this page was built from and a
 // link to its source on GitHub.  Shown at the foot of the boot screen and at
 // the end of a game, so whoever plays it can find the source.

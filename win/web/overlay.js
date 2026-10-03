@@ -24,10 +24,14 @@
 // The movement pad keeps the player's key size; the glass takes the rectangle
 // the banks leave.  The case paints the two wells and the glass's bezel; the
 // hood and the lip go, and their lamps move onto the keys they describe.
-// Everything that popped up over keys opens inside the map instead, and a
-// rebuild -- a resize, a turn -- keeps whatever was open or armed.  A window
-// with no room for twin banks shows classic, and the setting stays twin.
-// Classic is the board above, as it was; nothing here changes it.
+// Each key's box is its hit cell, and a guard round the banks keeps a near
+// miss from walking the hero or firing another key (the halos and seams
+// here, the map's ring in web.js).  The counts and the places of CONTEXT and
+// the pad centre are layers on the movement pad, as the hubs' are; whatever
+// else popped up over keys opens inside the map instead, and a rebuild -- a
+// resize, a turn -- keeps whatever was open or armed.  A window with no room
+// for twin banks shows classic, and the setting stays twin.  Classic is the
+// board above, as it was; nothing here changes it.
 //
 // Key feedback -- a vibration, the click, both or neither -- is feedback.js.
 
@@ -118,10 +122,49 @@ const POP_PAD = 4;        // a pop-up's distance inside the map area's edge
 const GHOST_SLOP = 8, GHOST_FLASH_MS = 1400;
 export const GHOST_CONFIRM_MS = 2000;
 const SESSION_IDLE_MS = 30 * 60 * 1000, SESSION_TURNS = 100, GHOST_SESSIONS = 3;
+// The near-miss guard (the design's section 6): a 12 dp halo round each bank
+// that snaps a tap within 8 dp of a keycap to it and swallows the rest, seams
+// at least 8 dp wide between the action pad's keycaps, and the confirm ring,
+// the 20 dp of map next to a halo (web.js).  A swallow flashes for 150 ms.
+const HALO = 12, SNAP = 8, SEAM = 8, GUARD_FLASH_MS = 150;
+export const RING_REACH = HALO + 20;   // a map tap this near a keycap is in the ring
+// Layers on the pad (the design's section 8): a sticky layer drops back to
+// arrows after 4 s with no input; a count held 600 ms or more stays up when
+// the thumb lifts; the stairs from CONTEXT wait 2 s for their second tap.
+const STICKY_IDLE_MS = 4000, COUNT_STICKY_MS = 600, STAIRS_MS = 2000;
+// the ghost deck's habit guards stand for 1.5 s (classicHabits)
+const HABIT_MS = 1500;
+// The count layer's places: ↖ ×1, ↑ ×5, ↗ ×10, → ×20 (or a Long rest's
+// ×100 to ×400); the centre types any count.
+const COUNT_PLACES = [0, 1, 2, 5];
+// PIN 1 empty, PIN 2 Fire, in twin banks (the design's section 16); classic's
+// two points keep C.ATK_SLOT_DEFAULT, both empty.  Twin keeps its pins under
+// their own name (twinPins).
+const TWIN_ATK_DEFAULT = [null, 'f'];
+// The flick's two wedges split at -62.5 degrees and run 62.5 each way, -125
+// to 0 (the design's section 7): 17.5 past each node, where classic has 15.
+const TWIN_FLICK_SLACK = 17.5;
 
 // here-context flags (include/rhhere.h)
 export const HERE_OBJECT = 0x01, HERE_STAIRS_DOWN = 0x02, HERE_STAIRS_UP = 0x04, ADJ_CLOSED_DOOR = 0x08,
   ADJ_HOSTILE = 0x10, HERE_CONTAINER = 0x20, HERE_ALTAR = 0x40, ADJ_OPEN_DOOR = 0x80;
+
+// Twin banks' HERE layer (the design's section 8), in the pad's order: fixed
+// places, never re-ranked, so a place is one thumb motion whatever the turn
+// holds.  A place whose flag the turn lacks is dimmed and does nothing; Look
+// here always applies.  The centre is ALL, the HERE drawer.  The stairs are
+// marked: from CONTEXT they take a second tap.
+const HERE_PLACES = [
+  { act: C.CTX_SACRIFICE, bit: HERE_ALTAR },                     // ↖
+  { act: C.CTX_ASCEND, bit: HERE_STAIRS_UP, stairs: true },      // ↑
+  { act: C.CTX_PICKUP, bit: HERE_OBJECT },                       // ↗
+  { act: C.CTX_OPEN, bit: ADJ_CLOSED_DOOR },                     // ←
+  null,                                                          // ALL
+  { act: C.CTX_CLOSE, bit: ADJ_OPEN_DOOR },                      // →
+  { act: C.CTX_LOOT, bit: HERE_CONTAINER },                      // ↙
+  { act: C.CTX_DESCEND, bit: HERE_STAIRS_DOWN, stairs: true },   // ↓
+  { act: C.CTX_LOOKHERE, bit: 0 },                               // ↘
+];
 
 // ---- keycap families (RhTheme): top light, top dark, skirt left/mid/right, legend, hold, raw
 const fam = (a) => a;
@@ -200,6 +243,16 @@ const ARROW_DEG = { '↑': 0, '↗': 45, '→': 90, '↘': 135, '↓': 180, '↙
 const ARROW_SVG = (deg) => `<svg width="20" height="20" viewBox="0 0 20 20" style="transform:rotate(${deg}deg)">`
   + '<path d="M10 16V4M5 9l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2.4" '
   + 'stroke-linecap="round" stroke-linejoin="round"/></svg>';
+// the arrow nearest a flick's screen bearing (0 to the right, -90 up): -85 ↑, -40 ↗
+const bearingArrow = (b) => {
+  const compass = (((b + 90) % 360) + 360) % 360;
+  let best = '↑';
+  for (const [a, d] of Object.entries(ARROW_DEG)) {
+    const off = (x) => Math.min(Math.abs(compass - x), 360 - Math.abs(compass - x));
+    if (off(d) < off(ARROW_DEG[best])) best = a;
+  }
+  return best;
+};
 
 const $ = (id) => document.getElementById(id);
 const el = (tag, cls, parent) => { const e = document.createElement(tag); if (cls) e.className = cls; if (parent) parent.appendChild(e); return e; };
@@ -254,7 +307,8 @@ class Key {
 
   place(x, y, w, h, rot = 0) {
     const s = this.el.style;
-    s.left = `${x}px`; s.top = `${y}px`; s.width = `${w}px`; s.height = `${h}px`;
+    this.kx = x; this.ky = y;
+    this.setBox(x, y, w, h);
     if (rot) s.transform = `rotate(${rot}deg)`;
     const shadow = 2.5, front = clamp(h * 0.2, 7, 12), side = Math.min(4, w / 12);
     const r = Math.min(6, (h - shadow) / 5);
@@ -281,6 +335,35 @@ class Key {
   }
 
   box(b, rot) { return this.place(b.x, b.y, b.w, b.h, rot); }
+
+  // The element's box: the keycap's, or with a hit cell (cell()) the cell's,
+  // the keycap drawn inside it at its own place.
+  setBox(x, y, w, h) {
+    const s = this.el.style, c = this.hit;
+    if (!c) { s.left = `${x}px`; s.top = `${y}px`; s.width = `${w}px`; s.height = `${h}px`; return; }
+    s.left = `${c.x}px`; s.top = `${c.y}px`; s.width = `${c.w}px`; s.height = `${c.h}px`;
+    Object.assign(this.capEl.style, { left: `${x - c.x}px`, top: `${y - c.y}px`, width: `${w}px`, height: `${h}px` });
+  }
+
+  // Twin banks: the key's box is its hit cell (the design's section 6) -- the
+  // keycap and the gaps round it, out to the screen's edge on the bank's
+  // outer side and bottom -- so a tap a little off the keycap still presses
+  // it, and the keycap is drawn inset, where the layout put it.  The cell is
+  // in the px place() was given, the key's parent's.  Classic's keys have no
+  // cell and no .kcap: their box is the keycap, as it always was.
+  cell(c) {
+    if (!this.capEl) {
+      this.capEl = el('span', 'kcap', this.el);
+      for (const part of [this.sh, this.sk, this.fr, this.tp]) this.capEl.appendChild(part);
+    }
+    this.hit = { ...c };
+    this.el.classList.add('hitcell');
+    this.setBox(this.kx, this.ky, this.w, this.h);
+    return this;
+  }
+
+  // the keycap as drawn, on screen
+  capRect() { return (this.capEl || this.el).getBoundingClientRect(); }
 
   face(f) { this.faceColour = f || C.G90; this.paint(); return this; }
   cap(c) { this.capFam = c; this.paint(); return this; }
@@ -352,6 +435,8 @@ class Key {
   }
 
   lit(on) { this.el.classList.toggle('lit', on); return this; }
+  // a layer's place that does nothing this turn (twin banks' HERE and counts)
+  dim(on) { this.el.classList.toggle('dimmed', on); return this; }
   // the flick key: a pointing stick's rubber nub rather than a keycap (RhFace.nub)
   nub(on) { this.isNub = on; this.el.classList.toggle('nub', on); return this; }
   press(on) { this.pressed = on; this.el.classList.toggle('pressed', on); }
@@ -419,6 +504,7 @@ export class Overlay {
     if (document.fonts) document.fonts.ready.then(() => this.rebuild());
     this.guardClicks();
     this.watchTwin();
+    this.watchGuard();
     this.startGhostSession();
     this.rebuild();
   }
@@ -712,7 +798,7 @@ export class Overlay {
     const sig = S.controls.map((c) => c.id).sort().join(' ');
     const snap = this.twin && sig === this.twinSig ? this.snapshot() : null;
     this.twin = { spec: S, info: r.info, W, H, pointer, mode, settings, budget: used, reason: r.reason,
-      ctl: new Map(S.controls.map((c) => [c.id, c])), keys: new Map() };
+      ctl: new Map(S.controls.map((c) => [c.id, c])), keys: new Map(), guard: guardGeometry(S) };
     this.twinSig = sig;
     this.twinTier = r.info.tier;
 
@@ -737,9 +823,14 @@ export class Overlay {
     this.keysEl.innerHTML = '';
     this.resetState();
     this.buildTwinCase();
+    // the halos first, under every key; the cells over them; the seams last
+    this.buildHalos(this.keysEl);
     this.buildKeys();
+    this.applyCells();
+    this.buildSeams(this.keysEl);
     if (snap) this.restoreState(snap);
     this.ghostSpots = this.portrait ? [] : this.classicDeck(W, H);
+    this.habitSpots = this.classicHabits(W, H);
 
     // The bands are the layout's, messages first: the message band's rows and
     // width are what web.js pages the game's messages by (bandMetrics), so
@@ -763,23 +854,12 @@ export class Overlay {
     const k = this.twin && this.twin.keys.get(id);
     return k ? k.el || k : null;
   }
-  // which side of the map a control's pop-up opens on: its own thumb's
-  twinSide(id) { const c = this.twin && this.twin.ctl.get(id); return c ? c.thumb : 'C'; }
-
-  // A pop-up's place inside the map area, never over a key: along the map's
-  // bottom edge on the side of the key it belongs to.  Until the layers paint
-  // these on the pad, the count rows, the pad centre's list and the context
-  // candidates open here; a row longer than the map is wide wraps upward.
-  twinPop(el_, side) {
-    const m = this.twin.spec.mapArea;
-    Object.assign(el_.style, {
-      left: side === 'R' ? 'auto' : `${m.x + POP_PAD}px`,
-      right: side === 'R' ? `${this.DW - (m.x + m.w - POP_PAD)}px` : 'auto',
-      top: 'auto', bottom: `${this.DH - (m.y + m.h - POP_PAD)}px`, maxWidth: `${m.w - 2 * POP_PAD}px`,
-    });
-    if (side !== 'L' && side !== 'R') { el_.style.left = `${m.x + m.w / 2}px`; el_.style.transform = 'translateX(-50%)'; }
-    el_.classList.add('twinpop');
-    return el_;
+  // the keycap of a control as drawn: its key's .kcap, inset in its hit cell
+  // (REST's slot holds the face that shows)
+  twinCapRect(id) {
+    if (id === 'rest' && this.restWell) return (this.restWell.revealed ? this.longFace : this.restFace).capRect();
+    const k = this.twin && this.twin.keys.get(id);
+    return k ? (k.capRect ? k.capRect() : k.getBoundingClientRect()) : null;
   }
 
   // ---- twin banks: what a rebuild keeps (control ids are stable)
@@ -795,6 +875,12 @@ export class Overlay {
       fill: this.fill ? { hub: hubId(this.fill.hv), attack: this.fill.attack, n: this.fill.n } : null,
       drawerScroll: this.drawerGrid ? this.drawerGrid.scrollTop : 0,
       restRevealed: !!(this.restWell && this.restWell.revealed),
+      // a layer on the pad that stays up: a count, CONTEXT's HERE and the
+      // stairs lit in it, the stairs' first tap (a layer held under a thumb is
+      // never rebuilt under it)
+      padLayer: this.padLayer ? { kind: this.padLayer.kind, act: this.padLayer.act, fromId: this.padLayer.fromId,
+        from: this.padLayer.from === 'context' ? 'context' : null, sticky: !!this.padLayer.sticky,
+        lit: this.padLayer.lit ?? null } : null,
     };
   }
 
@@ -823,9 +909,10 @@ export class Overlay {
       const radial = this.radials.get(FLICK_ID);
       if (radial) radial.style.display = '';
     }
-    if (s.chipsOpen) this.chipsOpen = s.chipsOpen;
+    if (s.chipsOpen && !s.padLayer) this.chipsOpen = s.chipsOpen;
     if (s.candOpen && this.candidates.length > 1) this.toggleCandidates();
     if (s.ctxRadialOpen) this.openContextRadial();
+    if (s.padLayer) this.reopenPadLayer(s.padLayer);
     if (s.drawerOpen) {
       this.openDrawer(s.drawerOpen, s.drawerHub ? C.HUBS.find((h) => h.id === s.drawerHub.id) || null : null);
       if (s.fill) {
@@ -916,14 +1003,22 @@ export class Overlay {
     if (g.session && !g.session.caught) P.set('ghostDeck', { ...g, session: { ...g.session, caught: true } });
   }
 
+  // Classic's geometry in this window, scale and all, without building it:
+  // where a thumb that learned classic reaches.  at() is a design-dp box in
+  // CSS px with the ghost deck's 8 dp round it.
+  classicGeom(W, H, portrait) {
+    const g = Object.create(Overlay.prototype);
+    Object.assign(g, { padCell: this.padCell, padBox: this.padBox, caseless: this.caseless, portrait });
+    const s = Math.min(1, Math.max(FIT_FLOOR, Math.min(W / g.needW(), H / g.needH())));
+    g.s = s; g.DW = W / s; g.DH = H / s;
+    g.at = (b) => ({ x: b.x * s - GHOST_SLOP, y: b.y * s - GHOST_SLOP, w: b.w * s + 2 * GHOST_SLOP, h: b.h * s + 2 * GHOST_SLOP });
+    return g;
+  }
+
   // Today's landscape deck, as classic lays it out in this window (its scale
   // and all), in CSS px: the spots a thumb has learned.
   classicDeck(W, H) {
-    const g = Object.create(Overlay.prototype);
-    Object.assign(g, { padCell: this.padCell, padBox: this.padBox, caseless: this.caseless, portrait: false });
-    const s = Math.min(1, Math.max(FIT_FLOOR, Math.min(W / g.needW(), H / g.needH())));
-    g.s = s; g.DW = W / s; g.DH = H / s;
-    const at = (b) => ({ x: b.x * s - GHOST_SLOP, y: b.y * s - GHOST_SLOP, w: b.w * s + 2 * GHOST_SLOP, h: b.h * s + 2 * GHOST_SLOP });
+    const g = this.classicGeom(W, H, false), at = g.at;
     const A = C.HUB_ATTACK;
     return [
       { id: 'combat', name: 'COMBAT', r: at(g.cb(g.hubW(A), g.hubH(A), g.hubCx(A), g.hubCy(A))) },
@@ -932,6 +1027,114 @@ export class Overlay {
       { id: 'look', name: 'LOOK', r: at(g.termStripBox(0)) },
       { id: 'context', name: 'CONTEXT', r: at(g.termStripBox(1)) },
     ];
+  }
+
+  // ---- the ghost deck's two habit guards (the design's section 6, item 8;
+  // section 15), while the deck is on, in either orientation:
+  //  - classic's pad centre opened a radial that stayed up for a tap; twin
+  //    banks' HERE is slide-only and closes on the lift, so the habitual tap
+  //    would land on whatever lies where a node was (M1, PIN 1, the map...).
+  //    A hold of the centre that lifts without a slide says "HERE: SLIDE" in
+  //    the pill, and for 1.5 s a tap on any of the old nodes' spots is
+  //    swallowed, with the same word;
+  //  - classic's SACRIFICE was prayed to by a 380 ms hold, then y on ↖ for the
+  //    game's question.  Its spot is REST in landscape, GAME in portrait now,
+  //    so the y would walk the hero north-west.  A hold of 380 ms there that
+  //    did nothing else shows, as it lifts, where SACRIFICE went, and the
+  //    next pad tap within 1.5 s is swallowed.  REST's own hold is the same
+  //    gesture: one that set a count, by a slide or by staying up to be
+  //    tapped, is no habit, and armed nothing -- it once flashed SACRIFICE
+  //    at every count, ate the next step and kept the ghost deck from
+  //    retiring (the layers stage's review, 2026-10-03).
+  // Either swallow is a catch: the player meant the old way.
+  classicHabits(W, H) {
+    const g = this.classicGeom(W, H, H > W), at = g.at;
+    const cx = g.termInner() + g.padBox / 2, cy = g.Y(g.termInner() + g.padBox / 2), r = g.ctxRadialRadius();
+    const radial = C.CTX_RADIAL.map((act, n) => {
+      const a = rad(CTX_RADIAL_A0 + n * CTX_RADIAL_STEP);
+      return at({ x: cx + Math.cos(a) * r - CTX_RADIAL_SIZE / 2, y: cy + Math.sin(a) * r - CTX_RADIAL_SIZE / 2, w: CTX_RADIAL_SIZE, h: CTX_RADIAL_SIZE });
+    });
+    let pray;
+    if (g.portrait) pray = g.lb(T_KEY, P_ROW_H, g.termInner(), g.pRowBottom(1));
+    else {
+      // where placeRow2() puts the left bank's middle row
+      const row1Bottom = g.termInner() + T_ROW1_H, row3Top = g.DH - g.termRow3Bottom() - T_KEY;
+      pray = g.tl(T_KEY, T_KEY, g.termInner(), Math.max(g.termRow2Top(), (row1Bottom + row3Top - T_KEY) / 2));
+    }
+    return { radial, pray: at(pray) };
+  }
+
+  // A touch on a habit's spot while its guard is up: swallowed whole, its
+  // move and lift too (watchGuard), whatever lies under it.
+  habitSwallows(e) {
+    const H = this.habit;
+    if (!H || !this.twin || !this.habitSpots) return false;
+    if (performance.now() > H.until) { this.habit = null; return false; }
+    const x = e.clientX, y = e.clientY, inR = (r) => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
+    if (H.kind === 'radial' ? !this.habitSpots.radial.some(inR) : this.padPlaceAt(x, y) === null || !this.padWalks()) return false;
+    if (H.kind === 'pray') this.habit = null;   // only the next pad tap
+    FB.tick();
+    this.ghostCaught();
+    this.noteGuard(`habit ${H.kind}`, e);
+    if (H.kind === 'radial') this.pillFlash('HERE: SLIDE');
+    else this.prayShow();
+    return true;
+  }
+
+  // A pad tap is a danger only where it would walk: the pad showing its
+  // arrows, nothing over it.  A layer takes it as a place, and a drawer's or
+  // a window's backdrop as a close.
+  padWalks() {
+    return !this.padLayer && !this.fanOpen && !this.answering && !this.drawerOpen && !this.picking
+      && !this.scrim.classList.contains('on') && !(this.host.guardsAside && this.host.guardsAside());
+  }
+
+  // A hold of the old SACRIFICE spot, from its touch to its lift.  The lift's
+  // verdict waits for the key's own lift (a capture listener runs first): a
+  // hold of 380 ms that set nothing (holdUsed) is the habit -- where
+  // SACRIFICE went shows, and the next pad tap's 1.5 s begin.  A count
+  // picked by a slide, or a count layer left up to be tapped, was meant.
+  // GAME's drawer, which the lift opens in portrait, is no use of the hold:
+  // the flash still says where SACRIFICE went, and the drawer's backdrop
+  // takes the y (habitSwallows lets it).
+  prayHabit(e) {
+    const r = this.habitSpots && this.habitSpots.pray;
+    if (!r || !this.twin || !this.ghostOn()) return;
+    if (!(e.clientX >= r.x && e.clientX <= r.x + r.w && e.clientY >= r.y && e.clientY <= r.y + r.h)) return;
+    this.prayHold = { id: e.pointerId, at: performance.now() };
+    this.holdUsed = null;
+  }
+  prayLift(e) {
+    const hold = this.prayHold;
+    if (!hold || hold.id !== e.pointerId) return;
+    this.prayHold = null;
+    if (e.type !== 'pointerup' || performance.now() - hold.at < HUB_HOLD_MS) return;
+    setTimeout(() => {
+      if (this.holdUsed === hold.id || !this.twin) return;
+      this.habit = { kind: 'pray', until: performance.now() + HABIT_MS };
+      this.prayShow();
+    }, 0);
+  }
+  prayShow() {
+    if (this.habitSpots) this.ghostShow({ id: 'sacrifice', name: 'SACRIFICE', r: this.habitSpots.pray });
+  }
+
+  // the pad centre lifted without a slide while its HERE was up
+  radialHabit() {
+    if (!this.twin || !this.ghostOn() || !this.habitSpots) return;
+    this.habit = { kind: 'radial', until: performance.now() + HABIT_MS };
+    this.pillFlash('HERE: SLIDE');
+  }
+
+  // a word on the layer pill with no layer up, for the habit guards
+  pillFlash(text) {
+    const pill = this.layerPill;
+    if (!pill || this.padLayer || this.fanOpen) return;
+    pill.style.setProperty('--acc', '#c2b6ff');
+    pill.textContent = text;
+    pill.classList.add('on');
+    clearTimeout(this.pillTimer);
+    this.pillTimer = setTimeout(() => { if (!this.padLayer && !this.fanOpen) pill.classList.remove('on'); }, HABIT_MS);
   }
 
   // the old deck spot under a map tap, while the deck is on
@@ -943,7 +1146,7 @@ export class Overlay {
   ghostShow(g) {
     const e = this.ghostEl, k = this.twinEl(g.id);
     if (!e || !k) return;
-    const kr = k.getBoundingClientRect(), m = this.twin.spec.mapArea;
+    const kr = this.twinCapRect(g.id), m = this.twin.spec.mapArea;
     const fx = g.r.x + g.r.w / 2, fy = g.r.y + g.r.h / 2;
     const deg = (Math.atan2(kr.x + kr.width / 2 - fx, -(kr.y + kr.height / 2 - fy)) * 180) / Math.PI;
     e.innerHTML = `<b>${g.name}</b>${ARROW_SVG(deg)}`;
@@ -961,7 +1164,7 @@ export class Overlay {
 
   resetState() {
     P.macros();   // first run with the flick key moves the retired third point's command first
-    this.atkSlotKeys = (P.get('atkSlots') || C.ATK_SLOT_DEFAULT).slice(0, C.ATK_SLOT_DEFAULT.length);
+    this.atkSlotKeys = (this.twin ? twinPins() : P.get('atkSlots') || C.ATK_SLOT_DEFAULT).slice(0, C.ATK_SLOT_DEFAULT.length);
     this.equipSlotKeys = (P.get('equipSlots') || C.EQUIP_SLOT_DEFAULT).slice();
     this.fanKeys = new Map();
     for (const h of C.HUBS) if (h.fan.length) this.fanKeys.set(h.id, P.fanSlots(h.id, h.fan.map((it) => (it ? it.key : null))));
@@ -976,6 +1179,12 @@ export class Overlay {
     this.armed = null;
     this.armedBy = null;      // twin banks: the key that armed, whose ARMED lamp is lit
     this.ctxRadialOpen = false;
+    // twin banks' layers on the pad (closePadLayer): { kind: 'count' | 'here'
+    // | 'stairs', ... }; hubs' layers are fanOpen, as in classic
+    if (this.padLayer) clearTimeout(this.padLayer.timer);
+    this.padLayer = null;
+    clearTimeout(this.idleTimer);
+    this.idleTimer = 0;
     this.radialOpen = null;
     this.radials = new Map();
     this.assign = null;
@@ -1144,6 +1353,587 @@ export class Overlay {
     if (more) more.classList.toggle('on', this.more > 0);
   }
 
+  // ---- twin banks: the near-miss guard (the design's section 6).  A tap
+  // meant for a key must neither walk the hero nor fire another key.  Each
+  // key's box is its hit cell (Key.cell, guardGeometry): the cells tile the
+  // bank out to the screen's edge on its outer side and bottom, and the pads
+  // own the gap above them up to the next row's keycap, so an overshoot from
+  // the pad stays on the pad.  Under the cells, a halo 12 dp round each bank:
+  // a tap within 8 dp of a keycap is that key's, and one 8 to 12 dp off is
+  // swallowed, with a light tick and the halo's edge flashing.  Over the
+  // action pad, whose keys act at once, the seams between keycaps (the drawn
+  // gap, at least 8 dp) swallow the same way, so a near miss between COMBAT
+  // and CONTEXT is a lost tap, not the wrong verb.  The map keeps 12 dp from
+  // every key (layout.js), and its 20 dp next to a halo is the confirm ring
+  // (web.js glassGestures).
+  //
+  // The guard acts whenever a tap could do harm, which is everywhere except
+  // at --More--, in getpos (farlook, travel, a target: the tap picks the spot)
+  // and under a menu or text window (host.guardsAside).  There a tap does
+  // what it always did: the halo still snaps to a key, and the rest of it and
+  // the seams take nothing, the tap going on to whatever lies under them.
+  // With Fight armed or a layer up the guard stays on.
+  //
+  // With the scrim up (a layer, a radial, a command in hand) only the keys
+  // lifted over it answer, and the guard guards those: the halos stand over
+  // the scrim and the seams over the lifted keys (syncModal), a near miss of
+  // a lifted key snaps to it or is swallowed as it would be with nothing
+  // open, and any other touch goes on to the scrim, which closes what is
+  // open, as a touch on a key under it does.  Under the scrim, the other
+  // thumb's tap on a count or a HERE place that fell a few dp off the pad's
+  // inner side closed the layer instead of picking the place.
+  guardsAside() { return !!this.picking || !!(this.host.guardsAside && this.host.guardsAside()); }
+
+  // a key that answers a touch now: any, or with the scrim up one lifted over it
+  keyLive(id) {
+    if (!this.scrim || !this.scrim.classList.contains('on')) return true;
+    const t = this.keyTarget(id);
+    return !!(t && t.closest('.lift, .lift2'));
+  }
+
+  buildHalos(K) {
+    for (const B of Object.values(this.twin.guard.banks)) {
+      const h = el('div', 'halo', K), r = B.halo;
+      Object.assign(h.style, { left: `${r.x}px`, top: `${r.y}px`, width: `${r.w}px`, height: `${r.h}px` });
+      // the corner into the screen is 12 dp round the bank's last keycap
+      if (r.corner) h.style[B.outerLeft ? 'borderTopRightRadius' : 'borderTopLeftRadius'] = `${HALO}px`;
+      h.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const g = this.guardAt(e.clientX, e.clientY), live = !!g && this.keyLive(g.id);
+        if (live && g.snap) { this.noteGuard('snap', e, g.id); this.forwardDown(e, this.keyTarget(g.id)); return; }
+        if (live && g.d <= HALO && !this.guardsAside()) { this.guardSwallow(h, 'halo', e, g.id); return; }
+        this.passDown(e, h);
+      });
+    }
+  }
+
+  buildSeams(K) {
+    for (const r of this.twin.guard.seams) {
+      const s = r.el = el('div', 'seam', K);
+      Object.assign(s.style, { left: `${r.x}px`, top: `${r.y}px`, width: `${r.w}px`, height: `${r.h}px` });
+      s.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const g = this.guardAt(e.clientX, e.clientY);
+        if (!this.guardsAside() && (!g || this.keyLive(g.id))) { this.guardSwallow(s, 'seam', e, null); return; }
+        this.passDown(e, s);
+      });
+    }
+  }
+
+  // The halos over the scrim (under the keys lifted over it), the seams over
+  // those keys, while the scrim is up; in their places under and over the
+  // keys when it goes.  (The scrim stands at 5, the lifted keys at 10 and 11.)
+  liftGuard(on) {
+    for (const e of this.keysEl.querySelectorAll(':scope > .halo, :scope > .seam')) {
+      e.style.zIndex = on ? (e.classList.contains('halo') ? '6' : '12') : '';
+    }
+  }
+
+  // every bank key's element made its hit cell, in its parent's px (the pad's
+  // keys sit in their mold); REST's slot was built as its cell
+  applyCells() {
+    for (const [id, k] of this.twin.keys) {
+      const c = this.twin.guard.cells.get(id);
+      if (!c || !(k instanceof Key) || k.hit) continue;
+      const at = this.tw(id), dx = at.x - k.kx, dy = at.y - k.ky;
+      k.cell({ x: c.x - dx, y: c.y - dy, w: c.w, h: c.h });
+    }
+  }
+
+  // The nearest keycap to a point, and whether the halo snaps it there: within
+  // 8 dp, or in portrait between the banks within half their gap less 2 dp
+  // (8 whenever the gap is the rule's 24 dp or more), so the two snaps never
+  // meet and the middle is swallowed (the hit model, checks/lib.mjs).
+  guardAt(x, y) {
+    const G = this.twin && this.twin.guard;
+    if (!G) return null;
+    let best = null;
+    for (const c of G.live) {
+      const d = Math.hypot(Math.max(c.x - x, 0, x - (c.x + c.w)), Math.max(c.y - y, 0, y - (c.y + c.h)));
+      if (!best || d < best.d) best = { id: c.id, d };
+    }
+    if (!best) return null;
+    let snap = SNAP;
+    if (G.between && x > G.between.x0 && x < G.between.x1 && y >= G.between.y0) snap = Math.min(SNAP, G.between.w / 2 - 2);
+    best.snap = best.d <= snap;
+    return best;
+  }
+
+  // the element a key's touch goes to: REST's slot holds the face that shows
+  keyTarget(id) {
+    if (id === 'rest' && this.restWell) return (this.restWell.revealed ? this.longFace : this.restFace).el;
+    const k = this.twin.keys.get(id);
+    return k ? k.el || k : null;
+  }
+
+  // A touch the guard hands on: the same pointer's down, dispatched to the
+  // element that takes it, which keeps the rest of the gesture -- its moves,
+  // its lift or its cancel -- as if it had been touched there.  The capture
+  // goes to it first, so whatever its handler does with it stands: a key
+  // takes it again, and a halo that hands the touch on to a key lets the key
+  // keep it (taken back afterwards, the key never saw its cancel and stayed
+  // down).
+  forwardDown(e, target) {
+    if (!target) return;
+    try { target.setPointerCapture(e.pointerId); } catch (x) { /* not a live pointer */ }
+    target.dispatchEvent(new PointerEvent('pointerdown', {
+      bubbles: true, cancelable: true, composed: true, pointerId: e.pointerId, pointerType: e.pointerType,
+      isPrimary: e.isPrimary, clientX: e.clientX, clientY: e.clientY, screenX: e.screenX, screenY: e.screenY,
+      button: e.button, buttons: e.buttons, width: e.width, height: e.height, pressure: e.pressure,
+    }));
+  }
+
+  // the guard stepping aside: the touch goes on to what lies under the halo or seam
+  passDown(e, src) {
+    const under = document.elementsFromPoint(e.clientX, e.clientY)
+      .find((n) => n !== src && !n.classList.contains('halo') && !n.classList.contains('seam'));
+    if (under) this.forwardDown(e, under.closest('button') || under);
+  }
+
+  // A swallowed near miss: a light tick, the halo's edge or the seam lit for
+  // 150 ms, and the tap goes no further.
+  guardSwallow(area, what, e, id) {
+    FB.tick();
+    this.noteGuard(what, e, id);
+    area.classList.add('flash');
+    clearTimeout(area.flashTimer);
+    area.flashTimer = setTimeout(() => area.classList.remove('flash'), GUARD_FLASH_MS);
+  }
+
+  // What the guard did, the latest 200, for the near-miss test on a device
+  // (the design's section 18, test 2): web.js adds the ring's catches.  The
+  // console reads it as rolehackGuardLog().
+  noteGuard(what, e, id = null) {
+    const log = this.guardLog || (this.guardLog = []);
+    log.push({ what, id, x: e ? Math.round(e.clientX) : null, y: e ? Math.round(e.clientY) : null, at: Date.now() });
+    if (log.length > 200) log.shift();
+  }
+
+  // The guard's clock and the layers' idle, from the capture phase: every key
+  // stops its pointer events, so nothing later in the page would see them.
+  // keyUpAt is when a touch begun on a key, a halo or a seam last lifted
+  // (web.js swallows a ring tap within 120 ms of it); any touch, as it lands
+  // and as it lifts, is input that keeps a sticky layer up for another 4 s.
+  // From the lift too: a hub's layer held open 3 s closed 1.4 s after the
+  // thumb lifted, its 4 s run from the hold (the layers stage, 2026-10-03).
+  watchGuard() {
+    this.keyUpAt = -1e9;
+    this.habit = null;
+    const onKey = new Set(), swallowed = new Set();
+    window.addEventListener('pointerdown', (e) => {
+      if (this.retarget(e)) return;
+      const t = e.target;
+      if (t && t.closest && this.keysEl.contains(t) && t.closest('button.k, .well-slot, .halo, .seam')) onKey.add(e.pointerId);
+      else onKey.delete(e.pointerId);
+      if (this.idleTimer) this.armIdle();
+      // the ghost deck's habit guards take the touch before anything under it
+      if (this.habitSwallows(e)) {
+        swallowed.add(e.pointerId);
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
+      this.prayHabit(e);
+    }, true);
+    window.addEventListener('pointerup', (e) => {
+      if (onKey.delete(e.pointerId)) this.keyUpAt = performance.now();
+      if (this.idleTimer) this.armIdle();
+      this.prayLift(e);
+    }, true);
+    window.addEventListener('pointercancel', (e) => { onKey.delete(e.pointerId); this.prayLift(e); }, true);
+    // a key from the keyboard is input too: a sticky layer stays its 4 s more
+    window.addEventListener('keydown', () => { if (this.idleTimer) this.armIdle(); }, true);
+    for (const type of ['pointermove', 'pointerup', 'pointercancel']) {
+      window.addEventListener(type, (e) => {
+        if (!swallowed.has(e.pointerId)) return;
+        if (type !== 'pointermove') swallowed.delete(e.pointerId);
+        e.stopImmediatePropagation();
+      }, true);
+    }
+  }
+
+  // Chrome moves a touch's pointerdown onto a tap target near it -- "touch
+  // adjustment" (Blink's touch_adjustment.cc), which hit-tests the finger's
+  // contact area, 20 to 32 dp across, and gives the touch to the button that
+  // area best covers.  So a touch in a halo, on a seam or in the ring beside
+  // a key went to the key: a 30 px touch 10 dp off pad_l, in the halo, and
+  // 14 dp off, in the ring, both pressed pad_l, and a seam, which no listener
+  // makes a tap target, never swallowed (the layers stage, 2026-10-03).  So
+  // did a touch just past a halo, where the case, the glass or a band lies:
+  // 14 dp above REST rested 20 turns, and in portrait 14 dp past the left
+  // bank's inner edge, between the two halos, armed the right bank's COMBAT
+  // (its review, 2026-10-03).  The pointerdown keeps the finger's own point,
+  // so a touch goes back where it landed whenever Chrome moved it across the
+  // guard's ground: wherever it begins on that ground -- a key's cell, a
+  // halo, a seam or the map -- and Chrome gave it to another part of it, and
+  // wherever Chrome gave a bank's key, halo or seam a touch that landed off
+  // the banks.  Then the hit cells, halos, seams and ring decide as the
+  // design has them -- between two keys, or a key and a seam, to the
+  // fraction of a px (bankAt) -- and past a halo the case takes nothing and
+  // a band does what a tap on it does.  Touches elsewhere -- a window's
+  // buttons, a prompt's chips, the drawer, the FLICK legend, the scrim of an
+  // open layer -- keep Chrome's help.  True when the touch was moved.
+  retarget(e) {
+    if (!this.twin || !e.isTrusted || e.pointerType !== 'touch' || !e.target || !e.target.closest) return false;
+    const K = this.keysEl;
+    const own = (n) => (n && n.closest ? n.closest('button.k, .well-slot, .halo, .seam, #map') : null);
+    const bank = (n) => !!(n && n.closest && K.contains(n) && n.closest('.hitcell, .well-slot, .halo, .seam'));
+    // at the whole px the touch is in: Chrome hit-tests a fractional point as
+    // the next whole px, a px to the right and below; between two keys, or a
+    // key and a seam, the guard's own geometry decides
+    let real = document.elementFromPoint(Math.floor(e.clientX), Math.floor(e.clientY));
+    if (real && K.contains(real) && real.closest('.hitcell, .well-slot, .seam')) real = this.bankAt(e.clientX, e.clientY) || real;
+    if (!real || real === e.target) return false;
+    const at = own(real), was = own(e.target);
+    if (at ? at === was || !(K.contains(at) || (was && K.contains(was))) : !bank(e.target)) return false;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    this.forwardDown(e, real.closest('button') || real);
+    return true;
+  }
+
+  // The bank's key or seam whose box holds a point, by the guard's geometry
+  // rather than by Chrome's hit test, which takes the px square from a point,
+  // right and down, and gives it to the topmost box that square touches: a
+  // cell's edge at 67.5 (the 3 dp gaps at 360 dp) gave the px at 67, 1 px
+  // off pad_b's keycap, to pad_j beyond it (the layers stage, 2026-10-03).
+  // A point on a keycap's own edge is that key's, as the nearest keycap is
+  // (the pads' cells begin at the face of the row above them).  A key under
+  // the scrim gives the scrim; null where no cell or seam holds the point.
+  bankAt(x, y) {
+    const G = this.twin.guard, inR = (r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h;
+    const seam = G.seams.find((r) => r.el && inR(r));
+    if (seam) return seam.el;
+    const on = G.live.find((c) => G.cells.has(c.id) && x >= c.x && x <= c.x + c.w && y >= c.y && y <= c.y + c.h);
+    const id = on ? on.id : [...G.cells].find(([, c]) => inR(c))?.[0];
+    if (!id) return null;
+    return this.keyLive(id) ? this.keyTarget(id) : this.scrim;
+  }
+
+  // The nearest keycap's distance from a point on the map, for web.js's ring;
+  // null in classic, which has no guard, and at the desk, where a mouse's
+  // click on the map is meant where it lands (the ring is for a thumb's
+  // near miss).
+  keyDistance(x, y) {
+    if (this.twin && this.twin.spec.pointer === 'mouse') return null;
+    const g = this.guardAt(x, y);
+    return g ? g.d : null;
+  }
+
+  // a layer or the stairs' first tap is up: a map tap only closes it
+  layerUp() { return !!(this.padLayer || this.fanOpen || this.radialOpen || this.ctxRadialOpen || this.candOpen || this.chipsOpen); }
+
+  // ---- twin banks: layers on the pad (the design's section 8).  Every
+  // layer paints the movement pad, which is the same in both orientations, so
+  // a place is one thumb motion everywhere, and nothing pops over a key: the
+  // layer's name is on the pill inside the map.  They replace the count-chip
+  // rows, the pad centre's radial and CONTEXT's candidate fan.
+  //  - COUNT: a hold of REST, SEARCH or a counted CONTEXT -- and of Long rest
+  //    once it is swiped in -- puts the counts on the pad: ↖ ×1, ↑ ×5, ↗ ×10,
+  //    → ×20 (Long rest ×100 to ×400), the centre any count, typed; the
+  //    count in use lit.  Slide to one and lift, or tap one with the other
+  //    thumb.  The layer closes when the thumb lifts, unless the hold lasted
+  //    600 ms: an accidental hold of SEARCH once left a layer that took the
+  //    next walking tap as "×5".
+  //  - HERE: a hold of the pad centre, slide-only: slide to a place and lift;
+  //    lifting without a slide closes it, so the pad is arrows again the
+  //    moment the thumb lifts and a slow press on the stairs never turns the
+  //    next step south into Descend.  CONTEXT's tap when several actions
+  //    apply opens it to stay up and be tapped.  Its places are fixed --
+  //    ↑ Ascend, ↓ Descend, ← Open, → Close, ↖ Sacrifice, ↗ Pick up, ↙ Loot,
+  //    ↘ Look here, the centre ALL -- and a place the turn does not offer is
+  //    dimmed and does nothing but tick.
+  //  - From CONTEXT the stairs take a second tap within 2 s: CONTEXT sits
+  //    beside COMBAT, and a near miss onto it must not change level.  With
+  //    one action, CONTEXT's first tap lights the pad centre with them; a
+  //    second tap on CONTEXT or the centre goes.  In its HERE, a tap on ↑ or
+  //    ↓ lights the centre the same way, for CONTEXT or the centre to go.
+  //    Never ↑ or ↓ themselves: COMBAT's tap is always followed by a tap of
+  //    the pad that aims, and after a near miss onto CONTEXT that tap landed
+  //    on the lit ↑ or ↓ and changed level (the layers stage's review,
+  //    2026-10-03).  The centre is the one place no aim uses.  ↑ and ↓ only
+  //    tick there, and on the one action's pad put the stairs away.  The pad
+  //    centre's slide goes at once.
+  // A layer left up drops back to arrows after 4 s with no input, or on a
+  // map tap (the scrim, which closes anything open).  A place that asks for a
+  // direction gives the pad straight back as arrows: the layer closes first.
+  hereFrom(from) { return !!(this.padLayer && this.padLayer.kind === 'here' && this.padLayer.from === from); }
+
+  // what any layer on the pad does first: everything else goes
+  clearForPadLayer() {
+    this.closeFan();
+    this.closeRadial();
+    this.closeDrawer();
+    this.closePadLayer();
+    this.disarm();
+  }
+
+  openCountLayer(act, from, fromId) {
+    if (this.answering || !this.twin) return false;
+    this.clearForPadLayer();
+    this.padLayer = { kind: 'count', act, from, fromId, sticky: false };
+    this.chipsOpen = act.countKey;
+    this.paintCount();
+    this.refreshContextStrip();   // the key's "pick a count", and the scrim
+    return true;
+  }
+
+  // False when the pad is taken -- a question, a spot being picked, and for
+  // the pad centre's hold also a layer or a direction -- and nothing opened.
+  openHere(from) {
+    if (this.answering || this.picking || !this.twin) return false;
+    if (from === 'centre' && (this.fanOpen || this.padLayer || this.directionPending())) return false;
+    this.clearForPadLayer();
+    this.padLayer = { kind: 'here', from, lit: null, timer: 0 };
+    this.paintHere();
+    this.refreshContextStrip();
+    if (from === 'context') this.armIdle();
+    return true;
+  }
+
+  openStairs(act) {
+    this.clearForPadLayer();
+    const L = this.padLayer = { kind: 'stairs', act };
+    L.timer = setTimeout(() => { if (this.padLayer === L) this.closePadLayer(); }, STAIRS_MS);
+    this.paintStairs();
+    this.refreshContextStrip();
+  }
+
+  closePadLayer() {
+    const L = this.padLayer;
+    if (!L) return;
+    this.padLayer = null;
+    clearTimeout(L.timer);
+    if (!this.fanOpen) this.stopIdle();
+    if (L.kind === 'count') this.chipsOpen = null;
+    this.restorePad();
+    this.hideFrame();
+    this.refreshContextStrip();   // the keys' sub lines, and the scrim
+  }
+
+  // a rebuild (a resize, a turn) puts back the layer that stayed up
+  reopenPadLayer(s) {
+    if (s.kind === 'count') {
+      const from = s.fromId === 'rest' ? this.restWell.slot : this.twinEl(s.fromId);
+      if (from && this.openCountLayer(s.act, from, s.fromId)) { this.padLayer.sticky = true; this.armIdle(); }
+    } else if (s.kind === 'here' && s.from === 'context') {
+      // the stairs' first tap stays in, its 2 s begun again
+      if (this.openHere('context') && s.lit !== null) this.lightStairs(s.lit);
+    } else if (s.kind === 'stairs') this.openStairs(s.act);
+  }
+
+  // CONTEXT's tap, in twin banks
+  contextTapped(act, from) {
+    const L = this.padLayer;
+    // the stairs lit in CONTEXT's HERE: its second tap goes
+    if (L && L.kind === 'here' && L.from === 'context' && L.lit !== null) { this.stairsGo(from); return; }
+    if (this.candidates.length > 1) {
+      if (L && L.kind === 'here' && L.from === 'context') this.closePadLayer();
+      else this.openHere('context');
+      return;
+    }
+    if (act === C.CTX_ASCEND || act === C.CTX_DESCEND) {
+      if (L && L.kind === 'stairs' && L.act === act) { this.closePadLayer(); this.runAction(act, from); return; }
+      this.openStairs(act);
+      return;
+    }
+    this.runAction(act, from);
+  }
+
+  // a place of the pad tapped while a layer of twin banks' is up on it
+  padLayerTapped(place, from) {
+    const L = this.padLayer;
+    if (L.kind === 'count') { this.countPick(place); return; }
+    if (L.kind === 'stairs') {
+      // the lit centre goes; any other tap, ↑ or ↓ too, only puts the stairs away
+      if (place === 4) { this.closePadLayer(); this.runAction(L.act, from); return; }
+      FB.tick();
+      this.closePadLayer();
+      return;
+    }
+    this.herePick(place, false, from);
+  }
+
+  countPick(place) {
+    const act = this.padLayer.act;
+    if (place === 4) { this.closePadLayer(); this.promptCount(act); return; }
+    const i = COUNT_PLACES.indexOf(place);
+    if (i < 0 || !(act.counts[i] > 0)) { FB.tick(); return; }   // a blank place: nothing to pick
+    P.saveCount(act.countKey, act.counts[i]);
+    this.closePadLayer();
+  }
+
+  // slid: the pad centre's slide-and-lift, which closes the layer whatever it lands on
+  herePick(place, slid, from) {
+    const L = this.padLayer;
+    if (place === 4) {
+      if (L.lit !== null) { this.stairsGo(from); return; }
+      this.closePadLayer();
+      if (!slid) this.openDrawer('here');
+      return;
+    }
+    const p = HERE_PLACES[place];
+    if (p.bit && !this.hereHas(p.bit)) {
+      // dimmed: swallowed, with the tick
+      FB.tick();
+      if (slid) this.closePadLayer();
+      return;
+    }
+    if (p.stairs && L.from === 'context') {
+      // their second tap is the centre's or CONTEXT's, never theirs (an aim's)
+      if (L.lit === place) FB.tick();
+      else this.lightStairs(place);
+      return;
+    }
+    this.closePadLayer();
+    this.runAction(p.act, from);
+  }
+
+  // CONTEXT's HERE: ↑ or ↓ tapped, the centre lit with them for 2 s
+  lightStairs(place) {
+    const L = this.padLayer;
+    if (!L || L.kind !== 'here') return;
+    L.lit = place;
+    clearTimeout(L.timer);
+    L.timer = setTimeout(() => { if (this.padLayer === L && L.lit === place) { L.lit = null; this.paintHere(); } }, STAIRS_MS);
+    this.paintHere();
+    this.armIdle();
+  }
+
+  // the stairs lit in CONTEXT's HERE go
+  stairsGo(from) {
+    const p = HERE_PLACES[this.padLayer.lit];
+    this.closePadLayer();
+    this.runAction(p.act, from);
+  }
+
+  // The pad centre's lift while its HERE is up: the place under the thumb.
+  // A thumb that slid off the centre and back lifts on ALL, the HERE drawer
+  // (it was out of reach: the lift on the centre closed the layer, and said
+  // "HERE: SLIDE" to a thumb that had slid -- the layers stage's review,
+  // 2026-10-03).  One that never left the centre opens nothing, and one
+  // that slid off the pad lets it go.
+  hereSlide(ev) {
+    this.padHover(null);
+    if (!this.hereFrom('centre')) return;
+    const L = this.padLayer, place = this.padPlaceAt(ev.clientX, ev.clientY);
+    if (place === 4 && L.left) { this.herePick(4, false, this.padCentre && this.padCentre.el); return; }
+    if (place === null || place === 4) { this.closePadLayer(); if (!L.left) this.radialHabit(); return; }
+    const f = this.padFace(place);
+    this.herePick(place, true, f && f.el);
+  }
+
+  // The hold that opened a count layer, followed: a slide onto a count picks
+  // it as the thumb lifts; else the layer closes then, unless the hold lasted
+  // 600 ms, and stays up to be tapped.  fromId: the key whose layer it is.
+  countHold(fromId) {
+    const mine = () => { const L = this.padLayer; return L && L.kind === 'count' && L.fromId === fromId ? L : null; };
+    return {
+      move: (ev) => { if (mine()) this.padHover(this.padPlaceAt(ev.clientX, ev.clientY)); },
+      release: (ev, ms) => {
+        const L = mine();
+        if (!L) return;
+        this.padHover(null);
+        const place = this.padPlaceAt(ev.clientX, ev.clientY);
+        // a hold that picked or stays up was meant (prayLift's habit)
+        if (place === 4 || COUNT_PLACES.includes(place)) { this.holdUsed = ev.pointerId; this.countPick(place); return; }
+        if (ms < COUNT_STICKY_MS) { this.closePadLayer(); return; }
+        this.holdUsed = ev.pointerId;
+        L.sticky = true;
+        this.armIdle();
+      },
+      cancel: () => { if (mine()) this.closePadLayer(); },
+    };
+  }
+
+  // the pad's place whose hit cell holds a point, or null
+  padPlaceAt(x, y) {
+    const cells = this.twin && this.twin.guard.cells;
+    if (!cells) return null;
+    for (let i = 0; i < 9; i++) {
+      const c = cells.get(TWIN_PAD[i]);
+      if (c && x >= c.x && x < c.x + c.w && y >= c.y && y < c.y + c.h) return i;
+    }
+    return null;
+  }
+
+  // the place a held thumb is over, pressed, as a key under it would be
+  padHover(place) {
+    for (let i = 0; i < 9; i++) { const f = this.padFace(i); if (f) f.press(i === place); }
+  }
+
+  // The count in use is lit: on the dark cap, its legend glowing amber, among
+  // the amber counts.  On an amber cap the amber glow could not be read, 1.12
+  // to 1 against the cap's top (the layers stage's review, 2026-10-03).
+  paintCount() {
+    const act = this.padLayer.act, n = this.countFor(act), preset = act.counts.includes(n), cap = capFor(C.A90);
+    const inUse = (f, on) => f.cap(on ? capFor(null) : cap).lit(on);
+    for (let place = 0; place < 9; place++) {
+      const f = this.padFace(place);
+      if (!f) continue;
+      const i = COUNT_PLACES.indexOf(place);
+      if (place === 4) inUse(f.placeholder(false).tag(null).dim(false), !preset).label('×n', 12, true).sub('type');
+      else if (i >= 0) inUse(f.placeholder(false).tag(null).dim(false), act.counts[i] === n).label(`×${act.counts[i]}`, 13, true).sub(null);
+      else f.placeholder(true).cap(capFor(C.G90)).tag(null).dim(true).lit(false).label('', 10).sub(null);
+    }
+    this.showFrame(`${act.word.toUpperCase()} ×${n}`, '#f8b457');
+  }
+
+  // The pad centre as the stairs' second tap: the amber cap, its dark legend
+  // the stairs' word, their arrow in the corner (place: ↑ 1 or ↓ 7).
+  paintStairsGo(f, act, place) {
+    f.placeholder(false).cap(capFor(C.A90)).tag(place === 1 ? '↑' : '↓').dim(false).lit(false)
+      .label(act.word, 9.5, true).sub('tap to go');
+  }
+
+  paintHere() {
+    const L = this.padLayer, cap = capFor(C.VIOLET), lit = L.lit !== null ? HERE_PLACES[L.lit] : null;
+    for (let place = 0; place < 9; place++) {
+      const f = this.padFace(place);
+      if (!f) continue;
+      if (place === 4) {
+        if (lit) this.paintStairsGo(f, lit.act, L.lit);
+        else f.placeholder(false).cap(cap).tag(null).dim(false).lit(false).label('ALL', 11).sub('drawer');
+        continue;
+      }
+      const p = HERE_PLACES[place];
+      f.placeholder(false).cap(cap).tag(null).dim(!!p.bit && !this.hereHas(p.bit)).lit(false)
+        .label(this.labelForAction(p.act), 9.5, true).sub(p.act.key, true);
+    }
+    this.showFrame(lit ? stairsPill(lit.act) : 'HERE', lit ? '#ffb347' : '#c2b6ff');
+  }
+
+  // CONTEXT's one action is the stairs: the centre lit with them, the rest of the pad dimmed
+  paintStairs() {
+    const L = this.padLayer;
+    for (let place = 0; place < 9; place++) {
+      const f = this.padFace(place);
+      if (!f) continue;
+      if (place === 4) this.paintStairsGo(f, L.act, L.act === C.CTX_ASCEND ? 1 : 7);
+      else f.dim(true).lit(false);
+    }
+    this.showFrame(stairsPill(L.act), '#ffb347');
+  }
+
+  // A sticky layer's 4 s: any touch starts them again (watchGuard), a thumb
+  // still down holds them, and a command being placed or a drawer keeps the
+  // layer it belongs to.
+  armIdle() {
+    clearTimeout(this.idleTimer);
+    this.idleTimer = setTimeout(() => this.idleFired(), STICKY_IDLE_MS);
+  }
+  stopIdle() { clearTimeout(this.idleTimer); this.idleTimer = 0; }
+  idleFired() {
+    this.idleTimer = 0;
+    if (this.pointersDown && this.pointersDown.size) { this.armIdle(); return; }
+    if (this.assign || this.drawerOpen || this.answering) return;
+    const L = this.padLayer;
+    if (L && (L.kind !== 'count' || L.sticky)) this.closePadLayer();
+    if (this.fanOpen) this.closeFan();
+  }
+
   // ---- the keys, in RhOverlay.build()'s order (it is the z order)
   buildKeys() {
     const K = this.keysEl;
@@ -1194,32 +1984,52 @@ export class Overlay {
     // twin banks, REST's place in the left bank's top strip
     const at = T ? this.tw('rest') : P_ ? this.pFnBox(0) : this.tl(this.termWideKey(), T_ROW1_H, inn, inn);
     const wide = at.w, h = at.h;
+    // Twin banks: the slot is REST's hit cell (the design's section 6), and the
+    // strip holds two cells, REST's over Long rest's, each keycap inset in its
+    // own, so a tap off REST's keycap but in its cell presses whichever face
+    // shows, and the strip slides a cell's height
+    const cl = T ? this.twin.guard.cells.get('rest') : null;
+    const box = cl || at;
     const slot = el('div', 'well-slot', K);
-    Object.assign(slot.style, { left: `${at.x}px`, top: `${at.y}px`, width: `${wide}px`, height: `${h}px` });
+    Object.assign(slot.style, { left: `${box.x}px`, top: `${box.y}px`, width: `${box.w}px`, height: `${box.h}px` });
     const strip = el('div', 'strip', slot);
     // Twin banks: Long rest is swiped UP out of REST's slot (Lucas, 2026-10-02:
     // the design's choice stands), so the strip stands on end, Long rest under
     // REST; a vertical swipe also stays clear of Android's sideways Back.
-    if (T) { slot.classList.add('v'); strip.style.width = `${wide}px`; strip.style.height = `${2 * h + T_GAP}px`; }
-    else strip.style.width = `${2 * wide + T_GAP}px`;
-    this.restFace = new Key(strip).place(0, 0, wide, h).face(C.A90);
-    this.longFace = new Key(strip).place(T ? 0 : wide + T_GAP, T ? h + T_GAP : 0, wide, h).cap(longRestCap());
+    if (cl) {
+      const kx = at.x - cl.x, ky = at.y - cl.y;
+      slot.classList.add('v');
+      strip.style.width = `${cl.w}px`;
+      strip.style.height = `${2 * cl.h}px`;
+      this.restFace = new Key(strip).place(kx, ky, wide, h).cell({ x: 0, y: 0, w: cl.w, h: cl.h }).face(C.A90);
+      this.longFace = new Key(strip).place(kx, cl.h + ky, wide, h).cell({ x: 0, y: cl.h, w: cl.w, h: cl.h }).cap(longRestCap());
+    } else {
+      strip.style.width = `${2 * wide + T_GAP}px`;
+      this.restFace = new Key(strip).place(0, 0, wide, h).face(C.A90);
+      this.longFace = new Key(strip).place(wide + T_GAP, 0, wide, h).cap(longRestCap());
+    }
     this.restFace.lg.style.paddingRight = '14px';
     this.longFace.lg.style.paddingRight = '14px';
     const dots = el('div', 'dots', slot);
     dots.innerHTML = '<i class="on"></i><i></i>';
-    this.restWell = { slot, strip, dots, revealed: false, pinned: false, timer: 0, wide, vertical: !!T, len: T ? h : wide };
+    if (cl) Object.assign(dots.style, { right: `${cl.w - (at.x - cl.x + wide) + 6}px`, top: `${at.y - cl.y + h / 2}px` });
+    this.restWell = { slot, strip, dots, revealed: false, pinned: false, timer: 0, wide, vertical: !!T,
+      len: cl ? cl.h : T ? h : wide, gap: cl ? 0 : T_GAP };
     if (T) { this.twinKey('rest', slot); this.twinKey('longrest', this.longFace); }
     this.bindScrollWell(this.restWell);
+    // Twin banks: a hold paints the counts on the pad (countHold); REST's tap
+    // with its own counts up puts them away, as SEARCH's does
     this.bindHold(this.restFace, CHIP_HOLD_MS, () => this.openRestChips(C.CTX_REST), () => {
+      if (T && this.chipsOpen === C.CTX_REST.countKey) { this.closeChips(); return; }
       this.closeChips();
       this.runAction(C.CTX_REST, slot);
-    });
+    }, T ? this.countHold('rest') : null);
     this.bindHold(this.longFace, CHIP_HOLD_MS, () => this.openRestChips(C.CTX_LONG_REST), () => {
+      if (T && this.chipsOpen === C.CTX_LONG_REST.countKey) { this.closeChips(); return; }
       this.closeChips();
       this.runAction(C.CTX_LONG_REST, slot);
       this.scrollWell(false);
-    });
+    }, T ? this.countHold('rest') : null);
 
     const prev = new Key(K).box(T ? this.tw('msgs') : P_ ? this.pFnBox(1) : this.tl(T_KEY, T_ROW1_H, inn + this.padBox - T_KEY, inn))
       .face(C.VIOLET).label(this.labelFor(C.PREV_MSGS), 9).sub(this.subKeyFor(C.PREV_MSGS), true);
@@ -1234,10 +2044,12 @@ export class Overlay {
     this.twinKey('m1', macro);
 
     // Rest's chips: under the slot in landscape, above the key row in portrait;
-    // twin banks, inside the map on REST's side
-    const chips = T ? { side: this.twinSide('rest') }
-      : P_ ? this.lb(CHIP_ROW_W + 8, CHIP_SIZE + 8, inn, this.pFnBottom() + P_FN_KEY + CHIP_GAP_ABOVE)
-           : this.tl(CHIP_ROW_W + 8, CHIP_SIZE + 8, inn, inn + T_ROW1_H + T_GAP);
+    // twin banks have none, their counts are a layer on the pad (the design's
+    // section 8: the count-chip rows go)
+    this.restChips = this.longChips = null;
+    if (T) return;
+    const chips = P_ ? this.lb(CHIP_ROW_W + 8, CHIP_SIZE + 8, inn, this.pFnBottom() + P_FN_KEY + CHIP_GAP_ABOVE)
+      : this.tl(CHIP_ROW_W + 8, CHIP_SIZE + 8, inn, inn + T_ROW1_H + T_GAP);
     this.restChips = this.buildCountRow(K, C.CTX_REST, chips);
     this.longChips = this.buildCountRow(K, C.CTX_LONG_REST, chips);
   }
@@ -1246,12 +2058,14 @@ export class Overlay {
   // from the right; up and down in twin banks (w.vertical), from below.
   bindScrollWell(w) {
     let x0 = 0, y0 = 0, t0 = 0, dragging = false, id = null;
-    const travel = () => (w.len || w.wide) + T_GAP;
+    const travel = () => (w.len || w.wide) + (w.gap ?? T_GAP);
     const cur = () => (w.revealed ? -travel() : 0);
     const axis = w.vertical ? 'translateY' : 'translateX';
     w.slot.addEventListener('pointerdown', (e) => { x0 = e.clientX; y0 = e.clientY; t0 = cur(); dragging = false; id = e.pointerId; }, true);
     w.slot.addEventListener('pointermove', (e) => {
       if (e.pointerId !== id) return;
+      // twin banks: a hold that put the counts on the pad slides to them, not the strip
+      if (!dragging && this.padLayer && this.padLayer.kind === 'count') return;
       const dx = (e.clientX - x0) / this.s, dy = (e.clientY - y0) / this.s;
       const along = w.vertical ? dy : dx, across = w.vertical ? dx : dy;
       if (!dragging && Math.abs(along) > 8 && Math.abs(along) > Math.abs(across)) {
@@ -1279,7 +2093,7 @@ export class Overlay {
     if (!w) return;
     w.revealed = revealed;
     clearTimeout(w.timer);
-    w.strip.style.transform = `${w.vertical ? 'translateY' : 'translateX'}(${revealed ? -((w.len || w.wide) + T_GAP) : 0}px)`;
+    w.strip.style.transform = `${w.vertical ? 'translateY' : 'translateX'}(${revealed ? -((w.len || w.wide) + (w.gap ?? T_GAP)) : 0}px)`;
     const [a, b] = w.dots.children;
     a.classList.toggle('on', !revealed);
     b.classList.toggle('on', revealed);
@@ -1384,8 +2198,7 @@ export class Overlay {
   // ---- counts
   buildCountRow(K, act, box) {
     const row = el('div', 'chiprow', K);
-    if (box.side) { this.twinPop(row, box.side); row.style.display = 'none'; }   // twin banks: inside the map
-    else Object.assign(row.style, { left: `${box.x}px`, top: `${box.y}px`, display: 'none' });
+    Object.assign(row.style, { left: `${box.x}px`, top: `${box.y}px`, display: 'none' });
     const chips = [];
     for (const value of act.counts) {
       const chip = new Key(row).place(0, 0, CHIP_SIZE, CHIP_SIZE).face(C.A90).label(`×${value}`, 11, true);
@@ -1422,6 +2235,7 @@ export class Overlay {
   }
 
   openRestChips(act) {
+    if (this.twin) { this.openCountLayer(act, this.restWell.slot, 'rest'); return; }
     this.closeFan();
     this.closeRadial();
     this.closeDrawer();
@@ -1431,11 +2245,13 @@ export class Overlay {
   }
 
   refreshRestFaces() {
+    // twin banks have no rows (r null): the counts are on the pad
     const face = (k, r, act) => {
-      if (!k || !r) return;
+      if (!k) return;
       const n = this.countFor(act), open = this.chipsOpen === act.countKey;
       k.label(P.get('labelMode') === 'keys' ? C.keyWithCount(act, n) : C.wordWithCount(act, n), 8.5)
         .sub(open ? 'pick a count' : 'hold to set');
+      if (!r) return;
       r.row.style.display = open ? 'flex' : 'none';
       if (open) this.highlightCounts(r, n);
     };
@@ -1464,17 +2280,38 @@ export class Overlay {
         this.twinKey(TWIN_PAD[idx], k);
         if (!key) {
           this.padCentre = k;
-          this.bindHold(k, CENTRE_HOLD_MS, () => { if (!this.fanOpen && !this.answering && !this.picking) this.openContextRadial(); }, () => {
+          const tap = () => {
             if (this.answering) { this.answerPlace(4); return; }
+            if (this.padLayer) { this.padLayerTapped(4, k.el); return; }
             if (this.fanOpen) { this.layerPlaceTapped(4, k.el); return; }
             if (this.directionPending() || this.picking) this.pressDirection('.');
             else this.execute(this.padCentreCommand(), k.el);
-          });
+          };
+          // Twin banks: the hold is the HERE layer, slide-only (hereSlide):
+          // slide to a place and lift; a hold that cannot open it -- a layer, a
+          // question or a direction already has the pad -- is a slow tap
+          this.bindHold(k, CENTRE_HOLD_MS, () => {
+            if (this.twin) { if (!this.openHere('centre')) this.centreSlowTap = true; return; }
+            if (!this.fanOpen && !this.answering && !this.picking) this.openContextRadial();
+          }, tap, this.twin ? {
+            move: (ev) => {
+              if (!this.hereFrom('centre')) return;
+              const place = this.padPlaceAt(ev.clientX, ev.clientY);
+              if (place !== 4) this.padLayer.left = true;   // it slid (hereSlide)
+              this.padHover(place);
+            },
+            release: (ev) => {
+              if (this.centreSlowTap) { this.centreSlowTap = false; tap(); return; }
+              this.hereSlide(ev, k.el);
+            },
+            cancel: () => { this.centreSlowTap = false; if (this.hereFrom('centre')) this.closePadLayer(); },
+          } : null);
           continue;
         }
         k.label(C.PAD_ARROW[idx], 18, true).sub(key, true);
         this.bindTap(k, () => {
           if (this.answering) { this.answerPlace(idx); return; }
+          if (this.padLayer) { this.padLayerTapped(idx, k.el); return; }
           if (this.fanOpen) { this.layerPlaceTapped(idx, k.el); return; }
           this.pressDirection(key);
         });
@@ -1513,7 +2350,7 @@ export class Overlay {
 
   refreshPadCentre() {
     const k = this.padCentre;
-    if (!k || this.fanOpen || this.answering) return;   // a layer or a question owns the centre
+    if (!k || this.fanOpen || this.answering || this.padLayer) return;   // a layer or a question owns the centre
     if (this.picking) k.label('PICK', 8).sub('.', true);
     else if (this.directionPending()) k.label('HERE', 8).sub('.', true);
     else if (this.hereHas(HERE_OBJECT)) k.label('PICK UP', 8).sub(',', true);
@@ -1795,11 +2632,14 @@ export class Overlay {
     this.syncModal();
   }
 
+  // where the attack pins are kept: twin's own, or classic's (twinPins)
+  atkPref() { return this.twin ? 'atkSlotsTwin' : 'atkSlots'; }
+
   placeAssignment(attack, n) {
     const keys = attack ? this.atkSlotKeys : this.equipSlotKeys;
     for (let k = 0; k < keys.length; k++) if (keys[k] === this.assign.key) keys[k] = null;
     keys[n] = this.assign.key;
-    P.set(attack ? 'atkSlots' : 'equipSlots', keys);
+    P.set(attack ? this.atkPref() : 'equipSlots', keys);
     this.assign = null;
     this.assignHub = null;
     // from COMBAT's or INVENTORY's drawer its layer was up too, and the flick key's radial may be
@@ -1813,7 +2653,7 @@ export class Overlay {
   clearSlot(hv, attack, n) {
     const keys = attack ? this.atkSlotKeys : this.equipSlotKeys;
     keys[n] = null;
-    P.set(attack ? 'atkSlots' : 'equipSlots', keys);
+    P.set(attack ? this.atkPref() : 'equipSlots', keys);
     this.refreshSlots(hv, attack);
   }
 
@@ -1894,10 +2734,10 @@ export class Overlay {
   restorePad() {
     this.padCells.forEach((k, i) => {
       const idx = i < 4 ? i : i + 1;
-      k.cap(role(ROLE_MOVE)).placeholder(false).tag(null).lit(false)
+      k.cap(role(ROLE_MOVE)).placeholder(false).tag(null).lit(false).dim(false)
         .label(C.PAD_ARROW[idx], 18, true).sub(C.PAD_KEYS[idx], true);
     });
-    if (this.padCentre) this.padCentre.cap(role(ROLE_MOVE)).placeholder(false).tag(null).lit(false);
+    if (this.padCentre) this.padCentre.cap(role(ROLE_MOVE)).placeholder(false).tag(null).lit(false).dim(false);
     this.refreshPadCentre();
   }
 
@@ -2011,12 +2851,15 @@ export class Overlay {
     hv.face.lit(true).sub('tap = all');
     if (hv.hub === C.HUB_ATTACK) this.refreshSlots(hv, true);
     this.syncModal();
+    // twin banks: a layer left up drops back to arrows after 4 s with no input
+    if (this.twin) this.armIdle();
   }
 
   closeFan() {
     if (!this.fanOpen) return;
     const was = this.hubView(this.fanOpen);
     this.fanOpen = null;
+    if (!this.padLayer) this.stopIdle();
     this.restorePad();
     this.hideFrame();
     if (was) {
@@ -2048,8 +2891,11 @@ export class Overlay {
     else this.buildFlickWedges(radial, c, bearings, n);
     this.flickNodes = bearings.map((deg, w) => {
       const slot = P.FLICK_TAP + 1 + w;
+      // A node of the legend stands in a row, not on its bearing, so it
+      // wears the stroke's arrow in its corner: ↑ Kick, ↗ the second macro
       const node = legend
         ? new Key(radial).box(legend[w] || { x: this.twin.spec.mapArea.x + POP_PAD + w * (SAT_SIZE + 8), y: this.twin.spec.mapArea.y + POP_PAD, w: SAT_SIZE, h: SAT_SIZE })
+          .tag(bearingArrow(deg))
         : new Key(radial).place(c.x + Math.cos(rad(deg)) * C.FLICK_RADIUS - SAT_SIZE / 2, c.y + Math.sin(rad(deg)) * C.FLICK_RADIUS - SAT_SIZE / 2, SAT_SIZE, SAT_SIZE);
       this.bindHold(node, HUB_HOLD_MS, () => { if (!this.assign) this.editMacro(slot); }, () => {
         if (this.assign) { this.placeMacro(slot); return; }
@@ -2193,7 +3039,15 @@ export class Overlay {
     }
     if (this.ctxRadialOpen) lift.push(this.ctxRadialEl);
     if (this.candOpen && this.ctxStrip[1]) lift.push(this.ctxStrip[1].el, this.candEl);
-    if (this.chipsOpen) {
+    // twin banks' layers on the pad: the pad, its frame and pill, and the key
+    // that opened the layer, so a second tap on it is taken
+    const L = this.padLayer;
+    if (L) {
+      lift.push(this.padMold, this.layerFrame, this.layerPill);
+      if (L.kind === 'count') lift.push(L.from);
+      else if (L.from === 'context' || L.kind === 'stairs') lift.push(this.ctxStrip[1] && this.ctxStrip[1].el);
+    }
+    if (this.chipsOpen && !L) {
       if (this.chipsOpen === C.CTX_REST.countKey) lift.push(this.restWell.slot, this.restChips.row);
       else if (this.chipsOpen === C.CTX_LONG_REST.countKey) lift.push(this.restWell.slot, this.longChips.row);
       else this.ctxStrip.forEach((k, n) => {
@@ -2214,19 +3068,22 @@ export class Overlay {
     if (this.flickFace && (this.assign || this.radialOpen === FLICK_ID)) top.push(this.flickFace.el);
     if (this.radialOpen === FLICK_ID) top.push(this.radials.get(FLICK_ID));
     for (const e of top) lift.push(e);
-    if (!lift.length) { this.scrim.classList.remove('on'); return; }
+    if (!lift.length) { this.scrim.classList.remove('on'); if (this.twin) this.liftGuard(false); return; }
     this.scrimHint.textContent = this.assign
       ? `TAP A LIT KEY TO PLACE ${this.assign.word.toUpperCase()}  ·  TAP ELSEWHERE OR ESC TO CANCEL`
       : 'TAP ANYWHERE OR ESC TO CLOSE';
     this.scrim.classList.add('on');
     for (const e of lift) if (e) e.classList.add('lift');
     for (const e of top) if (e) e.classList.add('lift2');
+    if (this.twin) this.liftGuard(true);
   }
 
   dismissPopups() {
-    const any = !!(this.chipsOpen || this.candOpen || this.assign || this.radialOpen || this.ctxRadialOpen || this.fanOpen);
+    const any = !!(this.chipsOpen || this.candOpen || this.assign || this.radialOpen || this.ctxRadialOpen || this.fanOpen
+      || this.padLayer);
     this.closeChips();
     this.closeCandidates();
+    this.closePadLayer();
     this.cancelAssignment();
     this.closeRadial();
     this.closeContextRadial();
@@ -2237,6 +3094,7 @@ export class Overlay {
 
   closeAll() {
     this.closeChips();
+    this.closePadLayer();
     this.closeFan();
     this.closeRadial();
     this.closeDrawer();
@@ -2308,26 +3166,13 @@ export class Overlay {
   }
 
   openContextRadial() {
+    // twin banks: the pad centre's hold is the HERE layer, on the pad itself
+    if (this.twin) { this.openHere('centre'); return; }
     this.closeChips();
     this.closeFan();
     this.closeDrawer();
     this.closeRadial();
     this.ctxRadialEl.innerHTML = '';
-    if (this.twin) {
-      // twin banks: a row inside the map on the pad's side, never over a key,
-      // until the HERE layer paints these places on the pad
-      const row = this.twinPop(el('div', 'chiprow', this.ctxRadialEl), this.twinSide('pad_centre'));
-      C.CTX_RADIAL.forEach((act) => {
-        const k = new Key(row).place(0, 0, CTX_RADIAL_SIZE, CTX_RADIAL_SIZE)
-          .label(this.labelForAction(act), 9.5).sub(this.subKeyForAction(act), true);
-        k.el.style.position = 'relative';
-        this.bindTap(k, () => { this.closeContextRadial(); this.runAction(act, k.el); });
-      });
-      this.ctxRadialOpen = true;
-      this.ctxRadialEl.style.display = '';
-      this.syncModal();
-      return;
-    }
     const cx = this.termInner() + this.padBox / 2, cy = this.Y(this.termInner() + this.padBox / 2);
     const r = this.ctxRadialRadius();
     C.CTX_RADIAL.forEach((act, n) => {
@@ -2342,7 +3187,10 @@ export class Overlay {
     this.syncModal();
   }
 
+  // Closing the pad centre's list closes twin banks' HERE, wherever it came
+  // from, and the stairs' first tap: whatever opened in its place closes it.
   closeContextRadial() {
+    if (this.padLayer && this.padLayer.kind !== 'count') { this.closePadLayer(); return; }
     if (!this.ctxRadialOpen) return;
     this.ctxRadialOpen = false;
     this.ctxRadialEl.style.display = 'none';
@@ -2366,7 +3214,6 @@ export class Overlay {
     return this.rb(this.termStripW(), DECK_KEY, this.termStripRight(n), this.termDeckBottom());
   }
   termChipBox(n) {
-    if (this.twin) return { side: this.twinSide(TWIN_STRIP[n]) };
     if (this.portrait) {
       return this.rb(CHIP_ROW_W + 8, CHIP_SIZE + 8, this.termInner(),
         this.pCellBottom(n) + this.padCell + CHIP_GAP_ABOVE);
@@ -2381,8 +3228,9 @@ export class Overlay {
       const k = new Key(K).box(this.termStripBox(n)).label('', 9.5);
       this.ctxStrip.push(k);
       this.twinKey(TWIN_STRIP[n], k);
-      // Search (slot 2) is the strip's only counted action, so its row saves there
-      this.chipRows.push(this.buildCountRow(K, C.CTX_SEARCH, this.termChipBox(n)));
+      // Search (slot 2) is the strip's only counted action, so its row saves
+      // there; twin banks paint their counts on the pad instead
+      if (!this.twin) this.chipRows.push(this.buildCountRow(K, C.CTX_SEARCH, this.termChipBox(n)));
       this.bindHold(k, CHIP_HOLD_MS, () => {
         const act = this.ctxActions[n];
         if (!act) return;
@@ -2393,9 +3241,10 @@ export class Overlay {
         if (!act) return;
         if (C.isCounted(act) && act.countKey === this.chipsOpen) { this.closeChips(); return; }
         this.closeChips();
+        if (n === 1 && this.twin) { this.contextTapped(act, k.el); return; }
         if (n === 1 && this.candidates.length > 1) { this.toggleCandidates(); return; }
         this.runAction(act, k.el);
-      });
+      }, this.twin ? this.countHold(TWIN_STRIP[n]) : null);
     }
     this.candEl = el('div', 'pop', K);
     this.candEl.style.display = 'none';
@@ -2411,6 +3260,11 @@ export class Overlay {
     if (this.hereHas(ADJ_OPEN_DOOR)) this.candidates.push(C.CTX_CLOSE);
     const sig = this.candidates.map((a) => a.id).join(' ');
     if (this.candOpen && sig !== this.candSig) this.closeCandidates();
+    // twin banks: HERE's places stay where they are and only their dimming
+    // follows the turn; the stairs' first tap goes when CONTEXT no longer offers them
+    const L = this.padLayer;
+    if (L && L.kind === 'here') this.paintHere();
+    if (L && L.kind === 'stairs' && sig !== this.candSig) this.closePadLayer();
     this.candSig = sig;
     this.ctxActions = [C.CTX_LOOK, this.candidates[0] || null, C.CTX_SEARCH];
     this.refreshContextStrip();
@@ -2425,21 +3279,6 @@ export class Overlay {
     this.closeContextRadial();
     this.candEl.innerHTML = '';
     const n = this.candidates.length;
-    if (this.twin) {
-      // twin banks: a row inside the map on CONTEXT's side, never over a key,
-      // until the HERE layer takes them
-      const row = this.twinPop(el('div', 'chiprow', this.candEl), this.twinSide('context'));
-      this.candidates.forEach((act, k) => {
-        const f = new Key(row).place(0, 0, CAND_SIZE, CAND_SIZE)
-          .face(k === 0 ? C.A90 : C.G90).label(act.word, 8.5).sub(act.key, true);
-        f.el.style.position = 'relative';
-        this.bindTap(f, () => { this.closeCandidates(); this.runAction(act, f.el); });
-      });
-      this.candEl.style.display = '';
-      this.candOpen = true;
-      this.refreshContextStrip();
-      return;
-    }
     const cx = this.X(this.portrait ? this.pCellCx(1) : -(this.termStripRight(1) + this.termStripW() / 2));
     const cy = this.Y(this.portrait ? this.pCellCy(1) : this.termDeckBottom() + DECK_KEY / 2);
     const spread = n <= 2 ? 60 : n === 3 ? 45 : 36, a0 = 270 - (spread * (n - 1)) / 2;
@@ -2455,6 +3294,7 @@ export class Overlay {
   }
 
   closeCandidates() {
+    if (this.padLayer && this.padLayer.kind !== 'count') { this.closePadLayer(); return; }
     if (!this.candOpen) return;
     this.candOpen = false;
     this.candEl.style.display = 'none';
@@ -2471,7 +3311,7 @@ export class Overlay {
       const row = this.chipRows[n];
       if (!act) {
         f.placeholder(true).label('', 9.5).sub(null);
-        row.row.style.display = 'none';
+        if (row) row.row.style.display = 'none';
         return;
       }
       f.placeholder(false);
@@ -2482,7 +3322,10 @@ export class Overlay {
       } else if (n === 1 && this.candidates.length > 1) {
         const lbl = this.candidates.length === 2 ? `${this.candidates[0].word}\n${this.candidates[1].word}`
           : `${this.candidates.length} actions`;
-        f.label(lbl, 9).sub(this.candOpen ? 'pick one' : 'tap to pick');
+        f.label(lbl, 9).sub(this.candOpen || this.hereFrom('context') ? 'pick one' : 'tap to pick');
+      } else if (n === 1 && this.padLayer && this.padLayer.kind === 'stairs') {
+        // twin banks: the stairs' first tap is in; the second goes
+        f.label(this.labelForAction(act), 9.5).sub('tap again');
       } else if (act.holdHint) {
         f.label(this.labelForAction(act), 9.5).sub(act.holdHint);
       } else {
@@ -2506,6 +3349,7 @@ export class Overlay {
   openChips(n) {
     const act = this.ctxActions[n];
     if (!act || !C.isCounted(act)) return;
+    if (this.twin) { this.openCountLayer(act, this.ctxStrip[n].el, TWIN_STRIP[n]); return; }
     this.closeFan();
     this.closeRadial();
     this.closeContextRadial();
@@ -2515,6 +3359,7 @@ export class Overlay {
 
   closeChips() {
     if (!this.chipsOpen) return;
+    if (this.padLayer && this.padLayer.kind === 'count') { this.closePadLayer(); return; }
     this.chipsOpen = null;
     this.refreshContextStrip();
   }
@@ -2665,6 +3510,9 @@ export class Overlay {
     this.drawerGrid.innerHTML = '';
     this.assigning = false;
     this.updateDrawerButtons();
+    // a bounce or a second tap on an item must not fall through to the map
+    // (web.js: map taps are swallowed for 200 ms after a drawer closes)
+    if (this.host.windowClosed) this.host.windowClosed();
   }
 
   updateDrawerButtons() {
@@ -2785,7 +3633,9 @@ export class Overlay {
     const kr = this.keysEl.getBoundingClientRect();
     let x = this.DW / 2, y = this.DH / 2;
     if (from) {
-      const r = from.getBoundingClientRect();
+      // twin banks: from the keycap, not the hit cell round it
+      const cap = this.twin && from.querySelector(':scope > .kcap');
+      const r = (cap || from).getBoundingClientRect();
       x = (r.left + r.width / 2 - kr.left) / this.s;
       y = (r.top - kr.top) / this.s - 22;
     }
@@ -2829,9 +3679,12 @@ export class Overlay {
   }
 
   // Tap / hold / tap-again: the release of the press that opened the hold is swallowed.
-  bindHold(key, holdMs, onHold, onTap) {
+  // Twin banks' layers held open (opts): while the thumb that opened one stays
+  // down, move(ev) follows it, and its lift is release(ev, ms held) -- a slide
+  // onto a place of the pad picks it -- or cancel() if the system takes it.
+  bindHold(key, holdMs, onHold, onTap, opts = null) {
     const e = key.el;
-    let pending = 0, justOpened = false;
+    let pending = 0, justOpened = false, downAt = 0;
     e.addEventListener('pointerdown', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
@@ -2839,20 +3692,41 @@ export class Overlay {
       key.press(true);
       FB.press();
       justOpened = false;
+      downAt = performance.now();
       clearTimeout(pending);
-      pending = setTimeout(() => { pending = 0; justOpened = true; FB.held(); onHold(); }, holdMs);
+      const id = ev.pointerId;
+      pending = setTimeout(() => {
+        pending = 0; justOpened = true; FB.held(); onHold();
+        // Twin banks: a hold that took its own key away spends the rest of
+        // the touch.  A drawer's item held to pin it closes the drawer under
+        // the finger and puts up the scrim round the lit places, and the
+        // touch, its key gone, lifted on the scrim -- which cancelled the pin
+        // as it began: the command was never in hand, so neither the FLICK
+        // legend nor any key could take it (the layers stage, 2026-10-03;
+        // classic does the same, and is left as it is).
+        if (this.twin && !e.isConnected) spendTouch(id);
+      }, holdMs);
     });
+    if (opts && opts.move) e.addEventListener('pointermove', (ev) => { if (justOpened) opts.move(ev); });
     e.addEventListener('pointerup', (ev) => {
       ev.stopPropagation();
       key.press(false);
       FB.up();
-      if (justOpened) { justOpened = false; return; }
+      if (justOpened) {
+        justOpened = false;
+        if (opts && opts.release) opts.release(ev, performance.now() - downAt);
+        return;
+      }
       if (!pending) return;
       clearTimeout(pending);
       pending = 0;
       onTap();
     });
-    e.addEventListener('pointercancel', () => { key.press(false); clearTimeout(pending); pending = 0; justOpened = false; });
+    e.addEventListener('pointercancel', () => {
+      key.press(false); clearTimeout(pending); pending = 0;
+      if (justOpened && opts && opts.cancel) opts.cancel();
+      justOpened = false;
+    });
     key.cancelGesture = () => { key.press(false); clearTimeout(pending); pending = 0; justOpened = false; };
   }
 
@@ -2860,7 +3734,12 @@ export class Overlay {
   // node and it fires on release; the radial shows only after FLICK_REVEAL_MS.
   bindFlick(key, bearings, onHold, onTap, onFire) {
     const e = key.el, n = bearings.length;
-    const [lower, upper] = flickWedges(bearings, n);
+    const [lower, upper] = flickWedges(bearings, n, this.twin ? TWIN_FLICK_SLACK : FLICK_ARC_SLACK);
+    // Twin banks: the legend is feedback while FLICK is held and its nodes are
+    // targets while it is held (the other thumb taps or holds one) or while a
+    // command is being placed (the design's section 7); when the thumb lifts
+    // with nothing in hand, it goes, rather than stay over the map
+    const legendDone = () => { if (this.twin && !this.assign && this.radialOpen === FLICK_ID) this.closeRadial(); };
     const arcCentre = (lower[0] + upper[n - 1]) / 2;
     let pendingHold = 0, pendingReveal = 0, justOpened = false, dragging = false, revealed = false;
     let downAt = 0, x0 = 0, y0 = 0, wedge = -1;
@@ -2930,7 +3809,7 @@ export class Overlay {
       key.press(false);
       FB.up();
       clearTimers();
-      if (justOpened) { justOpened = false; return; }
+      if (justOpened) { justOpened = false; highlight(-1); dragging = false; revealed = false; legendDone(); return; }
       if (!dragging) { onTap(); return; }
       const d = dist(ev);
       const w = d >= FLICK_MIN ? wedgeAt((ev.clientX - x0) / this.s, (ev.clientY - y0) / this.s) : -1;
@@ -2938,6 +3817,7 @@ export class Overlay {
       if (w >= 0) { this.closeRadial(); onFire(w, e); }
       else if (d < FLICK_MIN && !revealed) onTap();
       else if (revealed && w < 0 && d >= FLICK_MIN) this.closeRadial();
+      else if (revealed) legendDone();
       dragging = false;
       revealed = false;
     });
@@ -2945,8 +3825,115 @@ export class Overlay {
   }
 }
 
+// Twin banks' near-miss guard as geometry, from the layout's keycaps (the
+// design's section 6, whose hit model is its checks/lib.mjs hitModel):
+//  - cells: each key's hit cell.  Within a bank every point is the nearest
+//    keycap's, which for a bank's grid of keycaps is a rectangle per key out
+//    to the middle of each gap; the outer column and the bottom row run on to
+//    the screen's edge, and the pads' top row runs up to row 3's keycap (the
+//    pads own the gap above them, so an overshoot from the pad stays on it).
+//    The desk's dock (a mouse in use) sits mid-screen with panels beside it:
+//    its cells stop at the dock's edge.
+//  - banks: each bank's box, which side is its outer one, whether it is the
+//    action pad's, and its halo: 12 dp round it, clipped to the screen (corner:
+//    its inner top corner is still 12 dp round the last keycap's, and rounds).
+//  - seams: on the action pad (rows 0-2 of the bank without the movement
+//    pad), the strips between keycaps: the drawn gap, at least 8 dp about its
+//    middle, so at 3 dp gaps they take 2.5 dp of each keycap's face.
+//  - between: in portrait, the gap between the banks, where the halo's snap
+//    narrows so the two never meet.
+//  - live: the keycaps, for the halo's nearest key and web.js's ring.
+function guardGeometry(S) {
+  const live = S.controls.filter((c) => !c.behind), thumbs = S.pointer !== 'mouse';
+  const cells = new Map(), banks = {}, seams = [];
+  const same = (a, b) => Math.abs(a - b) < 0.01, unit = (v) => Math.round(v * 64) / 64;
+  const uniq = (vals) => vals.sort((a, b) => a - b).filter((v, i, a) => i === 0 || !same(v, a[i - 1]));
+  for (const th of ['L', 'R']) {
+    const ks = live.filter((c) => c.thumb === th);
+    if (!ks.length) continue;
+    const x0 = Math.min(...ks.map((c) => c.x)), x1 = Math.max(...ks.map((c) => c.x + c.w));
+    const y0 = Math.min(...ks.map((c) => c.y)), y1 = Math.max(...ks.map((c) => c.y + c.h));
+    const outerLeft = x0 < S.W - x1;
+    // the bank's columns, left to right, and its rows, top to bottom: the
+    // bottom three are the pads
+    const colX = uniq(ks.map((c) => c.x)), rowY = uniq(ks.map((c) => c.y));
+    const colW = colX.map((v) => ks.find((c) => same(c.x, v)).w), rowH = rowY.map((v) => ks.find((c) => same(c.y, v)).h);
+    const nr = rowY.length, padTop = nr - 3;
+    // Each edge is put on Chrome's 1/64 px layout grid, so the keycap drawn
+    // at the layout's place less the cell's lands where the layout puts it to
+    // the layout unit: a cell edge between two units took the keycaps of the
+    // 44.67 dp right columns 1/64 px off and moved their legends' edges.
+    const xs = colX.map((v, i) => ({
+      a: unit(i === 0 ? (outerLeft && thumbs ? 0 : x0) : (colX[i - 1] + colW[i - 1] + v) / 2),
+      b: unit(i === colX.length - 1 ? (outerLeft || !thumbs ? x1 : S.W) : (v + colW[i] + colX[i + 1]) / 2),
+    }));
+    const ys = rowY.map((v, j) => ({
+      a: unit(j === 0 ? y0 : j === padTop ? rowY[j - 1] + rowH[j - 1] : (rowY[j - 1] + rowH[j - 1] + v) / 2),
+      b: unit(j === nr - 1 ? (thumbs ? S.H : y1) : j + 1 === padTop ? v + rowH[j] : (v + rowH[j] + rowY[j + 1]) / 2),
+    }));
+    for (const c of ks) {
+      const X = xs[colX.findIndex((v) => same(v, c.x))], Y = ys[rowY.findIndex((v) => same(v, c.y))];
+      cells.set(c.id, { x: X.a, y: Y.a, w: X.b - X.a, h: Y.b - Y.a });
+    }
+    const hx0 = Math.max(0, x0 - HALO), hy0 = Math.max(0, y0 - HALO), hx1 = Math.min(S.W, x1 + HALO), hy1 = Math.min(S.H, y1 + HALO);
+    const corner = y0 - HALO >= 0 && (outerLeft ? x1 + HALO <= S.W : x0 - HALO >= 0);
+    const action = !ks.some((c) => c.kind === 'pad');
+    banks[th] = { x0, y0, x1, y1, outerLeft, action, halo: { x: hx0, y: hy0, w: hx1 - hx0, h: hy1 - hy0, corner } };
+    if (action && padTop >= 0) {
+      const top = rowY[padTop];
+      for (let i = 0; i + 1 < colX.length; i++) {
+        const a = colX[i] + colW[i], b = colX[i + 1], m = (a + b) / 2, half = Math.max((b - a) / 2, SEAM / 2);
+        seams.push({ x: m - half, y: top, w: 2 * half, h: y1 - top });
+      }
+      for (let j = padTop; j + 1 < nr; j++) {
+        const a = rowY[j] + rowH[j], b = rowY[j + 1], m = (a + b) / 2, half = Math.max((b - a) / 2, SEAM / 2);
+        seams.push({ x: x0, y: m - half, w: x1 - x0, h: 2 * half });
+      }
+    }
+  }
+  let between = null;
+  if (S.H > S.W && banks.L && banks.R) {
+    const xa = Math.min(banks.L.x1, banks.R.x1), xb = Math.max(banks.L.x0, banks.R.x0);
+    between = { x0: xa, x1: xb, w: Math.max(0, xb - xa), y0: Math.min(banks.L.y0, banks.R.y0) };
+  }
+  return { cells, banks, seams, between, live };
+}
+
+// The pill while the stairs wait for their second tap: the lit centre's word
+// and where to tap.  The pill is 120 dp (layout.js), about 17 letters, and
+// "DESCEND: TAP CENTRE" lost its last one.
+const stairsPill = (act) => `${act.word.toUpperCase()}? CENTRE`;
+
 // a layout reason's first clause, for a settings line
 const firstReason = (r) => String(r || '').split('; ')[0];
+
+// Twin banks' attack pins.  They are kept apart from classic's: PIN 2 starts
+// on Fire in twin and classic's second point stays empty, and with one array
+// the first pin set in twin wrote [x, 'f'] where classic reads its pins, so
+// classic's second point became Fire (the layers stage's review,
+// 2026-10-03).  Until twin's are set, they are classic's, an empty PIN 2
+// taking Fire unless Fire is pinned already; a player who pinned in classic
+// finds those pins in twin.
+function twinPins() {
+  const own = P.get('atkSlotsTwin');
+  if (Array.isArray(own)) return own.slice();
+  const pins = (P.get('atkSlots') || C.ATK_SLOT_DEFAULT).slice(0, C.ATK_SLOT_DEFAULT.length);
+  return pins.map((k, n) => k || (TWIN_ATK_DEFAULT[n] && !pins.includes(TWIN_ATK_DEFAULT[n]) ? TWIN_ATK_DEFAULT[n] : null));
+}
+
+// The rest of a touch whose key has gone (bindHold): its moves, and its lift
+// or cancel, reach nothing past the window's capture phase, where the page's
+// own bookkeeping of fingers (watchTwin, watchGuard) has already seen them.
+function spendTouch(id) {
+  const types = ['pointermove', 'pointerup', 'pointercancel'];
+  const stop = (ev) => {
+    if (ev.pointerId !== id) return;
+    ev.stopImmediatePropagation();
+    ev.preventDefault();
+    if (ev.type !== 'pointermove') for (const t of types) window.removeEventListener(t, stop, true);
+  };
+  for (const t of types) window.addEventListener(t, stop, true);
+}
 
 // the smallest rect holding them all
 function bounds(rs) {
@@ -2956,12 +3943,13 @@ function bounds(rs) {
 }
 
 // The flick's wedge edges for a bearing set: each wedge runs halfway to its
-// neighbours; the outer two a half-step plus FLICK_ARC_SLACK past their node.
-function flickWedges(b, n) {
+// neighbours; the outer two a half-step plus the slack past their node
+// (FLICK_ARC_SLACK; twin banks' TWIN_FLICK_SLACK).
+function flickWedges(b, n, slack = FLICK_ARC_SLACK) {
   const lo = [], hi = [];
   for (let w = 0; w < n; w++) {
-    lo[w] = w > 0 ? (b[w - 1] + b[w]) / 2 : b[w] - (b[w + 1] - b[w]) / 2 - FLICK_ARC_SLACK;
-    hi[w] = w < n - 1 ? (b[w] + b[w + 1]) / 2 : b[w] + (b[w] - b[w - 1]) / 2 + FLICK_ARC_SLACK;
+    lo[w] = w > 0 ? (b[w - 1] + b[w]) / 2 : b[w] - (b[w + 1] - b[w]) / 2 - slack;
+    hi[w] = w < n - 1 ? (b[w] + b[w + 1]) / 2 : b[w] + (b[w] - b[w - 1]) / 2 + slack;
   }
   return [lo, hi];
 }
