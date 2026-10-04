@@ -514,8 +514,9 @@ function panelOf(kind) {
   // log between the glass and the tray, which put it back at its oldest line,
   // and a new width re-wraps it, which left it short of its end, so it stopped
   // following (the review, 2026-10-03).  geo: what layoutPanels last gave it,
-  // so its place is put back only when that changes.
-  p = { el, body, title, kind, beyond: false, sig: '', follow: true, top: null, fx: 0, geo: '' };
+  // so its place is put back only when that changes.  first: the number
+  // (histSeq) of the log's oldest line when it was last drawn (renderLog).
+  p = { el, body, title, kind, beyond: false, sig: '', follow: true, top: null, fx: 0, geo: '', first: null };
   body.addEventListener('scroll', () => notePlace(p), { passive: true });
   panelTaps(p, kind);
   panels.set(kind, p);
@@ -533,11 +534,22 @@ function notePlace(p) {
     const list = panelItems(b);
     let lo = 0, hi = list.length - 1;
     while (lo < hi) { const mid = (lo + hi) >> 1; if (itemY(b, list[mid]) + list[mid].offsetHeight <= b.scrollTop) lo = mid + 1; else hi = mid; }
-    if (list[lo]) p.top = { i: lo, off: b.scrollTop - itemY(b, list[lo]) };
+    if (list[lo]) p.top = { i: lo, off: b.scrollTop - itemY(b, list[lo]), h: list[lo].offsetHeight };
   }
   p.fx = mx > 0 ? Math.min(1, b.scrollLeft / mx) : 0;
   // a wide inventory's columns that run on past its right edge: its edge fades
   if ('wide' in p.el.dataset && b.scrollLeft < mx - 2) p.el.dataset.more = ''; else delete p.el.dataset.more;
+}
+
+// How far into the top line or item to scroll, put back: the same share of
+// its own height, short of its end.  A new width re-wraps the line itself
+// too, and the offset it had, kept as it was, went past its end: a log line
+// scrolled 22 px into its 62 px (three rows in the tray) was 21 px tall in the
+// portrait glass, so the line after it came to the top at every turn (the
+// final pass, 2026-10-04, the tablet re-check's log.mjs).
+function lineOff(top, at) {
+  const h = at.offsetHeight, off = top.h > 0 ? (top.off * h) / top.h : top.off;
+  return Math.max(0, Math.min(h - 1, off));
 }
 
 // a panel's lines (the log) or headings and items (the inventory, in .pcols),
@@ -553,7 +565,7 @@ function putPlace(p) {
   const b = p.body, my = b.scrollHeight - b.clientHeight, mx = b.scrollWidth - b.clientWidth;
   const at = p.top && panelItems(b)[p.top.i];
   if (p.kind === 'log' && p.follow) b.scrollTop = Math.max(0, my);
-  else if (at) b.scrollTop = Math.round(itemY(b, at) + Math.min(p.top.off, at.offsetHeight));
+  else if (at) b.scrollTop = Math.round(itemY(b, at) + lineOff(p.top, at));
   else if (!p.top) b.scrollTop = 0;
   b.scrollLeft = Math.round(p.fx * Math.max(0, mx));
   notePlace(p);
@@ -626,11 +638,19 @@ function renderPanels() {
 }
 
 // a panel's body redrawn; the log keeps to its end while it follows it, and
-// a panel scrolled back keeps its place
-function fillPanel(p, html, toEnd) {
+// a panel scrolled back keeps its place.  gone: the lines that left the top
+// of the list since it was last drawn.  A full history drops its oldest line
+// for each new one (HISTORY_MAX), so the same scrollTop showed a line further
+// on at every message: 5 messages moved a log scrolled back by 5 lines (the
+// final pass, 2026-10-04: the tablet re-check's drift.mjs and log.mjs).  Its
+// top line is kept by its place in the new list instead; when it is gone
+// itself, the oldest line left.
+function fillPanel(p, html, toEnd, gone = 0) {
   const b = p.body, top = b.scrollTop, left = b.scrollLeft;
+  const keep = gone > 0 && !(toEnd && p.follow) && p.top ? { ...p.top, i: p.top.i - gone } : null;
   b.innerHTML = html;
-  b.scrollTop = toEnd && p.follow ? b.scrollHeight : top;
+  const at = keep && panelItems(b)[Math.max(0, keep.i)];
+  b.scrollTop = toEnd && p.follow ? b.scrollHeight : at ? Math.round(itemY(b, at) + (keep.i >= 0 ? lineOff(keep, at) : 0)) : top;
   b.scrollLeft = left;
   notePlace(p);
 }
@@ -645,7 +665,9 @@ function renderLog(p) {
   const sig = `${first} ${n} ${p.beyond ? 'beyond' : fresh}`;
   if (sig === p.sig) return;
   p.sig = sig;
-  fillPanel(p, history.slice(0, n).map((t, i) => `<div class="pl${first + i >= fresh ? ' new' : ''}">${esc(t)}</div>`).join(''), true);
+  const gone = p.first === null ? 0 : Math.max(0, first - p.first);
+  p.first = first;
+  fillPanel(p, history.slice(0, n).map((t, i) => `<div class="pl${first + i >= fresh ? ' new' : ''}">${esc(t)}</div>`).join(''), true, gone);
 }
 
 function renderInventory(p) {
