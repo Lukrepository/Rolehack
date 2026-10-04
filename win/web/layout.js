@@ -160,6 +160,8 @@ export const DEFAULTS = {
   budget: null,        // web in a tab: { w: portrait width, h: landscape height, l: landscape width } seen
   prevTier: null,      // the window's last tier, for hysteresis (section 3 below)
   prevCellTier: null,  // the tier the last device cell was decided at, for hysteresis (sections 3 and 8 below)
+  prevGlass: null,     // the glass last drawn, { kind, over }, for its band (section 7 below)
+  prevCellGlass: null, // the glass the last device cell was decided in, { kind, over, whole } (sections 7 and 8 below)
   halo: 12,            // guard band round each bank (section 6); also the least gap from a band to a key
   ring: 20,            // confirm ring inside the map next to a halo
   // 'auto': the header as section 10 places it -- side by side once the glass is 818 dp
@@ -353,7 +355,7 @@ function plan(S, L, st, table) {
   const refSt = st.padKey >= PAD_STEPS[0] ? st : { ...st, padKey: PAD_STEPS[0] };
   const ref = planFor(S, L, refSt, table, null);
   const DC = deviceCell(S, L, st, ref.M, table);
-  if (refSt === st) return { ...ref, DC };
+  if (refSt === st) return { ...ref, DC, refM: ref.M };
   const p = planFor(S, L, st, table, DC.T);
   // Smaller keys never make the bank stand taller: the width they free goes to wider gaps
   // and margins, and the gaps and the bottom offset are height too (52 dp keys at 384x568
@@ -371,9 +373,9 @@ function plan(S, L, st, table) {
     if (lower) M.top = ref.M.top;
     if (over > 1e-9) { const d = Math.min(over, Math.max(0, M.mb - 5)); M.mb -= d; over -= d; }
     if (over > 1e-9) M.g = Math.max(G_MIN, M.g - over / 3);
-    return { ...p, M: derive(M, st.budget?.w ?? S), DC };
+    return { ...p, M: derive(M, st.budget?.w ?? S), DC, refM: ref.M };
   }
-  return { ...p, DC };
+  return { ...p, DC, refM: ref.M };
 }
 
 // One pad setting's plan.  T: the device cell when it is already decided (smaller keys).
@@ -598,6 +600,36 @@ function better(p, q) {
   if (p.whole && q.whole && p.kind !== q.kind) return p.kind === 'above';
   return p.region.w * p.region.h > q.region.w * q.region.h;
 }
+const bestOf = (list) => list.reduce((b, c) => (!b || better(c, b) ? c : b), null);
+
+// The glass keeps a band of GLASS_BAND dp either side of where the ranking changes its mind
+// (Lucas, 2026-10-04), as the tiers do (section 3).  The ranking has steps a window can sit
+// on: a 1000 dp window dragged across 600 tall swapped a 16.5 dp cell for the whole level at
+// 12 (it shows from there), 1280x636 and 1366x656 a 20 dp cell for 12, and 1000x657 the map
+// between the banks for the map above them, at every pixel either side.  So the glass the
+// page last drew (settings.prevGlass, and prevCellGlass for the device cell's, which
+// viewer.js keeps with the tiers) stays while the ranking still picks it somewhere within
+// GLASS_BAND dp of the window, and only while it is still a glass this window has: a band
+// picks among the window's own candidates, which are all clear of the keys, so it costs a
+// little of the level at most, never a key.  The whole level is never kept under the cell's
+// floor, so that band is one-sided.  The ranking is tried at the eight windows GLASS_BAND
+// dp away; the steps are lines in W and H, so those find them.  Nothing is kept across a
+// bigger jump (a rotation, fullscreen): no window GLASS_BAND away picked the old glass.
+export const GLASS_BAND = 24;
+const NEAR = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
+const sameGlass = (s, g, whole) => s.kind === g.kind && !!s.over === !!g.over && (!whole || !!s.whole === !!g.whole);
+function keptGlass(best, list, prev, W, H, pickAt, whole) {
+  if (!best || !prev || sameGlass(best, prev, whole)) return best;
+  const kept = bestOf(list.filter((s) => sameGlass(s, prev, whole)));
+  if (!kept) return best;
+  const near = NEAR.some(([dx, dy]) => {
+    const b = pickAt(Math.max(1, W + dx * GLASS_BAND), Math.max(1, H + dy * GLASS_BAND));
+    return b && sameGlass(b, prev, whole);
+  });
+  return near ? kept : best;
+}
+// what a stored glass may be: { kind, over[, whole] }, or nothing
+const glassOf = (g) => (g && typeof g === 'object' && typeof g.kind === 'string' ? { kind: g.kind, over: !!g.over, whole: !!g.whole } : null);
 
 // ---------------------------------------------------------------------------------------
 // 8. One map cell per device, decided on the device's landscape geometry (the remembered
@@ -639,23 +671,30 @@ export function deviceCell(S, L, settings, M, table = BANK, Tfixed = null) {
   const W = st.budget?.l ?? L, H = st.budget?.h ?? S;
   // with its own hysteresis: a desktop window dragged across 480 dp tall would
   // otherwise swap the whole-level cell and the phone's at every pixel either side
-  const tier = tierOf(W, H, 'touch', st.prevCellTier ?? null);
+  const tierAt = (w, h) => tierOf(w, h, 'touch', st.prevCellTier ?? null);
+  const tier = tierAt(W, H);
   const ist = { ...st, insets: { l: st.sides.l, r: st.sides.r, t: 0, b: 0 } };
-  const P = placeBanks(W, H, M, ist, table);
   const a = st.cellAspect;
-  let best = null;
-  for (const c of candidates(W, H, M, P, ist, rowsFor(H, false, st))) {
+  // A tablet's glass that holds the whole level is that, and also -- for the band only
+  // (section 7) -- the same glass at the phone's cell, panning: the ranking puts any whole
+  // level first, so it never picks the second, but a window dragged across where the level
+  // first fits (968 wide at 800 tall) keeps it for GLASS_BAND dp.
+  const glasses = (W, H, tier) => candidates(W, H, M, placeBanks(W, H, M, ist, table), ist, rowsFor(H, false, st)).flatMap((c) => {
     const R = c.region;
     const fit = Math.min(R.w / (80 * a), R.h / 21);
-    let T, whole = false;
-    if (Tfixed) T = Tfixed;
-    else if (tier === 'tablet' && fit >= st.fitFloor) { T = Math.floor(Math.min(fit, tabletCap(R.w, a, st)) * 2) / 2; whole = true; }
-    else if (st.mapCell === 'rows') T = clamp(R.h / 21, st.fitFloor, st.cellMax);
-    else T = clamp(Math.min(R.w / (a * st.cellColumns), R.h / 21), st.fitFloor, st.cellMax);
-    const s = { ...cellsAt(R, T, a), T, kind: c.kind, over: c.over, region: R };
-    if (whole) { s.whole = true; s.cells = 1680; }
-    if (!best || better(s, best)) best = s;
-  }
+    const at = (T) => ({ ...cellsAt(R, T, a), T, kind: c.kind, over: c.over, region: R });
+    const phoneT = st.mapCell === 'rows' ? clamp(R.h / 21, st.fitFloor, st.cellMax) : clamp(Math.min(R.w / (a * st.cellColumns), R.h / 21), st.fitFloor, st.cellMax);
+    if (Tfixed) return [at(Tfixed)];
+    if (!(tier === 'tablet' && fit >= st.fitFloor)) return [at(phoneT)];
+    const s = { ...at(Math.floor(Math.min(fit, tabletCap(R.w, a, st)) * 2) / 2), whole: true, cells: 1680 };
+    const pans = at(phoneT);
+    return pans.whole ? [s] : [s, pans];
+  });
+  const list = glasses(W, H, tier);
+  // the band (section 7), for the device cell itself only: a fixed cell (smaller keys, the
+  // header's squeeze) compares glasses at that cell, as the ranking does
+  const prev = Tfixed ? null : glassOf(st.prevCellGlass);
+  const best = keptGlass(bestOf(list), list, prev, W, H, (w, h) => bestOf(glasses(w, h, tierAt(w, h))), true);
   if (!best) return { T: st.fitFloor, tier, kind: 'none', whole: false, rows: 0, cols: 0, cells: 0, over: false };
   return { T: best.T, tier, kind: best.kind, whole: best.whole, rows: best.rows, cols: best.cols, cells: best.cells, over: best.over };
 }
@@ -673,7 +712,16 @@ export function deviceCell(S, L, settings, M, table = BANK, Tfixed = null) {
 // ---------------------------------------------------------------------------------------
 export function layout(W, H, pointer = 'touch', settings = {}) {
   try {
-    return layoutCore(W, H, pointer, settings || {});
+    const st = settings || {};
+    const r = layoutCore(W, H, pointer, st);
+    // The glass's band (section 7) never costs a window its twin banks: a kept glass is
+    // clear of the keys, but may be too narrow for the drawer (600x620, where the column
+    // between the banks was kept 160 dp wide), so the ranking's own pick decides then.
+    if (!r.usable && (st.prevGlass || st.prevCellGlass)) {
+      const plain = layoutCore(W, H, pointer, { ...st, prevGlass: null, prevCellGlass: null });
+      if (plain.usable) return plain;
+    }
+    return r;
   } catch (e) {
     return { spec: null, usable: false, info: null, degraded: true, reason: `layout() failed: ${e && e.message}` };
   }
@@ -769,7 +817,7 @@ function layoutCore(W0, H0, pointer, settings) {
   }
   if (pointer === 'mouse') return verdict(deskLayout(W, H, deskMetrics(st), st, table, reasons));
   const tier = tierOf(W, H, pointer, st.prevTier);
-  const { M, fit, DC } = plan(S, L, st, table);
+  const { M, fit, DC, refM } = plan(S, L, st, table);
   fit.reasons = [...reasons, ...fit.reasons];
   const P = placeBanks(W, H, M, st, table);
   const a = st.cellAspect;
@@ -794,12 +842,24 @@ function layoutCore(W0, H0, pointer, settings) {
   // its landscape width (section 8 above) showed 45 of the level's 80 columns at 31.5 dp
   // where 24 dp shows 60 (the reviews, 2026-10-03).  Only past tabletCellMax, which no
   // phone or tablet reaches, so their two orientations keep one cell.
-  if (portrait && T > st.tabletCellMax && cands.length) {
+  const portraitCap = (T, cands, portrait) => {
+    if (!portrait || T <= st.tabletCellMax || !cands.length) return T;
     const wide = Math.max(...cands.map((c) => c.region.w));
-    T = Math.max(st.tabletCellMax, Math.min(T, Math.floor(wide / (80 * a) * 2) / 2));
-  }
+    return Math.max(st.tabletCellMax, Math.min(T, Math.floor(wide / (80 * a) * 2) / 2));
+  };
+  T = portraitCap(T, cands, portrait);
   const scored = cands.map((c) => ({ ...c, ...cellsAt(c.region, T, a), T }));
-  let G = scored.reduce((b, c) => (!b || better(c, b) ? c : b), null);
+  // The glass last drawn, while the ranking still picks it within GLASS_BAND dp (section 7).
+  // Each window tried has its own cell: the device's, which a window without a budget
+  // decides from its own sides (at 1366 wide the cell grows from 12 dp at 699 tall to 13.5
+  // at 740, and the glass the ranking picks there at 13.5 is not the one it picks at 12).
+  let G = keptGlass(bestOf(scored), scored, glassOf(st.prevGlass), W, H, (w, h) => {
+    const Pn = placeBanks(w, h, M, st, table);
+    let n = rowsFor(h, h > w, st), cs = candidates(w, h, M, Pn, st, n);
+    while (!cs.length && n > 1) { n--; cs = candidates(w, h, M, Pn, st, n); }
+    const Tn = portraitCap(deviceCell(Math.min(w, h), Math.max(w, h), st, refM, table).T, cs, h > w);
+    return bestOf(cs.map((c) => ({ ...c, ...cellsAt(c.region, Tn, a), T: Tn })));
+  }, false);
   // Smaller keys never show less of the level (section 2).  The device cell is decided at
   // 58 dp keys, and every glass rectangle only grows as the banks shrink, so the glass the
   // next larger key size picks, taken here at these keys, shows at least what it showed

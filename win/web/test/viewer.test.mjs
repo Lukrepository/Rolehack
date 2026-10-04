@@ -21,11 +21,15 @@
 //  5. the size classes (phone under 600 dp wide or 480 tall, tablet
 //     otherwise) change only 24 dp past a boundary, the window's tier and the
 //     device cell's alike, so a window dragged across one never flickers
-//     between them, and a tier never moves a key.
+//     between them, and a tier never moves a key;
+//  6. the glass has a band of its own (Lucas, 2026-10-04): the glass the map
+//     was drawn in, and the device cell's, change only 24 dp past where the
+//     ranking changes its mind, never at every pixel of a drag; a turn of the
+//     device keeps nothing, and the band never moves a key.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { layout } from '../layout.js';
+import { layout, GLASS_BAND } from '../layout.js';
 import { budgetFor, budgetedLayout, worse, sizeClass, withClasses, classesOf, SIZE_W, SIZE_H, SIZE_BAND } from '../viewer.js';
 
 // the page's settings at its defaults (overlay.js rebuildTwin)
@@ -255,17 +259,87 @@ test('a window dragged across a boundary changes tier once each way, and no key 
 test('the tiers kept are a drawn layout\'s: a fallback to classic keeps the last ones', () => {
   const tab = layout(1024, 768, 'touch', BASE);
   const kept = classesOf(tab, null);
-  assert.deepEqual(kept, { tier: 'tablet', cellTier: 'tablet' });
+  const tiers = (c) => ({ tier: c.tier, cellTier: c.cellTier });
+  assert.deepEqual(tiers(kept), { tier: 'tablet', cellTier: 'tablet' });
+  // the glasses go with them: the map's, and the one the device cell was decided in
+  assert.deepEqual(kept.glass, { kind: tab.info.G.kind, over: !!tab.info.G.over });
+  assert.deepEqual(kept.cellGlass, { kind: tab.info.DC.kind, over: !!tab.info.DC.over, whole: true });
   const split = layout(443, 460, 'touch', BASE);
   assert.equal(split.usable, false);
   assert.deepEqual(classesOf(split, kept), kept, 'an unusable result is not drawn, so its tiers are not kept');
   assert.equal(classesOf(null, kept), kept);
-  assert.deepEqual(withClasses({ padKey: 52 }, null), { padKey: 52, prevTier: null, prevCellTier: null });
+  assert.deepEqual(withClasses({ padKey: 52 }, null), { padKey: 52, prevTier: null, prevCellTier: null, prevGlass: null, prevCellGlass: null });
+  assert.deepEqual(withClasses({}, kept), { prevTier: 'tablet', prevCellTier: 'tablet', prevGlass: kept.glass, prevCellGlass: kept.cellGlass });
   // a phone's device cell is decided at its landscape geometry, whichever way it is held
   const p = layout(443, 939, 'touch', BASE);
-  assert.deepEqual(classesOf(p), { tier: 'phone', cellTier: 'phone' });
+  assert.deepEqual(tiers(classesOf(p)), { tier: 'phone', cellTier: 'phone' });
   // a portrait window on a tablet-sized device: a phone window, the device's cell a tablet's
-  assert.deepEqual(classesOf(layout(560, 900, 'touch', BASE)), { tier: 'phone', cellTier: 'tablet' });
+  assert.deepEqual(tiers(classesOf(layout(560, 900, 'touch', BASE))), { tier: 'phone', cellTier: 'tablet' });
+});
+
+// The glass's band (Lucas, 2026-10-04; layout.js section 7).  The ranking
+// has steps a window can sit on: a 1000 dp window at 600 tall swapped a
+// 16.5 dp cell for 12 at every pixel either side, 968 wide at 800 tall the
+// map that pans for the whole level, and 1366 wide at 693 tall the map
+// between the banks for the map above them.  The page's loop (each layout
+// given what the last one drew) keeps the glass until the window is
+// GLASS_BAND dp past the step; layout() alone, as the design's checks run it,
+// is the ranking as before.
+test('the glass changes 24 dp past a step of the ranking, once each way, and no key moves', () => {
+  const drag = (sizes, settings = {}) => {
+    let classes = null;
+    return sizes.map(([W, H]) => {
+      const r = layout(W, H, 'touch', withClasses(settings, classes));
+      classes = classesOf(r, classes);
+      const bare = layout(W, H, 'touch', settings);
+      assert.equal(r.usable, true, `${W}x${H} usable`);
+      assert.deepEqual(rects(r), rects(bare), `${W}x${H}: the band moves no key`);
+      return { W, H, T: r.info.DC.T, cell: `${r.info.DC.kind}${r.info.DC.whole ? ' whole' : ''}`, map: r.info.G.kind, bareT: bare.info.DC.T, bareMap: bare.info.G.kind };
+    });
+  };
+  const span = (a, b) => Array.from({ length: Math.abs(b - a) + 1 }, (_, i) => a + Math.sign(b - a) * i);
+  const flips = (seq, k) => seq.filter((q, i) => i && q[k] !== seq[i - 1][k]).map((q) => `${q.W}x${q.H}`);
+  assert.equal(GLASS_BAND, 24);
+
+  // 1000 wide, 560 tall to 640 and back: the cell flipped at 600 and 599, at
+  // every crossing; now at 624 on the way up and under 576 on the way down
+  const tall = drag([...span(560, 640), ...span(639, 560)].map((H) => [1000, H]));
+  assert.deepEqual(flips(tall.map((q) => ({ ...q, k: q.bareT })), 'k'), ['1000x600', '1000x599'], 'the plain rule steps at 600');
+  assert.deepEqual(flips(tall, 'T'), ['1000x624', '1000x575']);
+  assert.deepEqual([tall.find((q) => q.H === 623).T, tall.find((q) => q.H === 624).T].map((t) => Math.round(t * 100) / 100), [16.47, 12]);
+  // a window sitting on the step, a bar coming and going: one cell throughout
+  const wobble = drag([598, 602, 598, 602, 598, 602, 599, 601].map((H) => [1000, H]));
+  assert.deepEqual(flips(wobble, 'T'), []);
+  assert.deepEqual(flips(wobble.map((q) => ({ ...q, k: q.bareT })), 'k').length, 7, 'without the band the cell flips at each one');
+
+  // 800 tall, 940 wide to 1000 and back: the whole level first fits at 968;
+  // it comes 24 dp later, and goes where it no longer fits (it is never kept
+  // under the cell's floor, so that side has no band)
+  const wide = drag([...span(940, 1000), ...span(999, 940)].map((W) => [W, 800]));
+  assert.deepEqual(flips(wide, 'cell'), ['992x800', '967x800']);
+  assert.deepEqual(flips(wide.map((q) => ({ ...q, k: q.bareT })), 'k'), ['968x800', '967x800']);
+
+  // 1366 wide, 650 tall to 740 and back: the map moved above the banks at 693
+  // and back between them at 692; now 24 dp past either
+  const map = drag([...span(650, 740), ...span(739, 650)].map((H) => [1366, H]));
+  const [up, down] = flips(map, 'map').map((w) => Number(w.split('x')[1]));
+  const [bareUp, bareDown] = flips(map.map((q) => ({ ...q, map: q.bareMap })), 'map').map((w) => Number(w.split('x')[1]));
+  assert.equal(flips(map, 'map').length, 2);
+  assert.deepEqual([bareUp, bareDown], [693, 692]);
+  assert.ok(up >= bareUp + GLASS_BAND && down <= bareDown - GLASS_BAND, `the map moves at ${up} and ${down}`);
+});
+
+test('a turn of the device keeps no glass: each orientation is laid out as the rule alone lays it out', () => {
+  const pairs = [[896, 443], [640, 360], [915, 412], [844, 390], [1024, 768], [1180, 820], [1366, 768], [1920, 1080], [2560, 1440]];
+  for (const settings of [BASE, {}, { ...BASE, padKey: 46 }, { ...BASE, mapCell: 'rows' }]) {
+    for (const [a, b] of pairs) {
+      for (const [W, H] of [[a, b], [b, a]]) {
+        const before = classesOf(layout(H, W, 'touch', settings));
+        const turned = layout(W, H, 'touch', withClasses(settings, before));
+        assert.deepEqual(turned.spec, layout(W, H, 'touch', settings).spec, `${W}x${H} after ${H}x${W}`);
+      }
+    }
+  }
 });
 
 // Desktop mode is deferred (Lucas, 2026-10-03): the page lays out a window
