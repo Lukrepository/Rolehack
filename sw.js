@@ -7,11 +7,11 @@
 // new one is active.  It never reloads a page: a game in progress keeps
 // running on the files it started with.
 
-const VERSION = 'f3d346642b42';
+const VERSION = '1328b88dda55';
 const CACHE = `rolehack-${VERSION}`;
 const FILES = [
   './', 'index.html', 'rolehack.css', 'manifest.json',
-  'web.js', 'overlay.js', 'commands.js', 'prefs.js', 'doll.js', 'feedback.js', 'defaults.nh', 'build.json',
+  'web.js', 'overlay.js', 'commands.js', 'prefs.js', 'doll.js', 'feedback.js', 'layout.js', 'viewer.js', 'defaults.nh', 'build.json',
   'sounds/key-tactile.ogg',
   'nethack.js', 'nethack.wasm', 'tiles.png', 'tiles.json',
   'fonts/VT323-Regular.ttf', 'fonts/IBMPlexSansCondensed-SemiBold.ttf', 'fonts/AtkinsonHyperlegibleNext-Variable.ttf',

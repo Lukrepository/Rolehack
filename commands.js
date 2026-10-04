@@ -146,7 +146,21 @@ export function wizardExtras(groupId) {
   return groupId === 'world' ? WIZ_WORLD : groupId === 'game' ? WIZ_GAME : null;
 }
 
-const GROUPS = new Map([INVENT, WEAR, WEAPON, EQUIP, DROP, FIGHT, USE, WORLD, GAME].map((g) => [g.id, g]));
+// Twin banks' HERE layer's ALL (the design's section 8): what the layer's
+// eight places do and what did not fit on them -- Chat, Drop unknown -- with
+// the rest of your square and the squares beside it.  WORLD's own entries, so
+// a key pinned from here wears the same word as from WORLD.
+const fromWorld = (key) => WORLD.items.find((it) => it.key === key);
+export const HERE = group('here', 'HERE', [
+  head('This square'),
+  fromWorld('<'), fromWorld('>'), fromWorld(','), i('Look here', ':'), fromWorld('M-o'),
+  DROP.items.find((it) => it.key === DROP_UNKNOWN), fromWorld('M-l'), fromWorld('E'), fromWorld('p'),
+  fromWorld('M-s'), fromWorld('M-f'),
+  head('Adjacent'),
+  fromWorld('o'), fromWorld('c'), fromWorld('M-c'), fromWorld('^D'), fromWorld('M-u'), fromWorld('^'),
+]);
+
+const GROUPS = new Map([INVENT, WEAR, WEAPON, EQUIP, DROP, FIGHT, USE, WORLD, GAME, HERE].map((g) => [g.id, g]));
 export const groupById = (id) => GROUPS.get(id);
 
 // Hubs (RhCommands, 2026-09-26).  A tap runs quick; a hold turns the movement

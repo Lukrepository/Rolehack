@@ -9,7 +9,8 @@
 // forms.  The touch controls are overlay.js.
 import createNetHack from './nethack.js';
 import { setPalette, dressHero, LOOK_LEN } from './doll.js';
-import { Overlay, STATUS_BAND, LINE, msgRows, msgBandPx, msgTextPx, MSG_LEADING, resetTextScale, creationCap } from './overlay.js';
+import { Overlay, STATUS_BAND, LINE, msgRows, msgBandPx, msgTextPx, MSG_LEADING, resetTextScale, creationCap,
+  GHOST_CONFIRM_MS, RING_REACH } from './overlay.js';
 import { keyEvents } from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
@@ -27,6 +28,7 @@ const COLORS = ['#777f81', '#ff6267', '#1a9b54', '#cc5b10', '#2c51ff', '#9c2d8b'
                 '#34aeff', '#f364c9', '#4ee6fc', '#f8fcf6'];
 const MG_PET = 0x10;
 const MENU_ITEMFLAGS_SELECTED = 1;
+const MENU_BEHAVE_PERMINV = 1;   // wintype.h
 const ATR = { BOLD: 1, DIM: 2, ULINE: 4, BLINK: 5, INVERSE: 7 };
 // RhStatus's conditions: short name and severity (2 deadly, 1 impairing, 0 movement)
 const CONDITIONS = {
@@ -111,6 +113,8 @@ const queue = [];
 let waiter = null;
 
 function push(ev) {
+  // a key while the ghost deck previews a cell: the preview was not what was meant
+  if (ghostPreview && ev.key !== undefined) clearGhostPreview(false);
   if (waiter) { const w = waiter; waiter = null; w(ev); } else queue.push(ev);
 }
 
@@ -257,7 +261,14 @@ const statusBandH = () => ({ hidden: 0, compact: STATUS_BAND - LINE }[P.get('sta
 // the glass and centres between its bands; caseless, it fills the window.
 function layoutGlass(g) {
   geom = g;
+  if (g.twin) { layoutTwinGlass(g); return; }
   const gl = $('glass'), bands = $('bands'), s = g.s, r = g.glass;
+  // what twin banks set and classic does not (layoutTwinGlass): the bands back
+  // in the glass, in their place before the tube, and each band's own rect;
+  // no panels
+  untwinBands();
+  hidePanels();
+  $('map').style.left = $('map').style.top = '';
   const box = g.caseless ? { x: 0, y: 0, w: g.W, h: g.H } : r;
   Object.assign(gl.style, { left: `${box.x}px`, top: `${box.y}px`, width: `${box.w}px`, height: `${box.h}px`,
                             borderRadius: g.caseless ? '0' : `${r.r}px` });
@@ -282,26 +293,538 @@ function layoutGlass(g) {
   // screen and the hero centres in what is left above them (RhOverlay.mapArea)
   view.area = g.caseless && !g.portrait ? { x: 0, y: 0, w: box.w, h: box.h }
     : { x: bx + 2 * s, y: by + bandPx, w: r.w - 4 * s, h: r.h - bandPx - statusBandH() * s };
+  // The canvas is exactly as big as its backing store, a device pixel to a
+  // pixel, so what renderMap draws at a device pixel shows at that pixel and
+  // the tap maths in CSS px finds it there.  Stretched to box.w, the store was
+  // up to half a device pixel off across the glass, and resampled.
   const cv = $('map'), dpr = window.devicePixelRatio || 1;
   cv.width = Math.round(box.w * dpr);
   cv.height = Math.round(box.h * dpr);
-  cv.style.width = `${box.w}px`;
-  cv.style.height = `${box.h}px`;
+  cv.style.width = `${cv.width / dpr}px`;
+  cv.style.height = `${cv.height / dpr}px`;
   render();
 }
 
+// Twin banks (overlay.js, layout.js): the glass where the layout puts it and
+// the canvas exactly the map area, so the map draws inside it and nothing
+// outside it is map: a tap beside it lands on the case, the bands or the
+// bezel, never on a cell.  The canvas's edges sit on device pixels, so its
+// store maps a pixel to a pixel (the tap drift, layoutGlass above), each moved
+// inward to the next one, so it never reaches past the map area -- but for
+// an axis where the level drawn at the device's cell is the map area's whole
+// length, a whole-level screen's or a 21-row cell's.  Moved inward, the canvas
+// was a device pixel short of the level there, so the level was cut by that
+// pixel and followed the hero instead of standing centred (1366x768 at 1x,
+// every 2x tablet; the review, 2026-10-02); there both edges move outward,
+// by under a device pixel each, into the glass's own margin.
+//
+// The header is laid out band by band, each at the layout's own rect (the
+// design's section 10): stacked at the top of the glass, messages over the
+// status; side by side once the glass is wide enough, messages on the left; or
+// over the banks, side by side across the top of the screen, where that shows
+// more of the level (the map cell 'rows').  In the glass the bands stay under
+// its tube, as classic's do; over the banks they leave it for the case, each
+// band a pane of glass of its own, and the rule keeps them 12 dp clear of
+// every key.  The message band's rows are the layout's -- the spare height it
+// gives them, up to 4 -- and its width is the width it is drawn at: both are
+// what the game's messages are paged by (bandMetrics), so --More-- comes
+// exactly when the band shown is full.  A prompt's choices open at the top of
+// the map, as they open under the band in classic.
+function layoutTwinGlass(g) {
+  const gl = $('glass'), bands = $('bands'), r = g.glass, m = g.map, mb = g.msgBand, sb = g.statusBand;
+  const dpr = window.devicePixelRatio || 1, snap = (v) => Math.round(v * dpr) / dpr;
+  const gx = snap(r.x), gy = snap(r.y);
+  Object.assign(gl.style, { left: `${gx}px`, top: `${gy}px`, width: `${snap(r.x + r.w) - gx}px`, height: `${snap(r.y + r.h) - gy}px`,
+                            borderRadius: `${r.r}px` });
+  // the bands' layer: the glass, or the whole window when they stand over the
+  // banks -- after the glass and before the keys, so over the case, under a key
+  const over = !!g.headerOver;
+  if (!over) untwinBands();
+  else if (bands.parentNode !== $('app')) $('app').insertBefore(bands, $('keys'));
+  if (over) bands.dataset.over = ''; else delete bands.dataset.over;
+  const ox = over ? 0 : gx, oy = over ? 0 : gy;
+  Object.assign(bands.style, { left: '0px', top: '0px', width: over ? `${g.W}px` : '100%', height: over ? `${g.H}px` : '100%',
+                               zIndex: over ? '1' : '' });
+  // a rect of the layout's, its edges on device pixels, in the layer's own px
+  const place = (e, q) => {
+    const x = snap(q.x), y = snap(q.y);
+    Object.assign(e.style, { left: `${x - ox}px`, top: `${y - oy}px`, width: `${snap(q.x + q.w) - x}px`,
+                             height: `${snap(q.y + q.h) - y}px`, right: 'auto', bottom: 'auto' });
+  };
+  // the status lines at the system's text size, as the layout sized their band
+  const ts = g.textScale || 1;
+  bands.style.setProperty('--line', `${LINE * ts}px`);
+  resetTextScale();
+  const msg = $('msgband'), textPx = msgTextPx();
+  msg.style.fontFamily = P.get('msgFont') === 'screen' ? 'var(--screenfont)' : 'var(--msgfont)';
+  msg.style.fontSize = `${textPx}px`;
+  msg.style.lineHeight = `${textPx * MSG_LEADING}px`;
+  place(msg, mb);
+  msg.style.padding = '5px 10px 4px';
+  const st = $('statband');
+  st.style.fontSize = `${10.5 * 1.35 * ts}px`;
+  place(st, sb);
+  st.style.padding = `${3 * ts}px 10px ${4 * ts}px`;
+  st.style.display = P.get('statusLines') === 'hidden' ? 'none' : '';
+  // the MORE lamp at the message band's right end (overlay.js twinLamps)
+  const lamp = $('morelamp');
+  if (lamp) Object.assign(lamp.style, { left: `${snap(mb.x + mb.w) - 8 - ox}px`, top: `${snap(mb.y) + 6 - oy}px`, right: 'auto' });
+  // A prompt's choices: at the top of the map, or its bottom (placeChips),
+  // never past its edges.  Where there are more than the map holds, they
+  // scroll (sizeChips).
+  chipEdges = { top: m.y + 6 - oy, bottom: m.y + m.h - 6 - oy };
+  Object.assign($('chips').style, { left: `${m.x + 6 - ox}px`, top: `${chipEdges.top}px`, width: `${m.w - 12}px`,
+                                    right: 'auto', maxHeight: `${Math.max(48, m.h - 12)}px` });
+  sizeChips();
+  const cv = $('map'), up = (v) => Math.ceil(v * dpr - 1e-6) / dpr, down = (v) => Math.floor(v * dpr + 1e-6) / dpr;
+  // an axis's edges: inward, or outward where only that holds the level's n cells
+  const edges = (a, len, n) => {
+    const need = n * drawnCell(g.cell || 0) - 1e-6;
+    return down(a + len) - up(a) < need && up(a + len) - down(a) >= need ? [down(a), up(a + len)] : [up(a), down(a + len)];
+  };
+  const [cx, cx1] = edges(m.x, m.w, COLNO), [cy, cy1] = edges(m.y, m.h, ROWNO);
+  cv.width = Math.max(1, Math.round((cx1 - cx) * dpr));
+  cv.height = Math.max(1, Math.round((cy1 - cy) * dpr));
+  cv.style.left = `${cx - gx}px`;
+  cv.style.top = `${cy - gy}px`;
+  cv.style.width = `${cv.width / dpr}px`;
+  cv.style.height = `${cv.height / dpr}px`;
+  view.area = { x: 0, y: 0, w: cv.width / dpr, h: cv.height / dpr };
+  layoutPanels(g, gx, gy);
+  placeChips();
+  render();
+}
+
+// Twin banks: a prompt's choices stand at the top of the map, or at its
+// bottom where at the top they would cover the hero or a cell beside it --
+// the door a "Kick it?" asks about -- as they would on a level's top rows,
+// which a map centred where the level fits always shows under them (the
+// review, 2026-10-02: in portrait the chips hid both the hero and the door).
+// Where they cover it either way, at the top.  The hero stays put while a
+// prompt waits, so they are placed as they open (showChips) and when the
+// glass is laid out again.
+let chipEdges = null;     // the chips' top at the map's top, their bottom at its bottom, in their layer's px
+function placeChips() {
+  const c = $('chips');
+  if (!(geom && geom.twin) || !chipEdges) return;
+  c.style.top = `${chipEdges.top}px`;
+  if (!c.children.length || !view.area) return;
+  placeView();
+  const f = viewFocus(), T = view.T, cv = $('map').getBoundingClientRect();
+  const hx = cv.left + view.left + (f.x - 1) * T, hy = cv.top + view.top + (f.y - 1) * T;   // the hero's 3x3 cells
+  const covers = () => [...c.children].some((b) => {
+    const q = b.getBoundingClientRect();
+    return q.right > hx && q.left < hx + 3 * T && q.bottom > hy && q.top < hy + 3 * T;
+  });
+  if (!covers()) return;
+  c.style.top = `${chipBottom(c) - c.offsetHeight}px`;
+  if (covers()) c.style.top = `${chipEdges.top}px`;
+}
+
+// The lowest the chips' bottom goes: the map's foot, or over the layer's pill
+// there while a layer is up -- ANSWER, at a question whose answers are on the
+// pad -- which hid the 'y' chip's label on 443x939 with the hero in the
+// map's top corner (the review, 2026-10-03).  c's top is at chipEdges.top.
+function chipBottom(c) {
+  const pill = overlay && overlay.layerPill;
+  if (!(pill && pill.classList.contains('on'))) return chipEdges.bottom;
+  const q = pill.getBoundingClientRect(), oy = c.getBoundingClientRect().top - chipEdges.top;
+  return q.height ? Math.min(chipEdges.bottom, q.top - 4 - oy) : chipEdges.bottom;
+}
+
+// The bands as classic has them, one block in the glass before its tube, and
+// nothing of twin banks' own rects left on them (layoutGlass sets the rest).
+function untwinBands() {
+  const gl = $('glass'), bands = $('bands');
+  if (bands.parentNode !== gl) gl.insertBefore(bands, $('tube'));
+  delete bands.dataset.over;
+  bands.style.zIndex = '';
+  for (const id of ['msgband', 'statband', 'chips', 'morelamp']) {
+    const e = $(id);
+    if (!e) continue;
+    for (const k of ['left', 'top', 'width', 'right', 'bottom', 'maxHeight', 'padding']) e.style[k] = '';
+    e.classList.remove('scroll');
+  }
+}
+
+// Twin banks: choices that run past the bottom of the map scroll, and only
+// then take the touches between them (a drag there scrolls); otherwise the map
+// under the empty part of their row still pans.
+function sizeChips() {
+  const c = $('chips');
+  c.classList.toggle('scroll', !!(geom && geom.twin) && c.scrollHeight > c.clientHeight + 1);
+}
+
+/* ---------- twin banks: the panels, the message log and the inventory ---------- */
+
+// What the level does not need of the window becomes panels (the design's
+// sections 4, 10 and 11): on a tablet, a touch laptop or any large window --
+// a mouse's too, desktop mode being deferred (Lucas, 2026-10-03) -- the
+// message log and the inventory, in the tray between the banks, in the glass
+// under the map, or beside the map on a window much wider than the level; and
+// on a phone in portrait, a log in the glass under the map.  layout.js places
+// them off the map and 12 dp clear of every key, so they cover neither, and
+// they are copies: MSGS and INVENTORY stay in their banks, and no key moves
+// for a panel.
+//  - The log is the history (^P's), newest last, in the band's own face a
+//    step smaller.  A tablet's shows all of it, the band's page bright at its
+//    end; a phone's, two or three lines under the map, shows what comes
+//    before the band's first message, so no line stands twice on a small
+//    screen.  It keeps to its newest line unless the player has scrolled
+//    back.  A tap opens the whole history, as a tap on the band does.
+//  - The inventory is the core's permanent inventory (perm_invent), which the
+//    core sends whenever the inventory changes (winshim.c
+//    shim_update_inventory, repopulate_perminvent) as a menu on WIN_INVEN to
+//    pick nothing from: taken here, never opened as a window
+//    (shim_select_menu).  perm_invent is on for a game the page starts in
+//    twin banks (start()); classic plays as it always has, and a game begun
+//    in classic and switched shows its inventory from the page's next start.
+//    A tap opens the inventory ('i') while the game waits for a command.
+//    Where the panel has room for two columns of an item's line (a monitor's
+//    tray) the pack fills columns, so it shows whole rather than scroll.
+// A panel inside the glass (under the map, beside it) is part of it, under
+// its tube, as the bands are; outside (the tray, over the banks) it is a pane
+// of glass of its own, in #panes, as the bands are over the banks.  At
+// --More-- a tap on either is Space, as on all the glass.
+const panels = new Map();   // kind ('log', 'inventory') -> { el, body, title, kind, beyond, sig, follow, fy, fx, geo }
+const PANEL_TEXT = 0.85;    // of the band's text size
+// this page's game has perm_invent on: twin banks when the page started
+// (start() sends it to the core).  Known from the first layout, which comes
+// before start(): a fresh page's inventory once said "this game began in
+// classic" behind the name prompt (the review, 2026-10-03).
+let permInvent = P.get('layout') !== 'classic';
+let invMenu = null;         // the permanent inventory as the core last sent it: { items, n }
+
+function panelOf(kind) {
+  let p = panels.get(kind);
+  if (p) return p;
+  const el = document.createElement('div');
+  el.className = 'rhpanel';
+  el.dataset.kind = kind;
+  const title = document.createElement('div');
+  title.className = 'ptitle';
+  title.textContent = kind === 'log' ? 'Messages' : 'Inventory';
+  const body = document.createElement('div');
+  body.className = 'pbody';
+  el.append(title, body);
+  // follow: the log keeps to its newest line; top: the line or item at the
+  // top of a panel scrolled back, and how far into it; fx: how far across a
+  // wide inventory's columns, as a share.  Only the player's own scrolling
+  // changes them (notePlace), never a move or a resize: a rotation moves the
+  // log between the glass and the tray, which put it back at its oldest line,
+  // and a new width re-wraps it, which left it short of its end, so it stopped
+  // following (the review, 2026-10-03).  geo: what layoutPanels last gave it,
+  // so its place is put back only when that changes.  first: the number
+  // (histSeq) of the log's oldest line when it was last drawn (renderLog).
+  p = { el, body, title, kind, beyond: false, sig: '', follow: true, top: null, fx: 0, geo: '', first: null };
+  body.addEventListener('scroll', () => notePlace(p), { passive: true });
+  panelTaps(p, kind);
+  panels.set(kind, p);
+  return p;
+}
+
+function notePlace(p) {
+  if (!panelShown(p) || !p.body.clientHeight) return;   // no box, no place to note
+  const b = p.body, my = b.scrollHeight - b.clientHeight, mx = b.scrollWidth - b.clientWidth;
+  p.follow = b.scrollTop >= my - 4;
+  p.top = null;
+  if (my > 0 && b.scrollTop > 0) {
+    // the first line or item not wholly above the top: found by halves,
+    // as they stand in order down the panel (a wide one does not scroll down)
+    const list = panelItems(b);
+    let lo = 0, hi = list.length - 1;
+    while (lo < hi) { const mid = (lo + hi) >> 1; if (itemY(b, list[mid]) + list[mid].offsetHeight <= b.scrollTop) lo = mid + 1; else hi = mid; }
+    if (list[lo]) p.top = { i: lo, off: b.scrollTop - itemY(b, list[lo]), h: list[lo].offsetHeight };
+  }
+  p.fx = mx > 0 ? Math.min(1, b.scrollLeft / mx) : 0;
+  // a wide inventory's columns that run on past its right edge: its edge fades
+  if ('wide' in p.el.dataset && b.scrollLeft < mx - 2) p.el.dataset.more = ''; else delete p.el.dataset.more;
+}
+
+// How far into the top line or item to scroll, put back: the same share of
+// its own height, short of its end.  A new width re-wraps the line itself
+// too, and the offset it had, kept as it was, went past its end: a log line
+// scrolled 22 px into its 62 px (three rows in the tray) was 21 px tall in the
+// portrait glass, so the line after it came to the top at every turn (the
+// final pass, 2026-10-04, the tablet re-check's log.mjs).
+function lineOff(top, at) {
+  const h = at.offsetHeight, off = top.h > 0 ? (top.off * h) / top.h : top.off;
+  return Math.max(0, Math.min(h - 1, off));
+}
+
+// a panel's lines (the log) or headings and items (the inventory, in .pcols),
+// and where one stands in what scrolls
+const panelItems = (b) => (b.firstElementChild && b.firstElementChild.classList.contains('pcols') ? b.firstElementChild : b).children;
+const itemY = (b, e) => e.getBoundingClientRect().top - b.getBoundingClientRect().top - b.clientTop + b.scrollTop;
+
+// The place noted, put back on a panel moved, resized or shown again: the
+// log's end while it follows it, else the same line or item at the top
+// (a new width re-wraps those above, so no offset or share of the height
+// keeps it), and the same share across a wide inventory's columns.
+function putPlace(p) {
+  const b = p.body, my = b.scrollHeight - b.clientHeight, mx = b.scrollWidth - b.clientWidth;
+  const at = p.top && panelItems(b)[p.top.i];
+  if (p.kind === 'log' && p.follow) b.scrollTop = Math.max(0, my);
+  else if (at) b.scrollTop = Math.round(itemY(b, at) + lineOff(p.top, at));
+  else if (!p.top) b.scrollTop = 0;
+  b.scrollLeft = Math.round(p.fx * Math.max(0, mx));
+  notePlace(p);
+}
+
+// the layer for panes out of the glass: over the case, under the keys
+function panesLayer() {
+  let l = $('panes');
+  if (!l) {
+    l = document.createElement('div');
+    l.id = 'panes';
+    $('app').insertBefore(l, $('keys'));
+  }
+  return l;
+}
+
+function layoutPanels(g, gx, gy) {
+  const want = new Set(), r = g.glass, tube = $('tube'), dpr = window.devicePixelRatio || 1;
+  const up = (v) => Math.ceil(v * dpr - 1e-6) / dpr, down = (v) => Math.floor(v * dpr + 1e-6) / dpr;
+  const face = P.get('msgFont') === 'screen' ? 'var(--screenfont)' : 'var(--msgfont)';
+  const textPx = Math.max(12, Math.round(msgTextPx() * PANEL_TEXT * 2) / 2);
+  for (const q of g.panels || []) {
+    if (want.has(q.kind)) continue;
+    want.add(q.kind);
+    const p = panelOf(q.kind);
+    const inGlass = q.x >= r.x - 0.5 && q.y >= r.y - 0.5 && q.x + q.w <= r.x + r.w + 0.5 && q.y + q.h <= r.y + r.h + 0.5;
+    // moved only when it must be (a node moved loses its scroll): into the
+    // glass anywhere before its tube -- two panels there, beside the level,
+    // once swapped places at every rebuild -- or out of it into #panes
+    let moved = false;
+    if (inGlass) {
+      if (p.el.parentNode !== $('glass') || !(p.el.compareDocumentPosition(tube) & Node.DOCUMENT_POSITION_FOLLOWING)) { $('glass').insertBefore(p.el, tube); moved = true; }
+      delete p.el.dataset.pane;
+    } else {
+      if (p.el.parentNode !== panesLayer()) { panesLayer().appendChild(p.el); moved = true; }
+      p.el.dataset.pane = '';
+    }
+    // its edges on device pixels, each moved inward to the next one, so it
+    // never reaches into a halo, the map or a band beside it, as the canvas
+    const ox = inGlass ? gx : 0, oy = inGlass ? gy : 0, x = up(q.x), y = up(q.y);
+    Object.assign(p.el.style, { left: `${x - ox}px`, top: `${y - oy}px`, width: `${down(q.x + q.w) - x}px`,
+                                height: `${down(q.y + q.h) - y}px`, display: '', fontFamily: face, fontSize: `${textPx}px` });
+    p.beyond = !!q.beyond;
+    // a name over a panel tall enough to spare it; a phone's two or three lines are plainly the log
+    p.title.hidden = q.h < 120;
+    // the inventory in columns where two fit, each as wide as an item's line
+    // ("an uncursed +0 pair of hard shoes (being worn)": 26em, rolehack.css)
+    const inner = down(q.x + q.w) - x - 20;
+    const wide = q.kind === 'inventory' && inner + 18 >= 2 * (26 * textPx + 18);
+    if (wide) p.el.dataset.wide = ''; else delete p.el.dataset.wide;
+    // The content stays: nothing in it depends on where the panel is or its
+    // size (the face and size are the panel's own style), and redrawn at every
+    // rebuild it made a drag of a window's edge half as slow again, 256 lines
+    // and the pack each time (the review, 2026-10-03).  Its place is put back.
+    const geo = `${inGlass} ${x} ${y} ${p.el.style.width} ${p.el.style.height} ${face} ${textPx} ${wide}`;
+    if (moved || geo !== p.geo) { p.geo = geo; putPlace(p); }
+  }
+  for (const [kind, p] of panels) if (!want.has(kind)) hidePanel(p);
+}
+
+function hidePanel(p) { p.el.style.display = 'none'; p.geo = ''; }
+function hidePanels() { for (const p of panels.values()) hidePanel(p); }
+
+const panelShown = (p) => !!p && p.el.style.display !== 'none' && !!p.el.parentNode;
+function renderPanels() {
+  if (!(geom && geom.twin)) return;
+  const log = panels.get('log'), inv = panels.get('inventory');
+  if (panelShown(log)) renderLog(log);
+  if (panelShown(inv)) renderInventory(inv);
+}
+
+// a panel's body redrawn; the log keeps to its end while it follows it, and
+// a panel scrolled back keeps its place.  gone: the lines that left the top
+// of the list since it was last drawn.  A full history drops its oldest line
+// for each new one (HISTORY_MAX), so the same scrollTop showed a line further
+// on at every message: 5 messages moved a log scrolled back by 5 lines (the
+// final pass, 2026-10-04: the tablet re-check's drift.mjs and log.mjs).  Its
+// top line is kept by its place in the new list instead; when it is gone
+// itself, the oldest line left.
+function fillPanel(p, html, toEnd, gone = 0) {
+  const b = p.body, top = b.scrollTop, left = b.scrollLeft;
+  const keep = gone > 0 && !(toEnd && p.follow) && p.top ? { ...p.top, i: p.top.i - gone } : null;
+  b.innerHTML = html;
+  const at = keep && panelItems(b)[Math.max(0, keep.i)];
+  b.scrollTop = toEnd && p.follow ? b.scrollHeight : at ? Math.round(itemY(b, at) + (keep.i >= 0 ? lineOff(keep, at) : 0)) : top;
+  b.scrollLeft = left;
+  notePlace(p);
+}
+
+function renderLog(p) {
+  const first = histSeq - history.length;
+  const upto = p.beyond ? Math.min(bandFrom, histSeq) : histSeq;
+  const n = Math.max(0, Math.min(history.length, upto - first));
+  // the band's own page, while it is new, is bright at the log's end (a tablet's)
+  let fresh = Infinity;
+  if (pageFresh) for (const e of page) if (e.seq >= 0) { fresh = e.seq; break; }
+  const sig = `${first} ${n} ${p.beyond ? 'beyond' : fresh}`;
+  if (sig === p.sig) return;
+  p.sig = sig;
+  const gone = p.first === null ? 0 : Math.max(0, first - p.first);
+  p.first = first;
+  fillPanel(p, history.slice(0, n).map((t, i) => `<div class="pl${first + i >= fresh ? ' new' : ''}">${esc(t)}</div>`).join(''), true, gone);
+}
+
+function renderInventory(p) {
+  const pictures = !!sheet && P.get('mapMode') !== 'text';
+  const sig = `${permInvent} ${invMenu ? invMenu.n : -1} ${pictures} ${P.get('phosphor')} ${P.get('colourVision')}`;
+  if (sig === p.sig) return;
+  p.sig = sig;
+  if (!permInvent) {
+    fillPanel(p, '<div class="pnote">The inventory shows here from the next start of the page: this game began in classic.</div>', false);
+    return;
+  }
+  const items = invMenu ? invMenu.items : [];
+  const pics = pictures && items.some((i) => i.selectable && i.tile >= 0);
+  // in columns as wide as an item's line where the panel is wide
+  // (layoutPanels), so a monitor's 1500 dp tray shows the whole pack, not a
+  // strip down its left edge that scrolls
+  fillPanel(p, `<div class="pcols">${items.map((it) => (it.selectable
+    ? `<div class="pi"><span class="let">${esc(String.fromCharCode(it.ch))}</span>${pics ? (it.tile >= 0 ? tilePic(it.tile, 16, 'cpic') : '<span class="cpic none"></span>') : ''}`
+      + `<span${tint(it.clr)}>${attrText(it.text, it.attr)}</span></div>`
+    : `<div class="ph"${tint(it.clr)}>${attrText(it.text, it.attr) || ' '}</div>`)).join('')}</div>`, false);
+}
+
+// The core's permanent inventory: a menu on WIN_INVEN that picks nothing,
+// sent whenever the inventory changes.  Kept for the panel, and answered at
+// once (nothing picked); never shown as a window.
+function takePermInventory(win, how, listPtr) {
+  const w = wins.get(win);
+  if (!(permInvent && w && w.menu && w.menu.perm && how === 0 && win === G.WIN_INVEN)) return false;
+  invMenu = { items: w.menu.items, n: (invMenu ? invMenu.n : 0) + 1 };
+  M.setValue(listPtr, 0, '*');
+  renderPanels();
+  return true;
+}
+
+// A tap on a panel (a drag scrolls it): Space at --More--; else the log opens
+// the history, as the band does, and the inventory the inventory, while the
+// game waits for a command with no layer up and nothing armed.  Never while a
+// question waits on the band or the pad, where a key would be its answer.
+function panelTaps(p, kind) {
+  let down = null;
+  // A wide inventory's pack runs on in columns to the right, and Chrome turns
+  // a mouse's wheel into a sideways scroll only with Shift: the wheel, turned
+  // as for a list, moves along the columns (the reviews, 2026-10-03).
+  p.body.addEventListener('wheel', (e) => {
+    const b = p.body, mx = b.scrollWidth - b.clientWidth;
+    if (!('wide' in p.el.dataset) || mx <= 0 || e.ctrlKey || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    const d = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * b.clientWidth : e.deltaY;
+    const to = Math.max(0, Math.min(mx, b.scrollLeft + d));
+    if (Math.abs(to - b.scrollLeft) < 0.5) return;
+    b.scrollLeft = to;
+    e.preventDefault();
+  }, { passive: false });
+  p.el.addEventListener('pointerdown', (e) => { down = { id: e.pointerId, x: e.clientX, y: e.clientY, top: p.body.scrollTop, left: p.body.scrollLeft }; });
+  p.el.addEventListener('pointercancel', () => { down = null; });
+  p.el.addEventListener('pointerup', (e) => {
+    const d = down;
+    down = null;
+    if (!d || d.id !== e.pointerId || !(geom && geom.twin)) return;
+    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10 || Math.abs(p.body.scrollTop - d.top) > 2 || Math.abs(p.body.scrollLeft - d.left) > 2) return;
+    if (moreShown) { push({ key: 32 }); return; }
+    if (page.some((q) => q.ask) || (overlay && overlay.answering)) return;
+    if (kind === 'log') send('^P');
+    else if (commandWait && !(overlay && (overlay.layerUp() || overlay.armed))) send('i');
+  });
+}
+
+// The canvas's store and the drawn cell are in device pixels, and
+// devicePixelRatio can change with no resize: the window taken to a screen of
+// another density, or the system's scaling changed.  The glass is laid out
+// again then; the keys are in CSS px and stay as they are.  A resolution query
+// matches only the ratio it was made at, so each change makes the next one.
+(function watchDensity() {
+  if (!window.matchMedia) return;
+  const mq = matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`);
+  const changed = () => {
+    if (mq.removeEventListener) mq.removeEventListener('change', changed);
+    else mq.removeListener(changed);
+    if (geom) layoutGlass(geom);
+    watchDensity();
+  };
+  if (mq.addEventListener) mq.addEventListener('change', changed);
+  else mq.addListener(changed);   // Safari before 14
+}());
+
+// The cell the map is drawn at, in CSS px.  renderMap draws in whole device
+// pixels, so a cell of T CSS px is floor(T x dpr) of them, which is this many
+// CSS px; placement, the border, the cursor, the pinch and the tap handler
+// all take this one cell.  They took T while the drawing took round(T x dpr),
+// and the two grids drifted apart by the difference each column: on Lucas's
+// phone in portrait (dpr 2.4375, T 17, drawn 16.82) a tap on the drawn centre
+// of any column past 46 read as the cell to its left, and the hero walked
+// there (the layout audit's section 4.5, 2026-09-29).  Floored, not rounded,
+// so the drawn cell is never larger than asked and a cell fitted to the
+// level's 21 rows still fits them (the twin banks design, its section 11).
+// The 1e-6 keeps a cell that is already whole device pixels (a pinch starts
+// from one) from losing one to the floating point.  Never under 4 device
+// pixels, but for twin banks' overview, which fits the whole level wherever it
+// is: under 4 px wide on a 280 dp map.
+function drawnCell(T, least = 4) {
+  const dpr = window.devicePixelRatio || 1;
+  return Math.max(least, Math.floor(T * dpr + 1e-6)) / dpr;
+}
+
+// a length in CSS px moved to the nearest device pixel, where renderMap draws
+function toDevicePx(v) {
+  const dpr = window.devicePixelRatio || 1;
+  return Math.round(v * dpr) / dpr;
+}
+
+// the factor a twin banks pinch under way has reached (setZoom), 0 between pinches
+let pinchFactor = 0;
+
 function tileSize() {
+  // Twin banks: the device's one map cell (layout.js), the same in both
+  // orientations, times twin's own zoom factor -- the pinch's while fingers
+  // are down -- in classic's 8 to 96 px (the design's section 11).  Classic's
+  // zoom is not read here: it is classic's, and a pinch in twin never writes it.
+  if (geom && geom.twin && geom.cell > 0) {
+    const f = pinchFactor || Number(P.get('zoomFactor')) || 1;
+    return clamp(geom.cell * f, 8, 96);
+  }
   const z = Number(P.get('zoom')) || 0;
   if (z > 0) return z;
   // fit the level's height, within reason
   return view.area ? clamp(Math.floor(view.area.h / ROWNO), 12, 48) : 24;
 }
 
+// A pinch or the wheel asks for a cell of px CSS px.  Classic stores it as
+// its zoom, as it always has, the pinch on every move; twin banks store it as
+// a factor of the map cell, the pinch's on its lift (live: still moving, kept
+// in pinchFactor), not on every move (the design's section 11).
+function setZoom(px, live) {
+  if (!(geom && geom.twin && geom.cell > 0)) { P.set('zoom', clamp(px, 8, 96)); return; }
+  const f = clamp(px, 8, 96) / geom.cell;
+  if (live) { pinchFactor = f; render(); } else { pinchFactor = 0; P.set('zoomFactor', f); }
+}
+function endPinch() {
+  const f = pinchFactor;
+  pinchFactor = 0;
+  if (f && geom && geom.twin) P.set('zoomFactor', f);
+}
+
+// Twin banks' overview (the design's section 11): while two fingers rest on
+// the map, the whole level fitted to the map area (glassGestures).
+let overview = false;
+
+// the cell the view follows, the hero's: the core's cursor sits on it
+// whenever it waits for a command
+const viewFocus = () => (focus.x >= 0 ? focus : cursor.x >= 0 ? cursor : { x: 40, y: 10 });
+
+// view.T is the drawn cell and view.left and view.top sit on device pixels, so
+// the grid placed here is the grid drawn, to the pixel.  In the overview the
+// level fits both ways, so it is centred, and a pan in hand waits for the lift.
 function placeView() {
-  const a = view.area, T = view.T = tileSize();
+  const a = view.area, T = view.T = overview ? drawnCell(Math.min(a.w / COLNO, a.h / ROWNO), 1) : drawnCell(tileSize());
   const mapW = COLNO * T, mapH = ROWNO * T;
-  // follow the hero: the core's cursor sits on it whenever it waits for a command
-  const f = focus.x >= 0 ? focus : cursor.x >= 0 ? cursor : { x: 40, y: 10 };
+  const f = viewFocus();
   if (f.x !== lastFocus.x || f.y !== lastFocus.y) {   // it moved: any pan ends
     view.panX = view.panY = 0;
     lastFocus = { x: f.x, y: f.y };
@@ -314,8 +837,8 @@ function placeView() {
   // zooms "I can't move the map down").
   const axis = (len, avail, start, fc, pan) => (len <= avail ? start + (avail - len) / 2
     : clamp(start + avail / 2 - (fc + 0.5) * T, start + avail - len, start)) + pan;
-  view.left = axis(mapW, a.w, a.x, f.x, view.panX);
-  view.top = axis(mapH, a.h, a.y, f.y, view.panY);
+  view.left = toDevicePx(axis(mapW, a.w, a.x, f.x, overview ? 0 : view.panX));
+  view.top = toDevicePx(axis(mapH, a.h, a.y, f.y, overview ? 0 : view.panY));
 }
 
 const HEART = ['.X.X.', 'XXXXX', '.XXX.', '..X..'];
@@ -324,7 +847,9 @@ function renderMap() {
   if (!view.area) return;
   placeView();
   const cv = $('map'), cx = cv.getContext('2d'), dpr = window.devicePixelRatio || 1;
-  const Td = Math.max(4, Math.round(view.T * dpr)), L = Math.round(view.left * dpr), Tp = Math.round(view.top * dpr);
+  // whole device pixels already (placeView); the rounding only clears the
+  // floating point
+  const Td = Math.round(view.T * dpr), L = Math.round(view.left * dpr), Tp = Math.round(view.top * dpr);
   cx.setTransform(1, 0, 0, 1, 0, 0);
   cx.imageSmoothingEnabled = false;
   cx.fillStyle = '#000';
@@ -383,32 +908,184 @@ function renderMap() {
     cx.strokeRect(x0 + lw / 2, y0 + lw / 2, Td - lw, Td - lw);
     if (tier === 2) cx.strokeRect(x0 + 2.5 * lw, y0 + 2.5 * lw, Td - 5 * lw, Td - 5 * lw);
   }
+  if (ghostPreview) {
+    // the ghost deck's preview: the cell a second tap walks to
+    const lw = Math.max(1, Math.round(Td / 12));
+    cx.strokeStyle = '#ffb347';
+    cx.lineWidth = lw;
+    cx.setLineDash([2 * lw, lw]);
+    cx.strokeRect(L + ghostPreview.x * Td + lw / 2, Tp + ghostPreview.y * Td + lw / 2, Td - lw, Td - lw);
+    cx.setLineDash([]);
+  }
+}
+
+// Twin banks' ghost deck (overlay.js ghostAt; the design's section 6, item
+// 8): in landscape a map tap on the spot of one of the old deck's keys --
+// COMBAT, PIN 2, FLICK, LOOK, CONTEXT -- previews instead of travelling,
+// whenever it would travel: while the core waits for a command, not at
+// --More--, in getpos or under a window.  The cell is outlined and the old
+// key points to its new place; a second tap on the same cell within 2 s
+// walks.  A preview that goes unconfirmed -- it times out, or the next tap or
+// key is something else -- is a catch: the player meant the old key.
+let commandWait = false;    // the core is in nh_poskey for a command: a map tap would travel
+// { x, y, timer, ring }: the cell a preview outlines, the ghost deck's or
+// (ring) the confirm ring's
+let ghostPreview = null;
+
+function clearGhostPreview(confirmed) {
+  if (!ghostPreview) return;
+  const was = ghostPreview;
+  clearTimeout(was.timer);
+  ghostPreview = null;
+  // only the ghost deck counts its catches; the ring's lapse is no habit
+  if (!confirmed && !was.ring && overlay) overlay.ghostCaught();
+  renderMap();
+}
+
+// true when the tap was taken as a preview, and is not to travel
+function ghostTap(e, x, y) {
+  if (ghostPreview && ghostPreview.x === x && ghostPreview.y === y) { clearGhostPreview(true); return false; }
+  if (ghostPreview) clearGhostPreview(false);
+  const g = wouldTravel() && overlay && overlay.ghostAt(e.clientX, e.clientY);
+  if (!g) return false;
+  ghostPreview = { x, y, timer: setTimeout(() => clearGhostPreview(false), GHOST_CONFIRM_MS) };
+  overlay.ghostShow(g);
+  renderMap();
+  return true;
+}
+
+// Twin banks' near-miss guard on the map (the design's section 6; overlay.js
+// has its halos and seams).  It acts while a map tap would travel -- the core
+// waits for a command (commandWait), Fight armed included, since the overlay
+// holds the F until the pad gives the direction, or the core is busy, in a
+// travel or a count's turns, and the tap waits in the queue for the next
+// command it will travel to -- and nowhere else: at --More-- a tap is Space,
+// in getpos it picks the spot, and in a direction prompt nextKey() drops
+// clicks, so a map tap answers nothing there.  A tap during a travel went to
+// the queue unguarded, and the next command took it as the next travel, ring
+// and all (the layers stage's review, 2026-10-03).
+//  - Fight armed: any map tap disarms it and goes no further; it neither
+//    walks nor aims.
+//  - A layer up: a map tap only closes it (the scrim takes it first).
+//  - For 200 ms after a drawer, a layer's ALL, a modal, a menu or a
+//    prompt's chips close, every map tap is swallowed: a bounce or a second
+//    tap on an item would otherwise fall through and walk.
+//  - The confirm ring, the 20 dp of map next to a halo (32 dp from a
+//    keycap): a tap there does not walk, it outlines its cell, and a second
+//    tap on the same cell within 2 s walks; anything else clears it.  For 120
+//    ms after a key lifts, a ring tap is swallowed outright: a bounce lands
+//    beside the key.  Deeper in the map a tap walks at once, as it always has.
+//  - The ghost deck's old spots preview the same way (ghostTap).
+// The 120 and 200 ms are timed from when the tap landed (down, its
+// pointerdown's time), not from its lift: a thumb's tap stays down 50 to 100
+// ms, so a second tap that landed 150 ms after a drawer closed lifted past
+// the 200 and walked (the layers stage's review, 2026-10-03).  A tap that
+// landed before the key lifted or the window closed, and lifted after, is
+// held to them too.  True when the tap is not to travel.
+const RING_AFTER_KEY_MS = 120, AFTER_CLOSE_MS = 200;
+let closedAt = -1e9;        // when a drawer, modal, form, menu or chip row last closed
+function windowClosed() { closedAt = performance.now(); }
+
+// a map tap now would travel: the core waits for a command, or it is busy and
+// no question or spot is waiting, so the tap queues for its next command
+const wouldTravel = () => commandWait || (!waiter && !(overlay && overlay.picking));
+
+function guardTap(e, x, y, inLevel, down) {
+  if (!overlay || !wouldTravel()) return false;
+  if (overlay.armed) {
+    overlay.disarm();
+    overlay.noteGuard('disarm', e);
+    return true;
+  }
+  if (overlay.layerUp()) { overlay.dismissPopups(); return true; }
+  if (down - closedAt < AFTER_CLOSE_MS) { overlay.noteGuard('closing', e); return true; }
+  const d = overlay.keyDistance(e.clientX, e.clientY);
+  const ring = d !== null && d <= RING_REACH;
+  if (ring && down - overlay.keyUpAt < RING_AFTER_KEY_MS) { overlay.noteGuard('bounce', e); return true; }
+  if (!inLevel) { clearGhostPreview(false); return true; }
+  // a preview's second tap on its cell walks; any other tap clears it (ghostTap)
+  if (ghostPreview && ghostPreview.x === x && ghostPreview.y === y) { clearGhostPreview(true); return false; }
+  if (ghostTap(e, x, y)) return true;
+  if (!ring) return false;
+  ghostPreview = { x, y, ring: true, timer: setTimeout(() => clearGhostPreview(false), GHOST_CONFIRM_MS) };
+  overlay.noteGuard('ring', e);
+  renderMap();
+  return true;
 }
 
 // Taps travel, drags pan, two fingers or the wheel zoom.
+//
+// Twin banks tell two fingers' gestures apart (the design's section 11).
+// Two fingers that land and keep within OVERVIEW_SLOP of where they landed
+// for OVERVIEW_MS show the whole level, fitted to the map area, until they
+// lift: a glance at the level from any zoom.  A change in their spread of
+// more than PINCH_SLOP first makes it a pinch, as it always was, from the
+// spread they landed at, so the map grows with the fingers as before; fingers
+// that slide together without spreading are neither, and may still pinch.
+// Once two fingers are down, the gesture is theirs: the one left after a lift
+// neither pans nor taps.  Classic pinches from the first move, as it always
+// has, and has no overview.
+const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
 (function glassGestures() {
   const cv = $('map');
   const pts = new Map();
-  let moved = false, pinch = null, panStart = null;
+  let moved = false, pinch = null, panStart = null, two = null;
+  let downAt = 0;           // when a tap's one finger landed (guardTap times from it)
+  // the two-finger gesture under way ends: its pinch is written, its timer stopped
+  const endTwo = () => {
+    if (pinch) { pinch = null; endPinch(); }
+    if (two) { clearTimeout(two.timer); two = null; }
+  };
+  const endOverview = () => { if (overview && !pts.size) { overview = false; renderMap(); } };
   cv.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     try { cv.setPointerCapture(e.pointerId); } catch (x) { /* synthetic */ }
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    if (pts.size === 1) { moved = false; panStart = { x: e.clientX, y: e.clientY, px: view.panX, py: view.panY }; }
+    if (pts.size === 1) {
+      moved = false;
+      panStart = { x: e.clientX, y: e.clientY, px: view.panX, py: view.panY };
+      downAt = e.timeStamp || performance.now();
+    }
     if (pts.size === 2) {
       const [a, b] = [...pts.values()];
-      pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), T: view.T };
       moved = true;
+      if (geom && geom.twin) {
+        // where each finger landed, their spread and the cell as drawn
+        two = { at: new Map([...pts].map(([id, q]) => [id, { ...q }])), d: Math.hypot(a.x - b.x, a.y - b.y), T: view.T, still: true };
+        two.timer = setTimeout(() => {
+          if (!two || !two.still || pinch || pts.size !== 2) return;
+          overview = true;
+          renderMap();
+        }, OVERVIEW_MS);
+        panStart = null;
+        return;
+      }
+      // the cell as drawn: the fingers grow what they see
+      pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), T: view.T };
     }
   });
   cv.addEventListener('pointermove', (e) => {
     if (!pts.has(e.pointerId)) return;
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (two && pts.size === 2 && !overview) {
+      const [a, b] = [...pts.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      for (const [id, q] of pts) {
+        const at = two.at.get(id);
+        if (!at || Math.hypot(q.x - at.x, q.y - at.y) > OVERVIEW_SLOP) two.still = false;
+      }
+      if (!pinch && Math.abs(d - two.d) > PINCH_SLOP) pinch = { d: two.d, T: two.T };
+      if (pinch) setZoom(pinch.T * (d / pinch.d), true);
+      return;
+    }
+    if (overview || (two && !panStart)) return;
     if (pinch && pts.size === 2) {
       const [a, b] = [...pts.values()];
       const d = Math.hypot(a.x - b.x, a.y - b.y);
-      P.set('zoom', clamp(pinch.T * (d / pinch.d), 8, 96));
-      render();
+      // classic writes its zoom as the fingers move, as it always has; twin
+      // banks keep the factor in hand and write it on the lift
+      setZoom(pinch.T * (d / pinch.d), true);
+      if (!geom || !geom.twin) render();
       return;
     }
     if (pts.size === 1 && panStart) {
@@ -423,20 +1100,30 @@ function renderMap() {
   const up = (e) => {
     if (!pts.has(e.pointerId)) return;
     pts.delete(e.pointerId);
-    if (pts.size < 2) pinch = null;
+    if (pts.size < 2 && (pinch || two)) endTwo();
+    endOverview();
     if (pts.size || moved) return;
     // a tap: a --More-- or a text window's wait is answered, else it is a click on the map
     if (moreShown) { push({ key: 32 }); return; }
+    // the grid as drawn: view.T is the drawn cell, view.left and view.top sit
+    // on device pixels (placeView)
     const r = cv.getBoundingClientRect();
     const x = Math.floor((e.clientX - r.left - view.left) / view.T);
     const y = Math.floor((e.clientY - r.top - view.top) / view.T);
-    if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO) push({ click: { x, y, mod: 1 } });
+    const inLevel = x >= 0 && x < COLNO && y >= 0 && y < ROWNO;
+    // twin banks' guard, which an armed Fight's disarming tap may give off the
+    // level too; classic's ghostTap never previews (no ghost deck)
+    if (geom && geom.twin ? guardTap(e, x, y, inLevel, downAt) || !inLevel : !inLevel || ghostTap(e, x, y)) return;
+    push({ click: { x, y, mod: 1 } });
   };
   cv.addEventListener('pointerup', up);
-  cv.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); pinch = null; });
+  cv.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); if (pts.size < 2 && (pinch || two)) endTwo(); endOverview(); });
   cv.addEventListener('wheel', (e) => {
     e.preventDefault();
-    P.set('zoom', clamp(view.T * Math.pow(1.1, -e.deltaY / 100), 8, 96));
+    // Each notch scales the cell asked for (tileSize()), not the drawn one: the
+    // drawn cell is that floored to device pixels, so a trackpad's small steps
+    // scaled from it would each be floored away and the map never grow.
+    setZoom(tileSize() * Math.pow(1.1, -e.deltaY / 100), false);
     render();
   }, { passive: false });
   // A tap on the message band opens the history, always: a band that answers
@@ -446,6 +1133,30 @@ function renderMap() {
   $('msgband').addEventListener('pointerup', () => {
     if (moreShown) push({ key: 32 });
     else if (!page.some((e) => e.ask) && !(overlay && overlay.answering)) send('^P');
+  });
+  // Twin banks: the canvas is the map area alone, so the status lines and the
+  // glass round the map are #glass itself, which answered nothing.  At
+  // --More-- a tap there is Space, as a tap anywhere on classic's glass is
+  // (the design's section 6; the review, 2026-10-02); elsewhere it does
+  // nothing, as before.  The map and the message band answer for themselves.
+  // The status band answers for itself, wherever the layout put it: in the
+  // glass, or over the banks, where no glass lies under it; and so do the
+  // panels, in the glass or out of it (panelTaps).
+  const gl = $('glass'), sb = $('statband');
+  const own = (e) => e.target !== cv && !$('msgband').contains(e.target) && !sb.contains(e.target) && !e.target.closest('button')
+    && !e.target.closest('.rhpanel');
+  let glassDown = null, statDown = null;
+  gl.addEventListener('pointerdown', (e) => { glassDown = own(e) ? e.pointerId : null; });
+  gl.addEventListener('pointerup', (e) => {
+    const down = glassDown;
+    glassDown = null;
+    if (down === e.pointerId && own(e) && geom && geom.twin && moreShown) push({ key: 32 });
+  });
+  sb.addEventListener('pointerdown', (e) => { statDown = e.pointerId; });
+  sb.addEventListener('pointerup', (e) => {
+    const down = statDown;
+    statDown = null;
+    if (down === e.pointerId && geom && geom.twin && moreShown) push({ key: 32 });
   });
 }());
 
@@ -469,6 +1180,7 @@ let newPage = true;       // the next message starts a page
 let scrollRow = 0;        // a message longer than the band: the first page row shown
 let msgStop = false;      // Esc at --More--
 let lastHidden = 0;       // with the pause off, how many messages went by unshown
+let bandFrom = 0;         // twin banks: the number (histSeq) of the first message the band shows
 let measureCx = null;
 
 function bandMetrics() {
@@ -478,7 +1190,7 @@ function bandMetrics() {
   measureCx.font = `${cs.fontSize} ${cs.fontFamily}`;
   // tty keeps 8 columns of its line for --More-- (topl.c, CO - 8)
   const slot = measureCx.measureText('--More--').width + 14 * s;
-  return { width, slot, rows: msgRows(!!(geom && geom.portrait)), cx: measureCx };
+  return { width, slot, rows: geom && geom.twin ? geom.msgRows : msgRows(!!(geom && geom.portrait)), cx: measureCx };
 }
 
 // A message broken into the band's rows at spaces, as tty breaks a long one;
@@ -523,11 +1235,61 @@ const pausing = () => P.get('morePause') !== false;
 
 const ATR_URGENT = 16, ATR_NOHISTORY = 32;   // wintype.h
 
+// Twin banks lay the band out again when the window turns or the text size
+// changes, often with a page up and the game at --More--: the band's width
+// and rows change under a page that is part read.  Its rows are broken again
+// for the new band, and scrollRow, which counted rows of the old one, would
+// point elsewhere -- past the page's end, where the band showed nothing (a
+// long first message, Message size 1.4, a 640x360 phone turned to portrait).
+// So the place the band showed from is kept as the letters before it (a row
+// breaks only at spaces, or inside a word too long for it, so the letters
+// stay put), found again in the new rows, and taken back to the start of its
+// band's worth, so --More-- keeps its room on a band's last row.  The page
+// may show a row again; it never skips one.  At a --More--, whatever the new
+// band leaves below it is paged once the player answers (moreToEnd,
+// putMessage).  A --More-- that a band of more rows no longer needs still
+// waits for its answer: gone by itself, the tap the player meant for it
+// would land on the map as a travel, or open the history.  With no --More--
+// up, the band shows the page's last rows, as many as it holds: a fight's
+// four messages on a portrait band of 4 rows, the phone turned to
+// landscape's 3, showed only the first three, and the newest never came back
+// (the review, 2026-10-02); and the band's worth that held the newest row
+// could begin inside the newest message, where a narrower band wraps it onto
+// a second row, and show only its tail, the rest of the band empty -- "jackal
+// corpse." of a kill on the 360x640 phone turned to landscape, or a
+// question's "[ynq] (n)" alone, which no tap on the band brings back (the
+// re-check, 2026-10-03).  Those rows need not begin a band's worth: a
+// --More-- that comes on the same page before the player acts sees to its
+// room first (moreRoom).
+// Switching the Layout setting with a page up lays the band out again too,
+// either way, so it re-finds its place the same; classic's own re-layouts
+// keep its rows as they were.
+let scrollMark = null;    // { key, twin, row, last, letters }: the band's metrics and scrollRow's place at the last render (last: the page's last rows, put there at rest)
+const lettersOf = (row) => row.t.replace(/\s+/g, '').length;
+function keepScroll(m) {
+  const twin = !!(geom && geom.twin), mark = scrollMark;
+  const key = `${twin} ${m.width} ${m.rows} ${m.slot} ${m.cx.font}`;
+  let all = null, last = !!(mark && mark.last && mark.row === scrollRow);
+  const rows = () => (all = all || pageRowsOf(page, m));
+  if (mark && mark.key !== key && mark.row === scrollRow && (twin || mark.twin)) {
+    last = !moreShown;
+    if (last) scrollRow = Math.max(0, rows().length - m.rows);
+    else if (scrollRow) {
+      // the row that now holds the first letter the band showed
+      let r = 0, n = 0;
+      while (r < rows().length - 1 && n + lettersOf(all[r]) <= mark.letters) n += lettersOf(all[r++]);
+      scrollRow = Math.floor(r / m.rows) * m.rows;
+    }
+  }
+  scrollMark = { key, twin, row: scrollRow, last, letters: scrollRow ? rows().slice(0, scrollRow).reduce((a, q) => a + lettersOf(q), 0) : 0 };
+}
+
 function renderBands() {
   const m = bandMetrics(), s = geom ? geom.s : 1;
   let rows;
   lastHidden = 0;
   if (pausing()) {
+    keepScroll(m);
     rows = pageRowsOf(page, m).slice(scrollRow, scrollRow + m.rows);
   } else {
     // the newest messages that fit whole; the newest alone cut short if it is longer
@@ -546,6 +1308,9 @@ function renderBands() {
     }
     lastHidden = k;
   }
+  // the first message the band shows: twin banks' log under it ends there
+  const log = panels.get('log');
+  if (geom && geom.twin && panelShown(log) && log.beyond) bandFrom = pageSeqFrom(pausing() ? entryAtRow(scrollRow, m) : lastHidden);
   let html = rows.map((r) => `<div class="r${pageFresh ? '' : ' old'}">${r.ask ? `<span class="ask">${esc(r.t)}</span>` : esc(r.t)}</div>`).join('');
   const at = `right:${10 * s}px;bottom:${4 * s}px`;
   if (moreShown) html += `<span class="slot moreprompt" style="${at}">--More--</span>`;
@@ -554,6 +1319,22 @@ function renderBands() {
   if (overlay) overlay.setMore(moreShown ? 1 : lastHidden);
   $('statband').innerHTML = statusHtml();
   fitStatus();
+  renderPanels();
+}
+
+// the page entry whose rows hold the band's row r, and the number of the
+// first message from page entry i on (a question is none until answered)
+function entryAtRow(r, m) {
+  let n = 0;
+  for (let i = 0; i < page.length; i++) {
+    n += wrapRows(page[i].text, n, m).length;
+    if (n > r) return i;
+  }
+  return page.length;
+}
+function pageSeqFrom(i) {
+  for (let j = i; j < page.length; j++) if (page[j].seq >= 0) return page[j].seq;
+  return histSeq;
 }
 
 function startPage() { page.length = 0; scrollRow = 0; newPage = false; }
@@ -572,28 +1353,73 @@ async function more() {
   unread = false;
 }
 
-// 256 messages, as the phone's log keeps (ForkFront's NHW_Message)
+// A page at rest, laid out again, shows its last rows (keepScroll), and they
+// need not begin a band's worth, whose last row alone keeps --More--'s room
+// at its right end (wrapRows).  More messages may come on that page before
+// the player acts -- after a text window, in an occupation's turns -- and
+// their --More-- would stand over the end of the band's last row.  So when
+// that row leaves no room, the band goes back to the start of its band's
+// worth, and moreToEnd pages on from there: the page shows rows again, and
+// skips none.  True when it went back.  Classic's own turns keep its rows as
+// they were, and its --More-- where it stood.
+function moreRoom() {
+  const m = bandMetrics(), off = scrollRow % m.rows;
+  if (!off || m.width < 40 || !(scrollMark && scrollMark.last && scrollMark.row === scrollRow)) return false;
+  const rows = pageRowsOf(page, m).slice(scrollRow, scrollRow + m.rows);
+  if (rows.length < m.rows || m.cx.measureText(rows[m.rows - 1].t).width <= m.width - m.slot) return false;
+  scrollRow -= off;
+  return true;
+}
+
+// --More--, then, in twin banks, again for each band's worth of the page that
+// a re-layout meanwhile left below the band (keepScroll), so a page is never
+// put away with rows the band has not shown.  Classic waits once, as before,
+// unless its band went back for the --More--'s room (moreRoom: a page laid
+// out in twin banks, the Layout setting switched with it at rest).
+async function moreToEnd() {
+  const back = moreRoom();
+  await more();
+  for (let m = bandMetrics(); (back || (geom && geom.twin)) && !msgStop && pageRowsOf(page, m).length - scrollRow > m.rows; m = bandMetrics()) {
+    scrollRow += m.rows;
+    await more();
+  }
+}
+
+// 256 messages, as the phone's log keeps (ForkFront's NHW_Message).  Each
+// is numbered as it comes (histSeq counts them all, so history[i] is message
+// histSeq - history.length + i), and a page's entry keeps its number: twin
+// banks' message log under the band shows the history up to the first
+// message the band shows (layoutPanels).
 const HISTORY_MAX = 256;
+let histSeq = 0;
 function remember(text) {
   history.push(text);
   if (history.length > HISTORY_MAX) history.splice(0, history.length - HISTORY_MAX);
+  return histSeq++;
 }
 
 // A message from the game (putstr to the message window).
 async function putMessage(text, attr = 0) {
-  if (!(attr & ATR_NOHISTORY)) remember(text);
+  const seq = attr & ATR_NOHISTORY ? -1 : remember(text);
   if (msgStop && ((attr & ATR_URGENT) || /^You die/.test(text))) { msgStop = false; newPage = true; }
   if (msgStop) return;
   if (newPage) startPage();
-  const m = bandMetrics(), pause = pausing() && m.width >= 40;
+  let m = bandMetrics();
+  const pause = pausing() && m.width >= 40;
+  // twin banks: the band the player answered --More-- on may have been laid
+  // out again meanwhile (keepScroll), and the rows go on in the new one; so
+  // may a page begun in twin banks and switched to classic
+  const twinPage = !!(geom && geom.twin);
+  const again = () => { if (twinPage || (geom && geom.twin)) m = bandMetrics(); };
   if (pause) {
     const used = pageRowsOf(page, m).length;
     if (used > 0 && used + wrapRows(text, used, m).length > scrollRow + m.rows) {
-      await more();
+      await moreToEnd();
       startPage();
+      again();
     }
   }
-  page.push({ text });
+  page.push({ text, seq });
   if (page.length > 50) page.shift();
   pageFresh = true;
   unread = true;
@@ -601,7 +1427,14 @@ async function putMessage(text, attr = 0) {
   if (pause) {
     while (!msgStop && pageRowsOf(page, m).length - scrollRow > m.rows) {
       await more();
-      if (!msgStop) scrollRow += m.rows;
+      again();
+      // A band laid out again at the --More-- may show the rest already: the
+      // place re-found (keepScroll) starts a band of more rows that reaches
+      // the message's end, and a step on would show nothing (a 390-class
+      // phone turned to portrait inside a long message; the review,
+      // 2026-10-02).  Classic's band never changes here, so it steps on.
+      if (msgStop || pageRowsOf(page, m).length - scrollRow <= m.rows) break;
+      scrollRow += m.rows;
     }
   }
   renderBands();
@@ -609,9 +1442,9 @@ async function putMessage(text, attr = 0) {
 
 // A line that never waits: the interface's own notes, raw_print, an answered question.
 function addMessage(text) {
-  remember(text);
+  const seq = remember(text);
   if (newPage) startPage();
-  page.push({ text });
+  page.push({ text, seq });
   if (page.length > 50) page.shift();
   pageFresh = true;
 }
@@ -664,18 +1497,41 @@ function statusHtml() {
     : `<span style="color:${hpCol}">${hpText}</span>`;
   const row2 = `<div class="row">${hpHtml}&nbsp;${esc(tail2)}</div>`;
   const row3 = compact ? '' : `<div class="row">${esc(stats)}&nbsp;&nbsp;${badgeHtml}</div>`;
-  return row1 + row2 + row3;
+  return row1 + row2 + row3 + barsHtml(frac, hpCol);
+}
+
+// Twin banks: HP and Pw as bars under the status lines, wherever the layout
+// leaves the status band the room -- the 14 dp of height the level does not
+// need that layout.js fillGlass hands it, or a side-by-side band standing as
+// tall as the message rows beside it (the design's section 10).  A track and
+// its fill, each named, so they read without colour; HP takes the status
+// line's colour steps, Pw the game's bright blue.  The names grow with the
+// system's text size, as the lines over them do, up to the bars' own height
+// (the review, 2026-10-02: 11 px beside status lines twice that).  None in
+// classic.
+const BARS_MIN = 10, BARS_H = 14, BARS_TEXT = 11;
+function barsHtml(frac, hpCol) {
+  if (!(geom && geom.twin && geom.statusBand)) return '';
+  const room = geom.statusBand.h - (geom.statusLinesH || 0);
+  if (room < BARS_MIN) return '';
+  const en = Number(bare('BL_ENE')), enmax = Number(bare('BL_ENEMAX'));
+  const pw = enmax > 0 ? clamp(en / enmax, 0, 1) : 0;
+  const h = Math.min(BARS_H, room), text = Math.min(BARS_TEXT * (geom.textScale || 1), h);
+  const bar = (name, f, colour) => `<span class="bar"><b>${name}</b><span class="track">`
+    + `<span class="fill" style="width:${(f * 100).toFixed(1)}%;background:${colour}"></span></span></span>`;
+  return `<div class="bars" style="height:${h}px;--bartext:${text}px">${bar('HP', frac, hpCol)}${bar('Pw', pw, gameColour(12))}</div>`;
 }
 
 // the lines shrink together until the widest fits
 function fitStatus() {
   const sb = $('statband');
   if (!geom || sb.style.display === 'none') return;
-  const base = 10.5 * 1.35 * geom.s;
+  // twin banks: at the system's text size, as the layout sized the band
+  const base = 10.5 * 1.35 * (geom.twin ? geom.textScale || 1 : geom.s);
   sb.style.fontSize = `${base}px`;
   const avail = sb.clientWidth - 20 * geom.s;
   let widest = 0;
-  for (const r of sb.children) widest = Math.max(widest, r.scrollWidth);
+  for (const r of sb.querySelectorAll('.row')) widest = Math.max(widest, r.scrollWidth);
   if (widest > avail && avail > 0) sb.style.fontSize = `${base * Math.max(0.6, avail / widest)}px`;
 }
 
@@ -713,16 +1569,20 @@ function promptChoices(query, allowed) {
   return [...new Set(out)].slice(0, 40);
 }
 
+// A chip's tap closes the row as a window's tap does (windowClosed): the
+// chips sit over the map, and a bounce or a double tap on one, the row gone
+// under it, walked the hero to the chip's place once the core was back at a
+// command (the layers stage's review, 2026-10-03).
 function showChips(choices) {
   const c = $('chips');
   c.innerHTML = '';
-  if (!choices.length) return;
+  if (!choices.length) { sizeChips(); placeChips(); return; }
   for (const ch of choices) {
     const b = document.createElement('button');
     b.textContent = ch;
     b.addEventListener('pointerdown', () => { b.classList.add('pressed'); FB.press(); });
     b.addEventListener('pointerleave', () => b.classList.remove('pressed'));
-    b.addEventListener('pointerup', (e) => { e.preventDefault(); b.classList.remove('pressed'); FB.up(); push({ key: ch.charCodeAt(0) }); });
+    b.addEventListener('pointerup', (e) => { e.preventDefault(); b.classList.remove('pressed'); FB.up(); windowClosed(); push({ key: ch.charCodeAt(0) }); });
     c.appendChild(b);
   }
   const x = document.createElement('button');
@@ -730,8 +1590,10 @@ function showChips(choices) {
   x.textContent = 'Esc';
   x.addEventListener('pointerdown', () => { x.classList.add('pressed'); FB.press(); });
   x.addEventListener('pointerleave', () => x.classList.remove('pressed'));
-  x.addEventListener('pointerup', (e) => { e.preventDefault(); x.classList.remove('pressed'); FB.up(); push({ key: 27 }); });
+  x.addEventListener('pointerup', (e) => { e.preventDefault(); x.classList.remove('pressed'); FB.up(); windowClosed(); push({ key: 27 }); });
   c.appendChild(x);
+  sizeChips();
+  placeChips();
 }
 
 /* ---------- modal windows ---------- */
@@ -770,6 +1632,7 @@ function setHint(text, count = false) {
   $('modal-hint').classList.toggle('count', count);
 }
 function closeModal() {
+  if (!$('modal').hidden) windowClosed();
   $('modal').hidden = true;
   // character creation's keys go with the window (creationKeys)
   const keys = $('ckeys');
@@ -1159,6 +2022,7 @@ function form(title, fields, buttons) {
   const done = (b) => {
     box.parentElement.hidden = true;
     formOpen = null;
+    windowClosed();
     if (touch) showKeyboard(false);
     if (b && b.run) b.run(values);
   };
@@ -1342,7 +2206,7 @@ const handlers = {
     if (w.type === K.WIN_TYPE.NHW_MESSAGE) {
       // the game's own --More-- (a MSGTYPE=stop rule's, "You die...", ...)
       if (blocking && unread && !msgStop) {
-        await more();
+        await moreToEnd();
         pageFresh = false;
         newPage = true;
       }
@@ -1364,9 +2228,10 @@ const handlers = {
     if (w.type === K.WIN_TYPE.NHW_MESSAGE) await putMessage(str, attr);
     else w.lines.push({ attr, text: str });
   },
-  shim_start_menu(win) {
+  shim_start_menu(win, mbehavior) {
     const w = wins.get(win);
-    if (w) w.menu = { items: [], prompt: '' };
+    // perm: the permanent inventory's (MENU_BEHAVE_PERMINV), for the panel
+    if (w) w.menu = { items: [], prompt: '', perm: !!(mbehavior & MENU_BEHAVE_PERMINV) };
   },
   shim_add_menu(win, glyphinfo, identifier, ch, gch, attr, clr, str, itemflags) {
     const w = wins.get(win);
@@ -1385,7 +2250,7 @@ const handlers = {
     const w = wins.get(win);
     if (w && w.menu) w.menu.prompt = prompt || '';
   },
-  shim_select_menu(win, how, listPtr) { return selectMenu(win, how, listPtr); },
+  shim_select_menu(win, how, listPtr) { return takePermInventory(win, how, listPtr) ? 0 : selectMenu(win, how, listPtr); },
   shim_message_menu(let_, how, mesg) { addMessage(mesg); return 0; },
   shim_mark_synch() { render(); },
   shim_wait_synch() { render(); },
@@ -1408,8 +2273,12 @@ const handlers = {
   },
   async shim_nh_poskey(xp, yp, modp) {
     syncRules();
-    if (overlay && M._web_picking) overlay.setPicking(!!M._web_picking());
+    const picking = !!(M._web_picking && M._web_picking());
+    if (overlay && M._web_picking) overlay.setPicking(picking);
+    // a map tap now would travel (getpos takes it as the spot instead)
+    commandWait = !picking;
     const ev = await nextInput();
+    commandWait = false;
     endTurn();
     if (ev.click) {
       M.setValue(xp, ev.click.x, 'i16');
@@ -1445,7 +2314,7 @@ const handlers = {
     const m = bandMetrics();
     if (pausing() && m.width >= 40) {
       const used = pageRowsOf(page, m).length;
-      if (used > 0 && used + wrapRows(q, used, m).length > scrollRow + m.rows) { await more(); startPage(); }
+      if (used > 0 && used + wrapRows(q, used, m).length > scrollRow + m.rows) { await moreToEnd(); startPage(); }
     }
     const asked = { text: q, ask: true };
     page.push(asked);
@@ -1460,6 +2329,8 @@ const handlers = {
     const letters = shown || ((/\[([a-zA-Z]{1,8})\]\s*$/.exec(query) || [])[1] || '');
     const onPad = !direction && !!letters && !!overlay
       && overlay.showAnswers([...letters], def, (key) => push({ key }));
+    // the ANSWER pill is up now: the chips placed again, clear of it
+    if (onPad) placeChips();
     let k;
     for (;;) {
       k = await nextKey();
@@ -1507,7 +2378,7 @@ const handlers = {
   shim_get_color_string() { return ''; },
   shim_preference_update() {},
   shim_getmsghistory() { return ''; },   // '' comes back to C as NULL
-  shim_putmsghistory(msg) { if (msg) history.push(msg); },
+  shim_putmsghistory(msg) { if (msg) { history.push(msg); histSeq++; } },
   shim_status_update(fldidx, ptr, chg, percent, color, colormasks) {
     const name = K.STATUS_FIELD[fldidx];
     if (name === 'BL_FLUSH' || name === 'BL_RESET') { render(); return; }
@@ -1516,6 +2387,8 @@ const handlers = {
     let text = ptr ? M.UTF8ToString(ptr) : '';
     if (name === 'BL_GOLD') text = plainGold(text);
     status[name] = { text: text.trim(), color };
+    // the turn counter, for the ghost deck's sessions (overlay.js setTurn)
+    if (name === 'BL_TIME' && overlay) overlay.setTurn(parseInt(text, 10));
   },
 };
 
@@ -1620,14 +2493,21 @@ try {
   console.warn('tiles', e);   // the text map still works
 }
 buildKeyboard();
-P.onChange((name) => { if (name === 'mapMode' || name === 'zoom' || name === 'colourVision') render(); });
+P.onChange((name) => { if (['mapMode', 'zoom', 'zoomFactor', 'colourVision'].includes(name)) render(); });
 overlay = new Overlay({
   send,
   rawKey: (k) => push({ key: k }),
   glassChanged: (g) => layoutGlass(g),
   form,
   toggleKeyboard: () => showKeyboard(!$('kbd').classList.contains('on')),
+  // twin banks' guard steps aside where a tap means something else: at
+  // --More--, under a menu, a text window or a form (getpos is the overlay's)
+  guardsAside: () => moreShown || !$('modal').hidden || !$('formwrap').hidden,
+  windowClosed,
 });
+// what the near-miss guard did, for the near-miss test on a device (the
+// design's section 18, test 2), from the browser's console
+globalThis.rolehackGuardLog = () => (overlay && overlay.guardLog) || [];
 // build.json, written by build.sh: the commit this page was built from and a
 // link to its source on GitHub.  Shown at the foot of the boot screen and at
 // the end of a game, so whoever plays it can find the source.
@@ -1649,6 +2529,17 @@ async function start() {
     const rules = String(P.get('msgRules') || '').split('\n').map((l) => l.split('\t'))
       .filter(([t, p]) => t && p).map(([t, p]) => `MSGTYPE=${t} "${p}"`);
     if (rules.length) rc += `\n# Message rules made in the game (Rolehack; GAME -> Message rules)\n${rules.join('\n')}\n`;
+    // Twin banks put Take off and Remove right over the action pad, so they
+    // always ask which item, even with one candidate (the design's section
+    // 16; src/options.c optfn_paranoid_confirmation): the + keeps the
+    // defaults, Pray's confirmation among them.  Only for twin banks, so
+    // classic plays as it always has.  The options file is written once a
+    // start, and a game restored from its save keeps the confirmations it
+    // was saved with (restore.c restores flags), so the line reaches the
+    // games started with it: a change of layout, the next new game.  Before
+    // the player's own lines, which come last so that they win: their own
+    // paranoid_confirmation (none, say) stands over this one.
+    if (P.get('layout') !== 'classic') rc += '\n# Twin banks: T and R always ask (Rolehack; Settings -> Layout)\nOPTIONS=paranoid_confirmation:+Remove\n';
     // the player's own lines from Settings (colour vision, layer 3: glyph:)
     const own = String(P.get('userRc') || '').trim();
     if (own) rc += `\n# Your own options (Settings -> Your option lines)\n${own}\n`;
@@ -1664,9 +2555,19 @@ async function start() {
       // a generic user name (sysconf GENERICUSERS), so the game asks "Who are
       // you?" instead of calling everyone web_user
       mod.ENV.USER = 'player';
-      // libnh's sysconf turns perm_invent on, which needs a side panel this
-      // page doesn't have yet; without one every inventory change pops up
-      mod.ENV.NETHACKOPTIONS = '!perm_invent,time';
+      // libnh's sysconf turns perm_invent on, which needs a side panel:
+      // without one every inventory change would pop up.  Twin banks have
+      // one, the inventory panel (layoutPanels), and take the core's updates
+      // for it without a window (takePermInventory), on every tier, so a
+      // window that grows into a tablet's has the inventory to show.  Only
+      // for twin banks, as the paranoid_confirmation line, so classic plays
+      // as it always has; perm_invent is not saved with a game, so a switch
+      // of the layout reaches it at the page's next start.  Its mode 'full'
+      // includes gold (src/options.c perminv_modes), so the panel is the
+      // INVENTORY key's list, Coins first; the default, 'all', left gold out
+      // (the review, 2026-10-03).
+      permInvent = P.get('layout') !== 'classic';
+      mod.ENV.NETHACKOPTIONS = permInvent ? 'perm_invent,perminv_mode:full,time' : '!perm_invent,time';
       mod.FS.mkdir('/save');
       mod.FS.mount(mod.IDBFS, {}, '/save');
       mod.addRunDependency('syncfs');
