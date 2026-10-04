@@ -145,6 +145,13 @@ export function budgetedLayout(W, H, pointer, settings, screen, insets, entry) {
 // falls back to classic keeps the ones it had.  When the page lays out again
 // is overlay.js's to say (twinBusy): never under a finger nor while a field
 // has the focus, so a tier never changes under a thumb.
+//
+// The glass has a band of its own (Lucas, 2026-10-04; layout.js section 7):
+// the glass the map was last drawn in, and the one the device cell was
+// decided in, are kept here with the tiers, and layout() keeps each while its
+// ranking still picks it within 24 dp of the window.  A window dragged across
+// 600 tall at 1000 wide swapped a 16.5 dp cell for 12 at every pixel either
+// side, and across 657 moved the map from between the banks to above them.
 // ---------------------------------------------------------------------------
 
 export const SIZE_W = 600, SIZE_H = 480, SIZE_BAND = 24;
@@ -156,14 +163,22 @@ export function sizeClass(W, H, prev = null) {
   return tierOf(W, H, 'touch', prev === 'phone' || prev === 'tablet' ? prev : null);
 }
 
-// The settings that carry the tiers last drawn into the next layout() call.
+// The settings that carry the tiers and glasses last drawn into the next
+// layout() call.
 export function withClasses(settings, classes) {
-  return { ...settings, prevTier: (classes && classes.tier) || null, prevCellTier: (classes && classes.cellTier) || null };
+  const c = classes || {};
+  return { ...settings, prevTier: c.tier || null, prevCellTier: c.cellTier || null, prevGlass: c.glass || null, prevCellGlass: c.cellGlass || null };
 }
 
-// The tiers a result was laid out at, to keep for the next one; the previous
-// ones (prev) when the result is not drawn (unusable: the page shows classic).
+// The tiers and glasses a result was laid out at, to keep for the next one;
+// the previous ones (prev) when the result is not drawn (unusable: the page
+// shows classic).
 export function classesOf(r, prev = null) {
   if (!(r && r.usable && r.info)) return prev;
-  return { tier: r.info.tier, cellTier: (r.info.DC && r.info.DC.tier) || null };
+  const G = r.info.G, D = r.info.DC;
+  return {
+    tier: r.info.tier, cellTier: (D && D.tier) || null,
+    glass: G && G.kind ? { kind: G.kind, over: !!G.over } : null,
+    cellGlass: D && D.kind ? { kind: D.kind, over: !!D.over, whole: !!D.whole } : null,
+  };
 }
