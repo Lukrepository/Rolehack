@@ -39,7 +39,7 @@ import * as C from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
 import { textMetrics } from './layout.js';
-import { budgetedLayout } from './viewer.js';
+import { budgetedLayout, withClasses, classesOf } from './viewer.js';
 
 // ---- geometry, design dp (RhCase, RhOverlay, RhScreen)
 const MARGIN = 8, WELL_PAD = 10, DECK_H = 66, DECK_KEY = 52, HOOD_TOP = 14, HOOD_SIDE = 16,
@@ -527,11 +527,13 @@ export class Overlay {
   // the finger as readily: EAT on a corpse asked "eat it?", the 'n' chip's
   // tap opened "What do you want to eat?" under it and its click took the
   // food ration (the review, 2026-10-02).  So a touch begun there is held to
-  // the place it began in the same way, in every layout.
+  // the place it began in the same way, in every layout.  Twin banks' panels
+  // out of the glass (#panes: the tray between the banks, over the banks)
+  // open the history and the inventory on theirs, and are held the same.
   guardClicks() {
     const from = new Map();   // pointerId -> { at: where the touch began, up: when it lifted (0: still down) }
     let last = null;
-    const places = () => [this.keysEl, $('bands'), $('glass')];
+    const places = () => [this.keysEl, $('bands'), $('glass'), $('panes')];
     window.addEventListener('pointerdown', (e) => {
       const at = places().find((q) => q && q.contains(e.target));
       if (at) from.set(e.pointerId, { at, up: 0 });
@@ -580,6 +582,7 @@ export class Overlay {
     delete document.documentElement.dataset.svh;
     this.setViewportFit(false);
     document.documentElement.dataset.ui = 'classic';
+    delete document.documentElement.dataset.tier;
     this.twinSig = '';
     this.rebuildClassic(window.innerWidth, window.innerHeight);
   }
@@ -722,14 +725,6 @@ export class Overlay {
     return 'browser';
   }
 
-  // A touch screen starts with thumb banks; with none, the desk dock.  Never
-  // pointer: coarse alone, nor the user agent (the design's section 12; the
-  // switching on the input in use comes later).
-  pointerKind() {
-    const coarse = !!(window.matchMedia && matchMedia('(any-pointer: coarse)').matches);
-    return coarse || navigator.maxTouchPoints > 0 ? 'touch' : 'mouse';
-  }
-
   // The budget: what this display mode has shown in each orientation of the
   // whole device -- the portrait width, the landscape height and width, the
   // landscape side insets -- kept in this browser (prefs budgets), so a
@@ -741,7 +736,7 @@ export class Overlay {
   twinLayout(W, H, pointer, settings, insets, mode) {
     const all = P.get('budgets') || {};
     const scr = { w: Number(screen.width) || W, h: Number(screen.height) || H };
-    const out = budgetedLayout(W, H, pointer, settings, scr, insets, all[mode]);
+    const out = budgetedLayout(W, H, pointer, withClasses(settings, this.twinClasses), scr, insets, all[mode]);
     if (out.learn) P.set('budgets', { ...all, [mode]: out.learn });
     return out;
   }
@@ -753,7 +748,12 @@ export class Overlay {
     const root = document.documentElement.dataset;
     const box = $('app').getBoundingClientRect();
     const W = box.width || window.innerWidth, H = box.height || window.innerHeight;
-    const pointer = this.pointerKind(), mode = this.displayMode(), insets = this.safeInsets();
+    // Every window is laid out as for touch, a mouse's or a keyboard's
+    // included: desktop mode is deferred (Lucas, 2026-10-03), so a large window
+    // with a mouse gets the tablet tier's phone-size banks at its corners, not
+    // the desk's 40 dp dock (layout.js section 10, kept for later); a
+    // physical keyboard drives the game as it always has (web.js keyCode).
+    const pointer = 'touch', mode = this.displayMode(), insets = this.safeInsets();
     const padKey = clamp(Number(P.get('padCell')) || 58, 40, 72);
     // the message rows as the page sets them (msgTextPx) and the status band
     // as web.js draws it: inputs to the rule, so it never puts text over a key.
@@ -774,7 +774,6 @@ export class Overlay {
     const base = {
       padKey, insets, msgRowH: text.msgRowH, statusH,
       mapCell: P.get('mapCell') === 'rows' ? 'rows' : 'columns',
-      prevTier: this.twinTier || null,
     };
     const { r, budget, sideInsets, used } = this.twinLayout(W, H, pointer, base, insets, mode);
     const settings = { ...base, budget, sideInsets };
@@ -785,6 +784,7 @@ export class Overlay {
       this.twinFallback = (rs.find((x) => /^unusable/.test(x)) || rs[0] || 'the layout gave no result')
         .replace(/^unusable, the page shows classic: /, '');
       root.ui = 'classic';
+      delete root.tier;
       this.twinSig = '';
       this.rebuildClassic(W, H);
       return;
@@ -800,7 +800,9 @@ export class Overlay {
     this.twin = { spec: S, info: r.info, W, H, pointer, mode, settings, budget: used, reason: r.reason,
       ctl: new Map(S.controls.map((c) => [c.id, c])), keys: new Map(), guard: guardGeometry(S) };
     this.twinSig = sig;
-    this.twinTier = r.info.tier;
+    // the tiers drawn, the next layout's hysteresis (viewer.js, its size classes)
+    this.twinClasses = classesOf(r, this.twinClasses);
+    root.tier = r.info.tier;
 
     this.padCell = padKey;
     this.padBox = 3 * this.padCell + 2 * PAD_GAP;
@@ -842,6 +844,14 @@ export class Overlay {
       glass: { ...S.glass, r: this.caseless ? 0 : 10 },
       map: S.mapArea, msgBand, statusBand, msgRows: r.info.fill.rows_msg, cell: r.info.T,
       headerOver: !!r.info.G.over, textScale, statusLinesH: statusH,
+      // The panels the layout leaves room for, the message log and the
+      // inventory (its chrome), which web.js lays out and fills
+      // (layoutPanels).  'beyond': a log under the band's rows (a phone's, in
+      // the glass under the map), which shows the history the band no longer
+      // shows; a tablet's shows all of it.
+      panels: S.chrome.filter((c) => /^panel: (message log|inventory)\b/.test(c.name)).map((c) => ({
+        kind: c.name.startsWith('panel: inventory') ? 'inventory' : 'log',
+        beyond: /under the band/.test(c.name), x: c.x, y: c.y, w: c.w, h: c.h })),
     };
     this.host.glassChanged(this.geom);
   }
@@ -1630,7 +1640,9 @@ export class Overlay {
   // The nearest keycap's distance from a point on the map, for web.js's ring;
   // null in classic, which has no guard, and at the desk, where a mouse's
   // click on the map is meant where it lands (the ring is for a thumb's
-  // near miss).
+  // near miss).  The desk is deferred (Lucas, 2026-10-03): the page lays out
+  // as for touch (rebuildTwin), so a mouse player has the ring too, as the
+  // banks it plays with are the thumbs'.
   keyDistance(x, y) {
     if (this.twin && this.twin.spec.pointer === 'mouse') return null;
     const g = this.guardAt(x, y);
@@ -3855,7 +3867,8 @@ export class Overlay {
 //    the screen's edge, and the pads' top row runs up to row 3's keycap (the
 //    pads own the gap above them, so an overshoot from the pad stays on it).
 //    The desk's dock (a mouse in use) sits mid-screen with panels beside it:
-//    its cells stop at the dock's edge.
+//    its cells stop at the dock's edge (deferred with desktop mode, Lucas,
+//    2026-10-03: the page never lays the dock out today).
 //  - banks: each bank's box, which side is its outer one, whether it is the
 //    action pad's, and its halo: 12 dp round it, clipped to the screen (corner:
 //    its inner top corner is still 12 dp round the last keycap's, and rounds).

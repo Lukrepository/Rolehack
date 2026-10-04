@@ -141,7 +141,8 @@ export const DEFAULTS = {
   cellColumns: 34,
   fitFloor: 12,        // the smallest default cell; off phones, the whole level is shown when it fits at this or more
   cellMax: 20,         // phones: the default cell never grows past this
-  tabletCellMax: 24,   // tablets: the whole-level cell is capped here
+  tabletCellMax: 24,   // tablets: the whole-level cell is capped here...
+  tabletWideCellMax: 48, // ...or here where 24 dp would leave strips wider than a panel beside the level: a monitor's window (section 8 below)
   deskCellMax: 32,     // desk: whole device pixels up to this (the cell's width, so text cells may stand taller)
   deskWideCellMax: 48, // desk, when 32 px strips beside the map would each be wider than a panel (21:9 and wider)
   msgRows: { landscape: 2, portrait: 3 },   // Lucas's settings (2026-09-28)
@@ -157,7 +158,8 @@ export const DEFAULTS = {
   anchor: 'auto',      // 'physical' corner, 'safe' corner, or 'auto' (section 13)
   avoidCutout: 0,      // Android: a side cutout's depth from the edge; only what the margin does not already clear counts
   budget: null,        // web in a tab: { w: portrait width, h: landscape height, l: landscape width } seen
-  prevTier: null,      // the last tier, for hysteresis
+  prevTier: null,      // the window's last tier, for hysteresis (section 3 below)
+  prevCellTier: null,  // the tier the last device cell was decided at, for hysteresis (sections 3 and 8 below)
   halo: 12,            // guard band round each bank (section 6); also the least gap from a band to a key
   ring: 20,            // confirm ring inside the map next to a halo
   // 'auto': the header as section 10 places it -- side by side once the glass is 818 dp
@@ -185,7 +187,14 @@ const PAD_FLOOR = 46, KR_MIN = TOUCH_MIN, KR_LAST = 40;
 // ---------------------------------------------------------------------------------------
 // 3. Tiers: Android's width and height classes, crossed with the input in use, with a
 //    ±24 dp hysteresis band.  A landscape phone is compact HEIGHT.  Tiers change the map
-//    treatment and the panels only; no key's size or offset depends on the tier.
+//    treatment and the panels only; no key's size or offset depends on the tier.  The
+//    band works from the tier the last layout was drawn at: settings.prevTier for the
+//    window's, settings.prevCellTier for the device cell's (section 8 below), which the page
+//    keeps (viewer.js, its size classes), so a window on a boundary keeps its tier until it is
+//    24 dp past it.
+//    Desktop mode is deferred (Lucas, 2026-10-03): the page lays out every window as for
+//    touch, whatever the pointer, so a mouse or keyboard player keeps the phone or tablet
+//    tier the window's size gives.  'desk' and section 10 stay here, unused by the page.
 // ---------------------------------------------------------------------------------------
 export function tierOf(W, H, pointer, prev = null) {
   if (pointer === 'mouse') return 'desk';
@@ -582,6 +591,11 @@ function better(p, q) {
   if (Math.abs(p.cells - q.cells) > 1e-6) return p.cells > q.cells;
   if (p.over !== q.over) return !p.over;
   if (Math.abs(p.T - q.T) > 1e-6) return p.T > q.T;
+  // The whole level at the same cell in either glass (a monitor's window, both at the cap):
+  // the glass above the banks, which leaves the tray between them and the glass under the
+  // level to the panels.  The taller column between the banks would leave the glass under
+  // the level and both corners but their narrow panels void (5120x2160: 52% of it).
+  if (p.whole && q.whole && p.kind !== q.kind) return p.kind === 'above';
   return p.region.w * p.region.h > q.region.w * q.region.h;
 }
 
@@ -594,13 +608,38 @@ function better(p, q) {
 //      fit, never under 12 dp nor over 20;
 //    - phones, mapCell 'rows': the cell whose 21 rows fill the landscape map, 12 to 20 dp;
 //    - tablets: the cell that shows the whole level when that is 12 dp or more (cap 24),
-//      else the phone rule.
+//      else the phone rule.  No tablet is wide enough to reach the cap -- 1920x1080 shows
+//      the level at 23.5 dp -- so it binds only on a monitor, which the design gave the
+//      desk.  Desktop mode is deferred (Lucas, 2026-10-03) and a monitor's window is a
+//      tablet; there, where 24 dp would leave strips wider than a panel beside the level
+//      (WIDE_STRIP), the cap rises towards tabletWideCellMax, the desk's widest (section 10
+//      below), rather than leave the window black: a 2560x1440 window showed the level at
+//      24 dp in a glass half void (52%), 3440x1440 62%; now 31.5 and 42.5 dp, 5% and 8%.
+//      It rises over WIDE_RAMP dp of width, not at once (tabletCap): a first cut switched
+//      to 48 dp at the strips' width, and a monitor's window dragged across 2408 dp wide
+//      swapped a 24 dp level for a 30 dp one, and moved the log, at every pixel either side
+//      (the reviews, 2026-10-03).  A portrait window keeps the cell under a level as wide
+//      as its own glass, never under 24 dp (layoutCore, section 9 below).
 //    Pinch stores a factor of this cell, not a pixel size.
 // ---------------------------------------------------------------------------------------
+const WIDE_STRIP = 240;     // a strip beside the level as wide as a panel (the tray takes one from 240 dp)
+const WIDE_RAMP = 160;      // the width over which the strips close once they are WIDE_STRIP
+// The whole-level cell's cap on a tablet: tabletCellMax up to where a level at that cell
+// would leave strips WIDE_STRIP wide beside it in the region; from there, over the next
+// WIDE_RAMP dp, it moves to the cell that fills the region's width, which it then follows,
+// up to tabletWideCellMax.  Continuous in the width, so a window dragged wider grows the
+// level half a dp at a time (2560x1440 is past the ramp: the level fills it at 31.5 dp).
+function tabletCap(regionW, a, st) {
+  const lo = st.tabletCellMax, hi = Math.max(lo, st.tabletWideCellMax);
+  const t = clamp((regionW - 80 * a * lo - 2 * WIDE_STRIP) / WIDE_RAMP, 0, 1);
+  return Math.min(hi, lo + t * Math.max(0, regionW / (80 * a) - lo));
+}
 export function deviceCell(S, L, settings, M, table = BANK, Tfixed = null) {
   const st = settings.sides ? settings : settled(L, S, settings);
   const W = st.budget?.l ?? L, H = st.budget?.h ?? S;
-  const tier = tierOf(W, H, 'touch', null);
+  // with its own hysteresis: a desktop window dragged across 480 dp tall would
+  // otherwise swap the whole-level cell and the phone's at every pixel either side
+  const tier = tierOf(W, H, 'touch', st.prevCellTier ?? null);
   const ist = { ...st, insets: { l: st.sides.l, r: st.sides.r, t: 0, b: 0 } };
   const P = placeBanks(W, H, M, ist, table);
   const a = st.cellAspect;
@@ -610,7 +649,7 @@ export function deviceCell(S, L, settings, M, table = BANK, Tfixed = null) {
     const fit = Math.min(R.w / (80 * a), R.h / 21);
     let T, whole = false;
     if (Tfixed) T = Tfixed;
-    else if (tier === 'tablet' && fit >= st.fitFloor) { T = Math.floor(Math.min(fit, st.tabletCellMax) * 2) / 2; whole = true; }
+    else if (tier === 'tablet' && fit >= st.fitFloor) { T = Math.floor(Math.min(fit, tabletCap(R.w, a, st)) * 2) / 2; whole = true; }
     else if (st.mapCell === 'rows') T = clamp(R.h / 21, st.fitFloor, st.cellMax);
     else T = clamp(Math.min(R.w / (a * st.cellColumns), R.h / 21), st.fitFloor, st.cellMax);
     const s = { ...cellsAt(R, T, a), T, kind: c.kind, over: c.over, region: R };
@@ -701,7 +740,7 @@ function settled(W, H, settings) {
   st.msgRowH = pos(st.msgRowH, ROW_H);
   st.statusH = Math.max(0, num(st.statusH, STATUS_H));
   st.cellAspect = pos(st.cellAspect, 1);
-  for (const k of ['cellColumns', 'fitFloor', 'cellMax', 'tabletCellMax', 'deskCellMax', 'deskWideCellMax', 'halo', 'ring', 'statusW', 'shortScreenRows']) st[k] = pos(st[k], DEFAULTS[k]);
+  for (const k of ['cellColumns', 'fitFloor', 'cellMax', 'tabletCellMax', 'tabletWideCellMax', 'deskCellMax', 'deskWideCellMax', 'halo', 'ring', 'statusW', 'shortScreenRows']) st[k] = pos(st[k], DEFAULTS[k]);
   st.msgRows = { landscape: Math.max(1, Math.round(num(st.msgRows.landscape, 2))), portrait: Math.max(1, Math.round(num(st.msgRows.portrait, 3))) };
   st.header = st.header === 'stacked' ? 'stacked' : 'auto';
   const b = st.budget;
@@ -733,7 +772,8 @@ function layoutCore(W0, H0, pointer, settings) {
   const { M, fit, DC } = plan(S, L, st, table);
   fit.reasons = [...reasons, ...fit.reasons];
   const P = placeBanks(W, H, M, st, table);
-  const T = DC.T, a = st.cellAspect;
+  const a = st.cellAspect;
+  let T = DC.T;
 
   // 9a. the glass: the candidate that shows most of the level at the device cell.  Larger
   //     text first gives up message rows (down to 1), then the smallest glass worth a map.
@@ -748,6 +788,15 @@ function layoutCore(W0, H0, pointer, settings) {
   if (!cands.length) {
     cands = candidates(W, H, M, P, st, rows, 40);
     glassDegraded = true; fit.reasons.push('the glass is under 120 dp');
+  }
+  // A monitor turned to portrait (1440x2560) shares the device cell no further than a level
+  // as wide as its own widest glass, and never under the tablet's cap: the cell grown for
+  // its landscape width (section 8 above) showed 45 of the level's 80 columns at 31.5 dp
+  // where 24 dp shows 60 (the reviews, 2026-10-03).  Only past tabletCellMax, which no
+  // phone or tablet reaches, so their two orientations keep one cell.
+  if (portrait && T > st.tabletCellMax && cands.length) {
+    const wide = Math.max(...cands.map((c) => c.region.w));
+    T = Math.max(st.tabletCellMax, Math.min(T, Math.floor(wide / (80 * a) * 2) / 2));
   }
   const scored = cands.map((c) => ({ ...c, ...cellsAt(c.region, T, a), T }));
   let G = scored.reduce((b, c) => (!b || better(c, b) ? c : b), null);
@@ -830,24 +879,33 @@ function fillGlass(G, T, a, tier, st, rows0, P, W, H) {
   let bands = G.hd.bands.map((b) => ({ ...b }));
   const panels = [];
   let rowsMsg = rows0;
-  // The map between the banks on a landscape screen tall enough to leave 120 dp or more over
-  // each bank (960x600 tablets): the log over the left bank, the inventory over the right,
-  // each 12 dp clear of the keys and 4 dp clear of the glass.
-  if (G.kind === 'between' && P) {
-    const ins = st.insets, y0 = G.over ? G.hd.bands[0].y + G.hd.h + 4 : 4 + ins.t;
-    const h = P.bankTop - st.halo - y0;
-    const lx0 = 4 + ins.l, lx1 = R.x - 4, rx0 = R.x + R.w + 4, rx1 = W - 4 - ins.r;
-    if (h >= 120 && lx1 - lx0 >= 160 && rx1 - rx0 >= 160) {
-      panels.push({ name: 'panel: message log (history, newest last)', x: lx0, y: y0, w: lx1 - lx0, h });
-      panels.push({ name: 'panel: inventory (a copy of the INVENTORY list; the key stays in its bank)', x: rx0, y: y0, w: rx1 - rx0, h });
-    }
-  }
-  const hasLog = () => panels.some((q) => q.name.startsWith('panel: message log'));
+  const LOG = 'panel: message log (history, newest last)';
+  const INV = 'panel: inventory (a copy of the INVENTORY list; the key stays in its bank)';
   const whole = tier !== 'phone' && c.whole;
   const mh = Math.max(0, Math.min(R.h, 21 * T));
   // never wider than the level's 80 columns: past them no cell is drawn (a wide window
   // that is a little short of 21 rows once counted its whole width as map)
   const mw = Math.min(R.w, 80 * a * T);
+  // Ultrawide: the whole level in the column between the banks, narrower than it by a
+  // panel (160 dp) and a 12 dp gap a side, as on 32:9 (5120x1440, the level at 48 dp): the
+  // log and the inventory stand beside the level, from its top to the bottom of the screen,
+  // as the desk flanks its map (section 10 below), rather than over the banks, 212 dp wide, with
+  // the glass beside the level void (33% of 5120x1440; now 24%).
+  const side = (R.w - mw) / 2 - 12;
+  const flank = G.kind === 'between' && whole && side >= 160;
+  // The map between the banks on a landscape screen tall enough to leave 120 dp or more over
+  // each bank (960x600 tablets): the log over the left bank, the inventory over the right,
+  // each 12 dp clear of the keys and 4 dp clear of the glass.
+  if (G.kind === 'between' && P && !flank) {
+    const ins = st.insets, y0 = G.over ? G.hd.bands[0].y + G.hd.h + 4 : 4 + ins.t;
+    const h = P.bankTop - st.halo - y0;
+    const lx0 = 4 + ins.l, lx1 = R.x - 4, rx0 = R.x + R.w + 4, rx1 = W - 4 - ins.r;
+    if (h >= 120 && lx1 - lx0 >= 160 && rx1 - rx0 >= 160) {
+      panels.push({ name: LOG, x: lx0, y: y0, w: lx1 - lx0, h });
+      panels.push({ name: INV, x: rx0, y: y0, w: rx1 - rx0, h });
+    }
+  }
+  const hasLog = () => flank || panels.some((q) => q.name.startsWith('panel: message log'));
   let spare = R.h - mh;
   let y0 = R.y;
   // spare height: first message rows (up to 4 in all), then status bars, then a log panel
@@ -855,7 +913,7 @@ function fillGlass(G, T, a, tier, st, rows0, P, W, H) {
   if (canGrow && spare > 1) {
     const msgBand = bands[0];
     if (spare >= 120 && tier !== 'phone' && !hasLog()) {
-      panels.push({ name: 'panel: message log (history, newest last)', x: R.x, y: R.y + mh + 4, w: R.w, h: spare - 4 });
+      panels.push({ name: LOG, x: R.x, y: R.y + mh + 4, w: R.w, h: spare - 4 });
       spare = 0;
     } else {
       const add = Math.max(0, Math.min(4 - rowsMsg, Math.floor(spare / st.msgRowH)));
@@ -881,10 +939,14 @@ function fillGlass(G, T, a, tier, st, rows0, P, W, H) {
     }
   }
   const map = { x: R.x + (R.w - mw) / 2, y: y0, w: mw, h: mh };
+  if (flank) {
+    panels.push({ name: LOG, x: R.x, y: y0, w: side, h: R.y + R.h - y0 });
+    panels.push({ name: INV, x: R.x + R.w - side, y: y0, w: side, h: R.y + R.h - y0 });
+  }
   if (G.tray) {
     const want = [];
-    if (!hasLog() && tier !== 'phone') want.push('panel: message log (history, newest last)');
-    want.push('panel: inventory (a copy of the INVENTORY list; the key stays in its bank)');
+    if (!hasLog() && tier !== 'phone') want.push(LOG);
+    want.push(INV);
     const n = Math.max(1, Math.min(want.length, Math.floor((G.tray.w + 8) / 248)));
     const pw = (G.tray.w - (n - 1) * 8) / n;
     for (let i = 0; i < n; i++) panels.push({ name: want[i], x: G.tray.x + i * (pw + 8), y: G.tray.y, w: pw, h: G.tray.h });
@@ -952,6 +1014,8 @@ function popupsFor(P, fill, st) {
 //     Panels fill the row beside and under the dock.  The cell is capped by its width, so
 //     Android's text cells stand taller than tiles; on 21:9 and wider the cap rises to 48 px
 //     rather than leave strips wider than a panel beside the map.
+//     Deferred (Lucas, 2026-10-03): the page never asks for it (it lays out as for touch,
+//     section 3 above); kept, and still tested, for when desktop mode is built.
 // ---------------------------------------------------------------------------------------
 function deskLayout(W, H, M0, st, table, reasons) {
   const a = st.cellAspect;

@@ -5,7 +5,10 @@
 # its line-drawing characters suit a terminal font, not the page.  Nor is
 # dumplog: this build has no DUMPLOG, and the option was an error at every
 # start ("Unknown option 'dumplog'", 2026-09-27).
-# web.js writes this to ~/.nethackrc; NETHACKOPTIONS still adds !perm_invent.
+# web.js writes this to ~/.nethackrc.  Its NETHACKOPTIONS adds perm_invent
+# (with perminv_mode:full, gold included) for a game started in twin banks,
+# whose inventory panel takes the core's permanent inventory without a window,
+# and !perm_invent for classic, which has no panel for it.
 #
 # With the twin banks layout (Settings -> Layout, the default; Lucas,
 # 2026-10-02) Take off and Remove sit right over the action pad, so web.js's

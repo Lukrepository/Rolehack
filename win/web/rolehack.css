@@ -150,6 +150,48 @@ body { font-family: var(--capfont); color: #f1e8d5; -webkit-tap-highlight-color:
 :root[data-ui="twin"][data-case="off"] #bands[data-over] > #msgband,
 :root[data-ui="twin"][data-case="off"] #bands[data-over] > #statband { background: rgba(7,10,8,.78); box-shadow: none; }
 :root[data-ui="twin"][data-case="off"] #bands[data-over] > *::after { display: none; }
+/* Twin banks' panels, the message log and the inventory (web.js layoutPanels):
+   in the glass a part of it, under its tube; out of it (#panes: the tray
+   between the banks, over the banks) a pane of glass of its own, as the bands
+   are over the banks.  Each scrolls on its own; a tap opens what it copies. */
+#panes { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.rhpanel { position: absolute; display: flex; flex-direction: column; overflow: hidden; pointer-events: auto;
+  background: var(--glass); color: var(--phos); line-height: 1.25;
+  text-shadow: 0 0 3px color-mix(in srgb, var(--phos) 50%, transparent); }
+.rhpanel[data-pane] { border-radius: 6px; box-shadow: 0 0 0 2px #110e0c, 0 0 0 3px rgba(255,255,255,.07); }
+.rhpanel[data-pane]::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 70%, rgba(0,0,0,.4) 100%),
+    repeating-linear-gradient(180deg, rgba(0,0,0,.24) 0px, rgba(0,0,0,.24) 1px, rgba(0,0,0,0) 1px, rgba(0,0,0,0) 3px); }
+:root[data-case="off"] .rhpanel { background: rgba(7,10,8,.78); }
+:root[data-case="off"] .rhpanel[data-pane] { box-shadow: none; }
+:root[data-case="off"] .rhpanel::after { display: none; }
+.rhpanel .ptitle { flex: none; padding: 6px 10px 0; font: 600 9px var(--capfont); letter-spacing: .22em;
+  text-transform: uppercase; color: var(--phos-dim); text-shadow: none; }
+.rhpanel .ptitle[hidden] { display: none; }
+.rhpanel .pbody { flex: 1 1 auto; min-height: 0; overflow-x: hidden; overflow-y: auto; padding: 3px 10px 5px;
+  overflow-wrap: anywhere; touch-action: pan-y; scrollbar-width: thin; scrollbar-color: var(--phos-dim) transparent; }
+.rhpanel .pl { white-space: pre-wrap; color: var(--phos-dim); }
+.rhpanel .pl.new { color: var(--phos); }
+/* an item that wraps keeps its letter and picture by its first line */
+.rhpanel .pi { display: flex; align-items: flex-start; gap: 6px; }
+.rhpanel .pi .let { flex: none; min-width: .7em; }
+.rhpanel .pi > span:last-child { min-width: 0; white-space: pre-wrap; }
+.rhpanel .pi .cpic { width: 16px; height: 16px; margin-top: calc((1.25em - 16px) / 2); }
+.rhpanel .pi .cpic.none { background: none; }
+.rhpanel .ph { padding-top: 4px; color: var(--phos-dim); break-after: avoid; }
+.rhpanel .ph:first-child { padding-top: 0; }
+/* the inventory where the panel has room for two columns of an item's line
+   or more (a monitor's tray; web.js layoutPanels): each column filled to the
+   panel's foot before the next, a heading kept with its first item, no item
+   split between two; a pack too long for them all scrolls sideways */
+.rhpanel[data-wide] .pbody { overflow-x: auto; overflow-y: hidden; touch-action: pan-x; }
+.rhpanel[data-wide] .pcols { height: 100%; columns: 26em; column-gap: 18px; column-fill: auto; }
+.rhpanel[data-wide] .pcols > * { break-inside: avoid; }
+/* ...and while columns run on past its right edge, that edge fades, so the
+   rest of the pack is seen to be there (web.js notePlace) */
+.rhpanel[data-wide][data-more] .pbody { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); }
+.rhpanel .pnote { color: var(--phos-dim); white-space: normal; }
 /* the HP and Pw bars under the status lines, where the layout leaves room (web.js barsHtml) */
 #statband .bars { display: flex; align-items: center; gap: 14px; max-width: 392px; }   /* as long as a 412 dp band's lines */
 #statband .bar { flex: 1; display: flex; align-items: center; gap: 6px; min-width: 0; }

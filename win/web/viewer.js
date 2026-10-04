@@ -1,12 +1,14 @@
 // Written for Rolehack by Lucas Ruiz, 2026-10-02.
 //
 // What the twin banks know of the device they are viewed on, beyond the
-// window in hand: for now the remembered budget (the design's section 12),
-// which the design gives this module, with the input-mode machine and the
-// size classes to come.  A plain module like layout.js, which it imports:
-// no DOM and no storage, so overlay.js hands it the screen, the insets and
-// the stored entry, and stores what it says it learnt; node tests it
-// (test/viewer.test.mjs).
+// window in hand: the remembered budget and the size classes (the design's
+// section 12), which the design gives this module.  Its input-mode machine,
+// which would switch a mouse or keyboard player to the desk's dock, is not
+// built: desktop mode is deferred (Lucas, 2026-10-03), and every window is
+// laid out as for touch (overlay.js rebuildTwin).  A plain module like
+// layout.js, which it imports: no DOM and no storage, so overlay.js hands it
+// the screen, the insets, the stored entry and the tiers it last drew, and
+// stores what it says it learnt; node tests it (test/viewer.test.mjs).
 //
 // The budget is what one display mode (a tab, the installed app,
 // fullscreen) has shown in each orientation of the whole device: the
@@ -43,7 +45,7 @@
 //  - layout() still lays out without the budget any window narrower or
 //    shorter than it promises.
 
-import { layout } from './layout.js';
+import { layout, tierOf } from './layout.js';
 
 // A portrait window within this of the screen's short side spans it (CSS px
 // are fractional at some densities; screen.width is whole).
@@ -117,4 +119,51 @@ export function budgetedLayout(W, H, pointer, settings, screen, insets, entry) {
   const ok = r && r.usable && r.spec && !r.spec.fit.degraded;
   const none = used === 'none';
   return { r, used, budget: none ? null : B.budget, sideInsets: none ? null : B.sideInsets, learn: ok ? B.learn : null };
+}
+
+// ---------------------------------------------------------------------------
+// Size classes (the design's sections 4 and 12): a window is a phone when it
+// is under 600 dp wide or under 480 dp tall -- Android's compact width and
+// compact height, so a phone turned to landscape is still a phone -- and a
+// tablet otherwise, a touch laptop and any large window with a mouse
+// included (desktop mode is deferred: Lucas, 2026-10-03).  The tier changes
+// the map's treatment and the panels, never a key: the whole level when its
+// cell is 12 dp or more, the message log and the inventory between the banks
+// or in spare glass, or beside the level on a window far wider than it
+// (layout.js sections 8 and 9, which also let a monitor's level grow past a
+// tablet's 24 dp cell).
+//
+// Each threshold has a band of 24 dp either side, worked from the tier the
+// page last drew: a phone becomes a tablet only at 624 dp wide and 504 tall,
+// a tablet a phone only under 576 or 456.  A desktop window dragged across a
+// boundary, or a foldable's inner screen a few dp either side of it, would
+// otherwise swap the panels and the map's cell at every pixel of the drag.
+// Two tiers are kept, because layout() decides two: the window's own (the
+// map's treatment and the panels) and the one the device cell was decided at,
+// from the device's landscape geometry (layout.js section 8), which a portrait
+// window does not share.  Only a usable layout's tiers are kept: a window that
+// falls back to classic keeps the ones it had.  When the page lays out again
+// is overlay.js's to say (twinBusy): never under a finger nor while a field
+// has the focus, so a tier never changes under a thumb.
+// ---------------------------------------------------------------------------
+
+export const SIZE_W = 600, SIZE_H = 480, SIZE_BAND = 24;
+
+// The window's tier, given the one it was drawn at last (null: none yet).
+// layout.js tierOf is the rule itself, which the layout applies to both its
+// tiers; this is its touch side, the one the page uses.
+export function sizeClass(W, H, prev = null) {
+  return tierOf(W, H, 'touch', prev === 'phone' || prev === 'tablet' ? prev : null);
+}
+
+// The settings that carry the tiers last drawn into the next layout() call.
+export function withClasses(settings, classes) {
+  return { ...settings, prevTier: (classes && classes.tier) || null, prevCellTier: (classes && classes.cellTier) || null };
+}
+
+// The tiers a result was laid out at, to keep for the next one; the previous
+// ones (prev) when the result is not drawn (unusable: the page shows classic).
+export function classesOf(r, prev = null) {
+  if (!(r && r.usable && r.info)) return prev;
+  return { tier: r.info.tier, cellTier: (r.info.DC && r.info.DC.tier) || null };
 }

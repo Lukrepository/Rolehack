@@ -397,6 +397,109 @@ test('no room for bars under hidden status lines', () => {
   assert.ok(bars > 0, 'no window got bars with the lines shown');
 });
 
+// ---- the tablet tier on a monitor's window
+
+// Desktop mode is deferred (Lucas, 2026-10-03): the page lays out a monitor's
+// window as for touch, a tablet.  A tablet's whole-level cell stops at 24 dp,
+// which no tablet reaches; on a monitor it left the level small in a glass
+// half void (2560x1440: 52%, 3440x1440: 62%).  Where 24 dp would leave strips
+// wider than a panel (240 dp) beside the level, the cap rises over the next
+// 160 dp of width to the cell that fills it, up to 48 dp, the desk's widest;
+// where the level is still narrower than the column between the banks by a
+// panel and its gap a side (32:9), the log and the inventory stand beside it.  Every panel is clear of every key and the map, and the
+// void (no key, map, band or panel) stays under today's 21.8% at 1920x1080
+// (the design's M8) everywhere but 32:9, where the panels flank the level.
+function voidShare(S, step = 4) {
+  const rects = [...S.controls.filter((c) => !c.behind), S.mapArea, ...S.bands, ...S.chrome];
+  let n = 0, v = 0;
+  for (let y = step / 2; y < S.H; y += step) {
+    for (let x = step / 2; x < S.W; x += step) {
+      n++;
+      if (!rects.some((r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h)) v++;
+    }
+  }
+  return v / n;
+}
+
+test("a monitor's window is a tablet with the whole level, its panels in the spare glass or beside the level", () => {
+  const out = [];
+  const ov = (a, b) => a.x + 0.01 < b.x + b.w && b.x + 0.01 < a.x + a.w && a.y + 0.01 < b.y + b.h && b.y + 0.01 < a.y + a.h;
+  // [W, H, cell, panels beside the level, the most void]
+  const MONITORS = [[1280, 800, 15.5, false, 0.12], [1920, 1080, 23.5, false, 0.08], [1920, 1200, 23.5, false, 0.08],
+    [2560, 1440, 31.5, false, 0.06], [2752, 1152, 33.5, false, 0.08], [2560, 1080, 30, false, 0.1], [3440, 1440, 42.5, false, 0.09],
+    [3440, 1080, 37.5, false, 0.18], [3840, 1080, 42.5, false, 0.09], [3840, 1600, 47.5, false, 0.05], [3840, 2160, 47.5, false, 0.06],
+    [5120, 1440, 48, true, 0.25], [5120, 2160, 48, false, 0.15]];
+  for (const [W, H, T, beside, most] of MONITORS) {
+    const what = `${W}x${H}`;
+    const r = layout(W, H, 'touch', {});
+    checkResult(r, what);
+    if (!r.usable) { out.push(`${what}: unusable`); continue; }
+    const S = r.spec;
+    if (r.info.tier !== 'tablet') out.push(`${what}: tier ${r.info.tier}`);
+    if (S.fit.pad !== 58) out.push(`${what}: ${S.fit.pad} dp keys`);
+    if (!r.info.fill.whole) out.push(`${what}: not the whole level`);
+    if (Math.abs(r.info.T - T) > 1e-6) out.push(`${what}: cell ${r.info.T} (want ${T})`);
+    const panels = S.chrome.filter((c) => /^panel: (message log|inventory)/.test(c.name));
+    if (panels.length !== 2) out.push(`${what}: ${panels.length} panels`);
+    for (const q of panels) {
+      if (ov(q, S.mapArea)) out.push(`${what}: ${q.name.split(' (')[0]} on the map`);
+      for (const c of S.controls.filter((k) => !k.behind)) if (ov(q, c)) out.push(`${what}: ${q.name.split(' (')[0]} on ${c.id}`);
+    }
+    const m = S.mapArea;
+    const flanked = panels.length === 2 && panels.every((q) => q.y >= m.y - 0.01 && q.y < m.y + m.h && (q.x + q.w <= m.x - 11.99 || q.x >= m.x + m.w + 11.99));
+    if (flanked !== beside) out.push(`${what}: the panels ${flanked ? '' : 'not '}beside the level`);
+    // no strip wider than a panel beside the level unless the cell is at its cap
+    const strip = (S.glass.w - m.w) / 2;
+    if (strip >= 240 && r.info.T < 48 - 1e-6 && Math.abs(m.h - 21 * r.info.T) < 0.01 && r.info.G.kind === 'above') out.push(`${what}: ${strip} dp strips at ${r.info.T} dp`);
+    const v = voidShare(S);
+    if (v > most) out.push(`${what}: void ${(v * 100).toFixed(1)}% (at most ${most * 100}%)`);
+  }
+  // a tablet never reaches the cap, so its layout is as the design's (the golden screens hold
+  // 1024x768, 1180x820 and 1366x768); nor does a window that leaves no wide strip at 24 dp
+  for (const [W, H] of [[1024, 768], [1180, 820], [1366, 768], [1368, 912], [2000, 2000]]) {
+    const r = layout(W, H, 'touch', {});
+    if (r.info.T > 24) out.push(`${W}x${H}: cell ${r.info.T} past 24 dp`);
+  }
+  // A monitor turned to portrait shows no fewer of the level's columns than 24 dp would
+  // (its landscape cell, 31.5 dp at 1440x2560, showed 45 of 80 where 24 dp shows 60), and
+  // the whole level where its own glass is wide enough for it past 24 dp.
+  for (const [W, H, T] of [[1440, 2560, 24], [2160, 3840, 26.5], [1080, 1920, 23.5], [1200, 1920, 23.5]]) {
+    const r = layout(W, H, 'touch', {});
+    checkResult(r, `${W}x${H}`);
+    if (Math.abs(r.info.T - T) > 1e-6) out.push(`${W}x${H}: cell ${r.info.T} (want ${T})`);
+    const cols = r.info.fill.cols, at24 = Math.min(80, r.spec.mapArea.w / 24);
+    if (r.info.T > 24 && cols < at24 - 0.01) out.push(`${W}x${H}: ${cols} columns, fewer than 24 dp's ${at24}`);
+  }
+  assert.deepEqual(out, []);
+});
+
+// The monitor's cap rises with the width, not at once: dragging a window's edge never
+// grows or shrinks the level by more than the half-dp step a cell moves in.  The first cut
+// switched from 24 to 48 dp where the strips reached 240 dp, so 2406 and 2408 dp wide drew
+// the level at 24 and 30 dp, and moved the log (the reviews, 2026-10-03).  Windows at least
+// 700 dp tall, where no other rule changes the glass along a width (the glass ranking's own
+// steps lie under it); a square-ish window turned across portrait keeps within a step too.
+test("a monitor's window dragged wider or taller grows the level half a dp at a time", () => {
+  const out = [];
+  for (const H of [700, 900, 1080, 1200, 1440, 1600, 2160]) {
+    let prev = null;
+    for (let W = 1800; W <= 4000; W += 2) {
+      const r = layout(W, H, 'touch', {});
+      if (prev != null && Math.abs(r.info.T - prev) > 0.5 + 1e-6) out.push(`${W - 2} -> ${W}x${H}: ${prev} -> ${r.info.T}`);
+      prev = r.info.T;
+    }
+  }
+  for (const W of [1440, 2160, 2560, 3440]) {
+    let prev = null;
+    for (let H = W - 200; H <= W + 400; H += 2) {
+      const r = layout(W, H, 'touch', {});
+      if (prev != null && Math.abs(r.info.T - prev) > 0.5 + 1e-6) out.push(`${W}x${H - 2} -> ${H}: ${prev} -> ${r.info.T}`);
+      prev = r.info.T;
+    }
+  }
+  assert.deepEqual(out, []);
+});
+
 // ---- 5. the page imports the file as it is
 
 test('layout.js is a plain module: no imports, no DOM, no node', () => {

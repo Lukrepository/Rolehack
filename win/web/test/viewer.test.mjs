@@ -17,12 +17,16 @@
 //  3. a temporary window -- a short landscape one, a narrow portrait one, a
 //     split half -- never changes what a full window gets afterwards;
 //  4. what is learnt is learnt from the device's own windows: the landscape
-//     height only grows, and a window whose layout is unusable teaches nothing.
+//     height only grows, and a window whose layout is unusable teaches nothing;
+//  5. the size classes (phone under 600 dp wide or 480 tall, tablet
+//     otherwise) change only 24 dp past a boundary, the window's tier and the
+//     device cell's alike, so a window dragged across one never flickers
+//     between them, and a tier never moves a key.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { layout } from '../layout.js';
-import { budgetFor, budgetedLayout, worse } from '../viewer.js';
+import { budgetFor, budgetedLayout, worse, sizeClass, withClasses, classesOf, SIZE_W, SIZE_H, SIZE_BAND } from '../viewer.js';
 
 // the page's settings at its defaults (overlay.js rebuildTwin)
 const BASE = { padKey: 58, insets: { l: 0, r: 0, t: 0, b: 0 }, header: 'stacked' };
@@ -172,4 +176,111 @@ test('the landscape height is learnt from the device turned, and only grows', ()
   assert.equal(notch.learn.sl, 47);
   const p = budgetFor(390, 844, { w: 390, h: 844 }, null, notch.learn);
   assert.deepEqual(p.sideInsets, { l: 47, r: 47 });
+});
+
+// ---- 5. size classes
+
+test('a size class changes only 24 dp past its boundary, each way', () => {
+  assert.deepEqual([SIZE_W, SIZE_H, SIZE_BAND], [600, 480, 24]);
+  // with nothing drawn yet, the boundaries themselves
+  assert.equal(sizeClass(599, 800), 'phone');
+  assert.equal(sizeClass(600, 800), 'tablet');
+  assert.equal(sizeClass(1000, 479), 'phone');
+  assert.equal(sizeClass(1000, 480), 'tablet');
+  // a phone becomes a tablet at 624 wide and 504 tall; a tablet a phone under 576 or 456
+  const run = (from, sizes) => {
+    let t = from;
+    const changes = [];
+    for (const [W, H] of sizes) { const n = sizeClass(W, H, t); if (n !== t) changes.push(`${W}x${H} ${n}`); t = n; }
+    return changes;
+  };
+  const wide = (a, b, H) => Array.from({ length: Math.abs(b - a) + 1 }, (_, i) => [a + Math.sign(b - a) * i, H]);
+  const tall = (a, b, W) => Array.from({ length: Math.abs(b - a) + 1 }, (_, i) => [W, a + Math.sign(b - a) * i]);
+  assert.deepEqual(run('phone', wide(560, 640, 800)), ['624x800 tablet']);
+  assert.deepEqual(run('tablet', wide(640, 560, 800)), ['575x800 phone']);
+  assert.deepEqual(run('phone', tall(440, 520, 1000)), ['1000x504 tablet']);
+  assert.deepEqual(run('tablet', tall(520, 440, 1000)), ['1000x455 phone']);
+  // jitter about either boundary: no change at all
+  const jitter = (c, n) => Array.from({ length: n }, (_, i) => c + ((i % 2) ? 7 : -7));
+  assert.deepEqual(run('phone', jitter(600, 40).map((W) => [W, 800])), []);
+  assert.deepEqual(run('tablet', jitter(600, 40).map((W) => [W, 800])), []);
+  assert.deepEqual(run('tablet', jitter(480, 40).map((H) => [1000, H])), []);
+  // anything but a tier is no tier
+  assert.equal(sizeClass(590, 800, 'desk'), 'phone');
+  assert.equal(sizeClass(610, 800, 'nonsense'), 'tablet');
+});
+
+// The page's own loop: each layout given the tiers the last one drew
+// (overlay.js rebuildTwin), a window dragged a pixel at a time across a
+// boundary and back.  The window's tier, the device cell and the panels each
+// change once on the way out and once on the way back, at the band's edges,
+// and no key moves for any of it.
+test('a window dragged across a boundary changes tier once each way, and no key moves', () => {
+  const drag = (sizes) => {
+    let classes = null;
+    return sizes.map(([W, H]) => {
+      const r = layout(W, H, 'touch', withClasses(BASE, classes));
+      classes = classesOf(r, classes);
+      return { W, H, r, tier: r.info.tier, cellTier: r.info.DC.tier, whole: r.info.fill.whole, panels: r.spec.chrome.map((c) => c.name.split(' (')[0]).join(','), keys: JSON.stringify(rects(r)) };
+    });
+  };
+  const flips = (seq, k) => seq.filter((q, i) => i && q[k] !== seq[i - 1][k]).map((q) => `${q.W}x${q.H}`);
+  // the height of a desktop window, 1000 wide, from 520 down to 440 and back
+  const down = Array.from({ length: 81 }, (_, i) => [1000, 520 - i]), up = down.slice().reverse();
+  const seqH = drag([...down, ...up.slice(1)]);
+  assert.deepEqual(flips(seqH, 'tier'), ['1000x455', '1000x504']);
+  assert.deepEqual(flips(seqH, 'cellTier'), ['1000x455', '1000x504'], 'the device cell keeps its tier with the window');
+  assert.ok(flips(seqH, 'whole').every((w) => w === '1000x455' || w === '1000x504'), `the whole level comes and goes only with the tier: ${flips(seqH, 'whole')}`);
+  // (the panels over the banks come and go with their own room, 120 dp over
+  // a bank, at 503/504 here: a rule of space, crossed once each way)
+  for (const q of seqH) assert.equal(q.r.usable, true, `${q.W}x${q.H} usable`);
+  // without the tiers fed back, the same drag flips at 480 itself, every time it is crossed
+  const bare = [[1000, 481], [1000, 479], [1000, 481], [1000, 479]].map(([W, H]) => layout(W, H, 'touch', BASE));
+  assert.deepEqual(bare.map((r) => r.info.tier), ['tablet', 'phone', 'tablet', 'phone']);
+  const fed = drag([[1000, 481], [1000, 479], [1000, 481], [1000, 479]]);
+  assert.deepEqual(fed.map((q) => q.tier), ['tablet', 'tablet', 'tablet', 'tablet']);
+  // the width of a portrait window, 900 tall, from 640 down to 560 and back
+  const left = Array.from({ length: 81 }, (_, i) => [640 - i, 900]), right = left.slice().reverse();
+  const seqW = drag([...left, ...right.slice(1)]);
+  assert.deepEqual(flips(seqW, 'tier'), ['575x900', '624x900']);
+  assert.ok(flips(seqW, 'panels').every((w) => w === '575x900' || w === '624x900'), `panels change only with the tier: ${flips(seqW, 'panels')}`);
+  // a tier moves no key: the same window laid out as either tier has the same banks
+  for (const [W, H] of [[590, 900], [610, 900], [1000, 470], [1000, 490], [580, 470]]) {
+    const asPhone = layout(W, H, 'touch', withClasses(BASE, { tier: 'phone', cellTier: 'phone' }));
+    const asTablet = layout(W, H, 'touch', withClasses(BASE, { tier: 'tablet', cellTier: 'tablet' }));
+    assert.deepEqual(rects(asPhone), rects(asTablet), `${W}x${H}: the keys are the tier's own`);
+  }
+});
+
+test('the tiers kept are a drawn layout\'s: a fallback to classic keeps the last ones', () => {
+  const tab = layout(1024, 768, 'touch', BASE);
+  const kept = classesOf(tab, null);
+  assert.deepEqual(kept, { tier: 'tablet', cellTier: 'tablet' });
+  const split = layout(443, 460, 'touch', BASE);
+  assert.equal(split.usable, false);
+  assert.deepEqual(classesOf(split, kept), kept, 'an unusable result is not drawn, so its tiers are not kept');
+  assert.equal(classesOf(null, kept), kept);
+  assert.deepEqual(withClasses({ padKey: 52 }, null), { padKey: 52, prevTier: null, prevCellTier: null });
+  // a phone's device cell is decided at its landscape geometry, whichever way it is held
+  const p = layout(443, 939, 'touch', BASE);
+  assert.deepEqual(classesOf(p), { tier: 'phone', cellTier: 'phone' });
+  // a portrait window on a tablet-sized device: a phone window, the device's cell a tablet's
+  assert.deepEqual(classesOf(layout(560, 900, 'touch', BASE)), { tier: 'phone', cellTier: 'tablet' });
+});
+
+// Desktop mode is deferred (Lucas, 2026-10-03): the page lays out a window
+// with a mouse as for touch, so a large one gets the tablet tier -- phone-size
+// banks at its corners, the whole level, the log and the inventory -- and
+// never the desk's dock.
+test('a large window laid out as the page lays it out (touch) is a tablet, never the desk', () => {
+  for (const [W, H] of [[1280, 800], [1920, 1080], [2560, 1440], [3440, 1440], [1366, 768]]) {
+    const r = budgetedLayout(W, H, 'touch', withClasses(BASE, null), { w: W, h: H }, { l: 0, r: 0 }, {}).r;
+    assert.equal(r.usable, true, `${W}x${H}`);
+    assert.equal(r.info.tier, 'tablet', `${W}x${H}`);
+    assert.equal(r.spec.pointer, 'touch');
+    assert.equal(r.spec.fit.pad, 58, `${W}x${H}: phone-size keys`);
+    assert.equal(r.info.fill.whole, true, `${W}x${H}: the whole level`);
+    const kinds = r.spec.chrome.map((c) => c.name.split(' (')[0]);
+    assert.ok(kinds.includes('panel: message log') && kinds.includes('panel: inventory'), `${W}x${H}: ${kinds}`);
+  }
 });

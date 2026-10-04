@@ -47,6 +47,20 @@ and it imports every `*.test.mjs` here. Naming the files also works:
   messages over the status, no band stands beside another or over the banks,
   and a window whose header is stacked in the glass anyway lays out as it does
   by default;
+- a monitor's window, which the page lays out as a tablet while desktop mode
+  is deferred, shows the whole level with its panels clear of every key and of
+  the map. Where a 24 dp cell would leave strips wider than a panel beside the
+  level, the cell grows up to 48 dp (2560x1440: 31.5 dp, 3440x1440: 42.5 dp).
+  Where the level is still narrower than the column between the banks by a
+  panel a side (32:9, 5120x1440), the log and the inventory stand beside it.
+  The void (no key, map, band or panel) stays within each window's figure,
+  under the 21.8% of today's classic page at 1920x1080 everywhere except
+  5120x1440 (25%). A tablet never reaches 24 dp, so its layout is the design's.
+  A monitor turned to portrait shows no fewer of the level's columns than
+  24 dp would (1440x2560: 24 dp, 60 columns);
+- the cell grows with a monitor's window, not at once: dragged a pixel at a
+  time wider or taller, a window's cell never moves by more than half a dp
+  (the first cut jumped from 24 to 30 dp between 2406 and 2408 dp wide);
 - `layout.js` stays a plain module, with no imports, no DOM and nothing from node.
 
 `viewer.test.mjs` checks the remembered budget (`viewer.js`) with the rule
@@ -63,7 +77,16 @@ itself, as the page uses them:
   portrait one, a split half, the split screen) changes nothing for the full
   windows after it: not a key, not the map cell, not the stored budget;
 - a desktop window teaches nothing, and the landscape height is learnt from
-  the device turned and only grows.
+  the device turned and only grows;
+- the size classes (phone under 600 dp wide or 480 dp tall, tablet otherwise)
+  change only 24 dp past a boundary, each way. A window dragged a pixel at a
+  time across one and back changes its tier, the device cell's tier, the whole
+  level and the panels once each way, at the band's edges, and jittered about a
+  boundary it never changes. No key moves for a tier. A fallback to classic
+  keeps the tiers last drawn;
+- a large window laid out as the page lays it out (as for touch: desktop mode
+  is deferred) is a tablet, with phone-size keys, the whole level, the log and
+  the inventory, never the desk.
 
 ## Where the fixtures come from
 

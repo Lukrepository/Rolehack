@@ -28,6 +28,7 @@ const COLORS = ['#777f81', '#ff6267', '#1a9b54', '#cc5b10', '#2c51ff', '#9c2d8b'
                 '#34aeff', '#f364c9', '#4ee6fc', '#f8fcf6'];
 const MG_PET = 0x10;
 const MENU_ITEMFLAGS_SELECTED = 1;
+const MENU_BEHAVE_PERMINV = 1;   // wintype.h
 const ATR = { BOLD: 1, DIM: 2, ULINE: 4, BLINK: 5, INVERSE: 7 };
 // RhStatus's conditions: short name and severity (2 deadly, 1 impairing, 0 movement)
 const CONDITIONS = {
@@ -263,8 +264,10 @@ function layoutGlass(g) {
   if (g.twin) { layoutTwinGlass(g); return; }
   const gl = $('glass'), bands = $('bands'), s = g.s, r = g.glass;
   // what twin banks set and classic does not (layoutTwinGlass): the bands back
-  // in the glass, in their place before the tube, and each band's own rect
+  // in the glass, in their place before the tube, and each band's own rect;
+  // no panels
   untwinBands();
+  hidePanels();
   $('map').style.left = $('map').style.top = '';
   const box = g.caseless ? { x: 0, y: 0, w: g.W, h: g.H } : r;
   Object.assign(gl.style, { left: `${box.x}px`, top: `${box.y}px`, width: `${box.w}px`, height: `${box.h}px`,
@@ -387,6 +390,7 @@ function layoutTwinGlass(g) {
   cv.style.width = `${cv.width / dpr}px`;
   cv.style.height = `${cv.height / dpr}px`;
   view.area = { x: 0, y: 0, w: cv.width / dpr, h: cv.height / dpr };
+  layoutPanels(g, gx, gy);
   placeChips();
   render();
 }
@@ -438,6 +442,263 @@ function untwinBands() {
 function sizeChips() {
   const c = $('chips');
   c.classList.toggle('scroll', !!(geom && geom.twin) && c.scrollHeight > c.clientHeight + 1);
+}
+
+/* ---------- twin banks: the panels, the message log and the inventory ---------- */
+
+// What the level does not need of the window becomes panels (the design's
+// sections 4, 10 and 11): on a tablet, a touch laptop or any large window --
+// a mouse's too, desktop mode being deferred (Lucas, 2026-10-03) -- the
+// message log and the inventory, in the tray between the banks, in the glass
+// under the map, or beside the map on a window much wider than the level; and
+// on a phone in portrait, a log in the glass under the map.  layout.js places
+// them off the map and 12 dp clear of every key, so they cover neither, and
+// they are copies: MSGS and INVENTORY stay in their banks, and no key moves
+// for a panel.
+//  - The log is the history (^P's), newest last, in the band's own face a
+//    step smaller.  A tablet's shows all of it, the band's page bright at its
+//    end; a phone's, two or three lines under the map, shows what comes
+//    before the band's first message, so no line stands twice on a small
+//    screen.  It keeps to its newest line unless the player has scrolled
+//    back.  A tap opens the whole history, as a tap on the band does.
+//  - The inventory is the core's permanent inventory (perm_invent), which the
+//    core sends whenever the inventory changes (winshim.c
+//    shim_update_inventory, repopulate_perminvent) as a menu on WIN_INVEN to
+//    pick nothing from: taken here, never opened as a window
+//    (shim_select_menu).  perm_invent is on for a game the page starts in
+//    twin banks (start()); classic plays as it always has, and a game begun
+//    in classic and switched shows its inventory from the page's next start.
+//    A tap opens the inventory ('i') while the game waits for a command.
+//    Where the panel has room for two columns of an item's line (a monitor's
+//    tray) the pack fills columns, so it shows whole rather than scroll.
+// A panel inside the glass (under the map, beside it) is part of it, under
+// its tube, as the bands are; outside (the tray, over the banks) it is a pane
+// of glass of its own, in #panes, as the bands are over the banks.  At
+// --More-- a tap on either is Space, as on all the glass.
+const panels = new Map();   // kind ('log', 'inventory') -> { el, body, title, kind, beyond, sig, follow, fy, fx, geo }
+const PANEL_TEXT = 0.85;    // of the band's text size
+// this page's game has perm_invent on: twin banks when the page started
+// (start() sends it to the core).  Known from the first layout, which comes
+// before start(): a fresh page's inventory once said "this game began in
+// classic" behind the name prompt (the review, 2026-10-03).
+let permInvent = P.get('layout') !== 'classic';
+let invMenu = null;         // the permanent inventory as the core last sent it: { items, n }
+
+function panelOf(kind) {
+  let p = panels.get(kind);
+  if (p) return p;
+  const el = document.createElement('div');
+  el.className = 'rhpanel';
+  el.dataset.kind = kind;
+  const title = document.createElement('div');
+  title.className = 'ptitle';
+  title.textContent = kind === 'log' ? 'Messages' : 'Inventory';
+  const body = document.createElement('div');
+  body.className = 'pbody';
+  el.append(title, body);
+  // follow: the log keeps to its newest line; top: the line or item at the
+  // top of a panel scrolled back, and how far into it; fx: how far across a
+  // wide inventory's columns, as a share.  Only the player's own scrolling
+  // changes them (notePlace), never a move or a resize: a rotation moves the
+  // log between the glass and the tray, which put it back at its oldest line,
+  // and a new width re-wraps it, which left it short of its end, so it stopped
+  // following (the review, 2026-10-03).  geo: what layoutPanels last gave it,
+  // so its place is put back only when that changes.
+  p = { el, body, title, kind, beyond: false, sig: '', follow: true, top: null, fx: 0, geo: '' };
+  body.addEventListener('scroll', () => notePlace(p), { passive: true });
+  panelTaps(p, kind);
+  panels.set(kind, p);
+  return p;
+}
+
+function notePlace(p) {
+  if (!panelShown(p) || !p.body.clientHeight) return;   // no box, no place to note
+  const b = p.body, my = b.scrollHeight - b.clientHeight, mx = b.scrollWidth - b.clientWidth;
+  p.follow = b.scrollTop >= my - 4;
+  p.top = null;
+  if (my > 0 && b.scrollTop > 0) {
+    // the first line or item not wholly above the top: found by halves,
+    // as they stand in order down the panel (a wide one does not scroll down)
+    const list = panelItems(b);
+    let lo = 0, hi = list.length - 1;
+    while (lo < hi) { const mid = (lo + hi) >> 1; if (itemY(b, list[mid]) + list[mid].offsetHeight <= b.scrollTop) lo = mid + 1; else hi = mid; }
+    if (list[lo]) p.top = { i: lo, off: b.scrollTop - itemY(b, list[lo]) };
+  }
+  p.fx = mx > 0 ? Math.min(1, b.scrollLeft / mx) : 0;
+  // a wide inventory's columns that run on past its right edge: its edge fades
+  if ('wide' in p.el.dataset && b.scrollLeft < mx - 2) p.el.dataset.more = ''; else delete p.el.dataset.more;
+}
+
+// a panel's lines (the log) or headings and items (the inventory, in .pcols),
+// and where one stands in what scrolls
+const panelItems = (b) => (b.firstElementChild && b.firstElementChild.classList.contains('pcols') ? b.firstElementChild : b).children;
+const itemY = (b, e) => e.getBoundingClientRect().top - b.getBoundingClientRect().top - b.clientTop + b.scrollTop;
+
+// The place noted, put back on a panel moved, resized or shown again: the
+// log's end while it follows it, else the same line or item at the top
+// (a new width re-wraps those above, so no offset or share of the height
+// keeps it), and the same share across a wide inventory's columns.
+function putPlace(p) {
+  const b = p.body, my = b.scrollHeight - b.clientHeight, mx = b.scrollWidth - b.clientWidth;
+  const at = p.top && panelItems(b)[p.top.i];
+  if (p.kind === 'log' && p.follow) b.scrollTop = Math.max(0, my);
+  else if (at) b.scrollTop = Math.round(itemY(b, at) + Math.min(p.top.off, at.offsetHeight));
+  else if (!p.top) b.scrollTop = 0;
+  b.scrollLeft = Math.round(p.fx * Math.max(0, mx));
+  notePlace(p);
+}
+
+// the layer for panes out of the glass: over the case, under the keys
+function panesLayer() {
+  let l = $('panes');
+  if (!l) {
+    l = document.createElement('div');
+    l.id = 'panes';
+    $('app').insertBefore(l, $('keys'));
+  }
+  return l;
+}
+
+function layoutPanels(g, gx, gy) {
+  const want = new Set(), r = g.glass, tube = $('tube'), dpr = window.devicePixelRatio || 1;
+  const up = (v) => Math.ceil(v * dpr - 1e-6) / dpr, down = (v) => Math.floor(v * dpr + 1e-6) / dpr;
+  const face = P.get('msgFont') === 'screen' ? 'var(--screenfont)' : 'var(--msgfont)';
+  const textPx = Math.max(12, Math.round(msgTextPx() * PANEL_TEXT * 2) / 2);
+  for (const q of g.panels || []) {
+    if (want.has(q.kind)) continue;
+    want.add(q.kind);
+    const p = panelOf(q.kind);
+    const inGlass = q.x >= r.x - 0.5 && q.y >= r.y - 0.5 && q.x + q.w <= r.x + r.w + 0.5 && q.y + q.h <= r.y + r.h + 0.5;
+    // moved only when it must be (a node moved loses its scroll): into the
+    // glass anywhere before its tube -- two panels there, beside the level,
+    // once swapped places at every rebuild -- or out of it into #panes
+    let moved = false;
+    if (inGlass) {
+      if (p.el.parentNode !== $('glass') || !(p.el.compareDocumentPosition(tube) & Node.DOCUMENT_POSITION_FOLLOWING)) { $('glass').insertBefore(p.el, tube); moved = true; }
+      delete p.el.dataset.pane;
+    } else {
+      if (p.el.parentNode !== panesLayer()) { panesLayer().appendChild(p.el); moved = true; }
+      p.el.dataset.pane = '';
+    }
+    // its edges on device pixels, each moved inward to the next one, so it
+    // never reaches into a halo, the map or a band beside it, as the canvas
+    const ox = inGlass ? gx : 0, oy = inGlass ? gy : 0, x = up(q.x), y = up(q.y);
+    Object.assign(p.el.style, { left: `${x - ox}px`, top: `${y - oy}px`, width: `${down(q.x + q.w) - x}px`,
+                                height: `${down(q.y + q.h) - y}px`, display: '', fontFamily: face, fontSize: `${textPx}px` });
+    p.beyond = !!q.beyond;
+    // a name over a panel tall enough to spare it; a phone's two or three lines are plainly the log
+    p.title.hidden = q.h < 120;
+    // the inventory in columns where two fit, each as wide as an item's line
+    // ("an uncursed +0 pair of hard shoes (being worn)": 26em, rolehack.css)
+    const inner = down(q.x + q.w) - x - 20;
+    const wide = q.kind === 'inventory' && inner + 18 >= 2 * (26 * textPx + 18);
+    if (wide) p.el.dataset.wide = ''; else delete p.el.dataset.wide;
+    // The content stays: nothing in it depends on where the panel is or its
+    // size (the face and size are the panel's own style), and redrawn at every
+    // rebuild it made a drag of a window's edge half as slow again, 256 lines
+    // and the pack each time (the review, 2026-10-03).  Its place is put back.
+    const geo = `${inGlass} ${x} ${y} ${p.el.style.width} ${p.el.style.height} ${face} ${textPx} ${wide}`;
+    if (moved || geo !== p.geo) { p.geo = geo; putPlace(p); }
+  }
+  for (const [kind, p] of panels) if (!want.has(kind)) hidePanel(p);
+}
+
+function hidePanel(p) { p.el.style.display = 'none'; p.geo = ''; }
+function hidePanels() { for (const p of panels.values()) hidePanel(p); }
+
+const panelShown = (p) => !!p && p.el.style.display !== 'none' && !!p.el.parentNode;
+function renderPanels() {
+  if (!(geom && geom.twin)) return;
+  const log = panels.get('log'), inv = panels.get('inventory');
+  if (panelShown(log)) renderLog(log);
+  if (panelShown(inv)) renderInventory(inv);
+}
+
+// a panel's body redrawn; the log keeps to its end while it follows it, and
+// a panel scrolled back keeps its place
+function fillPanel(p, html, toEnd) {
+  const b = p.body, top = b.scrollTop, left = b.scrollLeft;
+  b.innerHTML = html;
+  b.scrollTop = toEnd && p.follow ? b.scrollHeight : top;
+  b.scrollLeft = left;
+  notePlace(p);
+}
+
+function renderLog(p) {
+  const first = histSeq - history.length;
+  const upto = p.beyond ? Math.min(bandFrom, histSeq) : histSeq;
+  const n = Math.max(0, Math.min(history.length, upto - first));
+  // the band's own page, while it is new, is bright at the log's end (a tablet's)
+  let fresh = Infinity;
+  if (pageFresh) for (const e of page) if (e.seq >= 0) { fresh = e.seq; break; }
+  const sig = `${first} ${n} ${p.beyond ? 'beyond' : fresh}`;
+  if (sig === p.sig) return;
+  p.sig = sig;
+  fillPanel(p, history.slice(0, n).map((t, i) => `<div class="pl${first + i >= fresh ? ' new' : ''}">${esc(t)}</div>`).join(''), true);
+}
+
+function renderInventory(p) {
+  const pictures = !!sheet && P.get('mapMode') !== 'text';
+  const sig = `${permInvent} ${invMenu ? invMenu.n : -1} ${pictures} ${P.get('phosphor')} ${P.get('colourVision')}`;
+  if (sig === p.sig) return;
+  p.sig = sig;
+  if (!permInvent) {
+    fillPanel(p, '<div class="pnote">The inventory shows here from the next start of the page: this game began in classic.</div>', false);
+    return;
+  }
+  const items = invMenu ? invMenu.items : [];
+  const pics = pictures && items.some((i) => i.selectable && i.tile >= 0);
+  // in columns as wide as an item's line where the panel is wide
+  // (layoutPanels), so a monitor's 1500 dp tray shows the whole pack, not a
+  // strip down its left edge that scrolls
+  fillPanel(p, `<div class="pcols">${items.map((it) => (it.selectable
+    ? `<div class="pi"><span class="let">${esc(String.fromCharCode(it.ch))}</span>${pics ? (it.tile >= 0 ? tilePic(it.tile, 16, 'cpic') : '<span class="cpic none"></span>') : ''}`
+      + `<span${tint(it.clr)}>${attrText(it.text, it.attr)}</span></div>`
+    : `<div class="ph"${tint(it.clr)}>${attrText(it.text, it.attr) || ' '}</div>`)).join('')}</div>`, false);
+}
+
+// The core's permanent inventory: a menu on WIN_INVEN that picks nothing,
+// sent whenever the inventory changes.  Kept for the panel, and answered at
+// once (nothing picked); never shown as a window.
+function takePermInventory(win, how, listPtr) {
+  const w = wins.get(win);
+  if (!(permInvent && w && w.menu && w.menu.perm && how === 0 && win === G.WIN_INVEN)) return false;
+  invMenu = { items: w.menu.items, n: (invMenu ? invMenu.n : 0) + 1 };
+  M.setValue(listPtr, 0, '*');
+  renderPanels();
+  return true;
+}
+
+// A tap on a panel (a drag scrolls it): Space at --More--; else the log opens
+// the history, as the band does, and the inventory the inventory, while the
+// game waits for a command with no layer up and nothing armed.  Never while a
+// question waits on the band or the pad, where a key would be its answer.
+function panelTaps(p, kind) {
+  let down = null;
+  // A wide inventory's pack runs on in columns to the right, and Chrome turns
+  // a mouse's wheel into a sideways scroll only with Shift: the wheel, turned
+  // as for a list, moves along the columns (the reviews, 2026-10-03).
+  p.body.addEventListener('wheel', (e) => {
+    const b = p.body, mx = b.scrollWidth - b.clientWidth;
+    if (!('wide' in p.el.dataset) || mx <= 0 || e.ctrlKey || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    const d = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * b.clientWidth : e.deltaY;
+    const to = Math.max(0, Math.min(mx, b.scrollLeft + d));
+    if (Math.abs(to - b.scrollLeft) < 0.5) return;
+    b.scrollLeft = to;
+    e.preventDefault();
+  }, { passive: false });
+  p.el.addEventListener('pointerdown', (e) => { down = { id: e.pointerId, x: e.clientX, y: e.clientY, top: p.body.scrollTop, left: p.body.scrollLeft }; });
+  p.el.addEventListener('pointercancel', () => { down = null; });
+  p.el.addEventListener('pointerup', (e) => {
+    const d = down;
+    down = null;
+    if (!d || d.id !== e.pointerId || !(geom && geom.twin)) return;
+    if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10 || Math.abs(p.body.scrollTop - d.top) > 2 || Math.abs(p.body.scrollLeft - d.left) > 2) return;
+    if (moreShown) { push({ key: 32 }); return; }
+    if (page.some((q) => q.ask) || (overlay && overlay.answering)) return;
+    if (kind === 'log') send('^P');
+    else if (commandWait && !(overlay && (overlay.layerUp() || overlay.armed))) send('i');
+  });
 }
 
 // The canvas's store and the drawn cell are in device pixels, and
@@ -846,9 +1107,11 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
   // (the design's section 6; the review, 2026-10-02); elsewhere it does
   // nothing, as before.  The map and the message band answer for themselves.
   // The status band answers for itself, wherever the layout put it: in the
-  // glass, or over the banks, where no glass lies under it.
+  // glass, or over the banks, where no glass lies under it; and so do the
+  // panels, in the glass or out of it (panelTaps).
   const gl = $('glass'), sb = $('statband');
-  const own = (e) => e.target !== cv && !$('msgband').contains(e.target) && !sb.contains(e.target) && !e.target.closest('button');
+  const own = (e) => e.target !== cv && !$('msgband').contains(e.target) && !sb.contains(e.target) && !e.target.closest('button')
+    && !e.target.closest('.rhpanel');
   let glassDown = null, statDown = null;
   gl.addEventListener('pointerdown', (e) => { glassDown = own(e) ? e.pointerId : null; });
   gl.addEventListener('pointerup', (e) => {
@@ -884,6 +1147,7 @@ let newPage = true;       // the next message starts a page
 let scrollRow = 0;        // a message longer than the band: the first page row shown
 let msgStop = false;      // Esc at --More--
 let lastHidden = 0;       // with the pause off, how many messages went by unshown
+let bandFrom = 0;         // twin banks: the number (histSeq) of the first message the band shows
 let measureCx = null;
 
 function bandMetrics() {
@@ -1011,6 +1275,9 @@ function renderBands() {
     }
     lastHidden = k;
   }
+  // the first message the band shows: twin banks' log under it ends there
+  const log = panels.get('log');
+  if (geom && geom.twin && panelShown(log) && log.beyond) bandFrom = pageSeqFrom(pausing() ? entryAtRow(scrollRow, m) : lastHidden);
   let html = rows.map((r) => `<div class="r${pageFresh ? '' : ' old'}">${r.ask ? `<span class="ask">${esc(r.t)}</span>` : esc(r.t)}</div>`).join('');
   const at = `right:${10 * s}px;bottom:${4 * s}px`;
   if (moreShown) html += `<span class="slot moreprompt" style="${at}">--More--</span>`;
@@ -1019,6 +1286,22 @@ function renderBands() {
   if (overlay) overlay.setMore(moreShown ? 1 : lastHidden);
   $('statband').innerHTML = statusHtml();
   fitStatus();
+  renderPanels();
+}
+
+// the page entry whose rows hold the band's row r, and the number of the
+// first message from page entry i on (a question is none until answered)
+function entryAtRow(r, m) {
+  let n = 0;
+  for (let i = 0; i < page.length; i++) {
+    n += wrapRows(page[i].text, n, m).length;
+    if (n > r) return i;
+  }
+  return page.length;
+}
+function pageSeqFrom(i) {
+  for (let j = i; j < page.length; j++) if (page[j].seq >= 0) return page[j].seq;
+  return histSeq;
 }
 
 function startPage() { page.length = 0; scrollRow = 0; newPage = false; }
@@ -1069,16 +1352,22 @@ async function moreToEnd() {
   }
 }
 
-// 256 messages, as the phone's log keeps (ForkFront's NHW_Message)
+// 256 messages, as the phone's log keeps (ForkFront's NHW_Message).  Each
+// is numbered as it comes (histSeq counts them all, so history[i] is message
+// histSeq - history.length + i), and a page's entry keeps its number: twin
+// banks' message log under the band shows the history up to the first
+// message the band shows (layoutPanels).
 const HISTORY_MAX = 256;
+let histSeq = 0;
 function remember(text) {
   history.push(text);
   if (history.length > HISTORY_MAX) history.splice(0, history.length - HISTORY_MAX);
+  return histSeq++;
 }
 
 // A message from the game (putstr to the message window).
 async function putMessage(text, attr = 0) {
-  if (!(attr & ATR_NOHISTORY)) remember(text);
+  const seq = attr & ATR_NOHISTORY ? -1 : remember(text);
   if (msgStop && ((attr & ATR_URGENT) || /^You die/.test(text))) { msgStop = false; newPage = true; }
   if (msgStop) return;
   if (newPage) startPage();
@@ -1097,7 +1386,7 @@ async function putMessage(text, attr = 0) {
       again();
     }
   }
-  page.push({ text });
+  page.push({ text, seq });
   if (page.length > 50) page.shift();
   pageFresh = true;
   unread = true;
@@ -1120,9 +1409,9 @@ async function putMessage(text, attr = 0) {
 
 // A line that never waits: the interface's own notes, raw_print, an answered question.
 function addMessage(text) {
-  remember(text);
+  const seq = remember(text);
   if (newPage) startPage();
-  page.push({ text });
+  page.push({ text, seq });
   if (page.length > 50) page.shift();
   pageFresh = true;
 }
@@ -1906,9 +2195,10 @@ const handlers = {
     if (w.type === K.WIN_TYPE.NHW_MESSAGE) await putMessage(str, attr);
     else w.lines.push({ attr, text: str });
   },
-  shim_start_menu(win) {
+  shim_start_menu(win, mbehavior) {
     const w = wins.get(win);
-    if (w) w.menu = { items: [], prompt: '' };
+    // perm: the permanent inventory's (MENU_BEHAVE_PERMINV), for the panel
+    if (w) w.menu = { items: [], prompt: '', perm: !!(mbehavior & MENU_BEHAVE_PERMINV) };
   },
   shim_add_menu(win, glyphinfo, identifier, ch, gch, attr, clr, str, itemflags) {
     const w = wins.get(win);
@@ -1927,7 +2217,7 @@ const handlers = {
     const w = wins.get(win);
     if (w && w.menu) w.menu.prompt = prompt || '';
   },
-  shim_select_menu(win, how, listPtr) { return selectMenu(win, how, listPtr); },
+  shim_select_menu(win, how, listPtr) { return takePermInventory(win, how, listPtr) ? 0 : selectMenu(win, how, listPtr); },
   shim_message_menu(let_, how, mesg) { addMessage(mesg); return 0; },
   shim_mark_synch() { render(); },
   shim_wait_synch() { render(); },
@@ -2053,7 +2343,7 @@ const handlers = {
   shim_get_color_string() { return ''; },
   shim_preference_update() {},
   shim_getmsghistory() { return ''; },   // '' comes back to C as NULL
-  shim_putmsghistory(msg) { if (msg) history.push(msg); },
+  shim_putmsghistory(msg) { if (msg) { history.push(msg); histSeq++; } },
   shim_status_update(fldidx, ptr, chg, percent, color, colormasks) {
     const name = K.STATUS_FIELD[fldidx];
     if (name === 'BL_FLUSH' || name === 'BL_RESET') { render(); return; }
@@ -2230,9 +2520,19 @@ async function start() {
       // a generic user name (sysconf GENERICUSERS), so the game asks "Who are
       // you?" instead of calling everyone web_user
       mod.ENV.USER = 'player';
-      // libnh's sysconf turns perm_invent on, which needs a side panel this
-      // page doesn't have yet; without one every inventory change pops up
-      mod.ENV.NETHACKOPTIONS = '!perm_invent,time';
+      // libnh's sysconf turns perm_invent on, which needs a side panel:
+      // without one every inventory change would pop up.  Twin banks have
+      // one, the inventory panel (layoutPanels), and take the core's updates
+      // for it without a window (takePermInventory), on every tier, so a
+      // window that grows into a tablet's has the inventory to show.  Only
+      // for twin banks, as the paranoid_confirmation line, so classic plays
+      // as it always has; perm_invent is not saved with a game, so a switch
+      // of the layout reaches it at the page's next start.  Its mode 'full'
+      // includes gold (src/options.c perminv_modes), so the panel is the
+      // INVENTORY key's list, Coins first; the default, 'all', left gold out
+      // (the review, 2026-10-03).
+      permInvent = P.get('layout') !== 'classic';
+      mod.ENV.NETHACKOPTIONS = permInvent ? 'perm_invent,perminv_mode:full,time' : '!perm_invent,time';
       mod.FS.mkdir('/save');
       mod.FS.mount(mod.IDBFS, {}, '/save');
       mod.addRunDependency('syncfs');
