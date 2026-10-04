@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="864" height="464" viewBox="-10 -64 864 464" font-family="Helvetica,Arial,sans-serif">
+<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#f6d5d5"/><line x1="0" y1="0" x2="0" y2="8" stroke="#d98c8c" stroke-width="3"/></pattern><clipPath id="scr"><rect x="0" y="0" width="844" height="390"/></clipPath></defs>
+<rect x="-10" y="-64" width="864" height="464" fill="#ffffff"/>
+<text x="0" y="-48" font-size="14" font-weight="bold" fill="#222">v2 (guarded twin banks) · 844x390 · touch</text>
+<text x="0" y="-31" font-size="11" fill="#444">map 454.0×269.3 dp (37.1%), text cells 37.8×14.2 of 80×21 · void 7.1% (hatched) · smallest pad 58.0 dp, other 44.0 dp</text>
+<text x="0" y="-15" font-size="10" fill="#666">blue = left thumb, orange = right (darker = pad) · red outline = flagged · dashed purple = pop-up · dashed grey = case decor · arcs 15 / 60 / 75 mm from each thumb corner</text>
+<rect x="0" y="0" width="844" height="390" fill="#fafafa" stroke="#222" stroke-width="1.5"/>
+<rect x="0" y="0" width="844" height="4" fill="url(#hatch)" opacity="0.8"/>
+<rect x="0" y="4" width="202" height="42" fill="url(#hatch)" opacity="0.8"/>
+<rect x="656" y="4" width="188" height="42" fill="url(#hatch)" opacity="0.8"/>
+<rect x="202" y="64.71" width="454" height="2" fill="url(#hatch)" opacity="0.8"/>
+<rect x="202" y="114.71" width="454" height="2" fill="url(#hatch)" opacity="0.8"/>
+<rect x="202" y="386" width="454" height="4" fill="url(#hatch)" opacity="0.8"/>
+<rect x="0" y="46" width="202" height="344" fill="none" stroke="#b9b9b9" stroke-dasharray="3 3"><title>left bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond) (decor)</title></rect>
+<rect x="656" y="46" width="188" height="344" fill="none" stroke="#b9b9b9" stroke-dasharray="3 3"><title>right bank well + guard halo (12 dp: snaps within 8 dp, swallows beyond) (decor)</title></rect>
+<rect x="202" y="116.71" width="20" height="265.29" fill="none" stroke="#b9b9b9" stroke-dasharray="3 3"><title>confirm ring (when a tap would travel: a map tap here previews; a second tap walks) (decor)</title></rect>
+<rect x="636" y="116.71" width="20" height="265.29" fill="none" stroke="#b9b9b9" stroke-dasharray="3 3"><title>confirm ring (when a tap would travel: a map tap here previews; a second tap walks) (decor)</title></rect>
+<rect x="202" y="116.71" width="454" height="269.29" fill="#d8efd9" stroke="#3f8f46"/>
+<text x="429" y="251.35500000000002" font-size="15.133333333333333" fill="#2e6b33" text-anchor="middle">map area 454.0×269.3 dp · 37.1%</text>
+<rect x="202" y="4" width="454" height="60.71" fill="#dce8f7" stroke="#6c8ebf" opacity="0.9"/>
+<text x="206" y="16" font-size="10" fill="#3d5f8f">messages (2 rows; MORE lamp at the right end)</text>
+<rect x="202" y="66.71" width="454" height="48" fill="#dce8f7" stroke="#6c8ebf" opacity="0.9"/>
+<text x="206" y="78.71" font-size="10" fill="#3d5f8f">status (3 lines)</text>
+<rect x="200" y="2" width="458" height="386" fill="none" stroke="#1f3f7a" stroke-width="1.5"/>
+<g clip-path="url(#scr)" opacity="0.55">
+<line x1="422" y1="0" x2="422" y2="390" stroke="#777" stroke-dasharray="6 4" stroke-width="0.8"/>
+<path d="M 94.48818897637796 390 A 94.48818897637796 94.48818897637796 0 0 0 0 295.51181102362204" fill="none" stroke="#e59866" stroke-width="1"/>
+<path d="M 749.511811023622 390 A 94.48818897637796 94.48818897637796 0 0 1 844 295.51181102362204" fill="none" stroke="#e59866" stroke-width="1"/>
+<path d="M 377.9527559055118 390 A 377.9527559055118 377.9527559055118 0 0 0 0 12.047244094488178" fill="none" stroke="#58a55c" stroke-width="1"/>
+<path d="M 466.0472440944882 390 A 377.9527559055118 377.9527559055118 0 0 1 844 12.047244094488178" fill="none" stroke="#58a55c" stroke-width="1"/>
+<path d="M 472.4409448818898 390 A 472.4409448818898 472.4409448818898 0 0 0 0 -82.44094488188978" fill="none" stroke="#58a55c" stroke-width="1" stroke-dasharray="5 4"/>
+<path d="M 371.5590551181102 390 A 472.4409448818898 472.4409448818898 0 0 1 844 -82.44094488188978" fill="none" stroke="#58a55c" stroke-width="1" stroke-dasharray="5 4"/>
+</g>
+<rect x="8" y="324" width="58" height="58" rx="3" fill="#a9cbee" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>pad_b: ↙ b · 58×58 dp · thumb L (spec) · pad</title></rect>
+<text x="37" y="356.85" font-size="11" fill="#1c1c1c" text-anchor="middle">pad ↙ b</text>
+<text x="37" y="379" font-size="7" fill="#555" text-anchor="middle">58×58</text>
+<rect x="70" y="324" width="58" height="58" rx="3" fill="#a9cbee" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>pad_j: ↓ j · 58×58 dp · thumb L (spec) · pad</title></rect>
+<text x="99" y="356.85" font-size="11" fill="#1c1c1c" text-anchor="middle">pad ↓ j</text>
+<text x="99" y="379" font-size="7" fill="#555" text-anchor="middle">58×58</text>
+<rect x="132" y="324" width="58" height="58" rx="3" fill="#a9cbee" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>pad_n: ↘ n · 58×58 dp · thumb L (spec) · pad</title></rect>
+<text x="161" y="356.85" font-size="11" fill="#1c1c1c" text-anchor="middle">pad ↘ n</text>
+<text x="161" y="379" font-size="7" fill="#555" text-anchor="middle">58×58</text>
+<rect x="8" y="262" width="58" height="58" rx="3" fill="#a9cbee" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>pad_h: ← h · 58×58 dp · thumb L (spec) · pad</title></rect>
+<text x="37" y="294.85" font-size="11" fill="#1c1c1c" text-anchor="middle">pad ← h</text>
+<text x="37" y="317" font-size="7" fill="#555" text-anchor="middle">58×58</text>
+<rect x="70" y="262" width="58" height="58" rx="3" fill="#a9cbee" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>pad_centre: centre: REST 1 / PICK UP (hold and slide: the HERE layer) · 58×58 dp · thumb L (spec) · pad</title></rect>
+<text x="99" y="293.8636363636364" font-size="8.18" fill="#1c1c1c" text-anchor="middle">pad centre</text>
+<text x="99" y="317" font-size="7" fill="#555" text-anchor="middle">58×58</text>
+<rect x="132" y="262" width="58" height="58" rx="3" fill="#a9cbee" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>pad_l: → l · 58×58 dp · thumb L (spec) · pad</title></rect>
+<text x="161" y="294.85" font-size="11" fill="#1c1c1c" text-anchor="middle">pad → l</text>
+<text x="161" y="317" font-size="7" fill="#555" text-anchor="middle">58×58</text>
+<rect x="8" y="200" width="58" height="58" rx="3" fill="#a9cbee" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>pad_y: ↖ y · 58×58 dp · thumb L (spec) · pad</title></rect>
+<text x="37" y="232.85" font-size="11" fill="#1c1c1c" text-anchor="middle">pad ↖ y</text>
+<text x="37" y="255" font-size="7" fill="#555" text-anchor="middle">58×58</text>
+<rect x="70" y="200" width="58" height="58" rx="3" fill="#a9cbee" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>pad_k: ↑ k · 58×58 dp · thumb L (spec) · pad</title></rect>
+<text x="99" y="232.85" font-size="11" fill="#1c1c1c" text-anchor="middle">pad ↑ k</text>
+<text x="99" y="255" font-size="7" fill="#555" text-anchor="middle">58×58</text>
+<rect x="132" y="200" width="58" height="58" rx="3" fill="#a9cbee" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>pad_u: ↗ u · 58×58 dp · thumb L (spec) · pad</title></rect>
+<text x="161" y="232.85" font-size="11" fill="#1c1c1c" text-anchor="middle">pad ↗ u</text>
+<text x="161" y="255" font-size="7" fill="#555" text-anchor="middle">58×58</text>
+<rect x="8" y="152" width="58" height="44" rx="3" fill="#cfe2f7" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>msgs: MSGS ^P · 58×44 dp · thumb L (spec) · chrome-key</title></rect>
+<text x="37" y="177.85" font-size="11" fill="#1c1c1c" text-anchor="middle">MSGS</text>
+<text x="37" y="193" font-size="7" fill="#555" text-anchor="middle">58×44</text>
+<rect x="70" y="152" width="58" height="44" rx="3" fill="#cfe2f7" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>drop: DROP (hub) · 58×44 dp · thumb L (spec) · hub</title></rect>
+<text x="99" y="177.85" font-size="11" fill="#1c1c1c" text-anchor="middle">DROP</text>
+<text x="99" y="193" font-size="7" fill="#555" text-anchor="middle">58×44</text>
+<rect x="132" y="152" width="58" height="44" rx="3" fill="#cfe2f7" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>pin1: PIN 1 (empty by default: a tap opens the picker) · 58×44 dp · thumb L (spec) · key</title></rect>
+<text x="161" y="177.85" font-size="11" fill="#1c1c1c" text-anchor="middle">pin 1</text>
+<text x="161" y="193" font-size="7" fill="#555" text-anchor="middle">58×44</text>
+<rect x="8" y="105" width="58" height="44" rx="3" fill="#cfe2f7" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>game: GAME drawer · 58×44 dp · thumb L (spec) · chrome-key</title></rect>
+<text x="37" y="130.85" font-size="11" fill="#1c1c1c" text-anchor="middle">GAME</text>
+<text x="37" y="146" font-size="7" fill="#555" text-anchor="middle">58×44</text>
+<rect x="70" y="105" width="58" height="44" rx="3" fill="#cfe2f7" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>m1: M1 macro · 58×44 dp · thumb L (spec) · key</title></rect>
+<text x="99" y="130.85" font-size="11" fill="#1c1c1c" text-anchor="middle">M1</text>
+<text x="99" y="146" font-size="7" fill="#555" text-anchor="middle">58×44</text>
+<rect x="132" y="105" width="58" height="44" rx="3" fill="#cfe2f7" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>menu: MENU (settings) · 58×44 dp · thumb L (spec) · chrome-key</title></rect>
+<text x="161" y="130.85" font-size="11" fill="#1c1c1c" text-anchor="middle">MENU</text>
+<text x="161" y="146" font-size="7" fill="#555" text-anchor="middle">58×44</text>
+<rect x="8" y="58" width="58" height="44" rx="3" fill="#cfe2f7" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>rest: REST ×n (hold: count layer on the pad; swipe up: LONG REST) · 58×44 dp · thumb L (spec) · key</title></rect>
+<text x="37" y="81.9090909090909" font-size="5.45" fill="#1c1c1c" text-anchor="middle">REST +Long rest</text>
+<text x="37" y="99" font-size="7" fill="#555" text-anchor="middle">58×44</text>
+<rect x="70" y="58" width="58" height="44" rx="3" fill="#cfe2f7" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>world: WORLD drawer · 58×44 dp · thumb L (spec) · chrome-key</title></rect>
+<text x="99" y="83.85" font-size="11" fill="#1c1c1c" text-anchor="middle">WORLD</text>
+<text x="99" y="99" font-size="7" fill="#555" text-anchor="middle">58×44</text>
+<rect x="132" y="58" width="58" height="44" rx="3" fill="#cfe2f7" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>sacrifice: SACRIFICE (tap: offer; hold 380 ms: PRAY) · 58×44 dp · thumb L (spec) · key</title></rect>
+<text x="161" y="83.18181818181819" font-size="9.09" fill="#1c1c1c" text-anchor="middle">SACRIFICE</text>
+<text x="161" y="99" font-size="7" fill="#555" text-anchor="middle">58×44</text>
+<rect x="782.67" y="324" width="53.33" height="58" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>apply: APPLY (hub) · 53.3×58 dp · thumb R (spec) · hub</title></rect>
+<text x="809.3349999999999" y="356.85" font-size="11" fill="#1c1c1c" text-anchor="middle">APPLY</text>
+<text x="809.3349999999999" y="379" font-size="7" fill="#555" text-anchor="middle">53.3×58</text>
+<rect x="725.33" y="324" width="53.33" height="58" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>search: SEARCH s×n (hold: count layer; SEARCH lamp on the cap) · 53.3×58 dp · thumb R (spec) · strip</title></rect>
+<text x="751.995" y="356.85" font-size="11" fill="#1c1c1c" text-anchor="middle">SEARCH</text>
+<text x="751.995" y="379" font-size="7" fill="#555" text-anchor="middle">53.3×58</text>
+<rect x="668" y="324" width="53.33" height="58" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>inventory: INVENTORY (hub) · 53.3×58 dp · thumb R (spec) · hub</title></rect>
+<text x="694.665" y="355.9066498316498" font-size="8.3" fill="#1c1c1c" text-anchor="middle">INVENTORY</text>
+<text x="694.665" y="379" font-size="7" fill="#555" text-anchor="middle">53.3×58</text>
+<rect x="782.67" y="262" width="53.33" height="58" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>eat: EAT/QUAFF/READ (hub) · 53.3×58 dp · thumb R (spec) · hub</title></rect>
+<text x="809.3349999999999" y="294.85" font-size="11" fill="#1c1c1c" text-anchor="middle">EAT</text>
+<text x="809.3349999999999" y="317" font-size="7" fill="#555" text-anchor="middle">53.3×58</text>
+<rect x="725.33" y="262" width="53.33" height="58" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>context: CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts) · 53.3×58 dp · thumb R (spec) · strip</title></rect>
+<text x="751.995" y="294.7371212121212" font-size="10.68" fill="#1c1c1c" text-anchor="middle">CONTEXT</text>
+<text x="751.995" y="317" font-size="7" fill="#555" text-anchor="middle">53.3×58</text>
+<rect x="668" y="262" width="53.33" height="58" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>combat: COMBAT (hub; ARMED lamp on the cap) · 53.3×58 dp · thumb R (spec) · hub</title></rect>
+<text x="694.665" y="294.85" font-size="11" fill="#1c1c1c" text-anchor="middle">COMBAT</text>
+<text x="694.665" y="317" font-size="7" fill="#555" text-anchor="middle">53.3×58</text>
+<rect x="782.67" y="200" width="53.33" height="58" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>look: LOOK : (hold: farlook) · 53.3×58 dp · thumb R (spec) · strip</title></rect>
+<text x="809.3349999999999" y="232.85" font-size="11" fill="#1c1c1c" text-anchor="middle">LOOK</text>
+<text x="809.3349999999999" y="255" font-size="7" fill="#555" text-anchor="middle">53.3×58</text>
+<rect x="725.33" y="200" width="53.33" height="58" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>flick: FLICK (tap: macro; flick ↑ Kick, ↗ second macro) · 53.3×58 dp · thumb R (spec) · flick</title></rect>
+<text x="751.995" y="232.85" font-size="11" fill="#1c1c1c" text-anchor="middle">FLICK</text>
+<text x="751.995" y="255" font-size="7" fill="#555" text-anchor="middle">53.3×58</text>
+<rect x="668" y="200" width="53.33" height="58" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>pin2: PIN 2 (Fire by default) · 53.3×58 dp · thumb R (spec) · key</title></rect>
+<text x="694.665" y="232.85" font-size="11" fill="#1c1c1c" text-anchor="middle">pin 2</text>
+<text x="694.665" y="255" font-size="7" fill="#555" text-anchor="middle">53.3×58</text>
+<rect x="782.67" y="152" width="53.33" height="44" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>eq_swap: Swap x · 53.3×44 dp · thumb R (spec) · key</title></rect>
+<text x="809.3349999999999" y="177.85" font-size="11" fill="#1c1c1c" text-anchor="middle">Swap</text>
+<text x="809.3349999999999" y="193" font-size="7" fill="#555" text-anchor="middle">53.3×44</text>
+<rect x="725.33" y="152" width="53.33" height="44" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>eq_remove: Remove R (asks: paranoid_confirmation:+Remove) · 53.3×44 dp · thumb R (spec) · key</title></rect>
+<text x="751.995" y="177.85" font-size="11" fill="#1c1c1c" text-anchor="middle">Remove</text>
+<text x="751.995" y="193" font-size="7" fill="#555" text-anchor="middle">53.3×44</text>
+<rect x="668" y="152" width="53.33" height="44" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>eq_takeoff: Take off T (asks: paranoid_confirmation:+Remove) · 53.3×44 dp · thumb R (spec) · key</title></rect>
+<text x="694.665" y="177.26998106060606" font-size="9.34" fill="#1c1c1c" text-anchor="middle">Take off</text>
+<text x="694.665" y="193" font-size="7" fill="#555" text-anchor="middle">53.3×44</text>
+<rect x="782.67" y="105" width="53.33" height="44" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>eq_wield: Wield w · 53.3×44 dp · thumb R (spec) · key</title></rect>
+<text x="809.3349999999999" y="130.85" font-size="11" fill="#1c1c1c" text-anchor="middle">Wield</text>
+<text x="809.3349999999999" y="146" font-size="7" fill="#555" text-anchor="middle">53.3×44</text>
+<rect x="725.33" y="105" width="53.33" height="44" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>eq_puton: Put on P · 53.3×44 dp · thumb R (spec) · key</title></rect>
+<text x="751.995" y="130.85" font-size="11" fill="#1c1c1c" text-anchor="middle">Put on</text>
+<text x="751.995" y="146" font-size="7" fill="#555" text-anchor="middle">53.3×44</text>
+<rect x="668" y="105" width="53.33" height="44" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>eq_wear: Wear W · 53.3×44 dp · thumb R (spec) · key</title></rect>
+<text x="694.665" y="130.85" font-size="11" fill="#1c1c1c" text-anchor="middle">Wear</text>
+<text x="694.665" y="146" font-size="7" fill="#555" text-anchor="middle">53.3×44</text>
+<rect x="782.67" y="58" width="53.33" height="44" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>m3: M3 macro · 53.3×44 dp · thumb R (spec) · key</title></rect>
+<text x="809.3349999999999" y="83.85" font-size="11" fill="#1c1c1c" text-anchor="middle">M3</text>
+<text x="809.3349999999999" y="99" font-size="7" fill="#555" text-anchor="middle">53.3×44</text>
+<rect x="725.33" y="58" width="53.33" height="44" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>keys: KEYS (soft keyboard) · 53.3×44 dp · thumb R (spec) · chrome-key</title></rect>
+<text x="751.995" y="83.85" font-size="11" fill="#1c1c1c" text-anchor="middle">KEYS</text>
+<text x="751.995" y="99" font-size="7" fill="#555" text-anchor="middle">53.3×44</text>
+<rect x="668" y="58" width="53.33" height="44" rx="3" fill="#fbe1c9" fill-opacity="0.85" stroke="#555" stroke-width="0.8"><title>m2: M2 macro · 53.3×44 dp · thumb R (spec) · key</title></rect>
+<text x="694.665" y="83.85" font-size="11" fill="#1c1c1c" text-anchor="middle">M2</text>
+<text x="694.665" y="99" font-size="7" fill="#555" text-anchor="middle">53.3×44</text>
+<rect x="556" y="207" width="44" height="44" rx="4" fill="#8e44ad" fill-opacity="0.07" stroke="#8e44ad" stroke-dasharray="4 3"><title>pop-up flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning (owner flick)</title></rect>
+<rect x="608" y="207" width="44" height="44" rx="4" fill="#8e44ad" fill-opacity="0.07" stroke="#8e44ad" stroke-dasharray="4 3"><title>pop-up flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning (owner flick)</title></rect>
+<rect x="206" y="358" width="120" height="24" rx="4" fill="#8e44ad" fill-opacity="0.07" stroke="#8e44ad" stroke-dasharray="4 3"><title>pop-up layer name pill (drawn while a layer is up; inside the map, never over keys) (owner pad_centre)</title></rect>
+<rect x="219" y="120.71" width="420" height="261.29" rx="4" fill="#8e44ad" fill-opacity="0.07" stroke="#8e44ad" stroke-dasharray="4 3"><title>pop-up drawer: WORLD, GAME, MENU and every layer's ALL open here (3 columns on every screen) (owner world)</title></rect>
+</svg>
