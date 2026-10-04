@@ -417,8 +417,19 @@ function placeChips() {
     return q.right > hx && q.left < hx + 3 * T && q.bottom > hy && q.top < hy + 3 * T;
   });
   if (!covers()) return;
-  c.style.top = `${chipEdges.bottom - c.offsetHeight}px`;
+  c.style.top = `${chipBottom(c) - c.offsetHeight}px`;
   if (covers()) c.style.top = `${chipEdges.top}px`;
+}
+
+// The lowest the chips' bottom goes: the map's foot, or over the layer's pill
+// there while a layer is up -- ANSWER, at a question whose answers are on the
+// pad -- which hid the 'y' chip's label on 443x939 with the hero in the
+// map's top corner (the review, 2026-10-03).  c's top is at chipEdges.top.
+function chipBottom(c) {
+  const pill = overlay && overlay.layerPill;
+  if (!(pill && pill.classList.contains('on'))) return chipEdges.bottom;
+  const q = pill.getBoundingClientRect(), oy = c.getBoundingClientRect().top - chipEdges.top;
+  return q.height ? Math.min(chipEdges.bottom, q.top - 4 - oy) : chipEdges.bottom;
 }
 
 // The bands as classic has them, one block in the glass before its tube, and
@@ -2296,6 +2307,8 @@ const handlers = {
     const letters = shown || ((/\[([a-zA-Z]{1,8})\]\s*$/.exec(query) || [])[1] || '');
     const onPad = !direction && !!letters && !!overlay
       && overlay.showAnswers([...letters], def, (key) => push({ key }));
+    // the ANSWER pill is up now: the chips placed again, clear of it
+    if (onPad) placeChips();
     let k;
     for (;;) {
       k = await nextKey();
