@@ -1,0 +1,6049 @@
+{
+ "name": "baseline (current build)",
+ "notes": "The current build as audited on 29 Sep 2026: terminal skin, case on, 58 dp movement keys, default prefs. Phone and tablet screens from the Java-derived models (android/*.json); 915x412, 844x390, their portrait pairs, 1366x768 (touch) and 1920x1080 (mouse) from the live web captures. Long rest is swipe-revealed in the REST slot (\"behind\": \"rest\"). Pop-ups are the Android models' (flick nodes, pad-centre radial, context candidates, count-chip rows); the web captures have none. \"decor\" is the case (wells, hood, deck and key-row wells): drawn, but counted as void.",
+ "retired": {},
+ "screens": {
+  "896x443": {
+   "W": 896,
+   "H": 443,
+   "pointer": "touch",
+   "source": "audit android/landscape.json 896x443, 58 dp keys, case on, scale 1",
+   "controls": [
+    {
+     "id": "rest",
+     "label": "REST ×20 (scroll well)",
+     "x": 18,
+     "y": 18,
+     "w": 126,
+     "h": 40,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swipe-revealed in REST slot)",
+     "x": 18,
+     "y": 18,
+     "w": 126,
+     "h": 40,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 150,
+     "y": 18,
+     "w": 58,
+     "h": 40,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (hold: pray)",
+     "x": 18,
+     "y": 83,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 82,
+     "y": 83,
+     "w": 126,
+     "h": 58,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP",
+     "x": 18,
+     "y": 166,
+     "w": 126,
+     "h": 58,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (COMBAT point 0; portrait calls it QUIVER)",
+     "x": 150,
+     "y": 166,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 18,
+     "y": 235,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 84,
+     "y": 235,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 150,
+     "y": 235,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 18,
+     "y": 301,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre s/, (hold: ctx radial)",
+     "x": 84,
+     "y": 301,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 150,
+     "y": 301,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 18,
+     "y": 367,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 84,
+     "y": 367,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 150,
+     "y": 367,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (OFFENSE, F)",
+     "x": 236,
+     "y": 376,
+     "w": 58,
+     "h": 52,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (COMBAT point 1; portrait calls it FIRE)",
+     "x": 300,
+     "y": 376,
+     "w": 50,
+     "h": 52,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK key (retired 3rd point; ZAP in the portrait comment)",
+     "x": 356,
+     "y": 376,
+     "w": 50,
+     "h": 52,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook ;)",
+     "x": 420,
+     "y": 376,
+     "w": 117,
+     "h": 52,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT key (this turn's action)",
+     "x": 543,
+     "y": 376,
+     "w": 117,
+     "h": 52,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS",
+     "x": 835,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "game",
+     "label": "GAME",
+     "x": 786,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD",
+     "x": 737,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU",
+     "x": 688,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY i (bar)",
+     "x": 688,
+     "y": 68,
+     "w": 190,
+     "h": 28,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 688,
+     "y": 104,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 753.33,
+     "y": 104,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 818.67,
+     "y": 104,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T",
+     "x": 688,
+     "y": 158,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R",
+     "x": 753.33,
+     "y": 158,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 818.67,
+     "y": 158,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 688,
+     "y": 246,
+     "w": 96,
+     "h": 52,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 688,
+     "y": 304,
+     "w": 96,
+     "h": 52,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s ×n",
+     "x": 688,
+     "y": 362,
+     "w": 96,
+     "h": 63,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (e)",
+     "x": 790,
+     "y": 246,
+     "w": 88,
+     "h": 68,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY a (HUB_INTERACT, the old INTERACT)",
+     "x": 790,
+     "y": 320,
+     "w": 88,
+     "h": 105,
+     "thumb": "R",
+     "kind": "hub"
+    }
+   ],
+   "glass": {
+    "x": 242,
+    "y": 22,
+    "w": 412,
+    "h": 313
+   },
+   "mapArea": {
+    "x": 244,
+    "y": 85.44,
+    "w": 408,
+    "h": 201.56
+   },
+   "bands": [
+    {
+     "name": "messages",
+     "x": 242,
+     "y": 22,
+     "w": 412,
+     "h": 63.44
+    },
+    {
+     "name": "status",
+     "x": 242,
+     "y": 287,
+     "w": 412,
+     "h": 48
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick_node0: flick UP node (Kick ^D by default)",
+     "x": 367.37,
+     "y": 284.37,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick_node1: flick UP-RIGHT node",
+     "x": 432.54,
+     "y": 318.29,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_0: Attack F",
+     "x": 90,
+     "y": 152.44,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_1: Pick up ,",
+     "x": 157.75,
+     "y": 168.09,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_2: Descend >",
+     "x": 211.79,
+     "y": 211.85,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_3: Look here :",
+     "x": 241.18,
+     "y": 274.87,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_4: Chat M-c",
+     "x": 239.97,
+     "y": 344.39,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "context",
+     "label": "cand_0: context candidate 1/3",
+     "x": 503.79,
+     "y": 304.29,
+     "w": 54,
+     "h": 54
+    },
+    {
+     "owner": "context",
+     "label": "cand_1: context candidate 2/3",
+     "x": 574.5,
+     "y": 275,
+     "w": 54,
+     "h": 54
+    },
+    {
+     "owner": "context",
+     "label": "cand_2: context candidate 3/3",
+     "x": 645.21,
+     "y": 304.29,
+     "w": 54,
+     "h": 54
+    },
+    {
+     "owner": "rest",
+     "label": "restchips: REST / LONG REST count chips",
+     "x": 18,
+     "y": 64,
+     "w": 244,
+     "h": 52
+    },
+    {
+     "owner": "look",
+     "label": "chips_strip0: count chips over LOOK (when counted)",
+     "x": 420,
+     "y": 325,
+     "w": 236,
+     "h": 44
+    },
+    {
+     "owner": "context",
+     "label": "chips_strip1: count chips over CONTEXT (when counted)",
+     "x": 543,
+     "y": 325,
+     "w": 236,
+     "h": 44
+    },
+    {
+     "owner": "search",
+     "label": "chips_search: SEARCH count chips",
+     "x": 642,
+     "y": 311,
+     "w": 236,
+     "h": 44
+    }
+   ],
+   "chrome": [
+    {
+     "name": "lip (SEARCH / ARMED / MORE lamps, nameplate)",
+     "x": 226,
+     "y": 335,
+     "w": 444,
+     "h": 26
+    }
+   ],
+   "decor": [
+    {
+     "name": "leftWell",
+     "x": 8,
+     "y": 8,
+     "w": 210,
+     "h": 427
+    },
+    {
+     "name": "rightWell",
+     "x": 678,
+     "y": 8,
+     "w": 210,
+     "h": 427
+    },
+    {
+     "name": "deck",
+     "x": 226,
+     "y": 369,
+     "w": 444,
+     "h": 66
+    },
+    {
+     "name": "hood",
+     "x": 226,
+     "y": 8,
+     "w": 444,
+     "h": 353
+    }
+   ]
+  },
+  "443x939": {
+   "W": 443,
+   "H": 939,
+   "pointer": "touch",
+   "source": "audit android/portrait.json 443x939, 58 dp keys, case on, scale 1",
+   "controls": [
+    {
+     "id": "rest",
+     "label": "REST ×n (scroll well)",
+     "x": 18,
+     "y": 559,
+     "w": 81.4,
+     "h": 36,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swipe-revealed in REST slot)",
+     "x": 18,
+     "y": 559,
+     "w": 81.4,
+     "h": 36,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 105.4,
+     "y": 559,
+     "w": 40.51,
+     "h": 36,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU",
+     "x": 151.91,
+     "y": 559,
+     "w": 40.51,
+     "h": 36,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD",
+     "x": 198.43,
+     "y": 559,
+     "w": 40.51,
+     "h": 36,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "game",
+     "label": "GAME",
+     "x": 244.94,
+     "y": 559,
+     "w": 40.51,
+     "h": 36,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS",
+     "x": 291.46,
+     "y": 559,
+     "w": 40.51,
+     "h": 36,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 337.97,
+     "y": 559,
+     "w": 40.51,
+     "h": 36,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 384.49,
+     "y": 559,
+     "w": 40.51,
+     "h": 36,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (hold: pray)",
+     "x": 18,
+     "y": 623,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 82,
+     "y": 623,
+     "w": 126,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP",
+     "x": 18,
+     "y": 677,
+     "w": 126,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "QUIVER slot = COMBAT point 0 (empty \"+\" by default)",
+     "x": 150,
+     "y": 677,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 18,
+     "y": 731,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 84,
+     "y": 731,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 150,
+     "y": 731,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 18,
+     "y": 797,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre s/. (hold: ctx radial)",
+     "x": 84,
+     "y": 797,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 150,
+     "y": 797,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 18,
+     "y": 863,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 84,
+     "y": 863,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 150,
+     "y": 863,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 235,
+     "y": 623,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 300.33,
+     "y": 623,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 365.67,
+     "y": 623,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T",
+     "x": 235,
+     "y": 677,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R",
+     "x": 300.33,
+     "y": 677,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 365.67,
+     "y": 677,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "pin2",
+     "label": "FIRE slot = COMBAT point 1 (empty \"+\" by default)",
+     "x": 235,
+     "y": 731,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK key (tap macro; flick up = Kick ^D; the portrait comment's \"ZAP\")",
+     "x": 301,
+     "y": 731,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "flick"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook ;)",
+     "x": 367,
+     "y": 731,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (OFFENSE; tap: Fight F, arms the pad)",
+     "x": 235,
+     "y": 797,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT key (this turn's action; candidates fan)",
+     "x": 301,
+     "y": 797,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (e)",
+     "x": 367,
+     "y": 797,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY i",
+     "x": 235,
+     "y": 863,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s ×n",
+     "x": 301,
+     "y": 863,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY a (HUB_INTERACT, \"INTERACT\" in the comments)",
+     "x": 367,
+     "y": 863,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    }
+   ],
+   "glass": {
+    "x": 16,
+    "y": 18,
+    "w": 411,
+    "h": 497
+   },
+   "mapArea": {
+    "x": 18,
+    "y": 108.65,
+    "w": 407,
+    "h": 358.35
+   },
+   "bands": [
+    {
+     "name": "messages",
+     "x": 16,
+     "y": 18,
+     "w": 411,
+     "h": 90.65
+    },
+    {
+     "name": "status",
+     "x": 16,
+     "y": 467,
+     "w": 411,
+     "h": 48
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick_node0: flick UP node (Kick ^D by default)",
+     "x": 316.37,
+     "y": 642.37,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick_node1: flick UP-RIGHT node (empty)",
+     "x": 381.54,
+     "y": 676.29,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_0: ctx radial: Attack F",
+     "x": 90,
+     "y": 648.44,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_1: ctx radial: Pick up ,",
+     "x": 157.75,
+     "y": 664.09,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_2: ctx radial: Descend >",
+     "x": 211.79,
+     "y": 707.85,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_3: ctx radial: Look here :",
+     "x": 241.18,
+     "y": 770.87,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_4: ctx radial: Chat M-c",
+     "x": 239.97,
+     "y": 840.39,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "context",
+     "label": "cand_0: context candidate 1/3",
+     "x": 232.29,
+     "y": 728.29,
+     "w": 54,
+     "h": 54
+    },
+    {
+     "owner": "context",
+     "label": "cand_1: context candidate 2/3",
+     "x": 303,
+     "y": 699,
+     "w": 54,
+     "h": 54
+    },
+    {
+     "owner": "context",
+     "label": "cand_2: context candidate 3/3",
+     "x": 373.71,
+     "y": 728.29,
+     "w": 54,
+     "h": 54
+    },
+    {
+     "owner": "rest",
+     "label": "restchips: REST / LONG REST count chips (above the key row, over the glass)",
+     "x": 18,
+     "y": 500,
+     "w": 244,
+     "h": 52
+    },
+    {
+     "owner": "look",
+     "label": "chips_strip0: count chips over LOOK (when counted)",
+     "x": 189,
+     "y": 680,
+     "w": 236,
+     "h": 44
+    },
+    {
+     "owner": "context",
+     "label": "chips_strip1: count chips over CONTEXT (when counted)",
+     "x": 189,
+     "y": 746,
+     "w": 236,
+     "h": 44
+    },
+    {
+     "owner": "search",
+     "label": "chips_strip2: count chips over SEARCH (when counted)",
+     "x": 189,
+     "y": 812,
+     "w": 236,
+     "h": 44
+    }
+   ],
+   "chrome": [
+    {
+     "name": "lip (SEARCH / ARMED / MORE lamps, nameplate)",
+     "x": 8,
+     "y": 515,
+     "w": 427,
+     "h": 26
+    }
+   ],
+   "decor": [
+    {
+     "name": "leftWell",
+     "x": 8,
+     "y": 613,
+     "w": 210,
+     "h": 318
+    },
+    {
+     "name": "rightWell",
+     "x": 225,
+     "y": 613,
+     "w": 210,
+     "h": 318
+    },
+    {
+     "name": "keyRowWell",
+     "x": 8,
+     "y": 549,
+     "w": 427,
+     "h": 56
+    },
+    {
+     "name": "hood",
+     "x": 8,
+     "y": 8,
+     "w": 427,
+     "h": 533
+    }
+   ]
+  },
+  "640x360": {
+   "W": 640,
+   "H": 360,
+   "pointer": "touch",
+   "source": "audit android/landscape.json 640x360, 58 dp keys, case on, scale 0.7512",
+   "controls": [
+    {
+     "id": "rest",
+     "label": "REST ×20 (scroll well)",
+     "x": 13.52,
+     "y": 13.52,
+     "w": 94.65,
+     "h": 30.05,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swipe-revealed in REST slot)",
+     "x": 13.52,
+     "y": 13.52,
+     "w": 94.65,
+     "h": 30.05,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 112.68,
+     "y": 13.52,
+     "w": 43.57,
+     "h": 30.05,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (hold: pray)",
+     "x": 13.52,
+     "y": 75.96,
+     "w": 43.57,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 61.6,
+     "y": 75.96,
+     "w": 94.65,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP",
+     "x": 13.52,
+     "y": 151.92,
+     "w": 94.65,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (COMBAT point 0; portrait calls it QUIVER)",
+     "x": 112.68,
+     "y": 151.92,
+     "w": 43.57,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 13.52,
+     "y": 203.76,
+     "w": 43.57,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 63.1,
+     "y": 203.76,
+     "w": 43.57,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 112.68,
+     "y": 203.76,
+     "w": 43.57,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 13.52,
+     "y": 253.33,
+     "w": 43.57,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre s/, (hold: ctx radial)",
+     "x": 63.1,
+     "y": 253.33,
+     "w": 43.57,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 112.68,
+     "y": 253.33,
+     "w": 43.57,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 13.52,
+     "y": 302.91,
+     "w": 43.57,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 63.1,
+     "y": 302.91,
+     "w": 43.57,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 112.68,
+     "y": 302.91,
+     "w": 43.57,
+     "h": 43.57,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (OFFENSE, F)",
+     "x": 177.28,
+     "y": 309.67,
+     "w": 43.57,
+     "h": 39.06,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (COMBAT point 1; portrait calls it FIRE)",
+     "x": 225.35,
+     "y": 309.67,
+     "w": 37.56,
+     "h": 39.06,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK key (retired 3rd point; ZAP in the portrait comment)",
+     "x": 267.42,
+     "y": 309.67,
+     "w": 37.56,
+     "h": 39.06,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook ;)",
+     "x": 315.49,
+     "y": 309.67,
+     "w": 71.36,
+     "h": 39.06,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT key (this turn's action)",
+     "x": 391.36,
+     "y": 309.67,
+     "w": 71.36,
+     "h": 39.06,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS",
+     "x": 594.18,
+     "y": 13.52,
+     "w": 32.3,
+     "h": 30.05,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "game",
+     "label": "GAME",
+     "x": 557.37,
+     "y": 13.52,
+     "w": 32.3,
+     "h": 30.05,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD",
+     "x": 520.56,
+     "y": 13.52,
+     "w": 32.3,
+     "h": 30.05,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU",
+     "x": 483.76,
+     "y": 13.52,
+     "w": 32.3,
+     "h": 30.05,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY i (bar)",
+     "x": 483.76,
+     "y": 51.08,
+     "w": 142.72,
+     "h": 21.03,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 483.76,
+     "y": 78.12,
+     "w": 44.57,
+     "h": 36.06,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 532.83,
+     "y": 78.12,
+     "w": 44.57,
+     "h": 36.06,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 581.91,
+     "y": 78.12,
+     "w": 44.57,
+     "h": 36.06,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T",
+     "x": 483.76,
+     "y": 118.69,
+     "w": 44.57,
+     "h": 36.06,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R",
+     "x": 532.83,
+     "y": 118.69,
+     "w": 44.57,
+     "h": 36.06,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 581.91,
+     "y": 118.69,
+     "w": 44.57,
+     "h": 36.06,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 483.76,
+     "y": 212.02,
+     "w": 72.11,
+     "h": 39.06,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 483.76,
+     "y": 255.59,
+     "w": 72.11,
+     "h": 39.06,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s ×n",
+     "x": 483.76,
+     "y": 299.15,
+     "w": 72.11,
+     "h": 47.32,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (e)",
+     "x": 560.38,
+     "y": 212.02,
+     "w": 66.1,
+     "h": 51.08,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY a (HUB_INTERACT, the old INTERACT)",
+     "x": 560.38,
+     "y": 267.61,
+     "w": 66.1,
+     "h": 78.87,
+     "thumb": "R",
+     "kind": "hub"
+    }
+   ],
+   "glass": {
+    "x": 181.78,
+    "y": 16.53,
+    "w": 276.43,
+    "h": 262.35
+   },
+   "mapArea": {
+    "x": 183.29,
+    "y": 77.72,
+    "w": 273.43,
+    "h": 165.1
+   },
+   "bands": [
+    {
+     "name": "messages",
+     "x": 181.78,
+     "y": 16.53,
+     "w": 276.43,
+     "h": 61.2
+    },
+    {
+     "name": "status",
+     "x": 181.78,
+     "y": 242.82,
+     "w": 276.43,
+     "h": 36.06
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick_node0: flick UP node (Kick ^D by default)",
+     "x": 275.96,
+     "y": 240.84,
+     "w": 33.05,
+     "h": 33.05
+    },
+    {
+     "owner": "flick",
+     "label": "flick_node1: flick UP-RIGHT node",
+     "x": 324.91,
+     "y": 266.32,
+     "w": 33.05,
+     "h": 33.05
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_0: Attack F",
+     "x": 67.61,
+     "y": 141.74,
+     "w": 34.55,
+     "h": 34.55
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_1: Pick up ,",
+     "x": 118.5,
+     "y": 153.49,
+     "w": 34.55,
+     "h": 34.55
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_2: Descend >",
+     "x": 159.09,
+     "y": 186.36,
+     "w": 34.55,
+     "h": 34.55
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_3: Look here :",
+     "x": 181.17,
+     "y": 233.7,
+     "w": 34.55,
+     "h": 34.55
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_4: Chat M-c",
+     "x": 180.26,
+     "y": 285.93,
+     "w": 34.55,
+     "h": 34.55
+    },
+    {
+     "owner": "context",
+     "label": "cand_0: context candidate 1/3",
+     "x": 353.64,
+     "y": 255.8,
+     "w": 40.56,
+     "h": 40.56
+    },
+    {
+     "owner": "context",
+     "label": "cand_1: context candidate 2/3",
+     "x": 406.76,
+     "y": 233.8,
+     "w": 40.56,
+     "h": 40.56
+    },
+    {
+     "owner": "context",
+     "label": "cand_2: context candidate 3/3",
+     "x": 459.88,
+     "y": 255.8,
+     "w": 40.56,
+     "h": 40.56
+    },
+    {
+     "owner": "rest",
+     "label": "restchips: REST / LONG REST count chips",
+     "x": 13.52,
+     "y": 48.08,
+     "w": 183.29,
+     "h": 39.06
+    },
+    {
+     "owner": "look",
+     "label": "chips_strip0: count chips over LOOK (when counted)",
+     "x": 315.49,
+     "y": 271.36,
+     "w": 177.28,
+     "h": 33.05
+    },
+    {
+     "owner": "context",
+     "label": "chips_strip1: count chips over CONTEXT (when counted)",
+     "x": 391.36,
+     "y": 271.36,
+     "w": 177.28,
+     "h": 33.05
+    },
+    {
+     "owner": "search",
+     "label": "chips_search: SEARCH count chips",
+     "x": 449.2,
+     "y": 260.85,
+     "w": 177.28,
+     "h": 33.05
+    }
+   ],
+   "chrome": [
+    {
+     "name": "lip (SEARCH / ARMED / MORE lamps, nameplate)",
+     "x": 169.77,
+     "y": 278.87,
+     "w": 300.47,
+     "h": 19.53
+    }
+   ],
+   "decor": [
+    {
+     "name": "leftWell",
+     "x": 6.01,
+     "y": 6.01,
+     "w": 157.75,
+     "h": 347.98
+    },
+    {
+     "name": "rightWell",
+     "x": 476.24,
+     "y": 6.01,
+     "w": 157.75,
+     "h": 347.98
+    },
+    {
+     "name": "deck",
+     "x": 169.77,
+     "y": 304.41,
+     "w": 300.47,
+     "h": 49.58
+    },
+    {
+     "name": "hood",
+     "x": 169.77,
+     "y": 6.01,
+     "w": 300.47,
+     "h": 292.39
+    }
+   ]
+  },
+  "360x640": {
+   "W": 360,
+   "H": 640,
+   "pointer": "touch",
+   "source": "audit android/portrait.json 360x640, 58 dp keys, case on, scale 0.8145",
+   "controls": [
+    {
+     "id": "rest",
+     "label": "REST ×n (scroll well)",
+     "x": 14.66,
+     "y": 330.5,
+     "w": 66.14,
+     "h": 29.32,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swipe-revealed in REST slot)",
+     "x": 14.66,
+     "y": 330.5,
+     "w": 66.14,
+     "h": 29.32,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 85.68,
+     "y": 330.5,
+     "w": 32.9,
+     "h": 29.32,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU",
+     "x": 123.48,
+     "y": 330.5,
+     "w": 32.9,
+     "h": 29.32,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD",
+     "x": 161.27,
+     "y": 330.5,
+     "w": 32.9,
+     "h": 29.32,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "game",
+     "label": "GAME",
+     "x": 199.06,
+     "y": 330.5,
+     "w": 32.9,
+     "h": 29.32,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS",
+     "x": 236.85,
+     "y": 330.5,
+     "w": 32.9,
+     "h": 29.32,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 274.64,
+     "y": 330.5,
+     "w": 32.9,
+     "h": 29.32,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 312.43,
+     "y": 330.5,
+     "w": 32.9,
+     "h": 29.32,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (hold: pray)",
+     "x": 14.66,
+     "y": 382.62,
+     "w": 47.24,
+     "h": 39.1,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 66.79,
+     "y": 382.62,
+     "w": 102.62,
+     "h": 39.1,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP",
+     "x": 14.66,
+     "y": 426.61,
+     "w": 102.62,
+     "h": 39.1,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "QUIVER slot = COMBAT point 0 (empty \"+\" by default)",
+     "x": 122.17,
+     "y": 426.61,
+     "w": 47.24,
+     "h": 39.1,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 14.66,
+     "y": 470.59,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 68.42,
+     "y": 470.59,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 122.17,
+     "y": 470.59,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 14.66,
+     "y": 524.34,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre s/. (hold: ctx radial)",
+     "x": 68.42,
+     "y": 524.34,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 122.17,
+     "y": 524.34,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 14.66,
+     "y": 578.1,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 68.42,
+     "y": 578.1,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 122.17,
+     "y": 578.1,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 190.59,
+     "y": 382.62,
+     "w": 48.33,
+     "h": 39.1,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 243.8,
+     "y": 382.62,
+     "w": 48.33,
+     "h": 39.1,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 297.01,
+     "y": 382.62,
+     "w": 48.33,
+     "h": 39.1,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T",
+     "x": 190.59,
+     "y": 426.61,
+     "w": 48.33,
+     "h": 39.1,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R",
+     "x": 243.8,
+     "y": 426.61,
+     "w": 48.33,
+     "h": 39.1,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 297.01,
+     "y": 426.61,
+     "w": 48.33,
+     "h": 39.1,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "pin2",
+     "label": "FIRE slot = COMBAT point 1 (empty \"+\" by default)",
+     "x": 190.59,
+     "y": 470.59,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK key (tap macro; flick up = Kick ^D; the portrait comment's \"ZAP\")",
+     "x": 244.34,
+     "y": 470.59,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "R",
+     "kind": "flick"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook ;)",
+     "x": 298.1,
+     "y": 470.59,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (OFFENSE; tap: Fight F, arms the pad)",
+     "x": 190.59,
+     "y": 524.34,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT key (this turn's action; candidates fan)",
+     "x": 244.34,
+     "y": 524.34,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (e)",
+     "x": 298.1,
+     "y": 524.34,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY i",
+     "x": 190.59,
+     "y": 578.1,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s ×n",
+     "x": 244.34,
+     "y": 578.1,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY a (HUB_INTERACT, \"INTERACT\" in the comments)",
+     "x": 298.1,
+     "y": 578.1,
+     "w": 47.24,
+     "h": 47.24,
+     "thumb": "R",
+     "kind": "hub"
+    }
+   ],
+   "glass": {
+    "x": 13.03,
+    "y": 14.66,
+    "w": 333.94,
+    "h": 280
+   },
+   "mapArea": {
+    "x": 14.66,
+    "y": 103.64,
+    "w": 330.68,
+    "h": 151.92
+   },
+   "bands": [
+    {
+     "name": "messages",
+     "x": 13.03,
+     "y": 14.66,
+     "w": 333.94,
+     "h": 88.98
+    },
+    {
+     "name": "status",
+     "x": 13.03,
+     "y": 255.57,
+     "w": 333.94,
+     "h": 39.1
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick_node0: flick UP node (Kick ^D by default)",
+     "x": 256.86,
+     "y": 398.4,
+     "w": 35.84,
+     "h": 35.84
+    },
+    {
+     "owner": "flick",
+     "label": "flick_node1: flick UP-RIGHT node (empty)",
+     "x": 309.94,
+     "y": 426.03,
+     "w": 35.84,
+     "h": 35.84
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_0: ctx radial: Attack F",
+     "x": 73.3,
+     "y": 403.35,
+     "w": 37.47,
+     "h": 37.47
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_1: ctx radial: Pick up ,",
+     "x": 128.49,
+     "y": 416.09,
+     "w": 37.47,
+     "h": 37.47
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_2: ctx radial: Descend >",
+     "x": 172.5,
+     "y": 451.73,
+     "w": 37.47,
+     "h": 37.47
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_3: ctx radial: Look here :",
+     "x": 196.44,
+     "y": 503.06,
+     "w": 37.47,
+     "h": 37.47
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_4: ctx radial: Chat M-c",
+     "x": 195.45,
+     "y": 559.68,
+     "w": 37.47,
+     "h": 37.47
+    },
+    {
+     "owner": "context",
+     "label": "cand_0: context candidate 1/3",
+     "x": 188.38,
+     "y": 468.38,
+     "w": 43.98,
+     "h": 43.98
+    },
+    {
+     "owner": "context",
+     "label": "cand_1: context candidate 2/3",
+     "x": 245.97,
+     "y": 444.52,
+     "w": 43.98,
+     "h": 43.98
+    },
+    {
+     "owner": "context",
+     "label": "cand_2: context candidate 3/3",
+     "x": 303.57,
+     "y": 468.38,
+     "w": 43.98,
+     "h": 43.98
+    },
+    {
+     "owner": "rest",
+     "label": "restchips: REST / LONG REST count chips (above the key row, over the glass)",
+     "x": 14.66,
+     "y": 282.44,
+     "w": 198.73,
+     "h": 42.35
+    },
+    {
+     "owner": "look",
+     "label": "chips_strip0: count chips over LOOK (when counted)",
+     "x": 153.12,
+     "y": 429.05,
+     "w": 192.22,
+     "h": 35.84
+    },
+    {
+     "owner": "context",
+     "label": "chips_strip1: count chips over CONTEXT (when counted)",
+     "x": 153.12,
+     "y": 482.81,
+     "w": 192.22,
+     "h": 35.84
+    },
+    {
+     "owner": "search",
+     "label": "chips_strip2: count chips over SEARCH (when counted)",
+     "x": 153.12,
+     "y": 536.56,
+     "w": 192.22,
+     "h": 35.84
+    }
+   ],
+   "chrome": [
+    {
+     "name": "lip (SEARCH / ARMED / MORE lamps, nameplate)",
+     "x": 6.52,
+     "y": 294.66,
+     "w": 346.97,
+     "h": 21.18
+    }
+   ],
+   "decor": [
+    {
+     "name": "leftWell",
+     "x": 6.52,
+     "y": 374.48,
+     "w": 171.04,
+     "h": 259
+    },
+    {
+     "name": "rightWell",
+     "x": 182.44,
+     "y": 374.48,
+     "w": 171.04,
+     "h": 259
+    },
+    {
+     "name": "keyRowWell",
+     "x": 6.52,
+     "y": 322.35,
+     "w": 346.97,
+     "h": 45.61
+    },
+    {
+     "name": "hood",
+     "x": 6.52,
+     "y": 6.52,
+     "w": 346.97,
+     "h": 309.32
+    }
+   ]
+  },
+  "915x412": {
+   "W": 915,
+   "H": 412,
+   "pointer": "touch",
+   "source": "audit web/915x412.json (live capture, touch, landscape, scale 0.9928)",
+   "controls": [
+    {
+     "id": "rest",
+     "label": "Rest ×20",
+     "x": 17.87,
+     "y": 17.87,
+     "w": 125.09,
+     "h": 39.71,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "msgs",
+     "label": "Msgs",
+     "x": 148.92,
+     "y": 17.87,
+     "w": 57.58,
+     "h": 39.71,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m1",
+     "label": "+ M1",
+     "x": 81.41,
+     "y": 68.5,
+     "w": 125.09,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 17.87,
+     "y": 205.5,
+     "w": 57.58,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 83.39,
+     "y": 205.5,
+     "w": 57.58,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 148.92,
+     "y": 205.5,
+     "w": 57.58,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 17.87,
+     "y": 271.03,
+     "w": 57.58,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "REST",
+     "x": 83.39,
+     "y": 271.03,
+     "w": 57.58,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 148.92,
+     "y": 271.03,
+     "w": 57.58,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 17.87,
+     "y": 336.55,
+     "w": 57.58,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 83.39,
+     "y": 336.55,
+     "w": 57.58,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 148.92,
+     "y": 336.55,
+     "w": 57.58,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "look",
+     "label": "Look",
+     "x": 416.96,
+     "y": 345.48,
+     "w": 128.89,
+     "h": 51.62,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "context",
+     "label": "Ascend <",
+     "x": 551.81,
+     "y": 345.48,
+     "w": 128.89,
+     "h": 51.62,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "search",
+     "label": "Search",
+     "x": 708.5,
+     "y": 331.59,
+     "w": 95.31,
+     "h": 62.54,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE",
+     "x": 17.87,
+     "y": 68.5,
+     "w": 57.58,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS",
+     "x": 854.43,
+     "y": 17.87,
+     "w": 42.69,
+     "h": 39.71,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "game",
+     "label": "GAME",
+     "x": 805.79,
+     "y": 17.87,
+     "w": 42.69,
+     "h": 39.71,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD",
+     "x": 757.14,
+     "y": 17.87,
+     "w": 42.69,
+     "h": 39.71,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU",
+     "x": 708.5,
+     "y": 17.87,
+     "w": 42.69,
+     "h": 39.71,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "+ M3",
+     "x": 708.5,
+     "y": 274,
+     "w": 95.31,
+     "h": 51.62,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "m2",
+     "label": "+ M2",
+     "x": 708.5,
+     "y": 216.42,
+     "w": 95.31,
+     "h": 51.62,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP",
+     "x": 17.87,
+     "y": 137,
+     "w": 125.09,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT QUAFF READ",
+     "x": 809.76,
+     "y": 216.42,
+     "w": 87.36,
+     "h": 67.51,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 708.5,
+     "y": 103.25,
+     "w": 58.9,
+     "h": 47.65,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 773.35,
+     "y": 103.25,
+     "w": 58.9,
+     "h": 47.65,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 838.22,
+     "y": 103.25,
+     "w": 58.9,
+     "h": 47.65,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T",
+     "x": 708.5,
+     "y": 156.86,
+     "w": 58.9,
+     "h": 47.65,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R",
+     "x": 773.35,
+     "y": 156.86,
+     "w": 58.9,
+     "h": 47.65,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 838.22,
+     "y": 156.86,
+     "w": 58.9,
+     "h": 47.65,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY i",
+     "x": 708.5,
+     "y": 67.51,
+     "w": 188.63,
+     "h": 27.8,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "+",
+     "x": 148.92,
+     "y": 137,
+     "w": 57.58,
+     "h": 57.58,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "pin2",
+     "label": "+",
+     "x": 297.83,
+     "y": 345.48,
+     "w": 49.64,
+     "h": 51.62,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "flick",
+     "label": "+ FLICK",
+     "x": 353.43,
+     "y": 345.48,
+     "w": 49.64,
+     "h": 51.62,
+     "thumb": null,
+     "kind": "flick"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT",
+     "x": 234.29,
+     "y": 345.48,
+     "w": 57.58,
+     "h": 51.62,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY",
+     "x": 809.76,
+     "y": 289.89,
+     "w": 87.36,
+     "h": 104.24,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swipe in REST slot)",
+     "x": 17.87,
+     "y": 17.87,
+     "w": 125.09,
+     "h": 39.71,
+     "thumb": null,
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 240.25,
+    "y": 21.83,
+    "w": 434.48,
+    "h": 282.94
+   },
+   "mapArea": {
+    "x": 242.2355421686747,
+    "y": 82.4786494364555,
+    "w": 430.5277108433735,
+    "h": 174.63809755149626
+   },
+   "bands": [
+    {
+     "name": "messages",
+     "x": 240.25,
+     "y": 21.83,
+     "w": 434.48,
+     "h": 60.64
+    },
+    {
+     "name": "status",
+     "x": 240.25,
+     "y": 257.13,
+     "w": 434.48,
+     "h": 47.64
+    }
+   ],
+   "popups": [],
+   "chrome": [
+    {
+     "name": "lip (SEARCH / ARMED / MORE lamps, nameplate)",
+     "x": 224.37,
+     "y": 304.78,
+     "w": 466.26,
+     "h": 25.81
+    }
+   ],
+   "decor": [
+    {
+     "name": "well 1",
+     "x": 7.94,
+     "y": 7.94,
+     "w": 208.48,
+     "h": 396.12
+    },
+    {
+     "name": "well 2",
+     "x": 698.57,
+     "y": 7.94,
+     "w": 208.48,
+     "h": 396.12
+    },
+    {
+     "name": "well 3",
+     "x": 224.37,
+     "y": 338.53,
+     "w": 466.26,
+     "h": 65.52
+    },
+    {
+     "name": "hood",
+     "x": 224.37,
+     "y": 7.94,
+     "w": 466.26,
+     "h": 322.65
+    }
+   ]
+  },
+  "412x915": {
+   "W": 412,
+   "H": 915,
+   "pointer": "touch",
+   "source": "audit web/412x915.json (live capture, touch, portrait, scale 0.9321)",
+   "controls": [
+    {
+     "id": "rest",
+     "label": "Rest ×20",
+     "x": 16.78,
+     "y": 560.79,
+     "w": 75.68,
+     "h": 33.56,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "msgs",
+     "label": "Msgs",
+     "x": 98.05,
+     "y": 560.79,
+     "w": 37.65,
+     "h": 33.56,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m1",
+     "label": "+ M1",
+     "x": 76.43,
+     "y": 620.45,
+     "w": 117.45,
+     "h": 44.74,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 16.78,
+     "y": 721.12,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 78.3,
+     "y": 721.12,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 139.82,
+     "y": 721.12,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 16.78,
+     "y": 782.64,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "REST",
+     "x": 78.3,
+     "y": 782.64,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 139.82,
+     "y": 782.64,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 16.78,
+     "y": 844.16,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 78.3,
+     "y": 844.16,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 139.82,
+     "y": 844.16,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "look",
+     "label": "Look",
+     "x": 341.16,
+     "y": 721.12,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "context",
+     "label": "Ascend <",
+     "x": 279.64,
+     "y": 782.64,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "search",
+     "label": "Search",
+     "x": 279.64,
+     "y": 844.16,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE",
+     "x": 16.78,
+     "y": 620.45,
+     "w": 54.06,
+     "h": 44.74,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS",
+     "x": 271.06,
+     "y": 560.79,
+     "w": 37.65,
+     "h": 33.56,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "game",
+     "label": "GAME",
+     "x": 227.8,
+     "y": 560.79,
+     "w": 37.65,
+     "h": 33.56,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD",
+     "x": 184.56,
+     "y": 560.79,
+     "w": 37.65,
+     "h": 33.56,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU",
+     "x": 141.3,
+     "y": 560.79,
+     "w": 37.65,
+     "h": 33.56,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "+ M2",
+     "x": 314.3,
+     "y": 560.79,
+     "w": 37.65,
+     "h": 33.56,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "m3",
+     "label": "+ M3",
+     "x": 357.56,
+     "y": 560.79,
+     "w": 37.65,
+     "h": 33.56,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP",
+     "x": 16.78,
+     "y": 670.78,
+     "w": 117.45,
+     "h": 44.74,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT QUAFF READ",
+     "x": 341.16,
+     "y": 782.64,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 218.12,
+     "y": 620.45,
+     "w": 55.3,
+     "h": 44.74,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 279.01,
+     "y": 620.45,
+     "w": 55.3,
+     "h": 44.74,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 339.91,
+     "y": 620.45,
+     "w": 55.3,
+     "h": 44.74,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T",
+     "x": 218.12,
+     "y": 670.78,
+     "w": 55.3,
+     "h": 44.74,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R",
+     "x": 279.01,
+     "y": 670.78,
+     "w": 55.3,
+     "h": 44.74,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 339.91,
+     "y": 670.78,
+     "w": 55.3,
+     "h": 44.74,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY i",
+     "x": 218.12,
+     "y": 844.16,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "+",
+     "x": 139.82,
+     "y": 670.78,
+     "w": 54.06,
+     "h": 44.74,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "pin2",
+     "label": "+",
+     "x": 218.12,
+     "y": 721.12,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "flick",
+     "label": "+ FLICK",
+     "x": 279.64,
+     "y": 721.12,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "flick"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT",
+     "x": 218.12,
+     "y": 782.64,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY",
+     "x": 341.16,
+     "y": 844.16,
+     "w": 54.06,
+     "h": 54.06,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swipe in REST slot)",
+     "x": 16.78,
+     "y": 560.79,
+     "w": 75.68,
+     "h": 33.56,
+     "thumb": null,
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 14.91,
+    "y": 16.77,
+    "w": 382.17,
+    "h": 503
+   },
+   "mapArea": {
+    "x": 16.77425339366516,
+    "y": 102.72970478762224,
+    "w": 378.4434389140271,
+    "h": 372.2982137644139
+   },
+   "bands": [
+    {
+     "name": "messages",
+     "x": 14.91,
+     "y": 16.77,
+     "w": 382.17,
+     "h": 85.95
+    },
+    {
+     "name": "status",
+     "x": 14.91,
+     "y": 475.03,
+     "w": 382.17,
+     "h": 44.73
+    }
+   ],
+   "popups": [],
+   "chrome": [
+    {
+     "name": "lip (SEARCH / ARMED / MORE lamps, nameplate)",
+     "x": 7.46,
+     "y": 519.78,
+     "w": 397.09,
+     "h": 24.24
+    }
+   ],
+   "decor": [
+    {
+     "name": "well 1",
+     "x": 7.46,
+     "y": 611.13,
+     "w": 195.75,
+     "h": 296.42
+    },
+    {
+     "name": "well 2",
+     "x": 208.8,
+     "y": 611.13,
+     "w": 195.75,
+     "h": 296.42
+    },
+    {
+     "name": "well 3",
+     "x": 7.46,
+     "y": 551.47,
+     "w": 397.09,
+     "h": 52.2
+    },
+    {
+     "name": "hood",
+     "x": 7.46,
+     "y": 7.46,
+     "w": 397.09,
+     "h": 536.56
+    }
+   ]
+  },
+  "844x390": {
+   "W": 844,
+   "H": 390,
+   "pointer": "touch",
+   "source": "audit web/844x390.json (live capture, touch, landscape, scale 0.9398)",
+   "controls": [
+    {
+     "id": "rest",
+     "label": "Rest ×20",
+     "x": 16.92,
+     "y": 16.92,
+     "w": 118.41,
+     "h": 37.59,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "msgs",
+     "label": "Msgs",
+     "x": 140.96,
+     "y": 16.92,
+     "w": 54.51,
+     "h": 37.59,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m1",
+     "label": "+ M1",
+     "x": 77.06,
+     "y": 64.84,
+     "w": 118.41,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 16.92,
+     "y": 194.53,
+     "w": 54.51,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 78.94,
+     "y": 194.53,
+     "w": 54.51,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 140.96,
+     "y": 194.53,
+     "w": 54.51,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 16.92,
+     "y": 256.55,
+     "w": 54.51,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "REST",
+     "x": 78.94,
+     "y": 256.55,
+     "w": 54.51,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 140.96,
+     "y": 256.55,
+     "w": 54.51,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 16.92,
+     "y": 318.58,
+     "w": 54.51,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 78.94,
+     "y": 318.58,
+     "w": 54.51,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 140.96,
+     "y": 318.58,
+     "w": 54.51,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "look",
+     "label": "Look",
+     "x": 394.7,
+     "y": 327.04,
+     "w": 110.94,
+     "h": 48.87,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "context",
+     "label": "Ascend <",
+     "x": 511.27,
+     "y": 327.04,
+     "w": 110.94,
+     "h": 48.87,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "search",
+     "label": "Search",
+     "x": 648.52,
+     "y": 313.88,
+     "w": 90.22,
+     "h": 59.2,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE",
+     "x": 16.92,
+     "y": 64.84,
+     "w": 54.51,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS",
+     "x": 786.67,
+     "y": 16.92,
+     "w": 40.41,
+     "h": 37.59,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "game",
+     "label": "GAME",
+     "x": 740.62,
+     "y": 16.92,
+     "w": 40.41,
+     "h": 37.59,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD",
+     "x": 694.57,
+     "y": 16.92,
+     "w": 40.41,
+     "h": 37.59,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU",
+     "x": 648.52,
+     "y": 16.92,
+     "w": 40.41,
+     "h": 37.59,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "+ M3",
+     "x": 648.52,
+     "y": 259.37,
+     "w": 90.22,
+     "h": 48.87,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "m2",
+     "label": "+ M2",
+     "x": 648.52,
+     "y": 204.87,
+     "w": 90.22,
+     "h": 48.87,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP",
+     "x": 16.92,
+     "y": 129.69,
+     "w": 118.41,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT QUAFF READ",
+     "x": 744.38,
+     "y": 204.87,
+     "w": 82.7,
+     "h": 63.9,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 648.52,
+     "y": 97.73,
+     "w": 55.75,
+     "h": 45.11,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 709.91,
+     "y": 97.73,
+     "w": 55.75,
+     "h": 45.11,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 771.32,
+     "y": 97.73,
+     "w": 55.75,
+     "h": 45.11,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T",
+     "x": 648.52,
+     "y": 148.48,
+     "w": 55.75,
+     "h": 45.11,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R",
+     "x": 709.91,
+     "y": 148.48,
+     "w": 55.75,
+     "h": 45.11,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 771.32,
+     "y": 148.48,
+     "w": 55.75,
+     "h": 45.11,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY i",
+     "x": 648.52,
+     "y": 63.9,
+     "w": 178.55,
+     "h": 26.31,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "+",
+     "x": 140.96,
+     "y": 129.69,
+     "w": 54.51,
+     "h": 54.51,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "pin2",
+     "label": "+",
+     "x": 281.93,
+     "y": 327.04,
+     "w": 46.99,
+     "h": 48.87,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "flick",
+     "label": "+ FLICK",
+     "x": 334.55,
+     "y": 327.04,
+     "w": 46.99,
+     "h": 48.87,
+     "thumb": null,
+     "kind": "flick"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT",
+     "x": 221.78,
+     "y": 327.04,
+     "w": 54.51,
+     "h": 48.87,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY",
+     "x": 744.38,
+     "y": 274.41,
+     "w": 82.7,
+     "h": 98.67,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swipe in REST slot)",
+     "x": 16.92,
+     "y": 16.92,
+     "w": 118.41,
+     "h": 37.59,
+     "thumb": null,
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 227.41,
+    "y": 20.67,
+    "w": 389.16,
+    "h": 267.83
+   },
+   "mapArea": {
+    "x": 229.28951807228916,
+    "y": 80.84154100272056,
+    "w": 385.3975903614458,
+    "h": 162.55135056354447
+   },
+   "bands": [
+    {
+     "name": "messages",
+     "x": 227.41,
+     "y": 20.67,
+     "w": 389.16,
+     "h": 60.16
+    },
+    {
+     "name": "status",
+     "x": 227.41,
+     "y": 243.41,
+     "w": 389.16,
+     "h": 45.09
+    }
+   ],
+   "popups": [],
+   "chrome": [
+    {
+     "name": "lip (SEARCH / ARMED / MORE lamps, nameplate)",
+     "x": 212.39,
+     "y": 288.51,
+     "w": 419.22,
+     "h": 24.43
+    }
+   ],
+   "decor": [
+    {
+     "name": "well 1",
+     "x": 7.52,
+     "y": 7.52,
+     "w": 197.35,
+     "h": 374.96
+    },
+    {
+     "name": "well 2",
+     "x": 639.12,
+     "y": 7.52,
+     "w": 197.35,
+     "h": 374.96
+    },
+    {
+     "name": "well 3",
+     "x": 212.39,
+     "y": 320.46,
+     "w": 419.22,
+     "h": 62.02
+    },
+    {
+     "name": "hood",
+     "x": 212.39,
+     "y": 7.52,
+     "w": 419.22,
+     "h": 305.42
+    }
+   ]
+  },
+  "390x844": {
+   "W": 390,
+   "H": 844,
+   "pointer": "touch",
+   "source": "audit web/390x844.json (live capture, touch, portrait, scale 0.8824)",
+   "controls": [
+    {
+     "id": "rest",
+     "label": "Rest ×20",
+     "x": 15.88,
+     "y": 508.7,
+     "w": 71.64,
+     "h": 31.76,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "msgs",
+     "label": "Msgs",
+     "x": 92.81,
+     "y": 508.7,
+     "w": 35.64,
+     "h": 31.76,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m1",
+     "label": "+ M1",
+     "x": 72.35,
+     "y": 565.17,
+     "w": 111.18,
+     "h": 42.35,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 15.88,
+     "y": 660.47,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 74.12,
+     "y": 660.47,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 132.35,
+     "y": 660.47,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 15.88,
+     "y": 718.7,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "REST",
+     "x": 74.12,
+     "y": 718.7,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 132.35,
+     "y": 718.7,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 15.88,
+     "y": 776.94,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 74.12,
+     "y": 776.94,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 132.35,
+     "y": 776.94,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "look",
+     "label": "Look",
+     "x": 322.94,
+     "y": 660.47,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "context",
+     "label": "Ascend <",
+     "x": 264.71,
+     "y": 718.7,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "search",
+     "label": "Search",
+     "x": 264.71,
+     "y": 776.94,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE",
+     "x": 15.88,
+     "y": 565.17,
+     "w": 51.18,
+     "h": 42.35,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS",
+     "x": 256.59,
+     "y": 508.7,
+     "w": 35.64,
+     "h": 31.76,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "game",
+     "label": "GAME",
+     "x": 215.64,
+     "y": 508.7,
+     "w": 35.64,
+     "h": 31.76,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD",
+     "x": 174.71,
+     "y": 508.7,
+     "w": 35.64,
+     "h": 31.76,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU",
+     "x": 133.76,
+     "y": 508.7,
+     "w": 35.64,
+     "h": 31.76,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "+ M2",
+     "x": 297.52,
+     "y": 508.7,
+     "w": 35.64,
+     "h": 31.76,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "m3",
+     "label": "+ M3",
+     "x": 338.47,
+     "y": 508.7,
+     "w": 35.64,
+     "h": 31.76,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP",
+     "x": 15.88,
+     "y": 612.82,
+     "w": 111.18,
+     "h": 42.35,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT QUAFF READ",
+     "x": 322.94,
+     "y": 718.7,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 206.47,
+     "y": 565.17,
+     "w": 52.35,
+     "h": 42.35,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 264.11,
+     "y": 565.17,
+     "w": 52.35,
+     "h": 42.35,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 321.76,
+     "y": 565.17,
+     "w": 52.35,
+     "h": 42.35,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T",
+     "x": 206.47,
+     "y": 612.82,
+     "w": 52.35,
+     "h": 42.35,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R",
+     "x": 264.11,
+     "y": 612.82,
+     "w": 52.35,
+     "h": 42.35,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 321.76,
+     "y": 612.82,
+     "w": 52.35,
+     "h": 42.35,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY i",
+     "x": 206.47,
+     "y": 776.94,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "+",
+     "x": 132.35,
+     "y": 612.82,
+     "w": 51.18,
+     "h": 42.35,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "pin2",
+     "label": "+",
+     "x": 206.47,
+     "y": 660.47,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "flick",
+     "label": "+ FLICK",
+     "x": 264.71,
+     "y": 660.47,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "flick"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT",
+     "x": 206.47,
+     "y": 718.7,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY",
+     "x": 322.94,
+     "y": 776.94,
+     "w": 51.18,
+     "h": 51.18,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swipe in REST slot)",
+     "x": 15.88,
+     "y": 508.7,
+     "w": 71.64,
+     "h": 31.76,
+     "thumb": null,
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 14.11,
+    "y": 15.88,
+    "w": 361.75,
+    "h": 454
+   },
+   "mapArea": {
+    "x": 15.874705882352941,
+    "y": 101.39174098671725,
+    "w": 358.2352941176471,
+    "h": 326.1353178368122
+   },
+   "bands": [
+    {
+     "name": "messages",
+     "x": 14.11,
+     "y": 15.88,
+     "w": 361.75,
+     "h": 85.5
+    },
+    {
+     "name": "status",
+     "x": 14.11,
+     "y": 427.53,
+     "w": 361.75,
+     "h": 42.34
+    }
+   ],
+   "popups": [],
+   "chrome": [
+    {
+     "name": "lip (SEARCH / ARMED / MORE lamps, nameplate)",
+     "x": 7.06,
+     "y": 469.88,
+     "w": 375.88,
+     "h": 22.94
+    }
+   ],
+   "decor": [
+    {
+     "name": "well 1",
+     "x": 7.06,
+     "y": 556.35,
+     "w": 185.29,
+     "h": 280.59
+    },
+    {
+     "name": "well 2",
+     "x": 197.65,
+     "y": 556.35,
+     "w": 185.29,
+     "h": 280.59
+    },
+    {
+     "name": "well 3",
+     "x": 7.06,
+     "y": 499.88,
+     "w": 375.88,
+     "h": 49.41
+    },
+    {
+     "name": "hood",
+     "x": 7.06,
+     "y": 7.06,
+     "w": 375.88,
+     "h": 485.76
+    }
+   ]
+  },
+  "1024x768": {
+   "W": 1024,
+   "H": 768,
+   "pointer": "touch",
+   "source": "audit android/landscape.json 1024x768, 58 dp keys, case on, scale 1",
+   "controls": [
+    {
+     "id": "rest",
+     "label": "REST ×20 (scroll well)",
+     "x": 18,
+     "y": 18,
+     "w": 126,
+     "h": 40,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swipe-revealed in REST slot)",
+     "x": 18,
+     "y": 18,
+     "w": 126,
+     "h": 40,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 150,
+     "y": 18,
+     "w": 58,
+     "h": 40,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (hold: pray)",
+     "x": 18,
+     "y": 245.5,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 82,
+     "y": 245.5,
+     "w": 126,
+     "h": 58,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP",
+     "x": 18,
+     "y": 491,
+     "w": 126,
+     "h": 58,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "PIN 1 (COMBAT point 0; portrait calls it QUIVER)",
+     "x": 150,
+     "y": 491,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 18,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 84,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 150,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 18,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre s/, (hold: ctx radial)",
+     "x": 84,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 150,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 18,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 84,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 150,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (OFFENSE, F)",
+     "x": 236,
+     "y": 701,
+     "w": 58,
+     "h": 52,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin2",
+     "label": "PIN 2 (COMBAT point 1; portrait calls it FIRE)",
+     "x": 300,
+     "y": 701,
+     "w": 50,
+     "h": 52,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK key (retired 3rd point; ZAP in the portrait comment)",
+     "x": 356,
+     "y": 701,
+     "w": 50,
+     "h": 52,
+     "thumb": "L",
+     "kind": "flick"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook ;)",
+     "x": 442,
+     "y": 701,
+     "w": 170,
+     "h": 52,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT key (this turn's action)",
+     "x": 618,
+     "y": 701,
+     "w": 170,
+     "h": 52,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS",
+     "x": 963,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "game",
+     "label": "GAME",
+     "x": 914,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD",
+     "x": 865,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU",
+     "x": 816,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY i (bar)",
+     "x": 816,
+     "y": 68,
+     "w": 190,
+     "h": 28,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 816,
+     "y": 104,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 881.33,
+     "y": 104,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 946.67,
+     "y": 104,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T",
+     "x": 816,
+     "y": 158,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R",
+     "x": 881.33,
+     "y": 158,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 946.67,
+     "y": 158,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 816,
+     "y": 571,
+     "w": 96,
+     "h": 52,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 816,
+     "y": 629,
+     "w": 96,
+     "h": 52,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s ×n",
+     "x": 816,
+     "y": 687,
+     "w": 96,
+     "h": 63,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (e)",
+     "x": 918,
+     "y": 571,
+     "w": 88,
+     "h": 68,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY a (HUB_INTERACT, the old INTERACT)",
+     "x": 918,
+     "y": 645,
+     "w": 88,
+     "h": 105,
+     "thumb": "R",
+     "kind": "hub"
+    }
+   ],
+   "glass": {
+    "x": 242,
+    "y": 22,
+    "w": 540,
+    "h": 638
+   },
+   "mapArea": {
+    "x": 244,
+    "y": 85.44,
+    "w": 536,
+    "h": 526.56
+   },
+   "bands": [
+    {
+     "name": "messages",
+     "x": 242,
+     "y": 22,
+     "w": 540,
+     "h": 63.44
+    },
+    {
+     "name": "status",
+     "x": 242,
+     "y": 612,
+     "w": 540,
+     "h": 48
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick_node0: flick UP node (Kick ^D by default)",
+     "x": 367.37,
+     "y": 609.37,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick_node1: flick UP-RIGHT node",
+     "x": 432.54,
+     "y": 643.29,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_0: Attack F",
+     "x": 90,
+     "y": 477.44,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_1: Pick up ,",
+     "x": 157.75,
+     "y": 493.09,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_2: Descend >",
+     "x": 211.79,
+     "y": 536.85,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_3: Look here :",
+     "x": 241.18,
+     "y": 599.87,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_4: Chat M-c",
+     "x": 239.97,
+     "y": 669.39,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "context",
+     "label": "cand_0: context candidate 1/3",
+     "x": 605.29,
+     "y": 629.29,
+     "w": 54,
+     "h": 54
+    },
+    {
+     "owner": "context",
+     "label": "cand_1: context candidate 2/3",
+     "x": 676,
+     "y": 600,
+     "w": 54,
+     "h": 54
+    },
+    {
+     "owner": "context",
+     "label": "cand_2: context candidate 3/3",
+     "x": 746.71,
+     "y": 629.29,
+     "w": 54,
+     "h": 54
+    },
+    {
+     "owner": "rest",
+     "label": "restchips: REST / LONG REST count chips",
+     "x": 18,
+     "y": 64,
+     "w": 244,
+     "h": 52
+    },
+    {
+     "owner": "look",
+     "label": "chips_strip0: count chips over LOOK (when counted)",
+     "x": 442,
+     "y": 650,
+     "w": 236,
+     "h": 44
+    },
+    {
+     "owner": "context",
+     "label": "chips_strip1: count chips over CONTEXT (when counted)",
+     "x": 618,
+     "y": 650,
+     "w": 236,
+     "h": 44
+    },
+    {
+     "owner": "search",
+     "label": "chips_search: SEARCH count chips",
+     "x": 770,
+     "y": 636,
+     "w": 236,
+     "h": 44
+    }
+   ],
+   "chrome": [
+    {
+     "name": "lip (SEARCH / ARMED / MORE lamps, nameplate)",
+     "x": 226,
+     "y": 660,
+     "w": 572,
+     "h": 26
+    }
+   ],
+   "decor": [
+    {
+     "name": "leftWell",
+     "x": 8,
+     "y": 8,
+     "w": 210,
+     "h": 752
+    },
+    {
+     "name": "rightWell",
+     "x": 806,
+     "y": 8,
+     "w": 210,
+     "h": 752
+    },
+    {
+     "name": "deck",
+     "x": 226,
+     "y": 694,
+     "w": 572,
+     "h": 66
+    },
+    {
+     "name": "hood",
+     "x": 226,
+     "y": 8,
+     "w": 572,
+     "h": 678
+    }
+   ]
+  },
+  "768x1024": {
+   "W": 768,
+   "H": 1024,
+   "pointer": "touch",
+   "source": "audit android/portrait.json 768x1024, 58 dp keys, case on, scale 1",
+   "controls": [
+    {
+     "id": "rest",
+     "label": "REST ×n (scroll well)",
+     "x": 18,
+     "y": 644,
+     "w": 120,
+     "h": 36,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swipe-revealed in REST slot)",
+     "x": 18,
+     "y": 644,
+     "w": 120,
+     "h": 36,
+     "thumb": "L",
+     "kind": "key",
+     "behind": "rest"
+    },
+    {
+     "id": "msgs",
+     "label": "MSGS ^P",
+     "x": 144,
+     "y": 644,
+     "w": 81.43,
+     "h": 36,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU",
+     "x": 231.43,
+     "y": 644,
+     "w": 81.43,
+     "h": 36,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD",
+     "x": 318.86,
+     "y": 644,
+     "w": 81.43,
+     "h": 36,
+     "thumb": "L",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "game",
+     "label": "GAME",
+     "x": 406.29,
+     "y": 644,
+     "w": 81.43,
+     "h": 36,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS",
+     "x": 493.71,
+     "y": 644,
+     "w": 81.43,
+     "h": 36,
+     "thumb": "R",
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m2",
+     "label": "M2 macro",
+     "x": 581.14,
+     "y": 644,
+     "w": 81.43,
+     "h": 36,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "m3",
+     "label": "M3 macro",
+     "x": 668.57,
+     "y": 644,
+     "w": 81.43,
+     "h": 36,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE (hold: pray)",
+     "x": 18,
+     "y": 708,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "m1",
+     "label": "M1 macro",
+     "x": 82,
+     "y": 708,
+     "w": 126,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP",
+     "x": 18,
+     "y": 762,
+     "w": 126,
+     "h": 48,
+     "thumb": "L",
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "QUIVER slot = COMBAT point 0 (empty \"+\" by default)",
+     "x": 150,
+     "y": 762,
+     "w": 58,
+     "h": 48,
+     "thumb": "L",
+     "kind": "key"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 18,
+     "y": 816,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 84,
+     "y": 816,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 150,
+     "y": 816,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 18,
+     "y": 882,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "centre s/. (hold: ctx radial)",
+     "x": 84,
+     "y": 882,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 150,
+     "y": 882,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 18,
+     "y": 948,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 84,
+     "y": 948,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 150,
+     "y": 948,
+     "w": 58,
+     "h": 58,
+     "thumb": "L",
+     "kind": "pad"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 560,
+     "y": 708,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 625.33,
+     "y": 708,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 690.67,
+     "y": 708,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T",
+     "x": 560,
+     "y": 762,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R",
+     "x": 625.33,
+     "y": 762,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 690.67,
+     "y": 762,
+     "w": 59.33,
+     "h": 48,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "pin2",
+     "label": "FIRE slot = COMBAT point 1 (empty \"+\" by default)",
+     "x": 560,
+     "y": 816,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "key"
+    },
+    {
+     "id": "flick",
+     "label": "FLICK key (tap macro; flick up = Kick ^D; the portrait comment's \"ZAP\")",
+     "x": 626,
+     "y": 816,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "flick"
+    },
+    {
+     "id": "look",
+     "label": "LOOK : (hold: farlook ;)",
+     "x": 692,
+     "y": 816,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT (OFFENSE; tap: Fight F, arms the pad)",
+     "x": 560,
+     "y": 882,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "context",
+     "label": "CONTEXT key (this turn's action; candidates fan)",
+     "x": 626,
+     "y": 882,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "eat",
+     "label": "EAT/QUAFF/READ (e)",
+     "x": 692,
+     "y": 882,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY i",
+     "x": 560,
+     "y": 948,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    },
+    {
+     "id": "search",
+     "label": "SEARCH s ×n",
+     "x": 626,
+     "y": 948,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "strip"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY a (HUB_INTERACT, \"INTERACT\" in the comments)",
+     "x": 692,
+     "y": 948,
+     "w": 58,
+     "h": 58,
+     "thumb": "R",
+     "kind": "hub"
+    }
+   ],
+   "glass": {
+    "x": 16,
+    "y": 18,
+    "w": 736,
+    "h": 582
+   },
+   "mapArea": {
+    "x": 18,
+    "y": 108.65,
+    "w": 732,
+    "h": 443.35
+   },
+   "bands": [
+    {
+     "name": "messages",
+     "x": 16,
+     "y": 18,
+     "w": 736,
+     "h": 90.65
+    },
+    {
+     "name": "status",
+     "x": 16,
+     "y": 552,
+     "w": 736,
+     "h": 48
+    }
+   ],
+   "popups": [
+    {
+     "owner": "flick",
+     "label": "flick_node0: flick UP node (Kick ^D by default)",
+     "x": 641.37,
+     "y": 727.37,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "flick",
+     "label": "flick_node1: flick UP-RIGHT node (empty)",
+     "x": 706.54,
+     "y": 761.29,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_0: ctx radial: Attack F",
+     "x": 90,
+     "y": 733.44,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_1: ctx radial: Pick up ,",
+     "x": 157.75,
+     "y": 749.09,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_2: ctx radial: Descend >",
+     "x": 211.79,
+     "y": 792.85,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_3: ctx radial: Look here :",
+     "x": 241.18,
+     "y": 855.87,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "pad_centre",
+     "label": "ctxradial_4: ctx radial: Chat M-c",
+     "x": 239.97,
+     "y": 925.39,
+     "w": 46,
+     "h": 46
+    },
+    {
+     "owner": "context",
+     "label": "cand_0: context candidate 1/3",
+     "x": 557.29,
+     "y": 813.29,
+     "w": 54,
+     "h": 54
+    },
+    {
+     "owner": "context",
+     "label": "cand_1: context candidate 2/3",
+     "x": 628,
+     "y": 784,
+     "w": 54,
+     "h": 54
+    },
+    {
+     "owner": "context",
+     "label": "cand_2: context candidate 3/3",
+     "x": 698.71,
+     "y": 813.29,
+     "w": 54,
+     "h": 54
+    },
+    {
+     "owner": "rest",
+     "label": "restchips: REST / LONG REST count chips (above the key row, over the glass)",
+     "x": 18,
+     "y": 585,
+     "w": 244,
+     "h": 52
+    },
+    {
+     "owner": "look",
+     "label": "chips_strip0: count chips over LOOK (when counted)",
+     "x": 514,
+     "y": 765,
+     "w": 236,
+     "h": 44
+    },
+    {
+     "owner": "context",
+     "label": "chips_strip1: count chips over CONTEXT (when counted)",
+     "x": 514,
+     "y": 831,
+     "w": 236,
+     "h": 44
+    },
+    {
+     "owner": "search",
+     "label": "chips_strip2: count chips over SEARCH (when counted)",
+     "x": 514,
+     "y": 897,
+     "w": 236,
+     "h": 44
+    }
+   ],
+   "chrome": [
+    {
+     "name": "lip (SEARCH / ARMED / MORE lamps, nameplate)",
+     "x": 8,
+     "y": 600,
+     "w": 752,
+     "h": 26
+    }
+   ],
+   "decor": [
+    {
+     "name": "leftWell",
+     "x": 8,
+     "y": 698,
+     "w": 210,
+     "h": 318
+    },
+    {
+     "name": "rightWell",
+     "x": 550,
+     "y": 698,
+     "w": 210,
+     "h": 318
+    },
+    {
+     "name": "keyRowWell",
+     "x": 8,
+     "y": 634,
+     "w": 752,
+     "h": 56
+    },
+    {
+     "name": "hood",
+     "x": 8,
+     "y": 8,
+     "w": 752,
+     "h": 618
+    }
+   ]
+  },
+  "1366x768": {
+   "W": 1366,
+   "H": 768,
+   "pointer": "touch",
+   "source": "audit web/1366x768.json (live capture, touch, landscape, scale 1)",
+   "controls": [
+    {
+     "id": "rest",
+     "label": "Rest ×20",
+     "x": 18,
+     "y": 18,
+     "w": 126,
+     "h": 40,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "msgs",
+     "label": "Msgs",
+     "x": 150,
+     "y": 18,
+     "w": 58,
+     "h": 40,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m1",
+     "label": "+ M1",
+     "x": 82,
+     "y": 245.5,
+     "w": 126,
+     "h": 58,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 18,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 84,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 150,
+     "y": 560,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 18,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "REST",
+     "x": 84,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 150,
+     "y": 626,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 18,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 84,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 150,
+     "y": 692,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "look",
+     "label": "Look",
+     "x": 784,
+     "y": 701,
+     "w": 170,
+     "h": 52,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "context",
+     "label": "Ascend <",
+     "x": 960,
+     "y": 701,
+     "w": 170,
+     "h": 52,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "search",
+     "label": "Search",
+     "x": 1158,
+     "y": 687,
+     "w": 96,
+     "h": 63,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE",
+     "x": 18,
+     "y": 245.5,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS",
+     "x": 1305,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "game",
+     "label": "GAME",
+     "x": 1256,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD",
+     "x": 1207,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU",
+     "x": 1158,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "+ M3",
+     "x": 1158,
+     "y": 629,
+     "w": 96,
+     "h": 52,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "m2",
+     "label": "+ M2",
+     "x": 1158,
+     "y": 571,
+     "w": 96,
+     "h": 52,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP",
+     "x": 18,
+     "y": 491,
+     "w": 126,
+     "h": 58,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT QUAFF READ",
+     "x": 1260,
+     "y": 571,
+     "w": 88,
+     "h": 68,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 1158,
+     "y": 104,
+     "w": 59.33,
+     "h": 48,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 1223.33,
+     "y": 104,
+     "w": 59.33,
+     "h": 48,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 1288.66,
+     "y": 104,
+     "w": 59.33,
+     "h": 48,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T",
+     "x": 1158,
+     "y": 158,
+     "w": 59.33,
+     "h": 48,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R",
+     "x": 1223.33,
+     "y": 158,
+     "w": 59.33,
+     "h": 48,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 1288.66,
+     "y": 158,
+     "w": 59.33,
+     "h": 48,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY i",
+     "x": 1158,
+     "y": 68,
+     "w": 190,
+     "h": 28,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "+",
+     "x": 150,
+     "y": 491,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "pin2",
+     "label": "+",
+     "x": 300,
+     "y": 701,
+     "w": 50,
+     "h": 52,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "flick",
+     "label": "+ FLICK",
+     "x": 356,
+     "y": 701,
+     "w": 50,
+     "h": 52,
+     "thumb": null,
+     "kind": "flick"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT",
+     "x": 236,
+     "y": 701,
+     "w": 58,
+     "h": 52,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY",
+     "x": 1260,
+     "y": 645,
+     "w": 88,
+     "h": 105,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swipe in REST slot)",
+     "x": 18,
+     "y": 18,
+     "w": 126,
+     "h": 40,
+     "thumb": null,
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 242,
+    "y": 22,
+    "w": 882,
+    "h": 638
+   },
+   "mapArea": {
+    "x": 244,
+    "y": 82.71370967741936,
+    "w": 878,
+    "h": 529.2862903225806
+   },
+   "bands": [
+    {
+     "name": "messages",
+     "x": 242,
+     "y": 22,
+     "w": 882,
+     "h": 60.7
+    },
+    {
+     "name": "status",
+     "x": 242,
+     "y": 612,
+     "w": 882,
+     "h": 48
+    }
+   ],
+   "popups": [],
+   "chrome": [
+    {
+     "name": "lip (SEARCH / ARMED / MORE lamps, nameplate)",
+     "x": 226,
+     "y": 660,
+     "w": 914,
+     "h": 26
+    }
+   ],
+   "decor": [
+    {
+     "name": "well 1",
+     "x": 8,
+     "y": 8,
+     "w": 210,
+     "h": 752
+    },
+    {
+     "name": "well 2",
+     "x": 1148,
+     "y": 8,
+     "w": 210,
+     "h": 752
+    },
+    {
+     "name": "well 3",
+     "x": 226,
+     "y": 694,
+     "w": 914,
+     "h": 66
+    },
+    {
+     "name": "hood",
+     "x": 226,
+     "y": 8,
+     "w": 914,
+     "h": 678
+    }
+   ]
+  },
+  "1920x1080": {
+   "W": 1920,
+   "H": 1080,
+   "pointer": "mouse",
+   "source": "audit web/1920x1080.json (live capture, mouse, landscape, scale 1)",
+   "controls": [
+    {
+     "id": "rest",
+     "label": "Rest ×20",
+     "x": 18,
+     "y": 18,
+     "w": 126,
+     "h": 40,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "msgs",
+     "label": "Msgs",
+     "x": 150,
+     "y": 18,
+     "w": 58,
+     "h": 40,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m1",
+     "label": "+ M1",
+     "x": 82,
+     "y": 401.5,
+     "w": 126,
+     "h": 58,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "pad_y",
+     "label": "↖ y",
+     "x": 18,
+     "y": 872,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_k",
+     "label": "↑ k",
+     "x": 84,
+     "y": 872,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_u",
+     "label": "↗ u",
+     "x": 150,
+     "y": 872,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_h",
+     "label": "← h",
+     "x": 18,
+     "y": 938,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_centre",
+     "label": "REST",
+     "x": 84,
+     "y": 938,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_l",
+     "label": "→ l",
+     "x": 150,
+     "y": 938,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_b",
+     "label": "↙ b",
+     "x": 18,
+     "y": 1004,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_j",
+     "label": "↓ j",
+     "x": 84,
+     "y": 1004,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "pad_n",
+     "label": "↘ n",
+     "x": 150,
+     "y": 1004,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "pad"
+    },
+    {
+     "id": "look",
+     "label": "Look",
+     "x": 1338,
+     "y": 1013,
+     "w": 170,
+     "h": 52,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "context",
+     "label": "Ascend <",
+     "x": 1514,
+     "y": 1013,
+     "w": 170,
+     "h": 52,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "search",
+     "label": "Search",
+     "x": 1712,
+     "y": 999,
+     "w": 96,
+     "h": 63,
+     "thumb": null,
+     "kind": "strip"
+    },
+    {
+     "id": "sacrifice",
+     "label": "SACRIFICE",
+     "x": 18,
+     "y": 401.5,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "keys",
+     "label": "KEYS",
+     "x": 1859,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "game",
+     "label": "GAME",
+     "x": 1810,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "world",
+     "label": "WORLD",
+     "x": 1761,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "menu",
+     "label": "MENU",
+     "x": 1712,
+     "y": 18,
+     "w": 43,
+     "h": 40,
+     "thumb": null,
+     "kind": "chrome-key"
+    },
+    {
+     "id": "m3",
+     "label": "+ M3",
+     "x": 1712,
+     "y": 941,
+     "w": 96,
+     "h": 52,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "m2",
+     "label": "+ M2",
+     "x": 1712,
+     "y": 883,
+     "w": 96,
+     "h": 52,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "drop",
+     "label": "DROP",
+     "x": 18,
+     "y": 803,
+     "w": 126,
+     "h": 58,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "eat",
+     "label": "EAT QUAFF READ",
+     "x": 1814,
+     "y": 883,
+     "w": 88,
+     "h": 68,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "eq_wear",
+     "label": "Wear W",
+     "x": 1712,
+     "y": 104,
+     "w": 59.33,
+     "h": 48,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_puton",
+     "label": "Put on P",
+     "x": 1777.33,
+     "y": 104,
+     "w": 59.33,
+     "h": 48,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_wield",
+     "label": "Wield w",
+     "x": 1842.66,
+     "y": 104,
+     "w": 59.33,
+     "h": 48,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_takeoff",
+     "label": "Take off T",
+     "x": 1712,
+     "y": 158,
+     "w": 59.33,
+     "h": 48,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_remove",
+     "label": "Remove R",
+     "x": 1777.33,
+     "y": 158,
+     "w": 59.33,
+     "h": 48,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "eq_swap",
+     "label": "Swap x",
+     "x": 1842.66,
+     "y": 158,
+     "w": 59.33,
+     "h": 48,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "inventory",
+     "label": "INVENTORY i",
+     "x": 1712,
+     "y": 68,
+     "w": 190,
+     "h": 28,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "pin1",
+     "label": "+",
+     "x": 150,
+     "y": 803,
+     "w": 58,
+     "h": 58,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "pin2",
+     "label": "+",
+     "x": 300,
+     "y": 1013,
+     "w": 50,
+     "h": 52,
+     "thumb": null,
+     "kind": "key"
+    },
+    {
+     "id": "flick",
+     "label": "+ FLICK",
+     "x": 356,
+     "y": 1013,
+     "w": 50,
+     "h": 52,
+     "thumb": null,
+     "kind": "flick"
+    },
+    {
+     "id": "combat",
+     "label": "COMBAT",
+     "x": 236,
+     "y": 1013,
+     "w": 58,
+     "h": 52,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "apply",
+     "label": "APPLY",
+     "x": 1814,
+     "y": 957,
+     "w": 88,
+     "h": 105,
+     "thumb": null,
+     "kind": "hub"
+    },
+    {
+     "id": "longrest",
+     "label": "LONG REST (swipe in REST slot)",
+     "x": 18,
+     "y": 18,
+     "w": 126,
+     "h": 40,
+     "thumb": null,
+     "kind": "key",
+     "behind": "rest"
+    }
+   ],
+   "glass": {
+    "x": 242,
+    "y": 22,
+    "w": 1436,
+    "h": 950
+   },
+   "mapArea": {
+    "x": 244,
+    "y": 82.71370967741936,
+    "w": 1432,
+    "h": 841.2862903225806
+   },
+   "bands": [
+    {
+     "name": "messages",
+     "x": 242,
+     "y": 22,
+     "w": 1436,
+     "h": 60.7
+    },
+    {
+     "name": "status",
+     "x": 242,
+     "y": 924,
+     "w": 1436,
+     "h": 48
+    }
+   ],
+   "popups": [],
+   "chrome": [
+    {
+     "name": "lip (SEARCH / ARMED / MORE lamps, nameplate)",
+     "x": 226,
+     "y": 972,
+     "w": 1468,
+     "h": 26
+    }
+   ],
+   "decor": [
+    {
+     "name": "well 1",
+     "x": 8,
+     "y": 8,
+     "w": 210,
+     "h": 1064
+    },
+    {
+     "name": "well 2",
+     "x": 1702,
+     "y": 8,
+     "w": 210,
+     "h": 1064
+    },
+    {
+     "name": "well 3",
+     "x": 226,
+     "y": 1006,
+     "w": 1468,
+     "h": 66
+    },
+    {
+     "name": "hood",
+     "x": 226,
+     "y": 8,
+     "w": 1468,
+     "h": 990
+    }
+   ]
+  }
+ }
+}

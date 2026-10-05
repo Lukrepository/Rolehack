@@ -65,6 +65,11 @@ export function held() { buzz(30); }
 /** A flick crossing into a wedge: a detent under the thumb. */
 export function detent() { buzz(8); }
 
+/** A near miss the twin banks' guard swallowed, or a dimmed place of a layer
+ *  that does nothing: a tick, lighter than a key's press, that says the tap
+ *  was taken and went nowhere (the design's section 6). */
+export function tick() { buzz(6); }
+
 /** The settings' own sample, so a choice can be heard as it is made. */
 export async function preview(vol) {
   if (!sample) await load();
