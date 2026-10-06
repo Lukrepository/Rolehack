@@ -2,10 +2,12 @@
 
 For the Claude workspace "Portrait/landscape UI redesign" in Lucas's Nethack_fork project, and for anyone else who picks up the web port's touch layout. Written on 6 October 2026 by the cloud session that built it (https://claude.ai/code/session_01Dgv3E1gUjAwvSmojZmYB4f).
 
-**This file lives on the branch `claude/exciting-pascal-afplud`, not yet on `web`.** After you sync (section 2), your checkout won't have it. Read the latest version at any time with:
+**This file is on `web`** (merged on 6 October 2026), so once you sync (section 2) it is in your checkout. The cloud session may update it first on its own branch, `claude/exciting-pascal-afplud`. To read the latest at any time:
 
     git fetch origin
-    git show origin/claude/exciting-pascal-afplud:doc/twin-banks/HANDOFF.md
+    git show origin/web:doc/twin-banks/HANDOFF.md
+    # if this prints anything, a newer version is waiting on the cloud session's branch:
+    git log --oneline origin/web..origin/claude/exciting-pascal-afplud -- doc/twin-banks/HANDOFF.md
 
 ## In short
 
@@ -78,7 +80,7 @@ All of the redesign is in the web port (`win/web/`) and its docs (`doc/twin-bank
 | `win/web/prefs.js`, `rolehack.css`, `commands.js`, `feedback.js`, `defaults.nh` | New settings (`layout: 'twin'`, `mapCell`, `zoomFactor`, the budget, the ghost deck), the twin styles, the HERE drawer, a tick haptic, and comments. |
 | `win/web/build.sh`, `win/web/sw.js` | They now ship and cache `layout.js` and `viewer.js`. A `build.sh` from `ec134a7` leaves them out, and the page breaks. |
 | `win/web/test/` | Node tests: the rule against 15 golden screens and six variants, the edge windows, the budget, the size classes and the glass band. |
-| `doc/twin-banks/` | `README.md` (index, checks, Lucas's decisions), `DESIGN.md` (the design, with CHANGES), `RESEARCH.md`, `AUDIT.md`, `BUILD.md` (the integration report and what was built differently), `figures/`, `checks/` and `harness/`. Also `webtest/`, the browser suites as they ran, which is only on `claude/exciting-pascal-afplud` for now (section 8). |
+| `doc/twin-banks/` | `README.md` (index, checks, Lucas's decisions), `DESIGN.md` (the design, with CHANGES), `RESEARCH.md`, `AUDIT.md`, `BUILD.md` (the integration report and what was built differently), `figures/`, `checks/` and `harness/`. Also `webtest/`, the browser suites as they ran (section 8). |
 
 Players switch layouts under MENU → Settings → "Layout: twin banks / classic". Twin is the default. A window too square for twin banks, such as a split screen, shows classic without changing the setting.
 
@@ -110,7 +112,7 @@ From the top of the checkout. Nothing needs installing. You need node 20.19 or l
 | `node doc/twin-banks/checks/drag.mjs` | `134985 dragged layouts ... 0 issues` (about 17 s on node 22, 45 s on node 20) |
 | `git fetch origin && git merge-base --is-ancestor 12bda73 origin/gh-pages && git merge-base --is-ancestor 636e6d9 origin/gh-pages && echo kept` | `kept`: every build since 28 September is still in the live branch's history |
 
-`BUILD.md` says 147 tests: that count is from before the glass band, which added two. On `web` as it stands, `sweep.mjs` and `drag.mjs` won't start under Windows node in Git Bash (they import a plain `C:\` path), so run them in WSL there. The fix is on `claude/exciting-pascal-afplud`, in `doc/twin-banks/checks/lib.mjs`.
+`BUILD.md` says 147 tests: that count is from before the glass band, which added two. Until 6 October, `sweep.mjs` and `drag.mjs` couldn't start under Windows node, because they imported a plain `C:\` path; `checks/lib.mjs` now imports by file URL. That fix hasn't been tried on a real Windows machine, so if either check stops at its first import, run it in WSL.
 
 To see the page exactly as it is live: `git fetch origin && mkdir -p ../rh-site && git archive origin/gh-pages | tar -x -C ../rh-site`, then `python3 -m http.server 8123 --directory ../rh-site` (on Windows, `py -3 -m http.server 8123 --directory ../rh-site`), and open http://localhost:8123/. In Chrome's device toolbar, Lucas's phone is 896×443 and 443×939 at a pixel ratio of 2.4375.
 
@@ -123,9 +125,9 @@ To see the page exactly as it is live: `git fetch origin && mkdir -p ../rh-site 
 - **When merging, never take one side wholesale** for anything under `win/web/`. Never check files out from `before-twin-banks` or `ec134a7` to "start clean".
 - **Keep the bookmarks.**
   - `before-twin-banks` (at `ec134a7`) marks the last state before the redesign. Never commit to it or move it.
-  - `claude/exciting-pascal-afplud` holds this file, the saved browser suites and the Windows fix to `lib.mjs`, none of which is on `web` yet. Don't delete it.
+  - `claude/exciting-pascal-afplud` is the cloud session's working branch. Its work reaches `web` through pull requests, as #1 did. Don't delete it.
 - **Changes outside `win/web/` need a real build.** Release plan B2 (protecting saves) changes both game cores, and D26 may move the web onto newer DevTeam code. Either means a full `win/web/build.sh` with the Emscripten SDK, which Lucas's machine can run and the cloud session can't. Don't start B2 or any core change until Lucas has answered D26.
-- **Page-only changes** can be tried without Emscripten by laying `win/web/` over the live build's core. The recipe is `websync.sh`: `git show origin/claude/exciting-pascal-afplud:doc/twin-banks/webtest/websync.sh`. It names the cloud session's folders and port 8766, so change those first. It is valid only while nothing outside `win/web/` changes.
+- **Page-only changes** can be tried without Emscripten by laying `win/web/` over the live build's core. The recipe is `doc/twin-banks/webtest/websync.sh`. It names the cloud session's folders and port 8766, so change those first. It is valid only while nothing outside `win/web/` changes.
 - **On Windows, build and deploy from a clone made inside WSL**:
   - Make it with `cd ~ && git clone https://github.com/Lukrepository/Rolehack && cd Rolehack`.
   - Bring your own branches across with `git fetch /mnt/c/<path to your Windows clone> 'refs/heads/room/*:refs/heads/room/*' 'refs/heads/backup/*:refs/heads/backup/*'`, then run section 6 there.
@@ -182,9 +184,9 @@ It works only on a temporary folder beside the clone, `rh-pages`, built from `or
   Build these on what is there.
 - **Waiting on Lucas's own playtesting:** the default map cell (`mapCell: 'columns'` now, with "rows" as the alternative), and the other on-device tests in `DESIGN.md` section 18.
 - **No automated test ran outside Chromium.** Every suite ran in Playwright's Chromium. Lucas has tried the page on his own tablet and phone, but which browser he used isn't recorded. A full touch-only play-through on a device, and Firefox and iPhone sessions, are still to come (release plan B10).
-- **The saved browser suites** are in `doc/twin-banks/webtest/`, on `claude/exciting-pascal-afplud` only (commit `6494df8`).
+- **The saved browser suites** are in `doc/twin-banks/webtest/`.
   - They still name the cloud session's paths, ports and global Playwright install, so they don't run as they stand. Their README says how they ran.
-  - Read it without checking out: `git show origin/claude/exciting-pascal-afplud:doc/twin-banks/webtest/README.md`.
+  - Start with `doc/twin-banks/webtest/README.md`.
 - **Twin banks on Android** is out of scope so far (`DESIGN.md`, "Android, later"). Release plan D13, still open for Lucas, recommends classic at launch and twin banks later as a setting.
   - The Android app is the NetHack community's work: gurrhack's NetHack-Android and its ForkFront interface, carried on by JodiJodington, with Lucas's Rolehack changes on top.
 - **Known quirks, not bugs:**
