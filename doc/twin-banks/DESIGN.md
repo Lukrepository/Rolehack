@@ -9,6 +9,10 @@ Everything comes from one function, `layout(W, H, pointer, settings)`, in `win/w
 
 ## CHANGES (v2, 2 October 2026)
 
+### The device report (Lucas, 2026-10-06)
+
+Lucas's fourth goal was to know the screens the page meets ("we want to make sure that we know the screen size of the users on the web version"), and the page sends nothing anywhere: no server, no telemetry (`AUDIT.md`, §12). So Settings now ends with a **device report**, one line a player copies or shares and sends to Lucas, built by `deviceReport()` in `viewer.js` from the facts `overlay.js` gathers when Settings opens (`deviceFacts()`): the build; the window (CSS px, orientation), the screen, the pixel ratio, the browser and system named coarsely (Client Hints, else the user agent, for the reader only: the layout still never reads it), the display mode, the touch points, the `pointer` and `any-pointer` features, `hover`, the text size, the safe insets; then the layout shown (and, for a window shown as classic, the first reason why), the tier, the key size set and drawn, the right columns where they narrowed, the map cell, the cells shown and whether the level is whole, the glass and whether the header stands over the banks, the budget used (seen, guessed or none) and its figures, the fit and its first reason, the map cell setting, the zoom factor, the style and the case. A window shown as classic reports classic's key size, tile and scale instead. A fact the page could not get reads as `?`; the fields keep one order, so two lines compare field by field; `win/web/test/report.test.mjs` holds the format. The button is "Share report" where the browser has a share sheet (`navigator.canShare`), else "Copy report"; it keeps Settings open and answers in the form's hint line; where neither works, it selects the line for a manual copy. Nothing is sent by the page itself, and nothing is stored.
+
 ### Lucas's decisions of 4 October 2026, and the glass's band
 
 **3440x1440 stays as it is** (Lucas, 2026-10-04): the level spans the window at 42.5 dp, with the log and the inventory between the banks under it. Few ultrawide monitors are used like a tablet, so the aspect ratio matters little.
@@ -673,6 +677,8 @@ Every layer paints on the movement pad, which is identical in both orientations.
 | orientation | W > H only (a square window is landscape) | the glass choice |
 
 Never used to decide: the user agent, `pointer: coarse` alone, `hover` alone.
+
+**The device report** (Lucas, 2026-10-06; CHANGES). Everything in this table that the page can read, and what it decided from it, goes into one line at the end of Settings (`viewer.js` `deviceReport()`, from `overlay.js` `deviceFacts()`), with the browser and system named coarsely for the reader. A player shares or copies it and sends it to Lucas; the page sends nothing by itself.
 
 **The input-mode state machine** (from size-classes, in `viewer.js`):
 - A touch or pen `pointerdown` asks for thumb mode. The touch itself acts in the current layout, and the switch waits for the finger to lift.

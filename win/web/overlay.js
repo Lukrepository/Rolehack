@@ -39,7 +39,7 @@ import * as C from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
 import { textMetrics } from './layout.js';
-import { budgetedLayout, withClasses, classesOf } from './viewer.js';
+import { budgetedLayout, withClasses, classesOf, deviceReport, browserFamily } from './viewer.js';
 
 // ---- geometry, design dp (RhCase, RhOverlay, RhScreen)
 const MARGIN = 8, WELL_PAD = 10, DECK_H = 66, DECK_KEY = 52, HOOD_TOP = 14, HOOD_SIDE = 16,
@@ -3550,6 +3550,72 @@ export class Overlay {
   }
 
   // ---- settings (the MENU key)
+  // ---- the device report (Lucas, 2026-10-06; viewer.js deviceReport)
+  // What this page saw of the device and what it made of it, as plain values:
+  // the window and screen, the density, the browser (named for the reader
+  // only), the display mode, the pointers the browser reports, the text size,
+  // the safe insets; then the layout shown and why, and its figures.  Read
+  // when Settings opens, so the line is the window's as it stands.
+  deviceFacts() {
+    const mm = (q) => { try { return !!(window.matchMedia && matchMedia(q).matches); } catch (e) { return false; } };
+    const pointerOf = (p) => (mm(`(${p}: coarse)`) ? 'coarse' : mm(`(${p}: fine)`) ? 'fine' : mm(`(${p}: none)`) ? 'none' : '?');
+    const box = $('app').getBoundingClientRect();
+    const t = this.twin, S = t && t.spec, I = t && t.info, fit = S && S.fit;
+    const nav = typeof navigator === 'undefined' ? {} : navigator;
+    return {
+      build: this.host.build ? this.host.build() : null,
+      window: { w: box.width || window.innerWidth, h: box.height || window.innerHeight },
+      screen: { w: Number(screen.width) || 0, h: Number(screen.height) || 0 },
+      dpr: window.devicePixelRatio || 1,
+      browser: browserFamily(nav.userAgent, nav.userAgentData),
+      mode: this.displayMode(),
+      touchPoints: nav.maxTouchPoints || 0,
+      pointer: pointerOf('pointer'), anyPointer: pointerOf('any-pointer'),
+      hover: mm('(hover: hover)') ? true : mm('(hover: none)') ? false : null,
+      textScale: osTextScale(), msgFont: P.get('msgFont'), msgSize: Number(P.get('msgSize')) || 1,
+      insets: this.safeInsets(),
+      layout: P.get('layout') === 'classic' ? 'classic' : 'twin',
+      shown: t ? 'twin' : 'classic',
+      fallback: this.twinFallback || null,
+      tier: I ? I.tier : null,
+      padSetting: Number(P.get('padCell')) || 58,
+      pad: fit ? fit.pad : (this.padCell || 58) * (this.s || 1),
+      rightColumns: fit ? fit.rightColumns : null,
+      fitLevel: fit ? fit.level : null, degraded: fit ? !!fit.degraded : false,
+      reason: fit && fit.reasons && fit.reasons.length ? fit.reasons[0] : null,
+      cell: t ? I.T : (this.host.tileSize ? this.host.tileSize() : null),
+      scale: t ? 1 : this.s,
+      cols: I ? I.fill.cols : null, rows: I ? I.fill.rows : null, whole: I ? !!I.fill.whole : null,
+      glass: I && I.G ? I.G.kind : null, headerOver: !!(I && I.G && I.G.over),
+      budgetUsed: t ? t.budget : null, budget: (t && t.settings && t.settings.budget) || null,
+      mapCell: P.get('mapCell') === 'rows' ? 'rows' : 'columns',
+      zoomFactor: Number(P.get('zoomFactor')) || 1, zoom: Number(P.get('zoom')) || 0,
+      style: P.get('style'), caseOn: !!P.get('case'),
+    };
+  }
+
+  // Share it where the browser offers a share sheet (a phone: to a message to
+  // Lucas), else copy it; where neither works, select it for a manual copy.
+  // Only on the player's tap: the page sends nothing by itself.
+  async sendReport(text, hint) {
+    const say = (m) => { if (hint) hint.textContent = m; };
+    if (this.canShareReport()) {
+      try { await navigator.share({ title: 'Rolehack device report', text }); say('Shared'); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      say('Copied: paste it in a message to Lucas');
+      return;
+    } catch (e) { /* no clipboard here: select the line */ }
+    const ta = document.querySelector('#form textarea[readonly]');
+    if (ta) { ta.focus(); ta.select(); }
+    say('Select the report and copy it');
+  }
+  canShareReport() {
+    try { return !!(navigator.share && navigator.canShare && navigator.canShare({ text: 'Rolehack' })); } catch (e) { return false; }
+  }
+
   openSettings() {
     this.closeAll();
     const seg = (id, label, options) => ({ seg: id, label, value: String(P.get(id)), options });
@@ -3604,7 +3670,15 @@ export class Overlay {
       { ...seg('clickVolume', 'Click volume', [['20', '20'], ['40', '40'], ['60', '60'], ['80', '80'], ['100', '100']]),
         onPick: (val) => FB.preview(Number(val)) },
       { note: 'Zoom the map with the mouse wheel or a pinch; drag it to look around.  Esc closes an open fan or drawer.' },
+      // the device report (Lucas, 2026-10-06; viewer.js): one line a player
+      // sends to Lucas, so he learns the screens the page meets.  The page
+      // itself sends nothing.
+      { id: 'deviceReport', multiline: true, readonly: true, value: deviceReport(this.deviceFacts()),
+        label: 'Device report: what this page saw of your screen and what it made of it, in one line. Send it to Lucas '
+          + 'when something looks wrong, or when he asks; the page sends nothing by itself' },
     ], [
+      { label: this.canShareReport() ? 'Share report' : 'Copy report', stay: true,
+        run: (v, el, hint) => this.sendReport(String(v.deviceReport || ''), hint) },
       // twin banks keep their own zoom, a factor of the map cell (web.js tileSize)
       { label: 'Reset zoom', run: () => { P.set(this.twin ? 'zoomFactor' : 'zoom', this.twin ? 1 : 0); this.host.glassChanged(this.geom); } },
       { label: 'Done', primary: true, run: (v) => {
