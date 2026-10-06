@@ -1,16 +1,17 @@
 // shared helpers for the checks
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 // The rule is the web page's own, win/web/layout.js.  RH_LAYOUT=<path> runs the checks
 // against another build of it.
-const mod = await import(process.env.RH_LAYOUT ? path.resolve(process.env.RH_LAYOUT) : path.join(HERE, '../../../win/web/layout.js'));
+// file URLs, not paths: import() refuses a plain C:\ path on Windows
+const mod = await import(pathToFileURL(process.env.RH_LAYOUT ? path.resolve(process.env.RH_LAYOUT) : path.join(HERE, '../../../win/web/layout.js')).href);
 export const { deviceCell, bankMetrics, textMetrics } = mod;
 // layout() never throws; an older rule might, and the checks report that as an issue
 export function layout(W, H, pointer, settings) {
   try { return mod.layout(W, H, pointer, settings); } catch (e) { return { spec: null, info: null, degraded: true, reason: `THROWS: ${e.message}` }; }
 }
-export const { evaluate } = await import(path.join(HERE, '../harness/eval.mjs'));
+export const { evaluate } = await import(pathToFileURL(path.join(HERE, '../harness/eval.mjs')).href);
 export const MM = 0.15875;
 // score any landscape/portrait pair with the harness's own parity model (keys renamed so the harness pairs them)
 export function pairScore(A, B) {

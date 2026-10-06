@@ -77,7 +77,7 @@ sh win/web/build.sh clean
 python3 -m http.server 8123 --directory targets/web
 ```
 
-then open http://localhost:8123/. `build.sh` writes `targets/web/`, which is what the `gh-pages` branch holds. Publishing a new build is copying that directory into `gh-pages` and pushing it; the page's service worker replaces the installed copy on its next start.
+then open http://localhost:8123/. `build.sh` writes `targets/web/`, which is what the `gh-pages` branch holds. Publishing a new build is copying that directory into `gh-pages` and pushing it, as a new commit on top of the live branch, never forced: [`doc/twin-banks/HANDOFF.md`](doc/twin-banks/HANDOFF.md) has a checked recipe. The page's service worker replaces the installed copy on its next start.
 
 ### The `android-port` branch
 

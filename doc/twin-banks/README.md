@@ -4,6 +4,7 @@ The touch layout of the web port (`win/web/`), and the research and measurements
 
 | file | what |
 |---|---|
+| [`HANDOFF.md`](HANDOFF.md) | For the next workspace: what is built and where, how to bring an old clone up to date without losing work, the rules that keep `web` and `gh-pages` safe, and what is still open. |
 | [`DESIGN.md`](DESIGN.md) | The design, v2: the rule, every key and layer, the near-miss guard, screen classes from phones to monitors. Its CHANGES list every decision since (Lucas's included). |
 | [`RESEARCH.md`](RESEARCH.md) | The research brief it rests on: thumb reach, target sizes, muscle memory across orientations, and screen classes. Every claim was fact-checked against its source. |
 | [`AUDIT.md`](AUDIT.md) | The audit of the build before the redesign (29 September 2026, `ec134a7`): what moved between orientations, and how much of the screen was empty. |
@@ -14,7 +15,7 @@ The touch layout of the web port (`win/web/`), and the research and measurements
 
 ## Running the checks
 
-From the top of the checkout, with node 20.19 or later (no packages):
+From the top of the checkout, with node 20.19 or later in the 20 line, or 22.7 or later (not 21; no packages):
 
     node --test win/web/test/              # the rule against its golden screens, the budget, the size classes, the glass's band
     node doc/twin-banks/checks/sweep.mjs   # the design's gate: 73,470 layouts in ten sections, 0 issues
