@@ -1,0 +1,212 @@
+[
+ {
+  "tag": "rotate-1024x768@2.4375",
+  "name": "both orientations tablet",
+  "pass": true,
+  "detail": [
+   "tablet",
+   "tablet"
+  ]
+ },
+ {
+  "tag": "rotate-1024x768@2.4375",
+  "name": "every key the same distance from its corner in both orientations",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "rotate-1024x768@2.4375",
+  "name": "portrait: every keycap at the spec",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "rotate-1024x768@2.4375",
+  "name": "the same map cell",
+  "pass": true,
+  "detail": [
+   12.5,
+   12.5
+  ]
+ },
+ {
+  "tag": "rotate-1024x768@2.4375",
+  "name": "portrait spec: layout()'s with the device's budget",
+  "pass": true,
+  "detail": {
+   "budget": {
+    "w": 768,
+    "h": 768,
+    "l": 1024
+   },
+   "used": "seen"
+  }
+ },
+ {
+  "tag": "rotate-1024x768@2.4375",
+  "name": "portrait: inventory and log shown and filled",
+  "pass": true,
+  "detail": {
+   "inv": 10,
+   "log": 2
+  }
+ },
+ {
+  "tag": "rotate-1024x768@2.4375",
+  "name": "Fight still armed after the turn",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "rotate-1024x768@2.4375",
+  "name": "turned back: the same layout as before",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "rotate-1024x768@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "rotate-1180x820@2.4375",
+  "name": "both orientations tablet",
+  "pass": true,
+  "detail": [
+   "tablet",
+   "tablet"
+  ]
+ },
+ {
+  "tag": "rotate-1180x820@2.4375",
+  "name": "every key the same distance from its corner in both orientations",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "rotate-1180x820@2.4375",
+  "name": "portrait: every keycap at the spec",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "rotate-1180x820@2.4375",
+  "name": "the same map cell",
+  "pass": true,
+  "detail": [
+   14.5,
+   14.5
+  ]
+ },
+ {
+  "tag": "rotate-1180x820@2.4375",
+  "name": "portrait spec: layout()'s with the device's budget",
+  "pass": true,
+  "detail": {
+   "budget": {
+    "w": 820,
+    "h": 820,
+    "l": 1180
+   },
+   "used": "seen"
+  }
+ },
+ {
+  "tag": "rotate-1180x820@2.4375",
+  "name": "portrait: inventory and log shown and filled",
+  "pass": true,
+  "detail": {
+   "inv": 10,
+   "log": 2
+  }
+ },
+ {
+  "tag": "rotate-1180x820@2.4375",
+  "name": "Fight still armed after the turn",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "rotate-1180x820@2.4375",
+  "name": "turned back: the same layout as before",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "rotate-1180x820@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "rotate-1366x1024@2.4375",
+  "name": "both orientations tablet",
+  "pass": true,
+  "detail": [
+   "tablet",
+   "tablet"
+  ]
+ },
+ {
+  "tag": "rotate-1366x1024@2.4375",
+  "name": "every key the same distance from its corner in both orientations",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "rotate-1366x1024@2.4375",
+  "name": "portrait: every keycap at the spec",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "rotate-1366x1024@2.4375",
+  "name": "the same map cell",
+  "pass": true,
+  "detail": [
+   16.5,
+   16.5
+  ]
+ },
+ {
+  "tag": "rotate-1366x1024@2.4375",
+  "name": "portrait spec: layout()'s with the device's budget",
+  "pass": true,
+  "detail": {
+   "budget": {
+    "w": 1024,
+    "h": 1024,
+    "l": 1366
+   },
+   "used": "seen"
+  }
+ },
+ {
+  "tag": "rotate-1366x1024@2.4375",
+  "name": "portrait: inventory and log shown and filled",
+  "pass": true,
+  "detail": {
+   "inv": 10,
+   "log": 2
+  }
+ },
+ {
+  "tag": "rotate-1366x1024@2.4375",
+  "name": "Fight still armed after the turn",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "rotate-1366x1024@2.4375",
+  "name": "turned back: the same layout as before",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "rotate-1366x1024@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ }
+]

@@ -1,0 +1,256 @@
+1. matrix: 3 pad sizes x 5 variants, phones, tablets, laptops, mouse; pairs by harness and hit model: 880 screens, 174 issues
+   default pad 46 pair 882x344/344x882: hit model differs over 2472 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   default pad 46 pair 800x360/360x800: hit model differs over 2490 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   default pad 46 pair 640x360/360x640: hit model differs over 2490 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   default pad 46 874x402: messages 4.0 dp from rest | status 4.0 dp from m3
+   default pad 52 pair 882x344/344x882: hit model differs over 5666 dp² (pad_n→· 258, inventory→· 258, ·→pad_n 238, ·→inventory 230)
+   default pad 52 pair 800x360/360x800: hit model differs over 5728 dp² (pad_n→· 258, inventory→· 258, ·→pad_n 244, ·→inventory 236)
+   default pad 52 pair 640x360/360x640: hit model differs over 5728 dp² (pad_n→· 258, inventory→· 258, ·→pad_n 244, ·→inventory 236)
+   default pad 52 pair 844x390/390x844: hit model differs over 2634 dp² (pad_n→· 137, inventory→· 137, pad_l→· 122, pad_u→· 122)
+   default pad 52 852x393: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 52 pair 852x393/393x852: hit model differs over 2520 dp² (pad_n→· 133, inventory→· 133, pad_l→· 120, pad_u→· 120)
+   default pad 52 874x402: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 52 915x412: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 52 924x412: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 52 926x428: messages 10.6 dp from rest | status 10.6 dp from m3
+   default pad 58 pair 882x344/344x882: hit model differs over 5990 dp² (pad_n→· 282, inventory→· 282, ·→pad_n 262, ·→inventory 254)
+   default pad 58 pair 800x360/360x800: hit model differs over 5368 dp² (pad_n→· 224, inventory→· 224, ·→pad_n 203, ·→inventory 195)
+   default pad 58 pair 640x360/360x640: hit model differs over 5368 dp² (pad_n→· 224, inventory→· 224, ·→pad_n 203, ·→inventory 195)
+   default pad 58 844x390: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 58 pair 844x390/390x844: hit model differs over 5884 dp² (pad_n→· 266, inventory→· 266, ·→pad_n 256, ·→pad_u 252)
+   default pad 58 852x393: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 58 pair 852x393/393x852: hit model differs over 5302 dp² (pad_n→· 226, inventory→· 226, ·→pad_n 204, ·→inventory 196)
+   default pad 58 874x402: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 58 pair 874x402/402x874: hit model differs over 4018 dp² (pad_n→· 212, inventory→· 212, ·→inventory 190, ·→pad_n 190)
+   default pad 58 915x412: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 58 pair 915x412/412x915: hit model differs over 2758 dp² (pad_n→· 147, inventory→· 147, pad_l→· 130, pad_u→· 130)
+   ... 149 more (-v)
+2. as the keys shrink (58 -> 52 -> 46) the map never shrinks: cells and map share, every touch screen and variant: 22055 screens, 5790 issues
+   default|360x640: 466 cells 29.11% / 468 cells 29.27% / 437 cells 27.32% at 46 / 52 / 58 dp
+   default|390x844: 632 cells 30.94% / 632 cells 30.94% / 529 cells 36.97% at 46 / 52 / 58 dp
+   default|844x390: 787 cells 38.55% / 738 cells 36.12% / 610 cells 42.64% at 46 / 52 / 58 dp
+   default|393x852: 630 cells 31.00% / 528 cells 36.98% / 528 cells 36.98% at 46 / 52 / 58 dp
+   default|852x393: 792 cells 38.97% / 619 cells 43.31% / 610 cells 42.74% at 46 / 52 / 58 dp
+   default|402x874: 527 cells 37.01% / 526 cells 37.07% / 526 cells 37.07% at 46 / 52 / 58 dp
+   default|412x915: 526 cells 36.28% / 523 cells 36.50% / 523 cells 36.50% at 46 / 52 / 58 dp
+   default|412x924: 526 cells 35.93% / 523 cells 36.14% / 523 cells 36.14% at 46 / 52 / 58 dp
+   default|428x926: 522 cells 37.58% / 522 cells 37.58% / 519 cells 37.79% at 46 / 52 / 58 dp
+   default|430x932: 522 cells 37.55% / 522 cells 37.55% / 519 cells 37.76% at 46 / 52 / 58 dp
+   default|712x1138: 1056 cells 25.55% / 1137 cells 23.72% / 1183 cells 22.81% at 46 / 52 / 58 dp
+   default|690x829: 1087 cells 32.98% / 1163 cells 30.83% / 1194 cells 30.05% at 46 / 52 / 58 dp
+   default|829x690: 1309 cells 39.70% / 1400 cells 37.11% / 1372 cells 34.53% at 46 / 52 / 58 dp
+   default|701x841: 1063 cells 33.80% / 1134 cells 31.69% / 1213 cells 29.62% at 46 / 52 / 58 dp
+   default|841x701: 1277 cells 40.63% / 1363 cells 38.09% / 1455 cells 35.55% at 46 / 52 / 58 dp
+   left-handed|360x640: 466 cells 29.11% / 468 cells 29.27% / 437 cells 27.32% at 46 / 52 / 58 dp
+   left-handed|390x844: 632 cells 30.94% / 632 cells 30.94% / 529 cells 36.97% at 46 / 52 / 58 dp
+   left-handed|844x390: 787 cells 38.55% / 738 cells 36.12% / 610 cells 42.64% at 46 / 52 / 58 dp
+   left-handed|393x852: 630 cells 31.00% / 528 cells 36.98% / 528 cells 36.98% at 46 / 52 / 58 dp
+   left-handed|852x393: 792 cells 38.97% / 619 cells 43.31% / 610 cells 42.74% at 46 / 52 / 58 dp
+   left-handed|402x874: 527 cells 37.01% / 526 cells 37.07% / 526 cells 37.07% at 46 / 52 / 58 dp
+   left-handed|412x915: 526 cells 36.28% / 523 cells 36.50% / 523 cells 36.50% at 46 / 52 / 58 dp
+   left-handed|412x924: 526 cells 35.93% / 523 cells 36.14% / 523 cells 36.14% at 46 / 52 / 58 dp
+   left-handed|428x926: 522 cells 37.58% / 522 cells 37.58% / 519 cells 37.79% at 46 / 52 / 58 dp
+   left-handed|430x932: 522 cells 37.55% / 522 cells 37.55% / 519 cells 37.76% at 46 / 52 / 58 dp
+   ... 5765 more (-v)
+3. uneven pairs: with the budget, parity; without, every single-screen rule: 420 screens, 105 issues
+   default pad 46 budget 915x388: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 46 no budget 915x388: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 46 budget pair 640x336/360x616: hit model differs over 2490 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   default pad 52 budget 915x388: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 52 no budget 915x388: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 52 budget pair 830x390/390x860: hit model differs over 2634 dp² (pad_n→· 137, inventory→· 137, pad_l→· 122, pad_u→· 122)
+   default pad 52 budget 896x419: messages 3.6 dp from rest | status 3.6 dp from m3
+   default pad 52 no budget 896x419: messages 3.6 dp from rest | status 3.6 dp from m3
+   default pad 52 budget pair 844x366/390x820: hit model differs over 2634 dp² (pad_n→· 137, inventory→· 137, pad_l→· 122, pad_u→· 122)
+   default pad 52 budget pair 640x336/360x616: hit model differs over 5728 dp² (pad_n→· 258, inventory→· 258, ·→pad_n 244, ·→inventory 236)
+   default pad 58 budget 915x388: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 58 no budget 915x388: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 58 budget pair 830x390/390x860: hit model differs over 6040 dp² (pad_n→· 282, inventory→· 282, ·→pad_n 262, ·→inventory 254)
+   default pad 58 budget 896x419: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 58 no budget 896x419: messages 2.0 dp from rest | status 2.0 dp from m3
+   default pad 58 budget pair 844x366/390x820: hit model differs over 6040 dp² (pad_n→· 282, inventory→· 282, ·→pad_n 262, ·→inventory 254)
+   default pad 58 budget pair 640x336/360x616: hit model differs over 5350 dp² (pad_n→· 224, inventory→· 224, ·→pad_n 203, ·→inventory 195)
+   default pad 58 no budget 640x336: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   default pad 58 budget 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   default pad 58 no budget 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   default pad 58 budget pair 800x412/412x915: hit model differs over 2742 dp² (pad_n→· 147, inventory→· 147, pad_l→· 130, pad_u→· 130)
+   left-handed pad 46 budget 915x388: messages 2.0 dp from m3 | status 2.0 dp from rest
+   left-handed pad 46 no budget 915x388: messages 2.0 dp from m3 | status 2.0 dp from rest
+   left-handed pad 46 budget pair 640x336/360x616: hit model differs over 2490 dp² (inventory→· 125, pad_b→· 125, ·→sacrifice 111, ·→m2 111)
+   left-handed pad 52 budget 915x388: messages 2.0 dp from m3 | status 2.0 dp from rest
+   ... 80 more (-v)
+4. iPhone safe areas (side insets 47/59/62) under each anchor rule: 108 screens, 40 issues
+   iPhone 14 auto pad 58 844x390: messages 2.0 dp from rest | status OVER game | not drawable: status over game
+   iPhone 14 auto one side pad 58 844x390: messages 2.0 dp from rest | status OVER game | not drawable: status over game
+   iPhone 14 physical pad 52 pair 844x390/390x844: hit model differs over 2634 dp² (pad_n→· 137, inventory→· 137, pad_l→· 122, pad_u→· 122)
+   iPhone 14 physical one side pad 52 pair 844x390/390x844: hit model differs over 2634 dp² (pad_n→· 137, inventory→· 137, pad_l→· 122, pad_u→· 122)
+   iPhone 14 physical pad 58 844x390: messages 2.0 dp from rest | status 2.0 dp from m3
+   iPhone 14 physical pad 58 pair 844x390/390x844: hit model differs over 5884 dp² (pad_n→· 266, inventory→· 266, ·→pad_n 256, ·→pad_u 252)
+   iPhone 14 physical one side pad 58 844x390: messages 2.0 dp from rest | status 2.0 dp from m3
+   iPhone 14 physical one side pad 58 pair 844x390/390x844: hit model differs over 5884 dp² (pad_n→· 266, inventory→· 266, ·→pad_n 256, ·→pad_u 252)
+   iPhone 14 safe pad 58 844x390: messages OVER rest | status OVER game | not drawable: messages over rest, status over game
+   iPhone 14 safe one side pad 58 844x390: messages OVER rest | status OVER game | not drawable: messages over rest, status over game
+   iPhone 15 auto pad 52 852x393: messages 2.0 dp from rest | status OVER game | not drawable: status over game
+   iPhone 15 auto one side pad 52 852x393: messages 2.0 dp from rest | status OVER game | not drawable: status over game
+   iPhone 15 auto pad 58 852x393: messages 2.0 dp from rest | status OVER game | not drawable: status over game
+   iPhone 15 auto one side pad 58 852x393: messages 2.0 dp from rest | status OVER game | not drawable: status over game
+   iPhone 15 physical pad 52 852x393: messages 2.0 dp from rest | status 2.0 dp from m3
+   iPhone 15 physical pad 52 pair 852x393/393x852: hit model differs over 2520 dp² (pad_n→· 133, inventory→· 133, pad_l→· 120, pad_u→· 120)
+   iPhone 15 physical one side pad 52 852x393: messages 2.0 dp from rest | status 2.0 dp from m3
+   iPhone 15 physical one side pad 52 pair 852x393/393x852: hit model differs over 2520 dp² (pad_n→· 133, inventory→· 133, pad_l→· 120, pad_u→· 120)
+   iPhone 15 physical pad 58 852x393: messages 2.0 dp from rest | status 2.0 dp from m3
+   iPhone 15 physical pad 58 pair 852x393/393x852: hit model differs over 5302 dp² (pad_n→· 226, inventory→· 226, ·→pad_n 204, ·→inventory 196)
+   iPhone 15 physical one side pad 58 852x393: messages 2.0 dp from rest | status 2.0 dp from m3
+   iPhone 15 physical one side pad 58 pair 852x393/393x852: hit model differs over 5302 dp² (pad_n→· 226, inventory→· 226, ·→pad_n 204, ·→inventory 196)
+   iPhone 15 safe pad 52 852x393: messages OVER rest | status OVER game | not drawable: messages over rest, status over game
+   iPhone 15 safe one side pad 52 852x393: messages OVER rest | status OVER game | not drawable: messages over rest, status over game
+   iPhone 15 safe pad 58 852x393: messages OVER rest | status OVER game | not drawable: messages over rest, status over game
+   ... 15 more (-v)
+5. Android side cutouts 8/24/30 dp at 360/390/412 wide: 480 screens, 570 issues
+   default cutout 0 pad 46 pair 780x360/360x780: hit model differs over 2490 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   left-handed cutout 0 pad 46 pair 780x360/360x780: hit model differs over 2490 dp² (inventory→· 125, pad_b→· 125, ·→sacrifice 111, ·→m2 111)
+   combat-left cutout 0 pad 46 pair 780x360/360x780: hit model differs over 2490 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   text cells cutout 0 pad 46 pair 780x360/360x780: hit model differs over 2490 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   cell rows cutout 0 pad 46 pair 780x360/360x780: hit model differs over 2490 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   default cutout 0 pad 52 pair 780x360/360x780: hit model differs over 5728 dp² (pad_n→· 258, inventory→· 258, ·→pad_n 244, ·→inventory 236)
+   left-handed cutout 0 pad 52 pair 780x360/360x780: hit model differs over 5728 dp² (inventory→· 258, pad_b→· 258, ·→pad_b 244, ·→inventory 236)
+   combat-left cutout 0 pad 52 pair 780x360/360x780: hit model differs over 5728 dp² (pad_n→· 258, inventory→· 258, ·→pad_n 244, ·→inventory 236)
+   text cells cutout 0 pad 52 pair 780x360/360x780: hit model differs over 5728 dp² (pad_n→· 258, inventory→· 258, ·→pad_n 244, ·→inventory 236)
+   cell rows cutout 0 pad 52 pair 780x360/360x780: hit model differs over 5728 dp² (pad_n→· 258, inventory→· 258, ·→pad_n 244, ·→inventory 236)
+   default cutout 0 pad 58 pair 780x360/360x780: hit model differs over 5368 dp² (pad_n→· 224, inventory→· 224, ·→pad_n 203, ·→inventory 195)
+   left-handed cutout 0 pad 58 pair 780x360/360x780: hit model differs over 5368 dp² (inventory→· 224, pad_b→· 224, ·→pad_b 203, ·→inventory 195)
+   combat-left cutout 0 pad 58 pair 780x360/360x780: hit model differs over 5368 dp² (pad_n→· 224, inventory→· 224, ·→pad_n 203, ·→inventory 195)
+   text cells cutout 0 pad 58 pair 780x360/360x780: hit model differs over 5368 dp² (pad_n→· 224, inventory→· 224, ·→pad_n 203, ·→inventory 195)
+   cell rows cutout 0 pad 58 pair 780x360/360x780: hit model differs over 5368 dp² (pad_n→· 224, inventory→· 224, ·→pad_n 203, ·→inventory 195)
+   default cutout 8 pad 46 pair 780x360/360x780: hit model differs over 2472 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   default cutout 8 pad 46 780x360: margin 20.0 adds more than the depth beyond 18.0
+   default cutout 8 pad 46 780x360: the bottom offset 20.0 is over the margin without the cutout, 18.0
+   left-handed cutout 8 pad 46 pair 780x360/360x780: hit model differs over 2472 dp² (inventory→· 125, pad_b→· 125, ·→sacrifice 111, ·→m2 111)
+   left-handed cutout 8 pad 46 780x360: margin 20.0 adds more than the depth beyond 18.0
+   left-handed cutout 8 pad 46 780x360: the bottom offset 20.0 is over the margin without the cutout, 18.0
+   combat-left cutout 8 pad 46 pair 780x360/360x780: hit model differs over 2472 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   combat-left cutout 8 pad 46 780x360: margin 20.0 adds more than the depth beyond 18.0
+   combat-left cutout 8 pad 46 780x360: the bottom offset 20.0 is over the margin without the cutout, 18.0
+   text cells cutout 8 pad 46 pair 780x360/360x780: hit model differs over 2472 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   ... 545 more (-v)
+6. grip lift 0/20/40/80 dp: 256 screens, 103 issues
+   lift 0 columns pad 58 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   lift 0 rows pad 58 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   lift 20 columns pad 58 896x443: messages OVER rest | status OVER m3 | not drawable: messages over rest, status over m3
+   lift 20 rows pad 58 896x443: messages OVER rest | status OVER m3 | not drawable: messages over rest, status over m3
+   lift 40 columns pad 46 896x443: messages 3.6 dp from rest | status 3.6 dp from m3
+   lift 40 columns pad 58 896x443: messages OVER rest | status OVER m3 | not drawable: messages over rest, status over m3
+   lift 40 rows pad 46 896x443: messages 3.6 dp from rest | status 3.6 dp from m3
+   lift 40 rows pad 58 896x443: messages OVER rest | status OVER m3 | not drawable: messages over rest, status over m3
+   lift 80 columns pad 46 896x443: messages OVER rest | status OVER m3 | not drawable: messages over rest, status over m3
+   lift 80 columns pad 58 896x443: key off screen rest,world,sacrifice,m3,keys,m2 | messages OVER game | status OVER eq_wield | not drawable: rest off screen, world off screen, sacrifice off screen
+   lift 80 rows pad 46 896x443: messages OVER rest | status OVER m3 | not drawable: messages over rest, status over m3
+   lift 80 rows pad 58 896x443: key off screen rest,world,sacrifice,m3,keys,m2 | messages OVER game | status OVER eq_wield | not drawable: rest off screen, world off screen, sacrifice off screen
+   lift 0 columns pad 46 pair 640x360/360x640: hit model differs over 2490 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   lift 0 columns pad 58 pair 640x360/360x640: hit model differs over 5368 dp² (pad_n→· 224, inventory→· 224, ·→pad_n 203, ·→inventory 195)
+   lift 0 rows pad 46 pair 640x360/360x640: hit model differs over 2490 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   lift 0 rows pad 58 pair 640x360/360x640: hit model differs over 5368 dp² (pad_n→· 224, inventory→· 224, ·→pad_n 203, ·→inventory 195)
+   lift 20 columns pad 46 pair 640x360/360x640: hit model differs over 2490 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   lift 20 columns pad 58 pair 640x360/360x640: hit model differs over 5448 dp² (·→pad_n 243, ·→inventory 235, pad_n→· 224, inventory→· 224)
+   lift 20 rows pad 46 pair 640x360/360x640: hit model differs over 2490 dp² (pad_n→· 125, inventory→· 125, ·→m2 111, ·→sacrifice 111)
+   lift 20 rows pad 58 pair 640x360/360x640: hit model differs over 5448 dp² (·→pad_n 243, ·→inventory 235, pad_n→· 224, inventory→· 224)
+   lift 40 columns pad 46 pair 640x360/360x640: hit model differs over 2464 dp² (pad_n→· 125, inventory→· 125, pad_l→· 110, pad_u→· 110)
+   lift 40 columns pad 58 640x360: key off screen rest,world,sacrifice,m3,keys,m2 | not drawable: rest off screen, world off screen, sacrifice off screen
+   lift 40 columns pad 58 pair 640x360/360x640: hit model differs over 5272 dp² (·→pad_n 283, ·→inventory 275, pad_n→· 224, inventory→· 224)
+   lift 40 rows pad 46 pair 640x360/360x640: hit model differs over 2464 dp² (pad_n→· 125, inventory→· 125, pad_l→· 110, pad_u→· 110)
+   lift 40 rows pad 58 640x360: key off screen rest,world,sacrifice,m3,keys,m2 | not drawable: rest off screen, world off screen, sacrifice off screen
+   ... 78 more (-v)
+7. short screens: never throw, step the pad, flag what is below the rule: 2279 screens, 2207 issues
+   default pad 58 640x336: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   default pad 58 336x640: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   left-handed pad 58 640x336: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   left-handed pad 58 336x640: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   combat-left pad 58 640x336: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   combat-left pad 58 336x640: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   text cells pad 58 640x336: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   text cells pad 58 336x640: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   cell rows pad 58 640x336: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   cell rows pad 58 336x640: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   default pad 58 592x336: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   default pad 58 336x592: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   left-handed pad 58 592x336: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   left-handed pad 58 336x592: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   combat-left pad 58 592x336: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   combat-left pad 58 336x592: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   text cells pad 58 592x336: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   text cells pad 58 336x592: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   cell rows pad 58 592x336: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   cell rows pad 58 336x592: NO SPEC (THROWS: width 336: the right bank would need 41 dp columns; choose a smaller pad key)
+   default pad 58 600x330: NO SPEC (THROWS: width 330: the right bank would need 39 dp columns; choose a smaller pad key)
+   default pad 58 330x600: NO SPEC (THROWS: width 330: the right bank would need 39 dp columns; choose a smaller pad key)
+   left-handed pad 58 600x330: NO SPEC (THROWS: width 330: the right bank would need 39 dp columns; choose a smaller pad key)
+   left-handed pad 58 330x600: NO SPEC (THROWS: width 330: the right bank would need 39 dp columns; choose a smaller pad key)
+   combat-left pad 58 600x330: NO SPEC (THROWS: width 330: the right bank would need 39 dp columns; choose a smaller pad key)
+   ... 2182 more (-v)
+8. text sizes: message face x Message size x system text size: 640 screens, 192 issues
+   atkinson 0.85 x0.85 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 0.85 x0.85 rows 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 0.85 x1 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 0.85 x1 rows 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 0.85 x1.3 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 0.85 x1.3 rows 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 0.85 x2 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 0.85 x2 rows 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1 x0.85 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1 x0.85 rows 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1 x1 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1 x1 rows 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1 x1.3 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1 x1.3 rows 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1 x2 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1 x2 rows 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1.2 x0.85 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1.2 x0.85 rows 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1.2 x1 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1.2 x1 rows 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1.2 x1.3 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1.2 x1.3 rows 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1.2 x2 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1.2 x2 rows 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   atkinson 1.4 x0.85 columns 896x443: messages 7.6 dp from rest | status 7.6 dp from m3
+   ... 167 more (-v)
+9. 960x600 / 600x960 shows all 21 rows; mouse void under today's 21.8% (ultrawide, text cells): 22 screens, 11 issues
+   pad 46 columns 960x600: 15.5 of 21 rows
+   pad 46 rows 960x600: 15.5 of 21 rows
+   pad 52 columns 960x600: 14.0 of 21 rows
+   pad 52 rows 960x600: 14.0 of 21 rows
+   pad 58 columns 960x600: 12.5 of 21 rows
+   pad 58 rows 960x600: 12.5 of 21 rows
+   cells 1 5120x1440: void 25.2% (over today's 21.8%)
+   cells 0.5625 3440x1440: void 29.1% (over today's 21.8%)
+   cells 0.5625 2560x1440: void 22.4% (over today's 21.8%)
+   cells 0.5625 3840x1600: void 28.0% (over today's 21.8%)
+   cells 0.5625 5120x1440: void 35.4% (over today's 21.8%)
+10. layout() never throws: 3000 seeded random windows and settings, odd values included: 3000 screens, 2296 issues
+   1893x1774 mouse {"padKey":52,"hand":"right","combatThumb":"L","cellAspect":0,"mapCell":"x","gripLift":80,"avoidCutout":0,"insets":{"l":null},"anchor":"physical","budget":null,"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map
+   115x2193 mouse {"padKey":46,"hand":"right","combatThumb":"L","cellAspect":0.5625,"mapCell":"columns","gripLift":0,"avoidCutout":200,"insets":{"t":400},"anchor":"auto","budget":{"w":null}}: usable but not drawable: pad_b off screen, pad_j off screen, pad_h off screen
+   1900xNaN touch {"padKey":40,"hand":"right","combatThumb":"L","cellAspect":0,"mapCell":"columns","gripLift":20,"avoidCutout":30,"insets":{"l":null},"anchor":"safe","budget":{"w":443,"h":443,"l":896}}: THROWS: width 443: the right bank would need 40 dp columns; choose a smaller pad key
+   1213x549 touch {"padKey":40,"hand":"right","combatThumb":"L","cellAspect":null,"mapCell":"rows","gripLift":-10,"avoidCutout":8,"insets":{"t":400},"anchor":"safe","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":443,"h":443,"l":896},"msgRows":{"landscape":0,"portrait":9}}: THROWS: width 443: the right bank would need 40 dp columns; choose a smaller pad key
+   3473x2585 touch {"padKey":null,"hand":"left","combatThumb":"R","cellAspect":0.5625,"mapCell":"columns","gripLift":500,"avoidCutout":8,"insets":{"l":null},"anchor":"physical","budget":{"w":443,"h":443,"l":896},"msgRows":{"landscape":0,"portrait":9}}: THROWS: Cannot read properties of null (reading 'T')
+   814x1849 mouse {"padKey":52,"hand":"left","combatThumb":"L","cellAspect":0,"mapCell":"rows","gripLift":20,"avoidCutout":30,"insets":{"l":null},"anchor":"auto","text":{"msgSize":"x"},"budget":{"w":443,"h":443,"l":896}}: usable but not drawable: no map
+   138x1688 touch {"padKey":null,"hand":"right","combatThumb":"L","cellAspect":0,"mapCell":"rows","gripLift":0,"avoidCutout":0,"insets":{"t":400},"anchor":"physical","budget":{"w":443,"h":443,"l":896}}: THROWS: Cannot read properties of null (reading 'T')
+   4074x2571 touch {"padKey":46,"hand":"left","combatThumb":"R","cellAspect":0.5625,"mapCell":"rows","gripLift":80,"avoidCutout":8,"insets":{"t":400},"anchor":"safe","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":null}}: THROWS: Cannot read properties of null (reading 'T')
+   2285x689 touch {"padKey":52,"hand":"left","combatThumb":"L","cellAspect":0,"mapCell":"columns","gripLift":0,"avoidCutout":30,"insets":{"l":47,"r":47},"anchor":"auto","budget":null,"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map
+   1620x2382 touch {"padKey":70,"hand":"left","combatThumb":"L","cellAspect":null,"mapCell":"rows","gripLift":-10,"avoidCutout":200,"insets":{"l":47,"r":47},"anchor":"auto","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":null}}: THROWS: Cannot read properties of null (reading 'T')
+   1504x2296 mouse {"padKey":70,"hand":"left","combatThumb":"R","cellAspect":0,"mapCell":"columns","gripLift":-10,"avoidCutout":0,"insets":{"l":47,"r":47},"anchor":"auto","budget":{"w":2000,"h":50},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map
+   1965x463 touch {"padKey":52,"hand":"left","combatThumb":"L","cellAspect":0.5625,"mapCell":"rows","gripLift":80,"avoidCutout":30,"insets":{"l":null},"anchor":"physical","budget":{"w":2000,"h":50},"msgRows":{"landscape":0,"portrait":9}}: THROWS: height 50: the bank (318 dp) does not fit the landscape height
+   1822x347 mouse {"padKey":70,"hand":"left","combatThumb":"L","cellAspect":1,"mapCell":"x","gripLift":80,"avoidCutout":0,"insets":{"l":null},"anchor":"physical","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":null},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: map 80.0x4.8 cells
+   807x340 touch {"padKey":46,"hand":"left","combatThumb":"R","cellAspect":0,"mapCell":"rows","gripLift":-10,"avoidCutout":0,"insets":{"l":47,"r":47},"anchor":"safe","budget":{"w":null},"msgRows":{"landscape":0,"portrait":9}}: THROWS: Cannot read properties of null (reading 'T')
+   3908x1396 mouse {"padKey":null,"hand":"right","combatThumb":"R","cellAspect":0,"mapCell":"x","gripLift":20,"avoidCutout":8,"insets":{"l":null},"anchor":"safe","text":{"msgSize":"x"},"budget":{"w":2000,"h":50},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map
+   1247x1317 mouse {"padKey":52,"hand":"right","combatThumb":"R","cellAspect":0,"mapCell":"x","gripLift":0,"avoidCutout":200,"insets":{"l":null},"anchor":"safe","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":null}: usable but not drawable: no map
+   1784x1640 touch {"padKey":70,"hand":"right","combatThumb":"L","cellAspect":1,"mapCell":"columns","gripLift":0,"avoidCutout":8,"insets":{"l":null},"anchor":"physical","text":{"msgSize":"x"},"budget":null}: not finite at spec.bands.0.x
+   1784x1640 touch {"padKey":70,"hand":"right","combatThumb":"L","cellAspect":1,"mapCell":"columns","gripLift":0,"avoidCutout":8,"insets":{"l":null},"anchor":"physical","text":{"msgSize":"x"},"budget":null}: usable but not drawable: not finite at spec.bands.0.x, not finite at spec.bands.0.w, not finite at spec.bands.1.x
+   1179x1665 touch {"padKey":null,"hand":"right","combatThumb":"L","cellAspect":1,"mapCell":"rows","gripLift":20,"avoidCutout":8,"insets":{"l":47,"r":47},"anchor":"auto","text":{"msgSize":"x"},"budget":{"w":2000,"h":50}}: THROWS: Cannot read properties of null (reading 'T')
+   3181x437 touch {"padKey":40,"hand":"right","combatThumb":"R","cellAspect":1,"mapCell":"x","gripLift":80,"avoidCutout":30,"anchor":"physical","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":443,"h":443,"l":896}}: THROWS: width 443: the right bank would need 40 dp columns; choose a smaller pad key
+   3144x2257 touch {"padKey":58,"hand":"left","combatThumb":"R","cellAspect":0,"mapCell":"columns","gripLift":-10,"avoidCutout":0,"anchor":"physical","budget":{"w":443,"h":443,"l":896},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map
+   2797x2548 touch {"padKey":70,"hand":"left","combatThumb":"L","cellAspect":0,"mapCell":"x","gripLift":80,"avoidCutout":8,"insets":{"l":47,"r":47},"anchor":"safe","budget":{"w":null}}: THROWS: Cannot read properties of null (reading 'T')
+   2116xInfinity touch {"padKey":46,"hand":"right","combatThumb":"R","cellAspect":0,"mapCell":"x","gripLift":0,"avoidCutout":30,"insets":{"t":400},"anchor":"safe","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":443,"h":443,"l":896}}: not finite at spec.H
+   2116xInfinity touch {"padKey":46,"hand":"right","combatThumb":"R","cellAspect":0,"mapCell":"x","gripLift":0,"avoidCutout":30,"insets":{"t":400},"anchor":"safe","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":443,"h":443,"l":896}}: usable but not drawable: not finite at spec.H, not finite at spec.controls.0.y, not finite at spec.controls.1.y
+   400x400 touch {"padKey":52,"hand":"left","combatThumb":"R","cellAspect":null,"mapCell":"columns","gripLift":500,"avoidCutout":200,"insets":{"l":47,"r":47},"anchor":"auto","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":443,"h":443,"l":896}}: THROWS: width 443: the right bank would need -51 dp columns; choose a smaller pad key
+   ... 2271 more (-v)
+sweep: 73470 screen layouts in 10 sections, 11488 issues

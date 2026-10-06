@@ -1,0 +1,12 @@
+const pw = await import('/usr/local/lib/node_modules/playwright/index.mjs');
+const b = await pw.chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+const p = await (await b.newContext({ viewport: { width: 1400, height: 900 } })).newPage();
+const errs = []; p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (m) => { if (m.type() === 'error' && !/CERT|404/.test(m.text())) errs.push(m.text()); });
+await p.goto('http://localhost:8811/twin-banks-tour.html', { waitUntil: 'networkidle' });
+await p.click('#s8 [data-act]'); const t8 = await p.evaluate(() => document.querySelector('#ranking').innerText);
+await p.click('#s6 [data-act]:nth-of-type(3)'); const t6 = await p.evaluate(() => document.querySelector('#ranking').innerText);
+await p.click('#s3 [data-anim]'); await p.waitForFunction(() => /Changes during|No changes/.test(document.querySelector('#draglog').textContent), null, { timeout: 60000 }); const d3 = await p.textContent('#draglog');
+await p.click('#forget');
+await p.click('#s8 [data-anim]'); await p.waitForFunction(() => /Changes during|No changes/.test(document.querySelector('#draglog').textContent), null, { timeout: 60000 }); const d8 = await p.textContent('#draglog');
+console.log(JSON.stringify({ errs, t8, t6, d3, d8 }, null, 1));
+await b.close();

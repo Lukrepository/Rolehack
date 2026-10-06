@@ -1,0 +1,84 @@
+[
+ {
+  "name": "the desk layout (pointer mouse)",
+  "pass": true,
+  "detail": "mouse"
+ },
+ {
+  "name": "no hit cell reaches past the dock",
+  "pass": true,
+  "detail": {
+   "pointer": "mouse",
+   "box": {
+    "x0": 496,
+    "y0": 395.71,
+    "x1": 784,
+    "y1": 639.71
+   },
+   "out": 0,
+   "halos": 2,
+   "seams": 4,
+   "m": {
+    "x": 40,
+    "y": 68.71,
+    "w": 1200,
+    "h": 315
+   }
+  }
+ },
+ {
+  "name": "the halos and seams are built",
+  "pass": true,
+  "detail": {
+   "pointer": "mouse",
+   "box": {
+    "x0": 496,
+    "y0": 395.71,
+    "x1": 784,
+    "y1": 639.71
+   },
+   "out": 0,
+   "halos": 2,
+   "seams": 4,
+   "m": {
+    "x": 40,
+    "y": 68.71,
+    "w": 1200,
+    "h": 315
+   }
+  }
+ },
+ {
+  "name": "a map click 20 dp above the dock walks at once (no ring for a mouse)",
+  "pass": true,
+  "detail": {
+   "ev": "@",
+   "pt": {
+    "x": 640,
+    "y": 375.71
+   }
+  }
+ },
+ {
+  "name": "a mouse hold on REST paints the counts on the pad",
+  "pass": true,
+  "detail": {
+   "kind": "count",
+   "from": "rest",
+   "sticky": false,
+   "lit": null,
+   "place": null,
+   "act": "rest"
+  }
+ },
+ {
+  "name": "and they go on the release",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ }
+]

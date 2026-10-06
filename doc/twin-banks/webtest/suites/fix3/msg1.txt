@@ -1,0 +1,32 @@
+Web port: the layout rule can keep the header stacked in the glass
+
+The twin banks go onto the page next (Lucas, 2026-10-02: "Layout: twin
+banks / classic", twin by default).  The page keeps the message and
+status bands stacked in #glass, messages over the status, as classic has
+them, until it can lay the bands out apart.  The rule's default ('auto')
+puts the header side by side once the glass is 818 dp wide, and over the
+banks when that shows more of the level, which #glass cannot draw today.
+So the page asks for header 'stacked', and the rule then never lays the
+bands side by side or over the banks.  On every phone at the default cell
+the header is stacked in the glass anyway, and those windows lay out as
+before.
+
+- layout.js: DEFAULTS.header, 'auto' or 'stacked'; overFit() and
+  header() keep the bands stacked in the glass when it is 'stacked', and
+  settled() takes anything else as 'auto'.  The design folder's copy
+  (v2) has the same edit, so the two still differ only in their header
+  comment.
+- test/layout.test.mjs: a test that, with header 'stacked', every usable
+  result has two bands, stacked and inside the glass, over phones,
+  tablets, foldables and desks, touch and mouse, three settings each;
+  and that a window whose header is stacked by default anyway lays out
+  exactly as it does by default.
+- test/README.md: says so.
+
+Checked: "node --test win/web/test/" passes 134/134 on node 22.22.  The
+design's CI gate, "RH_LAYOUT=win/web/layout.js node checks/sweep.mjs" in
+the design folder, runs 73,470 layouts in 10 sections with 0 issues.  The
+golden fixtures are unchanged: the default is still 'auto'.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Dgv3E1gUjAwvSmojZmYB4f

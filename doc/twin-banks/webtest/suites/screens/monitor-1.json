@@ -1,0 +1,32 @@
+[
+ {
+  "tag": "monitor-1080@1",
+  "name": "dragging 2396..2420 x 1080: no cell jump over 15% between windows 2 px apart",
+  "pass": true,
+  "detail": {
+   "jumps": [],
+   "seq": "2396:24 2398:24 2400:24 2402:24 2404:24 2406:24 2408:24 2410:24 2412:24 2414:24 2416:24 2418:24 2420:24"
+  }
+ },
+ {
+  "tag": "monitor-1080@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "monitor-900@1",
+  "name": "dragging 2830..2850 x 900: no cell jump over 15% between windows 2 px apart",
+  "pass": true,
+  "detail": {
+   "jumps": [],
+   "seq": "2830:24 2832:24 2834:24 2836:24 2838:24 2840:24 2842:24 2844:24 2846:24 2848:24 2850:24"
+  }
+ },
+ {
+  "tag": "monitor-900@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ }
+]

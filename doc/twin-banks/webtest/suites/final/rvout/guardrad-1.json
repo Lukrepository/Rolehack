@@ -1,0 +1,50 @@
+{
+ "896x443@1": [
+  {
+   "name": "A: 198 touches at the edges of every key, in the halo and beyond, as the hit model has them",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "A: no key acted on a cancelled touch",
+   "pass": true,
+   "detail": null
+  }
+ ],
+ "443x939@1": [
+  {
+   "name": "A: 186 touches at the edges of every key, in the halo and beyond, as the hit model has them",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "A: no key acted on a cancelled touch",
+   "pass": true,
+   "detail": null
+  }
+ ],
+ "360x640@1": [
+  {
+   "name": "A: 198 touches at the edges of every key, in the halo and beyond, as the hit model has them",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "A: no key acted on a cancelled touch",
+   "pass": true,
+   "detail": null
+  }
+ ],
+ "390x844@1": [
+  {
+   "name": "A: 198 touches at the edges of every key, in the halo and beyond, as the hit model has them",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "A: no key acted on a cancelled touch",
+   "pass": true,
+   "detail": null
+  }
+ ]
+}

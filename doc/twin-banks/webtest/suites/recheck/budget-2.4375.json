@@ -1,0 +1,1386 @@
+{
+ "first": [
+  {
+   "w": 443,
+   "h": 460,
+   "sw": 443,
+   "sh": 939,
+   "want": "classic",
+   "ok": true,
+   "ui": "classic",
+   "why": "the map has no area (435x0)",
+   "used": null,
+   "budget": null,
+   "fit": null,
+   "pad": null,
+   "degraded": null,
+   "pad_b": null,
+   "combat": null,
+   "apply": null,
+   "cell": null,
+   "stored": null,
+   "errors": []
+  },
+  {
+   "w": 443,
+   "h": 640,
+   "sw": 443,
+   "sh": 939,
+   "want": 58,
+   "ok": true,
+   "ui": "twin",
+   "why": null,
+   "used": "none",
+   "budget": null,
+   "fit": "full",
+   "pad": 58,
+   "degraded": false,
+   "pad_b": [
+    0,
+    560,
+    80,
+    80
+   ],
+   "combat": [
+    235,
+    494,
+    62,
+    66
+   ],
+   "apply": [
+    363,
+    560,
+    80,
+    80
+   ],
+   "cell": 12,
+   "stored": {
+    "w": 443,
+    "pw": 1
+   },
+   "errors": []
+  },
+  {
+   "w": 412,
+   "h": 600,
+   "sw": 412,
+   "sh": 915,
+   "want": 58,
+   "ok": true,
+   "ui": "twin",
+   "why": null,
+   "used": "none",
+   "budget": null,
+   "fit": "full",
+   "pad": 58,
+   "degraded": false,
+   "pad_b": [
+    0,
+    527,
+    73,
+    73
+   ],
+   "combat": [
+    222,
+    463,
+    58.33,
+    64
+   ],
+   "apply": [
+    341.67,
+    527,
+    70.33,
+    73
+   ],
+   "cell": 12,
+   "stored": {
+    "w": 412,
+    "pw": 1
+   },
+   "errors": []
+  },
+  {
+   "w": 500,
+   "h": 700,
+   "sw": 1366,
+   "sh": 768,
+   "want": 58,
+   "ok": true,
+   "ui": "twin",
+   "why": null,
+   "used": "none",
+   "budget": null,
+   "fit": "full",
+   "pad": 58,
+   "degraded": false,
+   "pad_b": [
+    0,
+    620,
+    80,
+    80
+   ],
+   "combat": [
+    292,
+    554,
+    62,
+    66
+   ],
+   "apply": [
+    420,
+    620,
+    80,
+    80
+   ],
+   "cell": 12,
+   "stored": null,
+   "errors": []
+  },
+  {
+   "w": 390,
+   "h": 664,
+   "sw": 390,
+   "sh": 844,
+   "want": 58,
+   "ok": true,
+   "ui": "twin",
+   "why": null,
+   "used": "none",
+   "budget": null,
+   "fit": "full",
+   "pad": 58,
+   "degraded": false,
+   "pad_b": [
+    0,
+    596,
+    68,
+    68
+   ],
+   "combat": [
+    214,
+    534,
+    55.33,
+    62
+   ],
+   "apply": [
+    326.67,
+    596,
+    63.33,
+    68
+   ],
+   "cell": 12,
+   "stored": {
+    "w": 390,
+    "pw": 1
+   },
+   "errors": []
+  },
+  {
+   "w": 412,
+   "h": 787,
+   "sw": 412,
+   "sh": 915,
+   "want": 58,
+   "ok": true,
+   "ui": "twin",
+   "why": null,
+   "used": "none",
+   "budget": null,
+   "fit": "full",
+   "pad": 58,
+   "degraded": false,
+   "pad_b": [
+    0,
+    714,
+    73,
+    73
+   ],
+   "combat": [
+    222,
+    650,
+    58.33,
+    64
+   ],
+   "apply": [
+    341.67,
+    714,
+    70.33,
+    73
+   ],
+   "cell": 12,
+   "stored": {
+    "w": 412,
+    "pw": 1
+   },
+   "errors": []
+  },
+  {
+   "w": 375,
+   "h": 553,
+   "sw": 375,
+   "sh": 667,
+   "want": 58,
+   "ok": true,
+   "ui": "twin",
+   "why": null,
+   "used": "none",
+   "budget": null,
+   "fit": "full",
+   "pad": 58,
+   "degraded": false,
+   "pad_b": [
+    0,
+    485.5,
+    67.5,
+    67.5
+   ],
+   "combat": [
+    212,
+    424.5,
+    51.17,
+    61
+   ],
+   "apply": [
+    315.83,
+    485.5,
+    59.17,
+    67.5
+   ],
+   "cell": 12,
+   "stored": {
+    "w": 375,
+    "pw": 1
+   },
+   "errors": []
+  },
+  {
+   "w": 600,
+   "h": 1000,
+   "sw": 1920,
+   "sh": 1080,
+   "want": 58,
+   "ok": true,
+   "ui": "twin",
+   "why": null,
+   "used": "none",
+   "budget": null,
+   "fit": "full",
+   "pad": 58,
+   "degraded": false,
+   "pad_b": [
+    0,
+    920,
+    80,
+    80
+   ],
+   "combat": [
+    392,
+    854,
+    62,
+    66
+   ],
+   "apply": [
+    520,
+    920,
+    80,
+    80
+   ],
+   "cell": 12,
+   "stored": null,
+   "errors": []
+  },
+  {
+   "w": 443,
+   "h": 859,
+   "sw": 443,
+   "sh": 939,
+   "want": 58,
+   "ok": true,
+   "ui": "twin",
+   "why": null,
+   "used": "guessed",
+   "budget": {
+    "w": 443,
+    "h": 363,
+    "l": 939
+   },
+   "fit": "full",
+   "pad": 58,
+   "degraded": false,
+   "pad_b": [
+    0,
+    779,
+    80,
+    80
+   ],
+   "combat": [
+    235,
+    713,
+    62,
+    66
+   ],
+   "apply": [
+    363,
+    779,
+    80,
+    80
+   ],
+   "cell": 12,
+   "stored": {
+    "w": 443,
+    "pw": 1
+   },
+   "errors": []
+  },
+  {
+   "w": 360,
+   "h": 560,
+   "sw": 360,
+   "sh": 640,
+   "want": "any",
+   "ok": true,
+   "ui": "twin",
+   "why": null,
+   "used": "none",
+   "budget": null,
+   "fit": "full",
+   "pad": 58,
+   "degraded": false,
+   "pad_b": [
+    0,
+    492.5,
+    67.5,
+    67.5
+   ],
+   "combat": [
+    212,
+    431.5,
+    46.17,
+    61
+   ],
+   "apply": [
+    305.83,
+    492.5,
+    54.17,
+    67.5
+   ],
+   "cell": 12,
+   "stored": {
+    "w": 360,
+    "pw": 1
+   },
+   "errors": []
+  },
+  {
+   "w": 800,
+   "h": 1280,
+   "sw": 800,
+   "sh": 1280,
+   "want": "any",
+   "ok": true,
+   "ui": "twin",
+   "why": null,
+   "used": "guessed",
+   "budget": {
+    "w": 800,
+    "h": 800,
+    "l": 1280
+   },
+   "fit": "full",
+   "pad": 58,
+   "degraded": false,
+   "pad_b": [
+    0,
+    1200,
+    80,
+    80
+   ],
+   "combat": [
+    592,
+    1134,
+    62,
+    66
+   ],
+   "apply": [
+    720,
+    1200,
+    80,
+    80
+   ],
+   "cell": 15.5,
+   "stored": {
+    "w": 800,
+    "pw": 1
+   },
+   "errors": []
+  }
+ ],
+ "seq": [
+  {
+   "name": "896x300 then portrait",
+   "rows": [
+    {
+     "at": "base",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      859,
+      80,
+      80
+     ],
+     "combat": [
+      235,
+      793,
+      62,
+      66
+     ],
+     "apply": [
+      363,
+      859,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1,
+      "w": 443,
+      "pw": 1
+     }
+    },
+    {
+     "at": "896x300",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 300,
+      "l": 896
+     },
+     "fit": "stepped",
+     "pad": 46,
+     "degraded": false,
+     "pad_b": [
+      0,
+      245.5,
+      67.5,
+      54.5
+     ],
+     "combat": [
+      726,
+      192.5,
+      49.5,
+      53
+     ],
+     "apply": [
+      828.5,
+      245.5,
+      67.5,
+      54.5
+     ],
+     "cell": 12,
+     "stored": {
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1,
+      "w": 443,
+      "pw": 1
+     }
+    },
+    {
+     "at": "443x939",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      859,
+      80,
+      80
+     ],
+     "combat": [
+      235,
+      793,
+      62,
+      66
+     ],
+     "apply": [
+      363,
+      859,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1,
+      "w": 443,
+      "pw": 1
+     }
+    }
+   ],
+   "errors": [],
+   "ok": true
+  },
+  {
+   "name": "896x220 then portrait",
+   "rows": [
+    {
+     "at": "base",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      859,
+      80,
+      80
+     ],
+     "combat": [
+      235,
+      793,
+      62,
+      66
+     ],
+     "apply": [
+      363,
+      859,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1,
+      "w": 443,
+      "pw": 1
+     }
+    },
+    {
+     "at": "896x220",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 220,
+      "l": 896
+     },
+     "fit": "degraded",
+     "pad": 37.07,
+     "degraded": true,
+     "pad_b": [
+      0,
+      178.48,
+      44.72,
+      41.5
+     ],
+     "combat": [
+      773.52,
+      139.02,
+      38.28,
+      39.48
+     ],
+     "apply": [
+      851.28,
+      178.5,
+      44.72,
+      41.5
+     ],
+     "cell": 12,
+     "stored": {
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1,
+      "w": 443,
+      "pw": 1
+     }
+    },
+    {
+     "at": "443x939",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      859,
+      80,
+      80
+     ],
+     "combat": [
+      235,
+      793,
+      62,
+      66
+     ],
+     "apply": [
+      363,
+      859,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1,
+      "w": 443,
+      "pw": 1
+     }
+    }
+   ],
+   "errors": [],
+   "ok": true
+  },
+  {
+   "name": "448x443 then portrait",
+   "rows": [
+    {
+     "at": "base",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      859,
+      80,
+      80
+     ],
+     "combat": [
+      235,
+      793,
+      62,
+      66
+     ],
+     "apply": [
+      363,
+      859,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1,
+      "w": 443,
+      "pw": 1
+     }
+    },
+    {
+     "at": "448x443",
+     "ui": "classic",
+     "why": "the map has no area (440x0), status over rest",
+     "used": null,
+     "budget": null,
+     "fit": null,
+     "pad": null,
+     "degraded": null,
+     "pad_b": null,
+     "combat": null,
+     "apply": null,
+     "cell": null,
+     "stored": {
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1,
+      "w": 443,
+      "pw": 1
+     }
+    },
+    {
+     "at": "443x939",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      859,
+      80,
+      80
+     ],
+     "combat": [
+      235,
+      793,
+      62,
+      66
+     ],
+     "apply": [
+      363,
+      859,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1,
+      "w": 443,
+      "pw": 1
+     }
+    }
+   ],
+   "errors": [],
+   "ok": true
+  },
+  {
+   "name": "443x460 then portrait",
+   "rows": [
+    {
+     "at": "base",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      859,
+      80,
+      80
+     ],
+     "combat": [
+      235,
+      793,
+      62,
+      66
+     ],
+     "apply": [
+      363,
+      859,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1,
+      "w": 443,
+      "pw": 1
+     }
+    },
+    {
+     "at": "443x460",
+     "ui": "classic",
+     "why": "the map has no area (435x0)",
+     "used": null,
+     "budget": null,
+     "fit": null,
+     "pad": null,
+     "degraded": null,
+     "pad_b": null,
+     "combat": null,
+     "apply": null,
+     "cell": null,
+     "stored": {
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1,
+      "w": 443,
+      "pw": 1
+     }
+    },
+    {
+     "at": "443x939",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      859,
+      80,
+      80
+     ],
+     "combat": [
+      235,
+      793,
+      62,
+      66
+     ],
+     "apply": [
+      363,
+      859,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1,
+      "w": 443,
+      "pw": 1
+     }
+    }
+   ],
+   "errors": [],
+   "ok": true
+  },
+  {
+   "name": "390x700 then landscape",
+   "rows": [
+    {
+     "at": "base",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      859,
+      80,
+      80
+     ],
+     "combat": [
+      235,
+      793,
+      62,
+      66
+     ],
+     "apply": [
+      363,
+      859,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "w": 443,
+      "pw": 1,
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1
+     }
+    },
+    {
+     "at": "390x700",
+     "ui": "twin",
+     "why": null,
+     "used": "none",
+     "budget": null,
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      632,
+      68,
+      68
+     ],
+     "combat": [
+      214,
+      570,
+      55.33,
+      62
+     ],
+     "apply": [
+      326.67,
+      632,
+      63.33,
+      68
+     ],
+     "cell": 12,
+     "stored": {
+      "w": 443,
+      "pw": 1,
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1
+     }
+    },
+    {
+     "at": "896x443",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      363,
+      80,
+      80
+     ],
+     "combat": [
+      688,
+      297,
+      62,
+      66
+     ],
+     "apply": [
+      816,
+      363,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "w": 443,
+      "pw": 1,
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1
+     }
+    }
+   ],
+   "errors": [],
+   "ok": false
+  },
+  {
+   "name": "896x300 then landscape",
+   "rows": [
+    {
+     "at": "base",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      363,
+      80,
+      80
+     ],
+     "combat": [
+      688,
+      297,
+      62,
+      66
+     ],
+     "apply": [
+      816,
+      363,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "w": 443,
+      "pw": 1,
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1
+     }
+    },
+    {
+     "at": "896x300",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 300,
+      "l": 896
+     },
+     "fit": "stepped",
+     "pad": 46,
+     "degraded": false,
+     "pad_b": [
+      0,
+      245.5,
+      67.5,
+      54.5
+     ],
+     "combat": [
+      726,
+      192.5,
+      49.5,
+      53
+     ],
+     "apply": [
+      828.5,
+      245.5,
+      67.5,
+      54.5
+     ],
+     "cell": 12,
+     "stored": {
+      "w": 443,
+      "pw": 1,
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1
+     }
+    },
+    {
+     "at": "896x443",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      363,
+      80,
+      80
+     ],
+     "combat": [
+      688,
+      297,
+      62,
+      66
+     ],
+     "apply": [
+      816,
+      363,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "w": 443,
+      "pw": 1,
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1
+     }
+    }
+   ],
+   "errors": [],
+   "ok": true
+  },
+  {
+   "name": "fresh: 443x939, 896x300, 443x939, 896x443, 443x939",
+   "rows": [
+    {
+     "at": "base",
+     "ui": "twin",
+     "why": null,
+     "used": "guessed",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 939
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      859,
+      80,
+      80
+     ],
+     "combat": [
+      235,
+      793,
+      62,
+      66
+     ],
+     "apply": [
+      363,
+      859,
+      80,
+      80
+     ],
+     "cell": 14.676,
+     "stored": {
+      "w": 443,
+      "pw": 1
+     }
+    },
+    {
+     "at": "896x300",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 300,
+      "l": 896
+     },
+     "fit": "stepped",
+     "pad": 46,
+     "degraded": false,
+     "pad_b": [
+      0,
+      245.5,
+      67.5,
+      54.5
+     ],
+     "combat": [
+      726,
+      192.5,
+      49.5,
+      53
+     ],
+     "apply": [
+      828.5,
+      245.5,
+      67.5,
+      54.5
+     ],
+     "cell": 12,
+     "stored": {
+      "w": 443,
+      "pw": 1,
+      "h": 300,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1
+     }
+    },
+    {
+     "at": "443x939",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 300,
+      "l": 896
+     },
+     "fit": "stepped",
+     "pad": 46,
+     "degraded": false,
+     "pad_b": [
+      0,
+      884.5,
+      67.5,
+      54.5
+     ],
+     "combat": [
+      273,
+      831.5,
+      49.5,
+      53
+     ],
+     "apply": [
+      375.5,
+      884.5,
+      67.5,
+      54.5
+     ],
+     "cell": 12,
+     "stored": {
+      "w": 443,
+      "pw": 1,
+      "h": 300,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1
+     }
+    },
+    {
+     "at": "896x443",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      363,
+      80,
+      80
+     ],
+     "combat": [
+      688,
+      297,
+      62,
+      66
+     ],
+     "apply": [
+      816,
+      363,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "w": 443,
+      "pw": 1,
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1
+     }
+    },
+    {
+     "at": "443x939",
+     "ui": "twin",
+     "why": null,
+     "used": "seen",
+     "budget": {
+      "w": 443,
+      "h": 443,
+      "l": 896
+     },
+     "fit": "full",
+     "pad": 58,
+     "degraded": false,
+     "pad_b": [
+      0,
+      859,
+      80,
+      80
+     ],
+     "combat": [
+      235,
+      793,
+      62,
+      66
+     ],
+     "apply": [
+      363,
+      859,
+      80,
+      80
+     ],
+     "cell": 13.412,
+     "stored": {
+      "w": 443,
+      "pw": 1,
+      "h": 443,
+      "l": 896,
+      "sl": 0,
+      "sr": 0,
+      "lh": 1
+     }
+    }
+   ],
+   "errors": []
+  }
+ ]
+}

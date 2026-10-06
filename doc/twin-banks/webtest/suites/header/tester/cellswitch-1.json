@@ -1,0 +1,156 @@
+[
+ {
+  "name": "cellswitch-1-896x443",
+  "w": 896,
+  "h": 443,
+  "dpr": 1,
+  "trail": [
+   "columns: T=13.41 over=false rows=3 drawn=13",
+   "switched to rows: T=17.81 over=true rows=2 drawn=17",
+   "back to columns, question up: T=13.41 over=false rows=3 drawn=13",
+   "rows again, question up: T=17.81 over=true rows=2 drawn=17",
+   "columns at the end: T=13.41 over=false rows=3 drawn=13"
+  ],
+  "bad": []
+ },
+ {
+  "name": "cellswitch-1-640x360",
+  "w": 640,
+  "h": 360,
+  "dpr": 1,
+  "trail": [
+   "columns: T=12.00 over=false rows=2 drawn=12",
+   "switched to rows: T=12.00 over=false rows=2 drawn=12",
+   "back to columns, question up: T=12.00 over=false rows=2 drawn=12",
+   "rows again, question up: T=12.00 over=false rows=2 drawn=12",
+   "columns at the end: T=12.00 over=false rows=2 drawn=12"
+  ],
+  "bad": []
+ },
+ {
+  "name": "cellswitch-1-915x412",
+  "w": 915,
+  "h": 412,
+  "dpr": 1,
+  "trail": [
+   "columns: T=13.87 over=false rows=2 drawn=13",
+   "switched to rows: T=16.35 over=true rows=2 drawn=16",
+   "back to columns, question up: T=13.87 over=false rows=2 drawn=13",
+   "rows again, question up: T=16.35 over=true rows=2 drawn=16",
+   "columns at the end: T=13.87 over=false rows=2 drawn=13"
+  ],
+  "bad": []
+ },
+ {
+  "name": "cellswitch-1-844x390",
+  "w": 844,
+  "h": 390,
+  "dpr": 1,
+  "trail": [
+   "columns: T=12.82 over=false rows=2 drawn=12",
+   "switched to rows: T=12.82 over=false rows=2 drawn=12",
+   "back to columns, question up: T=12.82 over=false rows=2 drawn=12",
+   "rows again, question up: T=12.82 over=false rows=2 drawn=12",
+   "columns at the end: T=12.82 over=false rows=2 drawn=12"
+  ],
+  "bad": []
+ },
+ {
+  "name": "cellswitch-1-443x939",
+  "w": 443,
+  "h": 939,
+  "dpr": 1,
+  "trail": [
+   "columns: T=14.68 over=false rows=4 drawn=14",
+   "switched to rows: T=17.81 over=false rows=4 drawn=17",
+   "back to columns, question up: T=14.68 over=false rows=4 drawn=14",
+   "rows again, question up: T=17.81 over=false rows=4 drawn=17",
+   "columns at the end: T=14.68 over=false rows=4 drawn=14"
+  ],
+  "bad": []
+ },
+ {
+  "name": "cellswitch-1-360x640",
+  "w": 360,
+  "h": 640,
+  "dpr": 1,
+  "trail": [
+   "columns: T=12.00 over=false rows=2 drawn=12",
+   "switched to rows: T=12.00 over=false rows=2 drawn=12",
+   "back to columns, question up: T=12.00 over=false rows=2 drawn=12",
+   "rows again, question up: T=12.00 over=false rows=2 drawn=12",
+   "columns at the end: T=12.00 over=false rows=2 drawn=12"
+  ],
+  "bad": []
+ },
+ {
+  "name": "cellswitch-1-412x915",
+  "w": 412,
+  "h": 915,
+  "dpr": 1,
+  "trail": [
+   "columns: T=13.87 over=false rows=4 drawn=13",
+   "switched to rows: T=16.35 over=false rows=4 drawn=16",
+   "back to columns, question up: T=13.87 over=false rows=4 drawn=13",
+   "rows again, question up: T=16.35 over=false rows=4 drawn=16",
+   "columns at the end: T=13.87 over=false rows=4 drawn=13"
+  ],
+  "bad": []
+ },
+ {
+  "name": "cellswitch-1-390x844",
+  "w": 390,
+  "h": 844,
+  "dpr": 1,
+  "trail": [
+   "columns: T=12.82 over=false rows=4 drawn=12",
+   "switched to rows: T=12.82 over=false rows=4 drawn=12",
+   "back to columns, question up: T=12.82 over=false rows=4 drawn=12",
+   "rows again, question up: T=12.82 over=false rows=4 drawn=12",
+   "columns at the end: T=12.82 over=false rows=4 drawn=12"
+  ],
+  "bad": []
+ },
+ {
+  "name": "cellswitch-1-1024x768",
+  "w": 1024,
+  "h": 768,
+  "dpr": 1,
+  "trail": [
+   "columns: T=12.50 over=false rows=4 drawn=12",
+   "switched to rows: T=12.50 over=false rows=4 drawn=12",
+   "back to columns, question up: T=12.50 over=false rows=4 drawn=12",
+   "rows again, question up: T=12.50 over=false rows=4 drawn=12",
+   "columns at the end: T=12.50 over=false rows=4 drawn=12"
+  ],
+  "bad": []
+ },
+ {
+  "name": "cellswitch-1-768x1024",
+  "w": 768,
+  "h": 1024,
+  "dpr": 1,
+  "trail": [
+   "columns: T=12.50 over=false rows=3 drawn=12",
+   "switched to rows: T=12.50 over=false rows=3 drawn=12",
+   "back to columns, question up: T=12.50 over=false rows=3 drawn=12",
+   "rows again, question up: T=12.50 over=false rows=3 drawn=12",
+   "columns at the end: T=12.50 over=false rows=3 drawn=12"
+  ],
+  "bad": []
+ },
+ {
+  "name": "cellswitch-1-1366x768",
+  "w": 1366,
+  "h": 768,
+  "dpr": 1,
+  "trail": [
+   "columns: T=15.00 over=false rows=2 drawn=15",
+   "switched to rows: T=15.00 over=false rows=2 drawn=15",
+   "back to columns, question up: T=15.00 over=false rows=2 drawn=15",
+   "rows again, question up: T=15.00 over=false rows=2 drawn=15",
+   "columns at the end: T=15.00 over=false rows=2 drawn=15"
+  ],
+  "bad": []
+ }
+]

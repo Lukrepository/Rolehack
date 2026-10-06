@@ -1,0 +1,57 @@
+--- a/win/web/layout.js@4e33f2d
++++ b/layout.js
+@@ -157,7 +157,8 @@
+   anchor: 'auto',      // 'physical' corner, 'safe' corner, or 'auto' (section 13)
+   avoidCutout: 0,      // Android: a side cutout's depth from the edge; only what the margin does not already clear counts
+   budget: null,        // web in a tab: { w: portrait width, h: landscape height, l: landscape width } seen
+-  prevTier: null,      // the last tier, for hysteresis
++  prevTier: null,      // the window's last tier, for hysteresis (section 3)
++  prevCellTier: null,  // the tier the last device cell was decided at, for hysteresis (sections 3, 8)
+   halo: 12,            // guard band round each bank (section 6); also the least gap from a band to a key
+   ring: 20,            // confirm ring inside the map next to a halo
+   // 'auto': the header as section 10 places it -- side by side once the glass is 818 dp
+@@ -185,7 +186,14 @@
+ // ---------------------------------------------------------------------------------------
+ // 3. Tiers: Android's width and height classes, crossed with the input in use, with a
+ //    ±24 dp hysteresis band.  A landscape phone is compact HEIGHT.  Tiers change the map
+-//    treatment and the panels only; no key's size or offset depends on the tier.
++//    treatment and the panels only; no key's size or offset depends on the tier.  The
++//    band works from the tier the last layout was drawn at: settings.prevTier for the
++//    window's, settings.prevCellTier for the device cell's (section 8), which the page
++//    keeps (viewer.js sizeClasses), so a window on a boundary keeps its tier until it is
++//    24 dp past it.
++//    Desktop mode is deferred (Lucas, 2026-10-03): the page lays out every window as for
++//    touch, whatever the pointer, so a mouse or keyboard player keeps the phone or tablet
++//    tier the window's size gives.  'desk' and section 10 stay here, unused by the page.
+ // ---------------------------------------------------------------------------------------
+ export function tierOf(W, H, pointer, prev = null) {
+   if (pointer === 'mouse') return 'desk';
+@@ -600,7 +608,9 @@
+ export function deviceCell(S, L, settings, M, table = BANK, Tfixed = null) {
+   const st = settings.sides ? settings : settled(L, S, settings);
+   const W = st.budget?.l ?? L, H = st.budget?.h ?? S;
+-  const tier = tierOf(W, H, 'touch', null);
++  // with its own hysteresis: a desktop window dragged across 480 dp tall would
++  // otherwise swap the whole-level cell and the phone's at every pixel either side
++  const tier = tierOf(W, H, 'touch', st.prevCellTier ?? null);
+   const ist = { ...st, insets: { l: st.sides.l, r: st.sides.r, t: 0, b: 0 } };
+   const P = placeBanks(W, H, M, ist, table);
+   const a = st.cellAspect;
+@@ -610,7 +620,7 @@
+     const fit = Math.min(R.w / (80 * a), R.h / 21);
+     let T, whole = false;
+     if (Tfixed) T = Tfixed;
+-    else if (tier === 'tablet' && fit >= st.fitFloor) { T = Math.floor(Math.min(fit, st.tabletCellMax) * 2) / 2; whole = true; }
++    else if (tier === 'tablet' && fit >= st.fitFloor) { let cap = st.tabletCellMax; for (const nx of [st.deskCellMax, st.deskWideCellMax]) if (fit > cap && (R.w - 80 * a * cap) / 2 >= 240) cap = nx; T = Math.floor(Math.min(fit, cap) * 2) / 2; whole = true; }
+     else if (st.mapCell === 'rows') T = clamp(R.h / 21, st.fitFloor, st.cellMax);
+     else T = clamp(Math.min(R.w / (a * st.cellColumns), R.h / 21), st.fitFloor, st.cellMax);
+     const s = { ...cellsAt(R, T, a), T, kind: c.kind, over: c.over, region: R };
+@@ -952,6 +962,8 @@
+ //     Panels fill the row beside and under the dock.  The cell is capped by its width, so
+ //     Android's text cells stand taller than tiles; on 21:9 and wider the cap rises to 48 px
+ //     rather than leave strips wider than a panel beside the map.
++//     Deferred (Lucas, 2026-10-03): the page never asks for it (it lays out as for touch,
++//     section 3); kept, and still tested, for when desktop mode is built.
+ // ---------------------------------------------------------------------------------------
+ function deskLayout(W, H, M0, st, table, reasons) {
+   const a = st.cellAspect;

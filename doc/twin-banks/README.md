@@ -10,6 +10,7 @@ The touch layout of the web port (`win/web/`), and the research and measurements
 | [`BUILD.md`](BUILD.md) | The web build's final integration report (4 October 2026): what was checked, and where the page differs from the design. |
 | `figures/` | One drawing of the layout per scored screen. |
 | `checks/`, `harness/` | The design's gate, the glass's band check, and the scoring harness they use. |
+| [`webtest/`](webtest/README.md) | The browser suites that checked the page with real touches (Playwright), and the release research's reproductions, kept as they ran on 2 to 5 October. Not yet runnable as they stand. |
 
 ## Running the checks
 

@@ -1,0 +1,50 @@
+mode variants8: 1591328 layouts in 121 s
+  degraded: key on map <key>: 10548
+     280x280 {"padKey":46} level unusable: key on map game
+     280x280 {"padKey":46} level unusable: key on map m1
+     280x280 {"padKey":46} level unusable: key on map menu
+     280x280 {"padKey":46} level unusable: key on map eq_wield
+     280x280 {"padKey":46} level unusable: key on map eq_puton
+     280x280 {"padKey":46} level unusable: key on map eq_wear
+  degraded: status OVER <key>: 1332
+     280x296 {"padKey":46} level unusable: status OVER game
+     280x296 {"padKey":52} level unusable: status OVER game
+     280x296 {"hand":"left"} level unusable: status OVER eq_wield
+     280x296 {"combatThumb":"L"} level unusable: status OVER combat
+     280x296 {"cellAspect":0.5625} level unusable: status OVER game
+     280x296 {"mapCell":"rows"} level unusable: status OVER game
+  map shrinks as keys shrink: 1301
+     1696x408 {"mapCell":"rows"}: cells 1674/1679/1674 area 436872/438363/437006 levels full/full/full
+     1704x408 {"mapCell":"rows"}: cells 1674/1680/1680 area 436872/438539/438539 levels full/full/full
+     1712x408 {"mapCell":"rows"}: cells 1674/1680/1680 area 436872/438539/438539 levels full/full/full
+     1720x408 {"mapCell":"rows"}: cells 1674/1680/1680 area 436872/438539/438539 levels full/full/full
+     1720x416 {"mapCell":"rows"}: cells 1670/1671/1656 area 456819/457034/452866 levels full/full/full
+     1728x408 {"mapCell":"rows"}: cells 1674/1680/1680 area 436872/438539/438539 levels full/full/full
+  degraded: status Ndp from <key>: 628
+     280x280 {"padKey":46} level unusable: status 2.8dp from msgs
+     280x280 {"padKey":52} level unusable: status 2.8dp from msgs
+     280x280 {"hand":"left"} level unusable: status 2.8dp from eq_swap
+     280x280 {"combatThumb":"L"} level unusable: status 2.8dp from msgs
+     280x280 {"cellAspect":0.5625} level unusable: status 2.8dp from msgs
+     280x280 {"mapCell":"rows"} level unusable: status 2.8dp from msgs
+  degraded: messages OVER <key>: 452
+     280x288 {"padKey":46} level unusable: messages OVER rest
+     280x288 {"padKey":52} level unusable: messages OVER rest
+     280x288 {"hand":"left"} level unusable: messages OVER m3
+     280x288 {"combatThumb":"L"} level unusable: messages OVER rest
+     280x288 {"cellAspect":0.5625} level unusable: messages OVER rest
+     280x288 {"mapCell":"rows"} level unusable: messages OVER rest
+  degraded: messages Ndp from <key>: 378
+     280x280 {"padKey":46} level unusable: messages 10.4dp from game
+     280x280 {"padKey":52} level unusable: messages 10.4dp from game
+     280x280 {"hand":"left"} level unusable: messages 10.4dp from eq_wield
+     280x280 {"combatThumb":"L"} level unusable: messages 10.4dp from combat
+     280x280 {"cellAspect":0.5625} level unusable: messages 10.4dp from game
+     280x280 {"mapCell":"rows"} level unusable: messages 10.4dp from game
+  map shrinks as keys shrink (a degraded one): 278
+     456x504 {}: cells 154/159/0 area 22176/22911/0 levels unusable/unusable/unusable
+     456x504 {"hand":"left"}: cells 154/159/0 area 22176/22911/0 levels unusable/unusable/unusable
+     456x504 {"cellAspect":0.5625}: cells 274/283/0 area 22176/22911/0 levels unusable/unusable/unusable
+     456x504 {"mapCell":"rows"}: cells 154/159/0 area 22176/22911/0 levels unusable/unusable/unusable
+     456x504 {"combatThumb":"L"}: cells 154/159/0 area 22176/22911/0 levels unusable/unusable/unusable
+     464x600 {"mapCell":"rows"}: cells 238/207/220 area 63516/55308/58888 levels full/unusable/unusable

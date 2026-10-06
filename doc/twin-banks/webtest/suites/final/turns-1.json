@@ -1,0 +1,210 @@
+[
+ {
+  "tag": "turns@1",
+  "name": "inventory window up across the turn",
+  "pass": true,
+  "detail": {
+   "ui": "twin",
+   "cw": false,
+   "more": false,
+   "modal": true,
+   "form": false,
+   "answering": false,
+   "picking": false,
+   "layer": null,
+   "drawer": null,
+   "assign": false,
+   "armed": null,
+   "cur": {
+    "x": 47,
+    "y": 17
+   },
+   "msg": "Velkommen Turns, welcome to NetHack! You are a neutral human Valkyrie.",
+   "W": 443,
+   "H": 939
+  }
+ },
+ {
+  "tag": "turns@1",
+  "name": "closed, back in landscape",
+  "pass": true,
+  "detail": {
+   "ui": "twin",
+   "cw": true,
+   "more": false,
+   "modal": false,
+   "form": false,
+   "answering": false,
+   "picking": false,
+   "layer": null,
+   "drawer": null,
+   "assign": false,
+   "armed": null,
+   "cur": {
+    "x": 47,
+    "y": 17
+   },
+   "msg": "Velkommen Turns, welcome to NetHack! You are a neutral human Valkyrie.",
+   "W": 896,
+   "H": 443
+  }
+ },
+ {
+  "tag": "turns@1",
+  "name": "Settings up across the turn",
+  "pass": true,
+  "detail": {
+   "ui": "twin",
+   "cw": true,
+   "more": false,
+   "modal": false,
+   "form": true,
+   "answering": false,
+   "picking": false,
+   "layer": null,
+   "drawer": null,
+   "assign": false,
+   "armed": null,
+   "cur": {
+    "x": 47,
+    "y": 17
+   },
+   "msg": "Velkommen Turns, welcome to NetHack! You are a neutral human Valkyrie.",
+   "W": 443,
+   "H": 939
+  }
+ },
+ {
+  "tag": "turns@1",
+  "name": "DONE in portrait closes it, nothing sent",
+  "pass": true,
+  "detail": {
+   "ui": "twin",
+   "cw": true,
+   "more": false,
+   "modal": false,
+   "form": false,
+   "answering": false,
+   "picking": false,
+   "layer": null,
+   "drawer": null,
+   "assign": false,
+   "armed": null,
+   "cur": {
+    "x": 47,
+    "y": 17
+   },
+   "msg": "Velkommen Turns, welcome to NetHack! You are a neutral human Valkyrie.",
+   "W": 443,
+   "H": 939
+  }
+ },
+ {
+  "tag": "turns@1",
+  "name": "the question's answers stay on the pad across the turn",
+  "pass": true,
+  "detail": {
+   "asked": true,
+   "answering": true,
+   "pad": [
+    "y Yes",
+    "",
+    "",
+    "",
+    "Esc Esc",
+    "",
+    "",
+    "",
+    "DEFAULT n No"
+   ]
+  }
+ },
+ {
+  "tag": "turns@1",
+  "name": "No answered from the turned pad",
+  "pass": true,
+  "detail": "Are you sure you want to pray? [yn] (n) n"
+ },
+ {
+  "tag": "turns@1",
+  "name": "getpos (farlook) kept across the turn",
+  "pass": true,
+  "detail": {
+   "picking": true,
+   "after": true,
+   "msg": "Pick a monster, object or location. Move cursor to a monster, object or location:"
+  }
+ },
+ {
+  "tag": "turns@1",
+  "name": "the pad moved the cursor and its centre picked the spot",
+  "pass": true,
+  "detail": "l."
+ },
+ {
+  "tag": "turns@1",
+  "name": "the sticky count layer is up after the turn",
+  "pass": true,
+  "detail": {
+   "kind": "count",
+   "sticky": true
+  }
+ },
+ {
+  "tag": "turns@1",
+  "name": "×10 picked on the turned pad sets SEARCH ×10",
+  "pass": true,
+  "detail": "SET ×N SEARCH ×10"
+ },
+ {
+  "tag": "turns@1",
+  "name": "the drawer stays open across the turn, inside the portrait map",
+  "pass": true,
+  "detail": {
+   "drawer": "world",
+   "box": {
+    "inMap": true,
+    "r": [
+     12,
+     186,
+     420,
+     274
+    ]
+   }
+  }
+ },
+ {
+  "tag": "turns@1",
+  "name": "a drawer item tapped in portrait runs and closes the drawer",
+  "pass": true,
+  "detail": {
+   "item": {
+    "x": 221.4921875,
+    "y": 429.453125,
+    "t": "s\nSearch"
+   },
+   "sent": "s"
+  }
+ },
+ {
+  "tag": "turns@1",
+  "name": "a command in hand stays in hand across the turn",
+  "pass": true,
+  "detail": {
+   "inHand": true,
+   "after": true
+  }
+ },
+ {
+  "tag": "turns@1",
+  "name": "Esc puts it back",
+  "pass": true,
+  "detail": false
+ },
+ {
+  "tag": "turns@1",
+  "name": "no console error",
+  "pass": true,
+  "detail": []
+ }
+]

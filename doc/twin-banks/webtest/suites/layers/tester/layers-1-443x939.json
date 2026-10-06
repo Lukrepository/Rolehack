@@ -1,0 +1,1166 @@
+{
+ "checks": [
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST hold: count layer up",
+   "pass": true,
+   "detail": {
+    "kind": "count",
+    "from": "rest",
+    "sticky": false,
+    "lit": null,
+    "place": null,
+    "act": "rest"
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST hold: pad shows x1 x5 x10 x20 at ↖ ↑ ↗ →",
+   "pass": true,
+   "detail": [
+    "×1",
+    "×5",
+    "×10",
+    "",
+    "×n",
+    "×20",
+    "",
+    "",
+    ""
+   ]
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST hold: blank places dimmed",
+   "pass": true,
+   "detail": [
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    true,
+    true,
+    true
+   ]
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST hold: pill names the layer",
+   "pass": true,
+   "detail": "REST ×20"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "nothing pops over a key: REST count held",
+   "pass": true,
+   "detail": "pill,scrimhint"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST short hold, no slide: closes on lift",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST short hold: nothing sent",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST slide: the place under the thumb is pressed",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST slide to ↑: count 5 saved",
+   "pass": true,
+   "detail": {
+    ".": 5
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST slide to ↑: layer closed",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST slide: nothing sent",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST face shows the count",
+   "pass": true,
+   "detail": "Rest ×5"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST 750 ms hold: sticky after the lift",
+   "pass": true,
+   "detail": {
+    "kind": "count",
+    "from": "rest",
+    "sticky": true,
+    "lit": null,
+    "place": null,
+    "act": "rest"
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "nothing pops over a key: REST count sticky",
+   "pass": true,
+   "detail": "pill,scrimhint"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST sticky: tap ↗ picks x10",
+   "pass": true,
+   "detail": {
+    "counts": {
+     ".": 10
+    },
+    "layer": null
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST sticky tap: nothing sent",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST sticky: still up at 3.5 s",
+   "pass": true,
+   "detail": {
+    "kind": "count",
+    "from": "rest",
+    "sticky": true,
+    "lit": null,
+    "place": null,
+    "act": "rest"
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST sticky: closed after 4 s idle",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST sticky + map tap: layer closed",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST sticky + map tap: no travel",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST chord: → picks x20",
+   "pass": true,
+   "detail": {
+    ".": 20
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST chord: layer closed on the pick",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST chord: lifting REST after leaves nothing open",
+   "pass": true,
+   "detail": {
+    "layer": null,
+    "scrim": false
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST chord: nothing sent",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST sticky: blank ← does nothing, layer stays",
+   "pass": true,
+   "detail": {
+    "layer": {
+     "kind": "count",
+     "from": "rest",
+     "sticky": true,
+     "lit": null,
+     "place": null,
+     "act": "rest"
+    },
+    "counts": {
+     ".": 20
+    }
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST sticky: centre asks for a count (a form)",
+   "pass": true,
+   "detail": {
+    "form": true,
+    "layer": null
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "count layer up: tap 5 dp off → snaps to → (x20)",
+   "pass": true,
+   "detail": {
+    "counts": {
+     ".": 20
+    },
+    "layer": null,
+    "log": [
+     "snap:pad_l"
+    ]
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "count layer up: tap 10 dp off → swallowed, layer stays",
+   "pass": true,
+   "detail": {
+    "counts": {},
+    "layer": {
+     "kind": "count",
+     "from": "rest",
+     "sticky": true,
+     "lit": null,
+     "place": null,
+     "act": "rest"
+    },
+    "log": [
+     "halo:pad_l"
+    ]
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "SEARCH hold: count layer up",
+   "pass": true,
+   "detail": {
+    "kind": "count",
+    "from": "search",
+    "sticky": false,
+    "lit": null,
+    "place": null,
+    "act": "search"
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "nothing pops over a key: SEARCH count held",
+   "pass": true,
+   "detail": "pill,scrimhint"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "SEARCH chord ↑: x5 saved, closed",
+   "pass": true,
+   "detail": {
+    "counts": {
+     ".": 20,
+     "s": 5
+    },
+    "layer": null
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "SEARCH chord: nothing sent",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "SEARCH 400 ms hold, then ↑: the hero steps (k), no x5",
+   "pass": true,
+   "detail": {
+    "sent": "k",
+    "counts": {
+     ".": 20,
+     "s": 5
+    }
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "SEARCH tap sends 5s",
+   "pass": true,
+   "detail": "5s"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "REST swiped up: Long rest shows",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "Long rest hold: its counts x100..x400",
+   "pass": true,
+   "detail": {
+    "layer": {
+     "kind": "count",
+     "from": "rest",
+     "sticky": false,
+     "lit": null,
+     "place": null,
+     "act": "longrest"
+    },
+    "pad": [
+     "×100",
+     "×200",
+     "×300",
+     "",
+     "×n",
+     "×400",
+     "",
+     "",
+     ""
+    ]
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "nothing pops over a key: Long rest count held",
+   "pass": true,
+   "detail": "pill,scrimhint"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "Long rest slide ↗: x300 saved",
+   "pass": true,
+   "detail": {
+    "counts": {
+     ".": 20,
+     "s": 5,
+     "longrest": 300
+    },
+    "layer": null
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "Long rest: nothing sent",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "centre hold: HERE up",
+   "pass": true,
+   "detail": {
+    "kind": "here",
+    "from": "centre",
+    "sticky": false,
+    "lit": null,
+    "place": null,
+    "act": null
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "centre hold: ↓ Descend live, ↑ Ascend dimmed, ↘ Look here live",
+   "pass": true,
+   "detail": [
+    {
+     "t": "Sacrifice",
+     "lit": false,
+     "dim": true
+    },
+    {
+     "t": "Ascend",
+     "lit": false,
+     "dim": true
+    },
+    {
+     "t": "Pick up",
+     "lit": false,
+     "dim": true
+    },
+    {
+     "t": "Open door",
+     "lit": false,
+     "dim": true
+    },
+    {
+     "t": "ALL",
+     "lit": false,
+     "dim": false
+    },
+    {
+     "t": "Close door",
+     "lit": false,
+     "dim": true
+    },
+    {
+     "t": "Loot",
+     "lit": false,
+     "dim": true
+    },
+    {
+     "t": "Descend",
+     "lit": false,
+     "dim": false
+    },
+    {
+     "t": "Look here",
+     "lit": false,
+     "dim": false
+    }
+   ]
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "centre hold: pill HERE",
+   "pass": true,
+   "detail": "HERE"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "nothing pops over a key: HERE held",
+   "pass": true,
+   "detail": "pill,scrimhint"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "centre hold, no slide: closes on lift, nothing sent",
+   "pass": true,
+   "detail": {
+    "layer": null,
+    "sent": ""
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "centre slide ↓ on stairs: > sent at once, closed",
+   "pass": true,
+   "detail": {
+    "sent": ">",
+    "layer": null
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "centre slide ↘: : sent",
+   "pass": true,
+   "detail": ":"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "centre slide to dimmed ↓: nothing sent, closed",
+   "pass": true,
+   "detail": {
+    "sent": "",
+    "layer": null
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "slow centre press on stairs, then ↓: steps (j), never >",
+   "pass": true,
+   "detail": "j"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "on stairs: CONTEXT offers Descend",
+   "pass": true,
+   "detail": "Descend"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "CONTEXT 1st tap: ↓ lit, nothing sent",
+   "pass": true,
+   "detail": {
+    "layer": {
+     "kind": "stairs",
+     "from": null,
+     "sticky": false,
+     "lit": null,
+     "place": 7,
+     "act": "descend"
+    },
+    "lit": {
+     "t": "Descend",
+     "lit": true,
+     "dim": false
+    },
+    "sent": ""
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "CONTEXT 1st tap: pill says tap again",
+   "pass": true,
+   "detail": "DESCEND: TAP AGAIN"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "nothing pops over a key: stairs first tap",
+   "pass": true,
+   "detail": "pill,scrimhint"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "CONTEXT 2nd tap: > sent",
+   "pass": true,
+   "detail": ">"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "CONTEXT then lit ↓: > sent",
+   "pass": true,
+   "detail": ">"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "CONTEXT 1st tap lapses after 2 s",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "after the lapse ↓ walks (j)",
+   "pass": true,
+   "detail": "j"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "CONTEXT then another place: stairs put away, nothing sent",
+   "pass": true,
+   "detail": {
+    "layer": null,
+    "sent": ""
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "CONTEXT with several: HERE sticky",
+   "pass": true,
+   "detail": {
+    "kind": "here",
+    "from": "context",
+    "sticky": false,
+    "lit": null,
+    "place": null,
+    "act": null
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "nothing pops over a key: HERE from CONTEXT",
+   "pass": true,
+   "detail": "pill,scrimhint"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "HERE(CONTEXT) ↓ first tap: lit, nothing sent",
+   "pass": true,
+   "detail": {
+    "layer": {
+     "kind": "here",
+     "from": "context",
+     "sticky": false,
+     "lit": 7,
+     "place": null,
+     "act": null
+    },
+    "sent": ""
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "HERE(CONTEXT) ↓ second tap: > sent",
+   "pass": true,
+   "detail": ">"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "HERE(CONTEXT) ↗ Pick up: , sent at once",
+   "pass": true,
+   "detail": ","
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "HERE(CONTEXT) dimmed ↖: nothing, layer stays",
+   "pass": true,
+   "detail": {
+    "layer": {
+     "kind": "here",
+     "from": "context",
+     "sticky": false,
+     "lit": null,
+     "place": null,
+     "act": null
+    },
+    "sent": ""
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "HERE(CONTEXT): closed after 4 s idle",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "HERE(CONTEXT) + map tap: closed, no travel",
+   "pass": true,
+   "detail": {
+    "layer": null,
+    "sent": ""
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "HERE(CONTEXT) centre: the HERE drawer",
+   "pass": true,
+   "detail": {
+    "drawer": "here",
+    "layer": null
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "nothing pops over a key: HERE drawer",
+   "pass": true,
+   "detail": "drawer"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "FLICK held: legend up",
+   "pass": true,
+   "detail": "flick"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "FLICK legend nodes show ↑ Kick and ↗ the second macro",
+   "pass": true,
+   "detail": [
+    "↑ Kick",
+    "↗ UpRtB"
+   ]
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "nothing pops over a key: FLICK held",
+   "pass": true,
+   "detail": "scrimhint,legend0,legend1,pop,pop"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "FLICK held + tap ↑ node: Kick (^D) sent",
+   "pass": true,
+   "detail": "^D"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "FLICK lifted: legend gone, nothing open",
+   "pass": true,
+   "detail": {
+    "radial": null,
+    "scrim": false
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "FLICK held + hold ↗ node: its macro editor opens",
+   "pass": true,
+   "detail": {
+    "form": true,
+    "title": "FLICK KEY: FLICK UP-RIGHT\nName (fits ~8 characters)\nKeys, e."
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "flick stroke -85°: ^D",
+   "pass": true,
+   "detail": "^D"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "flick stroke -40°: B",
+   "pass": true,
+   "detail": "B"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "flick stroke -120°: ^D",
+   "pass": true,
+   "detail": "^D"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "flick stroke -128°: nothing",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "flick stroke -64°: ^D",
+   "pass": true,
+   "detail": "^D"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "flick stroke -61°: B",
+   "pass": true,
+   "detail": "B"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "flick stroke -3°: B",
+   "pass": true,
+   "detail": "B"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "flick stroke 4°: nothing",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "flick stroke -100°: ^D",
+   "pass": true,
+   "detail": "^D"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "flick stroke 180°: nothing",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "flick stroke 90°: nothing",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "flick stroke 18 px (under FLICK_MIN 26): the tap (A)",
+   "pass": true,
+   "detail": {
+    "got": "A",
+    "ms": 314
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "WORLD drawer has items",
+   "pass": true,
+   "detail": {
+    "x": 221.4921875,
+    "y": 429.4375,
+    "text": "s Search"
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "a drawer item held: the command is in hand (assigning)",
+   "pass": true,
+   "detail": {
+    "assign": true,
+    "drawer": null,
+    "scrim": true
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "assigning: FLICK opens its legend as targets",
+   "pass": true,
+   "detail": "flick"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "nothing pops over a key: FLICK legend while assigning",
+   "pass": true,
+   "detail": "scrimhint,legend0,legend1,pop,pop"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "assigning: the ↗ node takes the command",
+   "pass": true,
+   "detail": {
+    "name": "Search",
+    "keys": "s"
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "PIN 2 wears Fire by default",
+   "pass": true,
+   "detail": "f FIRE"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "PIN 2 tap sends f",
+   "pass": true,
+   "detail": "f"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "empty PIN 1 tap opens its picker",
+   "pass": true,
+   "detail": {
+    "pin1": "TAP TO FILL +",
+    "drawer": "fight",
+    "sent": ""
+   }
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "nothing pops over a key: PIN 1 picker",
+   "pass": true,
+   "detail": "flash,drawer"
+  },
+  {
+   "tag": "layers 1-443x939",
+   "name": "console clean",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "popups": [
+  {
+   "tag": "1-443x939",
+   "what": "REST count held",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ],
+   "bad": [],
+   "rects": [
+    {
+     "name": "pill",
+     "x": 8,
+     "y": 462.625,
+     "w": 65.46875,
+     "h": 24
+    },
+    {
+     "name": "scrimhint",
+     "x": 131.453125,
+     "y": 188.421875,
+     "w": 180.09375,
+     "h": 17
+    }
+   ]
+  },
+  {
+   "tag": "1-443x939",
+   "what": "REST count sticky",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ],
+   "bad": [],
+   "rects": [
+    {
+     "name": "pill",
+     "x": 8,
+     "y": 462.625,
+     "w": 59.203125,
+     "h": 24
+    },
+    {
+     "name": "scrimhint",
+     "x": 131.453125,
+     "y": 188.421875,
+     "w": 180.09375,
+     "h": 17
+    }
+   ]
+  },
+  {
+   "tag": "1-443x939",
+   "what": "SEARCH count held",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ],
+   "bad": [],
+   "rects": [
+    {
+     "name": "pill",
+     "x": 8,
+     "y": 462.625,
+     "w": 74.015625,
+     "h": 24
+    },
+    {
+     "name": "scrimhint",
+     "x": 131.453125,
+     "y": 188.421875,
+     "w": 180.09375,
+     "h": 17
+    }
+   ]
+  },
+  {
+   "tag": "1-443x939",
+   "what": "Long rest count held",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ],
+   "bad": [],
+   "rects": [
+    {
+     "name": "pill",
+     "x": 8,
+     "y": 462.625,
+     "w": 101.96875,
+     "h": 24
+    },
+    {
+     "name": "scrimhint",
+     "x": 131.453125,
+     "y": 188.421875,
+     "w": 180.09375,
+     "h": 17
+    }
+   ]
+  },
+  {
+   "tag": "1-443x939",
+   "what": "HERE held",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ],
+   "bad": [],
+   "rects": [
+    {
+     "name": "pill",
+     "x": 8,
+     "y": 462.625,
+     "w": 44.796875,
+     "h": 24
+    },
+    {
+     "name": "scrimhint",
+     "x": 131.453125,
+     "y": 188.421875,
+     "w": 180.09375,
+     "h": 17
+    }
+   ]
+  },
+  {
+   "tag": "1-443x939",
+   "what": "stairs first tap",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ],
+   "bad": [],
+   "rects": [
+    {
+     "name": "pill",
+     "x": 8,
+     "y": 462.625,
+     "w": 120,
+     "h": 24
+    },
+    {
+     "name": "scrimhint",
+     "x": 131.453125,
+     "y": 188.421875,
+     "w": 180.09375,
+     "h": 17
+    }
+   ]
+  },
+  {
+   "tag": "1-443x939",
+   "what": "HERE from CONTEXT",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ],
+   "bad": [],
+   "rects": [
+    {
+     "name": "pill",
+     "x": 8,
+     "y": 462.625,
+     "w": 44.796875,
+     "h": 24
+    },
+    {
+     "name": "scrimhint",
+     "x": 131.453125,
+     "y": 188.421875,
+     "w": 180.09375,
+     "h": 17
+    }
+   ]
+  },
+  {
+   "tag": "1-443x939",
+   "what": "HERE drawer",
+   "shown": [
+    "drawer"
+   ],
+   "bad": [],
+   "rects": [
+    {
+     "name": "drawer",
+     "x": 11.5,
+     "y": 186.4375,
+     "w": 420,
+     "h": 300.203125
+    }
+   ]
+  },
+  {
+   "tag": "1-443x939",
+   "what": "FLICK held",
+   "shown": [
+    "scrimhint",
+    "legend0",
+    "legend1",
+    "pop",
+    "pop"
+   ],
+   "bad": [],
+   "rects": [
+    {
+     "name": "scrimhint",
+     "x": 131.453125,
+     "y": 188.421875,
+     "w": 180.09375,
+     "h": 17
+    },
+    {
+     "name": "legend0",
+     "x": 282,
+     "y": 442.625,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "name": "legend1",
+     "x": 334,
+     "y": 442.625,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "name": "pop",
+     "x": 282,
+     "y": 442.625,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "name": "pop",
+     "x": 334,
+     "y": 442.625,
+     "w": 44,
+     "h": 44
+    }
+   ]
+  },
+  {
+   "tag": "1-443x939",
+   "what": "FLICK legend while assigning",
+   "shown": [
+    "scrimhint",
+    "legend0",
+    "legend1",
+    "pop",
+    "pop"
+   ],
+   "bad": [],
+   "rects": [
+    {
+     "name": "scrimhint",
+     "x": 45.1171875,
+     "y": 188.421875,
+     "w": 352.765625,
+     "h": 17
+    },
+    {
+     "name": "legend0",
+     "x": 282,
+     "y": 442.625,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "name": "legend1",
+     "x": 334,
+     "y": 442.625,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "name": "pop",
+     "x": 282,
+     "y": 442.625,
+     "w": 44,
+     "h": 44
+    },
+    {
+     "name": "pop",
+     "x": 334,
+     "y": 442.625,
+     "w": 44,
+     "h": 44
+    }
+   ]
+  },
+  {
+   "tag": "1-443x939",
+   "what": "PIN 1 picker",
+   "shown": [
+    "flash",
+    "drawer"
+   ],
+   "bad": [],
+   "rects": [
+    {
+     "name": "flash",
+     "x": 254,
+     "y": 468.625,
+     "w": 20.0625,
+     "h": 18
+    },
+    {
+     "name": "drawer",
+     "x": 11.5,
+     "y": 258.640625,
+     "w": 420,
+     "h": 228
+    }
+   ]
+  }
+ ]
+}

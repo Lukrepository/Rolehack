@@ -1,0 +1,642 @@
+--- a/win/web/web.js@395ea31
++++ b/web.js
+@@ -1,532 +1,108 @@
+-// Rolehack web front end, test build: a plain-text window port for the
+-// WebAssembly core.  The core calls nethackCallback(name, ...args) for every
+-// window-port function in win/shim/winshim.c and waits on the promise it
+-// returns, so each handler may take as long as the player does.
+-import createNetHack from './nethack.js';
+-
+-const COLNO = 80, ROWNO = 21;
+-// CLR_BLACK .. CLR_WHITE; NO_COLOR (8) draws as gray
+-const COLORS = ['#6f6f6f', '#d8453e', '#46a946', '#b5762a', '#4d74dc', '#b049b0',
+-                '#3cb1b1', '#c2c2c2', '#c2c2c2', '#ff9a3a', '#6ff06f', '#f3df55',
+-                '#78a2ff', '#ff78ff', '#72f2f2', '#ffffff'];
+-const MG_PET = 0x10;
+-const MENU_ITEMFLAGS_SELECTED = 1;
+-const ATR = { BOLD: 1, DIM: 2, ULINE: 4, BLINK: 5, INVERSE: 7 };
+-const CONDITION_NAMES = {
+-  BAREH: 'Bare', BLIND: 'Blind', BUSY: 'Busy', CONF: 'Conf', DEAF: 'Deaf',
+-  ELF_IRON: 'Iron', FLY: 'Fly', FOODPOIS: 'FoodPois', GLOWHANDS: 'Glow',
+-  GRAB: 'Grab', HALLU: 'Hallu', HELD: 'Held', ICY: 'Icy', INLAVA: 'Lava',
+-  LEV: 'Lev', PARLYZ: 'Parlyz', RIDE: 'Ride', SLEEPING: 'Zzz', SLIME: 'Slime',
+-  SLIPPERY: 'Slip', STONE: 'Stone', STRNGL: 'Strngl', STUN: 'Stun',
+-  SUBMERGED: 'Sub', TERMILL: 'TermIll', TETHERED: 'Teth', TRAPPED: 'Trap',
+-  UNCONSC: 'Out', WOUNDEDL: 'Legs', HOLDING: 'UHold',
+-};
+-
+-const $ = (id) => document.getElementById(id);
+-const esc = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+-
+-let M;                    // the Emscripten module
+-let K;                    // nethackGlobal.constants
+-let G;                    // nethackGlobal.globals
+-const wins = new Map();   // winid -> { type, lines, menu }
+-let nextWin = 1;
+-let grid = blankGrid();
+-let cursor = { x: -1, y: -1 };
+-const msgs = [];          // { text, fresh }
+-const history = [];
+-const status = {};        // field name -> { text, color }
+-let condMask = 0;
+-let promptText = '';
+-let moreShown = false;
+-
+-function blankGrid() {
+-  return Array.from({ length: ROWNO }, () =>
+-    Array.from({ length: COLNO }, () => ({ ch: 32, color: 8, flags: 0 })));
+-}
+-
+-/* ---------- input ---------- */
+-
+-const queue = [];
+-let waiter = null;
+-
+-function push(ev) {
+-  if (waiter) { const w = waiter; waiter = null; w(ev); } else queue.push(ev);
+-}
+-
+-function nextInput() {
+-  render();
+-  return queue.length ? Promise.resolve(queue.shift())
+-                      : new Promise((r) => { waiter = r; });
+-}
+-
+-async function nextKey() {
+-  for (;;) {
+-    const ev = await nextInput();
+-    if (ev.key !== undefined) return ev.key;
+-  }
+-}
+-
+-const ARROWS = { ArrowLeft: 'h', ArrowRight: 'l', ArrowUp: 'k', ArrowDown: 'j',
+-                 Home: 'y', PageUp: 'u', End: 'b', PageDown: 'n' };
+-
+-function keyCode(e) {
+-  if (ARROWS[e.key]) {
+-    const c = ARROWS[e.key];
+-    return (e.shiftKey ? c.toUpperCase() : c).charCodeAt(0);
+-  }
+-  switch (e.key) {
+-  case 'Enter': return 13;
+-  case 'Escape': return 27;
+-  case 'Backspace': return 8;
+-  case 'Tab': return 9;
+-  }
+-  if (e.key.length !== 1) return null;
+-  let c = e.key.charCodeAt(0);
+-  if (e.ctrlKey && /^[a-z]$/i.test(e.key)) return e.key.toUpperCase().charCodeAt(0) & 0x1f;
+-  if (e.altKey && c < 128) return c | 0x80;   // M- commands
+-  return c;
+-}
+-
+-window.addEventListener('keydown', (e) => {
+-  if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+-  const k = keyCode(e);
+-  if (k === null) return;
+-  e.preventDefault();
+-  push({ key: k });
+-});
+-
+-// a tap or click on the map is a CLICK_1 at that square (travel, in play)
+-$('map').addEventListener('pointerup', (e) => {
+-  const r = $('map').getBoundingClientRect();
+-  const x = Math.floor((e.clientX - r.left) / (r.width / COLNO));
+-  const y = Math.floor((e.clientY - r.top) / (r.height / ROWNO));
+-  if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO) push({ click: { x, y, mod: 1 } });
+-});
+-
+-/* ---------- drawing ---------- */
+-
+-function fitFont() {
+-  const w = window.innerWidth - 32, h = window.innerHeight - 70;
+-  // 80 columns at ~0.6em, and 21 map rows plus ~6 lines of text
+-  const cell = Math.max(9, Math.min(w / (COLNO * 0.6), h / (ROWNO * 1.12 + 6 * 1.25)));
+-  document.documentElement.style.setProperty('--cell', `${cell.toFixed(2)}px`);
+-}
+-window.addEventListener('resize', fitFont);
+-
+-function render() {
+-  const rows = [];
+-  for (let y = 0; y < ROWNO; y++) {
+-    let html = '', run = '', runColor = -1;
+-    const flush = () => {
+-      if (run) html += `<span style="color:${COLORS[runColor]}">${esc(run)}</span>`;
+-      run = '';
+-    };
+-    for (let x = 0; x < COLNO; x++) {
+-      const c = grid[y][x];
+-      const ch = String.fromCharCode(c.ch || 32);
+-      const special = (x === cursor.x && y === cursor.y) || (c.flags & MG_PET);
+-      if (special) {
+-        flush();
+-        const cls = [x === cursor.x && y === cursor.y ? 'cur' : '', c.flags & MG_PET ? 'pet' : '']
+-          .join(' ').trim();
+-        html += `<span class="${cls}" style="color:${COLORS[c.color]}">${esc(ch)}</span>`;
+-        runColor = -1;
+-      } else {
+-        if (c.color !== runColor) { flush(); runColor = c.color; }
+-        run += ch;
+-      }
+-    }
+-    flush();
+-    rows.push(html);
+-  }
+-  $('map').innerHTML = rows.join('\n');
+-
+-  const shown = msgs.slice(-3).map((m) =>
+-    `<div class="${m.fresh ? '' : 'old'}">${esc(m.text)}</div>`).join('');
+-  $('msgs').innerHTML = shown
+-    + (promptText ? `<div id="prompt">${esc(promptText)}</div>` : '')
+-    + (moreShown ? '<span class="more">--More--</span>' : '');
+-  $('status').innerHTML = statusHtml();
+-}
+-
+-function addMessage(text) {
+-  msgs.push({ text, fresh: true });
+-  history.push(text);
+-  if (msgs.length > 50) msgs.shift();
++// Written for Rolehack by Lucas Ruiz, 2026-10-02.
++//
++// What the twin banks know of the device they are viewed on, beyond the
++// window in hand: for now the remembered budget (the design's section 12),
++// which the design gives this module, with the input-mode machine and the
++// size classes to come.  A plain module like layout.js, which it imports:
++// no DOM and no storage, so overlay.js hands it the screen, the insets and
++// the stored entry, and stores what it says it learnt; node tests it
++// (test/viewer.test.mjs).
++//
++// The budget is what one display mode (a tab, the installed app,
++// fullscreen) has shown in each orientation of the whole device: the
++// portrait width, the landscape height and width, the landscape side insets.
++// layout() takes it so that a phone's two orientations get the same banks
++// and the same map cell in a tab, where the browser's bars make the window
++// uneven (443x859 against 896x363 on Lucas's phone).  Two things about it
++// were wrong in the first cut of the page, found in review (2026-10-02):
++//  - the orientation not seen yet was always estimated from the screen, the
++//    landscape height as the short side less every bar the portrait window
++//    showed.  Beside a wiki in split screen that "bar" is half the screen, and
++//    443x460 got twin keys of 0.17 dp instead of classic; on an iPhone, whose
++//    portrait toolbar is not there in landscape, the pad shrank to 35 dp, and
++//    stayed so until the phone was turned;
++//  - every window wrote what it showed, a split screen's half or a short
++//    freeform window included, so the next full window was laid out for it:
++//    46 dp keys in a full portrait window after a 896x300 one.
++// So now:
++//  - only a window that fills the screen the way the whole device turned
++//    does -- a portrait window across the screen's short side, a landscape one
++//    across most of its long side (Lucas's phone letterboxes 896 of 939 for
++//    the cutout) -- uses the budget or teaches it.  Any other window, a split,
++//    a freeform or desktop window, a touch PC's portrait window, lays out on
++//    its own, as layout() lays out any window;
++//  - the estimate is made only where it can be right: in portrait, when the
++//    bars it would take are a browser's (BARS_MAX), and in either orientation
++//    only when the layout it gives is no worse than the window's own -- no
++//    smaller pad, not degraded where the window alone is not.  The real
++//    orientation, once seen, replaces it, and then parity is the point, even
++//    where it costs the other orientation a step of key size;
++//  - it is learnt from a window whose layout is usable and not degraded, and
++//    the landscape height only grows: a shorter landscape window than one
++//    already seen is a split or a bar come back, not the device;
++//  - layout() still lays out without the budget any window narrower or
++//    shorter than it promises.
++
++import { layout } from './layout.js';
++
++// A portrait window within this of the screen's short side spans it (CSS px
++// are fractional at some densities; screen.width is whole).
++export const SPAN_SHORT = 8;
++// A landscape window at least this share of the screen's long side spans it.
++export const SPAN_LONG = 0.85;
++// The most a browser's bars take from a portrait window's height, for the
++// landscape estimate: Chrome's toolbar and the status bar on Lucas's phone are
++// 80 dp; Android's three-button bar adds 48 (it goes to the side in landscape,
++// so the estimate is low there, and the comparison catches it); an iPhone's
++// Safari takes 180, most of it a bottom toolbar landscape does not have.
++export const BARS_MAX = 150;
++// A landscape window shorter than this share of the screen's short side is a
++// split, not the device turned: it never teaches the landscape height (a
++// browser's bars in landscape are 80 dp of 443 on Lucas's phone, 128 of 360
++// with Samsung Internet's bottom bar).
++export const LAND_MIN = 0.6;
++
++const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
++
++// What a window may take from the stored entry, and what it may teach it.
++// screen: { w, h } (screen.width and height, either way round); insets: this
++// window's safe-area insets; entry: the display mode's stored budget,
++// { w, h, l, sl, sr, pw, lh } (prefs.js).
++export function budgetFor(W, H, screen, insets, entry) {
++  const b = { ...(entry || {}) };
++  if (H > W) { b.w = W; b.pw = 1; }
++  else { b.h = H; b.l = W; b.sl = insets ? insets.l : 0; b.sr = insets ? insets.r : 0; b.lh = 1; }
++  const sw = Number(screen.w) || W, sh = Number(screen.h) || H;
++  const short = Math.min(sw, sh), long = Math.max(sw, sh);
++  const learn = { ...b };
++  if (!b.pw) b.w = short;
++  if (!b.lh) { b.h = Math.max(1, short - Math.max(0, long - H)); b.l = long; }
++  return { budget: { w: b.w, h: b.h, l: b.l }, sideInsets: b.lh ? { l: b.sl || 0, r: b.sr || 0 } : null, guessed: false, learn };
++}
++
++// A guess is worse than none when it costs the pad a step, or degrades a
++// window that alone is not degraded, or loses twin banks the window has room for.
++const fit = (r) => (r && r.spec ? r.spec.fit : null);
++export function worse(a, b) {
++  if (!b || !b.usable) return false;
++  if (!a || !a.usable) return true;
++  const fa = fit(a), fb = fit(b);
++  return fa.pad < fb.pad - 1e-6 || (fa.degraded && !fb.degraded);
++}
++
++// layout() for a window with the budget that applies to it.  Returns the
++// result, what was used ('seen', 'guessed' or 'none') and the budget and side
++// insets given to layout(), and the entry to store when the window taught it
++// something (null when it did not).
++export function budgetedLayout(W, H, pointer, settings, screen, insets, entry) {
++  const B = budgetFor(W, H, screen, insets, entry);
++  const run = (b) => { try { return layout(W, H, pointer, { ...settings, ...b }); } catch (x) { return null; } };
++  let r = run({ budget: B.budget, sideInsets: B.sideInsets }), used = B.budget ? (B.guessed ? 'guessed' : 'seen') : 'none';
++  if (B.guessed) {
++    const alone = run({ budget: null, sideInsets: null });
++    if (worse(r, alone)) { r = alone; used = 'none'; }
++  }
++  const ok = r && r.usable && r.spec && !r.spec.fit.degraded;
++  const none = used === 'none';
++  return { r, used, budget: none ? null : B.budget, sideInsets: none ? null : B.sideInsets, learn: ok ? B.learn : null };
+ }
+-
+-function ageMessages() { for (const m of msgs) m.fresh = false; }
+-
+-/* ---------- status ---------- */
+-
+-function field(name) {
+-  const f = status[name];
+-  if (!f || !f.text) return '';
+-  const color = f.color & 0xff;
+-  const style = color < 16 && color !== 8 ? ` style="color:${COLORS[color]}"` : '';
+-  return `<span${style}>${esc(f.text)}</span>`;
+-}
+-
+-function statusHtml() {
+-  const t = (n) => (status[n] && status[n].text) || '';
+-  const conds = Object.entries(K ? K.CONDITION : {})
+-    .filter(([n, v]) => typeof v === 'number' && n.startsWith('BL_MASK_') && (condMask & v))
+-    .map(([n]) => CONDITION_NAMES[n.slice(8)] || n.slice(8));
+-  const line1 = [field('BL_TITLE'),
+-    `St:${field('BL_STR')} Dx:${field('BL_DX')} Co:${field('BL_CO')} In:${field('BL_IN')} `
+-    + `Wi:${field('BL_WI')} Ch:${field('BL_CH')}`, field('BL_ALIGN'),
+-    t('BL_SCORE') ? `S:${field('BL_SCORE')}` : ''].filter(Boolean).join('  ');
+-  const xp = t('BL_HD') ? `HD:${field('BL_HD')}`
+-    : `Xp:${field('BL_XP')}${t('BL_EXP') ? '/' + field('BL_EXP') : ''}`;
+-  const line2 = [field('BL_LEVELDESC'), `$:${field('BL_GOLD')}`,
+-    `HP:${field('BL_HP')}(${field('BL_HPMAX')})`, `Pw:${field('BL_ENE')}(${field('BL_ENEMAX')})`,
+-    `AC:${field('BL_AC')}`, xp, t('BL_TIME') ? `T:${field('BL_TIME')}` : '',
+-    field('BL_HUNGER'), field('BL_CAP'), esc(conds.join(' '))].filter(Boolean).join(' ');
+-  return `${line1}\n${line2}`;
+-}
+-
+-// gold arrives with its map symbol encoded as \GXXXXNNNN; keep the number
+-const plainGold = (s) => s.replace(/\\G[0-9a-fA-F]{8}:?/, '');
+-
+-/* ---------- modal windows ---------- */
+-
+-function openModal(title, bodyHtml, foot) {
+-  $('modal-title').textContent = title || '';
+-  $('modal-title').hidden = !title;
+-  $('modal-body').innerHTML = bodyHtml;
+-  $('modal-foot').textContent = foot || '';
+-  $('modal').hidden = false;
+-}
+-function closeModal() { $('modal').hidden = true; }
+-
+-function lineHtml(l) {
+-  const cls = { [ATR.BOLD]: 'bold', [ATR.DIM]: 'dim', [ATR.ULINE]: 'uline',
+-                [ATR.INVERSE]: 'inverse' }[l.attr & 0xff] || '';
+-  return `<div class="${cls}">${esc(l.text) || ' '}</div>`;
+-}
+-
+-async function showText(lines, title) {
+-  openModal(title, lines.map(lineHtml).join(''), 'Space, Enter or Esc to close');
+-  for (;;) {
+-    const k = await nextKey();
+-    if (k === 32 || k === 13 || k === 27) break;
+-  }
+-  closeModal();
+-}
+-
+-const LETTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+-
+-async function selectMenu(win, how, listPtr) {
+-  const w = wins.get(win);
+-  const items = (w && w.menu) ? w.menu.items : [];
+-  // tty gives unlabelled selectable items letters in order, skipping used ones
+-  const used = new Set(items.filter((i) => i.ch).map((i) => i.ch));
+-  let li = 0;
+-  for (const it of items) {
+-    if (!it.selectable || it.ch) continue;
+-    while (li < LETTERS.length && used.has(LETTERS.charCodeAt(li))) li++;
+-    if (li < LETTERS.length) it.ch = LETTERS.charCodeAt(li++);
+-  }
+-  let count = '';
+-
+-  const draw = () => {
+-    const body = items.map((it, n) => {
+-      if (!it.selectable) {
+-        return it.attr ? `<div class="head">${esc(it.text) || ' '}</div>` : lineHtml(it);
+-      }
+-      const mark = how === 2 ? (it.selected ? (it.count > 0 ? '#' : '+') : '-') : '-';
+-      return `<div class="item${it.selected ? ' sel' : ''}" data-n="${n}">`
+-        + `${esc(String.fromCharCode(it.ch))} ${mark} ${esc(it.text)}</div>`;
+-    }).join('');
+-    const foot = how === 0 ? 'Space, Enter or Esc to close'
+-      : how === 1 ? 'Press a letter or tap an item; Esc to cancel'
+-      : 'Letters or taps toggle; . selects all, - none; Enter to accept, Esc to cancel';
+-    openModal(w && w.menu ? w.menu.prompt : '', body, count ? `Count: ${count}` : foot);
+-    for (const el of $('modal-body').querySelectorAll('.item')) {
+-      el.addEventListener('click', () => push({ key: items[+el.dataset.n].ch }));
+-    }
+-  };
+-
+-  const finish = (n) => {
+-    closeModal();
+-    const chosen = items.filter((i) => i.selectable && i.selected);
+-    if (n < 0 || !chosen.length) { M.setValue(listPtr, 0, '*'); return n < 0 ? -1 : 0; }
+-    const list = M._web_menu_alloc(chosen.length);
+-    chosen.forEach((it, i) => M._web_menu_set(list, i, it.lo, it.hi, it.count > 0 ? it.count : -1));
+-    M.setValue(listPtr, list, '*');
+-    return chosen.length;
+-  };
+-
+-  for (;;) {
+-    draw();
+-    const k = await nextKey();
+-    if (k === 27) return finish(-1);
+-    if (k === 13 || k === 32) return finish(0);
+-    if (how === 0) continue;
+-    if (k >= 48 && k <= 57) { count += String.fromCharCode(k); continue; }
+-    const hit = items.filter((i) => i.selectable && i.ch === k);
+-    const group = hit.length ? hit : items.filter((i) => i.selectable && i.gch && i.gch === k);
+-    if (group.length) {
+-      for (const it of group) {
+-        if (how === 1) {
+-          for (const o of items) o.selected = false;
+-          it.selected = true;
+-        } else {
+-          it.selected = count ? true : !it.selected;
+-        }
+-        it.count = count ? parseInt(count, 10) : -1;
+-      }
+-      count = '';
+-      if (how === 1) return finish(0);
+-      continue;
+-    }
+-    if (how === 2 && (k === 46 || k === 44)) for (const it of items) if (it.selectable) it.selected = true;
+-    if (how === 2 && k === 45) for (const it of items) it.selected = false;
+-    count = '';
+-  }
+-}
+-
+-async function getLine(title, initial = '', datalist = null) {
+-  const listAttr = datalist ? ' list="extcmds"' : '';
+-  const options = datalist ? `<datalist id="extcmds">${datalist.map((n) =>
+-    `<option value="${esc(n)}">`).join('')}</datalist>` : '';
+-  openModal(title, `<input class="line" id="line" autocomplete="off"${listAttr}>${options}`,
+-            'Enter to accept, Esc to cancel');
+-  const input = $('line');
+-  input.value = initial;
+-  input.focus();
+-  const result = await new Promise((resolve) => {
+-    input.addEventListener('keydown', (e) => {
+-      if (e.key === 'Enter') { e.preventDefault(); resolve(input.value); }
+-      if (e.key === 'Escape') { e.preventDefault(); resolve(null); }
+-    });
+-  });
+-  input.blur();
+-  closeModal();
+-  return result;
+-}
+-
+-/* ---------- the window procedures ---------- */
+-
+-const handlers = {
+-  shim_init_nhwindows() {},
+-  shim_player_selection_or_tty() { return true; },   // core asks with menus
+-  async shim_askname() {
+-    let name = null;
+-    while (!name) name = await getLine('Who are you?');
+-    G.svp.plname = name.slice(0, 31);
+-  },
+-  shim_get_nh_event() {},
+-  async shim_exit_nhwindows(str) {
+-    if (str) addMessage(str);
+-    render();
+-    await syncSaves();
+-  },
+-  shim_suspend_nhwindows() {},
+-  shim_resume_nhwindows() {},
+-  shim_create_nhwindow(type) {
+-    const id = nextWin++;
+-    wins.set(id, { type, lines: [], menu: null });
+-    return id;
+-  },
+-  shim_clear_nhwindow(win) {
+-    const w = wins.get(win);
+-    if (!w) return;
+-    if (w.type === K.WIN_TYPE.NHW_MAP) grid = blankGrid();
+-    else if (w.type === K.WIN_TYPE.NHW_MESSAGE) ageMessages();
+-    else w.lines = [];
+-  },
+-  async shim_display_nhwindow(win, blocking) {
+-    const w = wins.get(win);
+-    if (!w) return;
+-    if (w.type === K.WIN_TYPE.NHW_MESSAGE) {
+-      if (blocking && msgs.some((m) => m.fresh)) {
+-        moreShown = true;
+-        for (;;) { const k = await nextKey(); if (k === 32 || k === 13 || k === 27) break; }
+-        moreShown = false;
+-        ageMessages();
+-      }
+-    } else if ((w.type === K.WIN_TYPE.NHW_TEXT || w.type === K.WIN_TYPE.NHW_MENU) && w.lines.length) {
+-      await showText(w.lines);
+-      w.lines = [];
+-    } else {
+-      render();
+-    }
+-  },
+-  shim_destroy_nhwindow(win) { wins.delete(win); },
+-  shim_curs(win, x, y) {
+-    const w = wins.get(win);
+-    if (w && w.type === K.WIN_TYPE.NHW_MAP) cursor = { x, y };
+-  },
+-  shim_putstr(win, attr, str) {
+-    const w = wins.get(win);
+-    if (!w) return;
+-    if (w.type === K.WIN_TYPE.NHW_MESSAGE) addMessage(str);
+-    else w.lines.push({ attr, text: str });
+-  },
+-  shim_start_menu(win) {
+-    const w = wins.get(win);
+-    if (w) w.menu = { items: [], prompt: '' };
+-  },
+-  shim_add_menu(win, glyphinfo, identifier, ch, gch, attr, clr, str, itemflags) {
+-    const w = wins.get(win);
+-    if (!w || !w.menu) return;
+-    const lo = M._web_any_word(identifier, 0), hi = M._web_any_word(identifier, 1);
+-    w.menu.items.push({
+-      lo, hi, selectable: !!(lo || hi), ch: ch & 0xff, gch: gch & 0xff, attr, clr, text: str,
+-      selected: !!(itemflags & MENU_ITEMFLAGS_SELECTED), count: -1,
+-    });
+-  },
+-  shim_end_menu(win, prompt) {
+-    const w = wins.get(win);
+-    if (w && w.menu) w.menu.prompt = prompt || '';
+-  },
+-  shim_select_menu(win, how, listPtr) { return selectMenu(win, how, listPtr); },
+-  shim_message_menu(let_, how, mesg) { addMessage(mesg); return 0; },
+-  shim_mark_synch() { render(); },
+-  shim_wait_synch() { render(); },
+-  shim_cliparound() {},
+-  shim_update_positionbar() {},
+-  shim_print_glyph(win, x, y, gi) {
+-    if (y < 0 || y >= ROWNO || x < 0 || x >= COLNO) return;
+-    grid[y][x] = { ch: M._web_glyphinfo(gi, 1), color: M._web_glyphinfo(gi, 2) & 15,
+-                   flags: M._web_glyphinfo(gi, 3) };
+-  },
+-  shim_raw_print(str) { if (str) addMessage(str); },
+-  shim_raw_print_bold(str) { if (str) addMessage(str); },
+-  async shim_nhgetch() {
+-    const k = await nextKey();
+-    ageMessages();
+-    return k;
+-  },
+-  async shim_nh_poskey(xp, yp, modp) {
+-    const ev = await nextInput();
+-    ageMessages();
+-    if (ev.click) {
+-      M.setValue(xp, ev.click.x, 'i16');
+-      M.setValue(yp, ev.click.y, 'i16');
+-      M.setValue(modp, ev.click.mod, 'i32');
+-      return 0;
+-    }
+-    return ev.key;
+-  },
+-  shim_nhbell() {
+-    document.body.animate([{ background: '#402020' }, { background: '' }], 150);
+-  },
+-  async shim_doprev_message() {
+-    await showText(history.slice(-60).map((text) => ({ attr: 0, text })), 'Messages');
+-    return 0;
+-  },
+-  async shim_yn_function(query, resp, def) {
+-    const shown = resp.split('\x1b')[0];
+-    const allowed = resp.replace('\x1b', '');
+-    let q = query;
+-    if (shown) q += ` [${shown}]`;
+-    if (def) q += ` (${String.fromCharCode(def)})`;
+-    promptText = q;
+-    let k;
+-    for (;;) {
+-      k = await nextKey();
+-      if (!allowed) break;
+-      if (k === 27) {
+-        k = allowed.includes('q') ? 113 : allowed.includes('n') ? 110 : def;
+-        break;
+-      }
+-      if ((k === 13 || k === 32) && def) { k = def; break; }
+-      const ch = String.fromCharCode(k);
+-      if (allowed.includes(ch)) break;
+-      if (allowed.includes(ch.toLowerCase())) { k = ch.toLowerCase().charCodeAt(0); break; }
+-    }
+-    promptText = '';
+-    ageMessages();
+-    if (k >= 32 && k < 127) addMessage(`${q} ${String.fromCharCode(k)}`);
+-    return k > 127 ? 27 : k;
+-  },
+-  async shim_getlin(query, bufp) {
+-    const s = await getLine(query);
+-    M.stringToUTF8(s === null ? '\x1b' : s, bufp, 256);
+-  },
+-  async shim_get_ext_cmd() {
+-    const names = [];
+-    for (let i = 0; ; i++) {
+-      const p = M._web_extcmd_name(i);
+-      if (!p) break;
+-      names.push(M.UTF8ToString(p));
+-    }
+-    const s = await getLine('#', '', names);
+-    if (!s) return -1;
+-    const i = M.ccall('web_extcmd_find', 'number', ['string'], [s.trim()]);
+-    if (i < 0) addMessage(`Unknown extended command '${s}'.`);
+-    return i;
+-  },
+-  shim_number_pad() {},
+-  async shim_delay_output() { render(); await sleep(40); },
+-  shim_change_color() {},
+-  shim_get_color_string() { return ''; },
+-  shim_preference_update() {},
+-  shim_getmsghistory() { return ''; },   // '' comes back to C as NULL
+-  shim_putmsghistory(msg) { if (msg) history.push(msg); },
+-  shim_status_update(fldidx, ptr, chg, percent, color, colormasks) {
+-    const name = K.STATUS_FIELD[fldidx];
+-    if (name === 'BL_FLUSH' || name === 'BL_RESET') { render(); return; }
+-    if (name === 'BL_CONDITION') { condMask = ptr ? M.getValue(ptr, 'i32') : 0; return; }
+-    if (!name) return;
+-    let text = ptr ? M.UTF8ToString(ptr) : '';
+-    if (name === 'BL_GOLD') text = plainGold(text);
+-    status[name] = { text: text.trim(), color };
+-  },
+-};
+-
+-globalThis.nethackCallback = async (name, ...args) => {
+-  K = K || globalThis.nethackGlobal.constants;   // set up by main()
+-  G = G || globalThis.nethackGlobal.globals;
+-  const h = handlers[name];
+-  if (!h) { console.debug('unhandled', name, args); return 0; }
+-  try {
+-    const r = await h(...args);
+-    return r === undefined ? 0 : r;
+-  } catch (e) {
+-    console.error(name, e);
+-    return 0;
+-  }
+-};
+-
+-/* ---------- saves ---------- */
+-
+-function syncSaves() {
+-  return new Promise((resolve) => {
+-    try { M.FS.syncfs(false, (err) => { if (err) console.warn('save sync', err); resolve(); }); }
+-    catch (e) { console.warn('save sync', e); resolve(); }
+-  });
+-}
+-
+-/* ---------- start ---------- */
+-
+-fitFont();
+-createNetHack({
+-  preRun: [(mod) => {
+-    // a generic user name (sysconf GENERICUSERS), so the game asks "Who are
+-    // you?" instead of calling everyone web_user
+-    mod.ENV.USER = 'player';
+-    // libnh's sysconf turns perm_invent on, which needs a side panel this
+-    // page doesn't have yet; without one every inventory change pops up
+-    mod.ENV.NETHACKOPTIONS = '!perm_invent,time';
+-    // saved games live in IndexedDB so they survive a reload
+-    mod.FS.mkdir('/save');
+-    mod.FS.mount(mod.IDBFS, {}, '/save');
+-    mod.addRunDependency('syncfs');
+-    mod.FS.syncfs(true, (err) => {
+-      if (err) console.warn('save restore', err);
+-      mod.removeRunDependency('syncfs');
+-    });
+-  }],
+-  print: (s) => console.log(s),
+-  printErr: (s) => console.warn(s),
+-  // main() starts right after this, before the factory's promise settles
+-  onRuntimeInitialized() {
+-    M = this;
+-    $('boot').remove();
+-    M.ccall('shim_graphics_set_callback', null, ['string'], ['nethackCallback']);
+-  },
+-}).catch((e) => { $('boot').textContent = `The game failed to load: ${e}`; });

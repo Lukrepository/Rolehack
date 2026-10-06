@@ -1,0 +1,15 @@
+import { launch, newCtx, openPage, resume, touch, sleep } from './common.mjs';
+import { capOf } from './kit.mjs';
+const b = await launch();
+const ctx = await newCtx(b, { w: 896, h: 443, dpr: 1, prefs: { ghostDeck: { on: false, clean: 0, session: null } } });
+const p = await openPage(ctx);
+await resume(p);
+await p.evaluate(() => { const real = globalThis.nethackCallback; globalThis.__cb = []; globalThis.nethackCallback = (name, ...a) => { if (!/print_glyph|status_update|curs|putstr|cliparound|flush|mark_synch|wait_synch|delay/.test(name)) globalThis.__cb.push(name); return real(name, ...a); }; });
+const t = await touch(ctx, p);
+const look = await capOf(p, 'look');
+await t.tap(look.cx, look.cy, 450);
+await sleep(800);
+console.log(await p.evaluate(() => ({ cb: globalThis.__cb.length, modal: !document.getElementById('modal').hidden, title: document.getElementById('modal-title').textContent, body: document.getElementById('modal-body').innerText.slice(0, 400) })));
+await p.keyboard.press('l'); await sleep(300);
+console.log(await p.evaluate(() => ({ cb: globalThis.__cb.slice(-5), wp: globalThis.__bt.M._web_picking(), picking: globalThis.__bt.overlay.picking })));
+await b.close();

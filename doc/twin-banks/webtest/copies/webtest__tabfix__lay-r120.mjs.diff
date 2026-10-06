@@ -1,0 +1,60 @@
+--- a/win/web/layout.js@10b91db
++++ b/layout.js
+@@ -612,27 +612,14 @@
+ //      the level at 23.5 dp -- so it binds only on a monitor, which the design gave the
+ //      desk.  Desktop mode is deferred (Lucas, 2026-10-03) and a monitor's window is a
+ //      tablet; there, where 24 dp would leave strips wider than a panel beside the level
+-//      (WIDE_STRIP), the cap rises towards tabletWideCellMax, the desk's widest (section 10
+-//      below), rather than leave the window black: a 2560x1440 window showed the level at
+-//      24 dp in a glass half void (52%), 3440x1440 62%; now 31.5 and 42.5 dp, 5% and 8%.
+-//      It rises over WIDE_RAMP dp of width, not at once (tabletCap): a first cut switched
+-//      to 48 dp at the strips' width, and a monitor's window dragged across 2408 dp wide
+-//      swapped a 24 dp level for a 30 dp one, and moved the log, at every pixel either side
+-//      (the reviews, 2026-10-03).  A portrait window keeps the cell under a level as wide
+-//      as its own glass, never under 24 dp (layoutCore, section 9 below).
++//      (WIDE_STRIP), the cap is tabletWideCellMax, the desk's widest (section 10 below), rather
++//      than leave the window black: a 2560x1440 window showed the level at 24 dp in a
++//      glass half void (52%), 3440x1440 62%; now 31.5 and 42.5 dp, 5% and 8%.
+ //    Pinch stores a factor of this cell, not a pixel size.
+ // ---------------------------------------------------------------------------------------
+ const WIDE_STRIP = 240;     // a strip beside the level as wide as a panel (the tray takes one from 240 dp)
+-const WIDE_RAMP = 160;      // the width over which the strips close once they are WIDE_STRIP
+-// The whole-level cell's cap on a tablet: tabletCellMax up to where a level at that cell
+-// would leave strips WIDE_STRIP wide beside it in the region; from there, over the next
+-// WIDE_RAMP dp, it moves to the cell that fills the region's width, which it then follows,
+-// up to tabletWideCellMax.  Continuous in the width, so a window dragged wider grows the
+-// level half a dp at a time (2560x1440 is past the ramp: the level fills it at 31.5 dp).
+ function tabletCap(regionW, a, st) {
+-  const lo = st.tabletCellMax, hi = Math.max(lo, st.tabletWideCellMax);
+-  const t = clamp((regionW - 80 * a * lo - 2 * WIDE_STRIP) / WIDE_RAMP, 0, 1);
+-  return Math.min(hi, lo + t * Math.max(0, regionW / (80 * a) - lo));
++  const lo = st.tabletCellMax, hi = Math.max(lo, st.tabletWideCellMax); const w0 = 80 * a * lo + 2 * WIDE_STRIP; const t = Math.min(1, Math.max(0, (regionW - w0) / 120)); return Math.min(hi, lo + t * Math.max(0, regionW / (80 * a) - lo));
+ }
+ export function deviceCell(S, L, settings, M, table = BANK, Tfixed = null) {
+   const st = settings.sides ? settings : settled(L, S, settings);
+@@ -772,8 +759,7 @@
+   const { M, fit, DC } = plan(S, L, st, table);
+   fit.reasons = [...reasons, ...fit.reasons];
+   const P = placeBanks(W, H, M, st, table);
+-  const a = st.cellAspect;
+-  let T = DC.T;
++  const T = DC.T, a = st.cellAspect;
+ 
+   // 9a. the glass: the candidate that shows most of the level at the device cell.  Larger
+   //     text first gives up message rows (down to 1), then the smallest glass worth a map.
+@@ -789,15 +775,6 @@
+     cands = candidates(W, H, M, P, st, rows, 40);
+     glassDegraded = true; fit.reasons.push('the glass is under 120 dp');
+   }
+-  // A monitor turned to portrait (1440x2560) shares the device cell no further than a level
+-  // as wide as its own widest glass, and never under the tablet's cap: the cell grown for
+-  // its landscape width (section 8 above) showed 45 of the level's 80 columns at 31.5 dp
+-  // where 24 dp shows 60 (the reviews, 2026-10-03).  Only past tabletCellMax, which no
+-  // phone or tablet reaches, so their two orientations keep one cell.
+-  if (portrait && T > st.tabletCellMax && cands.length) {
+-    const wide = Math.max(...cands.map((c) => c.region.w));
+-    T = Math.max(st.tabletCellMax, Math.min(T, Math.floor(wide / (80 * a) * 2) / 2));
+-  }
+   const scored = cands.map((c) => ({ ...c, ...cellsAt(c.region, T, a), T }));
+   let G = scored.reduce((b, c) => (!b || better(c, b) ? c : b), null);
+   // Smaller keys never show less of the level (section 2).  The device cell is decided at

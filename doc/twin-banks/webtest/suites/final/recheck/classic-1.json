@@ -1,0 +1,65 @@
+[
+ {
+  "w": 360,
+  "h": 640,
+  "bad": [
+   "16890 of 230400 pixels differ in 5,255,254,508"
+  ],
+  "px": {
+   "n": 16890,
+   "of": 230400,
+   "box": [
+    5,
+    255,
+    254,
+    508
+   ]
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/recheck/shots/classic-1-head-360x640.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/recheck/shots/classic-1-work-360x640.png"
+  ]
+ },
+ {
+  "w": 390,
+  "h": 844,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 329160,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/recheck/shots/classic-1-head-390x844.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/recheck/shots/classic-1-work-390x844.png"
+  ]
+ }
+]

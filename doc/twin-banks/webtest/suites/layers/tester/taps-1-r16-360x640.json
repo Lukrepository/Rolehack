@@ -1,0 +1,47 @@
+{
+ "summary": {
+  "360x640": {
+   "taps": 7010,
+   "hard": 0,
+   "soft": 0,
+   "tally": {
+    "tie pad_b->pad_j": 2,
+    "tie pad_j->pad_n": 2,
+    "tie pad_h->pad_centre": 1,
+    "tie pad_centre->pad_l": 1,
+    "tie pad_y->pad_k": 1,
+    "tie pad_k->pad_u": 1,
+    "tie msgs->drop": 1,
+    "tie drop->pin1": 1,
+    "tie game->m1": 1,
+    "tie m1->menu": 1
+   }
+  }
+ },
+ "checks": [
+  {
+   "tag": "taps 1 r16 360x640",
+   "name": "layout unchanged by the sweep",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "taps 1 r16 360x640",
+   "name": "taps agree with the hit model (7010 taps)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "taps 1 r16 360x640",
+   "name": "boundary taps (within 1 px) agree",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "taps 1 r16 360x640",
+   "name": "console clean",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

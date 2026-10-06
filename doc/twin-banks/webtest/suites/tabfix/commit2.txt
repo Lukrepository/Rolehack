@@ -1,0 +1,30 @@
+Web port: a question's chips stand clear of the ANSWER pill
+
+A reviewer playing at 443x939 (2026-10-03) met "This door is locked.
+Kick it? [ynq] (q)" with the hero in the map's top-left corner.  The
+chips go to the map's foot when the hero is near its top, and the ANSWER
+pill, which twin banks show at the map's bottom-left while a question's
+answers are on the pad, was drawn over the 'y' chip and hid its label.
+The pad's Yes still answered, but the chip meant for the same answer was
+unreadable.  The overlap is older than the tablet stage: placeChips()
+never knew of the pill, and it placed the chips before the pad's answers
+put the pill up.
+
+- web.js: placeChips() puts the chips' foot over the layer's pill while
+  a layer is up (chipBottom()), and shim_yn_function places them again
+  once the answers are on the pad.  With no pill up, or the chips at the
+  map's top, nothing changes.
+
+Checked in the browser (Playwright, Chromium, density 1 and 2.4375, no
+console errors): webtest/tabfix/dcheck.mjs asks the reviewer's question
+through the page's own yn handler, with the hero at (2, 2) so that the
+chips go to the map's foot, at 443x939, 1024x768 and 896x443.  On
+10b91db the pill lies on the 'y' and 'n' chips at all three windows.
+Here no chip touches it, every chip stays inside the map, and 'q'
+answers.  The header stage's chips suite (placement, scrolling,
+taps) and the layers stage's suites, whose pop-up checks include the
+pill and the chips, pass on this tree, and so do the rest of the suites
+listed in 10b91db.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Dgv3E1gUjAwvSmojZmYB4f

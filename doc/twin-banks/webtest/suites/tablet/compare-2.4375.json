@@ -1,0 +1,171 @@
+{
+ "896x443": {
+  "tier": "phone",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [],
+  "errors": []
+ },
+ "443x939": {
+  "tier": "phone",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [
+   "log"
+  ],
+  "errors": []
+ },
+ "640x360": {
+  "tier": "phone",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [],
+  "errors": []
+ },
+ "360x640": {
+  "tier": "phone",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [],
+  "errors": []
+ },
+ "915x412": {
+  "tier": "phone",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [],
+  "errors": []
+ },
+ "412x915": {
+  "tier": "phone",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [
+   "log"
+  ],
+  "errors": []
+ },
+ "844x390": {
+  "tier": "phone",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [],
+  "errors": []
+ },
+ "390x844": {
+  "tier": "phone",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [],
+  "errors": []
+ },
+ "896x363": {
+  "tier": "phone",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [],
+  "errors": []
+ },
+ "443x859": {
+  "tier": "phone",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [],
+  "errors": []
+ },
+ "1024x768": {
+  "tier": "tablet",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [
+   "log",
+   "inventory"
+  ],
+  "errors": []
+ },
+ "768x1024": {
+  "tier": "tablet",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [
+   "log",
+   "inventory"
+  ],
+  "errors": []
+ },
+ "1180x820": {
+  "tier": "tablet",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [
+   "log",
+   "inventory"
+  ],
+  "errors": []
+ },
+ "1366x768": {
+  "tier": "tablet",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [
+   "log",
+   "inventory"
+  ],
+  "errors": []
+ },
+ "960x600": {
+  "tier": "tablet",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [
+   "log",
+   "inventory"
+  ],
+  "errors": []
+ },
+ "600x960": {
+  "tier": "tablet",
+  "keys": 37,
+  "same": true,
+  "diffs": [],
+  "panelsBefore": 0,
+  "panelsNow": [
+   "log"
+  ],
+  "errors": []
+ },
+ "1280x800 mouse": "HEAD twin desk (mouse); now twin tablet (touch), 2 panels",
+ "1920x1080 mouse": "HEAD twin desk (mouse); now twin tablet (touch), 2 panels",
+ "2560x1440 mouse": "HEAD twin desk (mouse); now twin tablet (touch), 2 panels",
+ "3440x1440 mouse": "HEAD twin desk (mouse); now twin tablet (touch), 2 panels"
+}

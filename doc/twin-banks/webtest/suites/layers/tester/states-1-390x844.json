@@ -1,0 +1,427 @@
+{
+ "checks": [
+  {
+   "tag": "states 1-390x844",
+   "name": "a deep map point exists",
+   "pass": true,
+   "detail": {
+    "x": 195,
+    "y": 317.43,
+    "cx": 60,
+    "cy": 10,
+    "d": 0.35499999999996135
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "halo swallow point found",
+   "pass": true,
+   "detail": {
+    "x": 200,
+    "y": 745,
+    "id": "pad_l"
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "seam point found",
+   "pass": true,
+   "detail": {
+    "x": 269.328125,
+    "y": 745
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "a deep map tap within 120 ms of a key still travels",
+   "pass": true,
+   "detail": "l@60,10"
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "a deep map tap travels at once",
+   "pass": true,
+   "detail": "@60,10"
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "GAME opens its drawer",
+   "pass": true,
+   "detail": "game"
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "a map tap within 200 ms of a drawer closing: swallowed",
+   "pass": true,
+   "detail": {
+    "drawer": null,
+    "sent": "",
+    "log": [
+     "closing"
+    ]
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "after 200 ms the map tap travels",
+   "pass": true,
+   "detail": "@60,10"
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "COMBAT tap arms Fight (deep)",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "Fight armed + deep map tap: disarmed, consumed",
+   "pass": true,
+   "detail": {
+    "armed": false,
+    "sent": "",
+    "log": [
+     "disarm"
+    ],
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "Fight armed then →: Fl sent",
+   "pass": true,
+   "detail": "Fl"
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "a slide from a key onto the map: no travel",
+   "pass": true,
+   "detail": "l"
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "a pan from the map onto a key: no key, no travel",
+   "pass": true,
+   "detail": {
+    "sent": "",
+    "downs": [],
+    "v0": {
+     "x": 0,
+     "y": 0
+    },
+    "v1": {
+     "x": -34,
+     "y": 427.57000732421875
+    }
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "halo 10 dp off a key: swallowed, nothing sent",
+   "pass": true,
+   "detail": {
+    "log": [
+     "halo:pad_l"
+    ],
+    "sent": "",
+    "downs": []
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "nothing pops over a key: halo flash",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "seam COMBAT|CONTEXT: swallowed, nothing armed",
+   "pass": true,
+   "detail": {
+    "log": [
+     "seam"
+    ],
+    "armed": false,
+    "sent": ""
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "--More-- up (deep map)",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "nothing pops over a key: --More--",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "--More-- + deep map tap: Space, no preview, no travel",
+   "pass": true,
+   "detail": {
+    "sent": " ",
+    "log": [],
+    "downs": [],
+    "more": false,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "--More-- up (halo 8-12 dp)",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "--More-- + halo 8-12 dp: not swallowed",
+   "pass": true,
+   "detail": {
+    "sent": "",
+    "log": [],
+    "downs": [],
+    "more": true,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "--More-- up (seam)",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "--More-- + seam: not swallowed",
+   "pass": true,
+   "detail": {
+    "sent": "",
+    "log": [],
+    "downs": [
+     "context"
+    ],
+    "more": true,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "--More-- up (halo snap)",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "--More-- + halo snap: snaps to pad_l",
+   "pass": true,
+   "detail": {
+    "sent": "l",
+    "log": [
+     "snap:pad_l"
+    ],
+    "downs": [
+     "pad_l"
+    ],
+    "more": true,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "kick asks a direction",
+   "pass": true,
+   "detail": "In what direction?"
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "direction prompt + map tap: nothing answered, no preview, no travel",
+   "pass": true,
+   "detail": {
+    "still": true,
+    "sent": "@60,10",
+    "log": []
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "direction prompt + halo 8-12 dp: swallowed",
+   "pass": true,
+   "detail": {
+    "log": [
+     "halo:pad_l"
+    ],
+    "sent": ""
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "direction prompt: the hero did not move",
+   "pass": true,
+   "detail": {
+    "hero0": {
+     "x": 60,
+     "y": 4
+    },
+    "hero1": {
+     "x": 60,
+     "y": 4
+    }
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "farlook (deep map): getpos up",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "farlook + deep map: the tap picks the spot (a click), no preview",
+   "pass": true,
+   "detail": {
+    "sent": "@60,10",
+    "log": [],
+    "downs": [],
+    "picking": false,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "farlook (halo 8-12 dp): getpos up",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "farlook + halo 8-12 dp: not swallowed",
+   "pass": true,
+   "detail": {
+    "sent": "",
+    "log": [],
+    "downs": [],
+    "picking": true,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 1-390x844",
+   "name": "console clean",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "popups": [
+  {
+   "tag": "1-390x844",
+   "what": "halo flash",
+   "shown": [],
+   "bad": [],
+   "rects": []
+  },
+  {
+   "tag": "1-390x844",
+   "what": "--More--",
+   "shown": [],
+   "bad": [],
+   "rects": []
+  }
+ ],
+ "notes": [
+  {
+   "tag": "1-390x844",
+   "ring": null,
+   "deep": {
+    "x": 195,
+    "y": 317.43,
+    "cx": 60,
+    "cy": 10,
+    "d": 0.35499999999996135
+   },
+   "hero": {
+    "x": 60,
+    "y": 4
+   }
+  },
+  {
+   "tag": "1-390x844",
+   "swallowAt": {
+    "x": 200,
+    "y": 745,
+    "id": "pad_l"
+   },
+   "snapAt": {
+    "x": 195,
+    "y": 745,
+    "id": "pad_l"
+   },
+   "seamAt": {
+    "x": 269.328125,
+    "y": 745
+   }
+  },
+  {
+   "tag": "1-390x844",
+   "note": "no ring in the level at this window"
+  },
+  {
+   "tag": "1-390x844",
+   "more": false,
+   "sent": " ",
+   "log": [],
+   "downs": [],
+   "preview": null
+  },
+  {
+   "tag": "1-390x844",
+   "more": true,
+   "sent": "",
+   "log": [],
+   "downs": [],
+   "preview": null
+  },
+  {
+   "tag": "1-390x844",
+   "more": true,
+   "sent": "",
+   "log": [],
+   "downs": [
+    "context"
+   ],
+   "preview": null
+  },
+  {
+   "tag": "1-390x844",
+   "more": true,
+   "sent": "l",
+   "log": [
+    "snap:pad_l"
+   ],
+   "downs": [
+    "pad_l"
+   ],
+   "preview": null
+  },
+  {
+   "tag": "1-390x844",
+   "farlook": "deep map",
+   "sent": "@60,10",
+   "log": [],
+   "downs": [],
+   "picking": false,
+   "preview": null
+  },
+  {
+   "tag": "1-390x844",
+   "farlook": "halo 8-12 dp",
+   "sent": "",
+   "log": [],
+   "downs": [],
+   "picking": true,
+   "preview": null
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+import { launch, newCtx, openPage, resume, sleep } from './common.mjs';
+import fs from 'node:fs';
+const src = fs.readFileSync('more.mjs', 'utf8');
+const oracle = eval('(' + src.slice(src.indexOf('const ORACLE = ') + 'const ORACLE = '.length, src.indexOf('async function state(p)')).trim().replace(/;$/, '') + ')');
+const b = await launch();
+const ctx = await newCtx(b, { w: 443, h: 939, prefs: { budgets: {} } });
+await ctx.addInitScript(oracle);
+const p = await openPage(ctx); await resume(p);
+const t = 'There is a staircase down here.  You see here 14 gold pieces, a scroll labeled ELBIB YLOH, a blessed +2 pair of hard shoes, an uncursed potion of see invisible and a ring mail.';
+const r = await p.evaluate((t) => {
+  const R = globalThis.__bt, m = R.bandMetrics();
+  const n = globalThis.__lines([t], m.slot, m.rows);
+  const d = globalThis.__probe, e = d.lastElementChild;
+  const rg = document.createRange(); rg.selectNodeContents(e);
+  const rects = [...rg.getClientRects()].map((q) => ({ l: q.left - d.getBoundingClientRect().left, t: q.top - d.getBoundingClientRect().top, w: q.width }));
+  const fl = [...d.children].slice(0, 4).map((q) => { const b = q.getBoundingClientRect(); return { t: b.top - d.getBoundingClientRect().top, h: b.height, w: b.width, l: b.left - d.getBoundingClientRect().left }; });
+  return { n, rects, fl, w: d.getBoundingClientRect().width, eb: e.getBoundingClientRect().top - d.getBoundingClientRect().top };
+}, t);
+console.log(JSON.stringify(r, null, 1));
+await b.close();

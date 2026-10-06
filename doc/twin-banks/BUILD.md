@@ -1,6 +1,6 @@
 # Twin banks on the web port: the final integration pass
 
-*In the repo (4 October 2026).* This is the report as the build session wrote it. The browser suites it names (`webtest/...`, Playwright with real touches against a local copy of the page) and their logs and screenshots stayed in that session; the node tests (`win/web/test/`) and the design's gate (`checks/sweep.mjs` here) are in the repo. Since this report, the glass's band is built (`DESIGN.md`, CHANGES of 4 October), which answers the two questions under "For Lucas to decide" below; 3440x1440 stays as it is.
+*In the repo (4 October 2026).* This is the report as the build session wrote it. The browser suites it names (`webtest/...`, Playwright with real touches against a local copy of the page) are kept in [`webtest/suites/`](webtest/README.md) since 6 October; their logs and screenshots stayed in that session; the node tests (`win/web/test/`) and the design's gate (`checks/sweep.mjs` here) are in the repo. Since this report, the glass's band is built (`DESIGN.md`, CHANGES of 4 October), which answers the two questions under "For Lucas to decide" below; 3440x1440 stays as it is.
 
 4 October 2026.  Branch `claude/exciting-pascal-afplud`: the 15 commits since `ec134a7` (up to `003e336`), and this pass's one fix, `ce38b67`.  Checked against `design/v2/DESIGN.md` (v2 with its CHANGES of 2 and 3 October) and `design/v2/spec.json`.  Nothing was pushed.
 

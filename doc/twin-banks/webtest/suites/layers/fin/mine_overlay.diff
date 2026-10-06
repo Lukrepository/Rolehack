@@ -1,0 +1,508 @@
+--- impl_overlay.js	2026-10-03 11:13:12.833420771 +0000
++++ /home/user/Rolehack/win/web/overlay.js	2026-10-03 11:08:42.475142385 +0000
+@@ -138,7 +138,8 @@
+ // ×100 to ×400); the centre types any count.
+ const COUNT_PLACES = [0, 1, 2, 5];
+ // PIN 1 empty, PIN 2 Fire, in twin banks (the design's section 16); classic's
+-// two points keep C.ATK_SLOT_DEFAULT, both empty.
++// two points keep C.ATK_SLOT_DEFAULT, both empty.  Twin keeps its pins under
++// their own name (twinPins).
+ const TWIN_ATK_DEFAULT = [null, 'f'];
+ // The flick's two wedges split at -62.5 degrees and run 62.5 each way, -125
+ // to 0 (the design's section 7): 17.5 past each node, where classic has 15.
+@@ -356,6 +357,7 @@
+       for (const part of [this.sh, this.sk, this.fr, this.tp]) this.capEl.appendChild(part);
+     }
+     this.hit = { ...c };
++    this.el.classList.add('hitcell');
+     this.setBox(this.kx, this.ky, this.w, this.h);
+     return this;
+   }
+@@ -873,10 +875,12 @@
+       fill: this.fill ? { hub: hubId(this.fill.hv), attack: this.fill.attack, n: this.fill.n } : null,
+       drawerScroll: this.drawerGrid ? this.drawerGrid.scrollTop : 0,
+       restRevealed: !!(this.restWell && this.restWell.revealed),
+-      // a layer on the pad that stays up: a count, CONTEXT's HERE, the stairs'
+-      // first tap (a layer held under a thumb is never rebuilt under it)
++      // a layer on the pad that stays up: a count, CONTEXT's HERE and the
++      // stairs lit in it, the stairs' first tap (a layer held under a thumb is
++      // never rebuilt under it)
+       padLayer: this.padLayer ? { kind: this.padLayer.kind, act: this.padLayer.act, fromId: this.padLayer.fromId,
+-        from: this.padLayer.from === 'context' ? 'context' : null, sticky: !!this.padLayer.sticky } : null,
++        from: this.padLayer.from === 'context' ? 'context' : null, sticky: !!this.padLayer.sticky,
++        lit: this.padLayer.lit ?? null } : null,
+     };
+   }
+ 
+@@ -1035,9 +1039,13 @@
+   //    swallowed, with the same word;
+   //  - classic's SACRIFICE was prayed to by a 380 ms hold, then y on ↖ for the
+   //    game's question.  Its spot is REST in landscape, GAME in portrait now,
+-  //    so the y would walk the hero north-west.  A hold of 380 ms there shows
+-  //    where SACRIFICE went, and the next pad tap within 1.5 s of its lift is
+-  //    swallowed.
++  //    so the y would walk the hero north-west.  A hold of 380 ms there that
++  //    did nothing else shows, as it lifts, where SACRIFICE went, and the
++  //    next pad tap within 1.5 s is swallowed.  REST's own hold is the same
++  //    gesture: one that set a count, by a slide or by staying up to be
++  //    tapped, is no habit, and armed nothing -- it once flashed SACRIFICE
++  //    at every count, ate the next step and kept the ghost deck from
++  //    retiring (the layers stage's review, 2026-10-03).
+   // Either swallow is a catch: the player meant the old way.
+   classicHabits(W, H) {
+     const g = this.classicGeom(W, H, H > W), at = g.at;
+@@ -1063,12 +1071,7 @@
+     if (!H || !this.twin || !this.habitSpots) return false;
+     if (performance.now() > H.until) { this.habit = null; return false; }
+     const x = e.clientX, y = e.clientY, inR = (r) => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
+-    // The pray habit's tap is a danger only where it would walk: the pad
+-    // showing its arrows, nothing over it.  A count layer the hold left up
+-    // takes it as a count, and a drawer's or a window's backdrop as a close.
+-    const walks = () => !this.padLayer && !this.fanOpen && !this.answering && !this.drawerOpen && !this.picking
+-      && !this.scrim.classList.contains('on') && !(this.host.guardsAside && this.host.guardsAside());
+-    if (H.kind === 'radial' ? !this.habitSpots.radial.some(inR) : this.padPlaceAt(x, y) === null || !walks()) return false;
++    if (H.kind === 'radial' ? !this.habitSpots.radial.some(inR) : this.padPlaceAt(x, y) === null || !this.padWalks()) return false;
+     if (H.kind === 'pray') this.habit = null;   // only the next pad tap
+     FB.tick();
+     this.ghostCaught();
+@@ -1078,22 +1081,39 @@
+     return true;
+   }
+ 
+-  // a hold of the old SACRIFICE spot: at 380 ms, where SACRIFICE went; at its
+-  // lift, the next pad tap's 1.5 s begin
++  // A pad tap is a danger only where it would walk: the pad showing its
++  // arrows, nothing over it.  A layer takes it as a place, and a drawer's or
++  // a window's backdrop as a close.
++  padWalks() {
++    return !this.padLayer && !this.fanOpen && !this.answering && !this.drawerOpen && !this.picking
++      && !this.scrim.classList.contains('on') && !(this.host.guardsAside && this.host.guardsAside());
++  }
++
++  // A hold of the old SACRIFICE spot, from its touch to its lift.  The lift's
++  // verdict waits for the key's own lift (a capture listener runs first): a
++  // hold of 380 ms that set nothing (holdUsed) is the habit -- where
++  // SACRIFICE went shows, and the next pad tap's 1.5 s begin.  A count
++  // picked by a slide, or a count layer left up to be tapped, was meant.
++  // GAME's drawer, which the lift opens in portrait, is no use of the hold:
++  // the flash still says where SACRIFICE went, and the drawer's backdrop
++  // takes the y (habitSwallows lets it).
+   prayHabit(e) {
+     const r = this.habitSpots && this.habitSpots.pray;
+     if (!r || !this.twin || !this.ghostOn()) return;
+     if (!(e.clientX >= r.x && e.clientX <= r.x + r.w && e.clientY >= r.y && e.clientY <= r.y + r.h)) return;
+-    const id = e.pointerId, hold = { id, timer: 0, held: false };
+-    hold.timer = setTimeout(() => { if (this.pointersDown.has(id)) { hold.held = true; this.prayShow(); } }, HUB_HOLD_MS);
+-    this.prayHold = hold;
++    this.prayHold = { id: e.pointerId, at: performance.now() };
++    this.holdUsed = null;
+   }
+   prayLift(e) {
+     const hold = this.prayHold;
+     if (!hold || hold.id !== e.pointerId) return;
+-    clearTimeout(hold.timer);
+     this.prayHold = null;
+-    if (hold.held) this.habit = { kind: 'pray', until: performance.now() + HABIT_MS };
++    if (e.type !== 'pointerup' || performance.now() - hold.at < HUB_HOLD_MS) return;
++    setTimeout(() => {
++      if (this.holdUsed === hold.id || !this.twin) return;
++      this.habit = { kind: 'pray', until: performance.now() + HABIT_MS };
++      this.prayShow();
++    }, 0);
+   }
+   prayShow() {
+     if (this.habitSpots) this.ghostShow({ id: 'sacrifice', name: 'SACRIFICE', r: this.habitSpots.pray });
+@@ -1144,7 +1164,7 @@
+ 
+   resetState() {
+     P.macros();   // first run with the flick key moves the retired third point's command first
+-    this.atkSlotKeys = (P.get('atkSlots') || (this.twin ? TWIN_ATK_DEFAULT : C.ATK_SLOT_DEFAULT)).slice(0, C.ATK_SLOT_DEFAULT.length);
++    this.atkSlotKeys = (this.twin ? twinPins() : P.get('atkSlots') || C.ATK_SLOT_DEFAULT).slice(0, C.ATK_SLOT_DEFAULT.length);
+     this.equipSlotKeys = (P.get('equipSlots') || C.EQUIP_SLOT_DEFAULT).slice();
+     this.fanKeys = new Map();
+     for (const h of C.HUBS) if (h.fan.length) this.fanKeys.set(h.id, P.fanSlots(h.id, h.fan.map((it) => (it ? it.key : null))));
+@@ -1390,7 +1410,7 @@
+ 
+   buildSeams(K) {
+     for (const r of this.twin.guard.seams) {
+-      const s = el('div', 'seam', K);
++      const s = r.el = el('div', 'seam', K);
+       Object.assign(s.style, { left: `${r.x}px`, top: `${r.y}px`, width: `${r.w}px`, height: `${r.h}px` });
+       s.addEventListener('pointerdown', (e) => {
+         e.preventDefault();
+@@ -1494,8 +1514,10 @@
+   // The guard's clock and the layers' idle, from the capture phase: every key
+   // stops its pointer events, so nothing later in the page would see them.
+   // keyUpAt is when a touch begun on a key, a halo or a seam last lifted
+-  // (web.js swallows a ring tap within 120 ms of it); any touch is input
+-  // that keeps a sticky layer up for another 4 s.
++  // (web.js swallows a ring tap within 120 ms of it); any touch, as it lands
++  // and as it lifts, is input that keeps a sticky layer up for another 4 s.
++  // From the lift too: a hub's layer held open 3 s closed 1.4 s after the
++  // thumb lifted, its 4 s run from the hold (the layers stage, 2026-10-03).
+   watchGuard() {
+     this.keyUpAt = -1e9;
+     this.habit = null;
+@@ -1517,6 +1539,7 @@
+     }, true);
+     window.addEventListener('pointerup', (e) => {
+       if (onKey.delete(e.pointerId)) this.keyUpAt = performance.now();
++      if (this.idleTimer) this.armIdle();
+       this.prayLift(e);
+     }, true);
+     window.addEventListener('pointercancel', (e) => { onKey.delete(e.pointerId); this.prayLift(e); }, true);
+@@ -1537,28 +1560,58 @@
+   // area best covers.  So a touch in a halo, on a seam or in the ring beside
+   // a key went to the key: a 30 px touch 10 dp off pad_l, in the halo, and
+   // 14 dp off, in the ring, both pressed pad_l, and a seam, which no listener
+-  // makes a tap target, never swallowed (webtest/layers/dbg6.mjs, 2026-10-03).
+-  // The pointerdown keeps the finger's own point, so wherever a touch begins
+-  // on the guard's ground -- a key's cell, a halo, a seam or the map -- and
+-  // Chrome gave it to another of them, it goes back where it landed, and the
+-  // hit cells, halos, seams and ring decide as the design has them.  Touches
+-  // elsewhere -- a window's buttons, a prompt's chips, the scrim of an open
+-  // layer -- keep Chrome's help.  True when the touch was moved.
++  // makes a tap target, never swallowed (the layers stage, 2026-10-03).  So
++  // did a touch just past a halo, where the case, the glass or a band lies:
++  // 14 dp above REST rested 20 turns, and in portrait 14 dp past the left
++  // bank's inner edge, between the two halos, armed the right bank's COMBAT
++  // (its review, 2026-10-03).  The pointerdown keeps the finger's own point,
++  // so a touch goes back where it landed whenever Chrome moved it across the
++  // guard's ground: wherever it begins on that ground -- a key's cell, a
++  // halo, a seam or the map -- and Chrome gave it to another part of it, and
++  // wherever Chrome gave a bank's key, halo or seam a touch that landed off
++  // the banks.  Then the hit cells, halos, seams and ring decide as the
++  // design has them -- between two keys, or a key and a seam, to the
++  // fraction of a px (bankAt) -- and past a halo the case takes nothing and
++  // a band does what a tap on it does.  Touches elsewhere -- a window's
++  // buttons, a prompt's chips, the drawer, the FLICK legend, the scrim of an
++  // open layer -- keep Chrome's help.  True when the touch was moved.
+   retarget(e) {
+     if (!this.twin || !e.isTrusted || e.pointerType !== 'touch' || !e.target || !e.target.closest) return false;
++    const K = this.keysEl;
++    const own = (n) => (n && n.closest ? n.closest('button.k, .well-slot, .halo, .seam, #map') : null);
++    const bank = (n) => !!(n && n.closest && K.contains(n) && n.closest('.hitcell, .well-slot, .halo, .seam'));
+     // at the whole px the touch is in: Chrome hit-tests a fractional point as
+-    // the next whole px, a px to the right and below
+-    const real = document.elementFromPoint(Math.floor(e.clientX), Math.floor(e.clientY));
++    // the next whole px, a px to the right and below; between two keys, or a
++    // key and a seam, the guard's own geometry decides
++    let real = document.elementFromPoint(Math.floor(e.clientX), Math.floor(e.clientY));
++    if (real && K.contains(real) && real.closest('.hitcell, .well-slot, .seam')) real = this.bankAt(e.clientX, e.clientY) || real;
+     if (!real || real === e.target) return false;
+-    const own = (n) => (n && n.closest ? n.closest('button.k, .well-slot, .halo, .seam, #map') : null);
+     const at = own(real), was = own(e.target);
+-    if (!at || at === was || !(this.keysEl.contains(at) || (was && this.keysEl.contains(was)))) return false;
++    if (at ? at === was || !(K.contains(at) || (was && K.contains(was))) : !bank(e.target)) return false;
+     e.preventDefault();
+     e.stopImmediatePropagation();
+     this.forwardDown(e, real.closest('button') || real);
+     return true;
+   }
+ 
++  // The bank's key or seam whose box holds a point, by the guard's geometry
++  // rather than by Chrome's hit test, which takes the px square from a point,
++  // right and down, and gives it to the topmost box that square touches: a
++  // cell's edge at 67.5 (the 3 dp gaps at 360 dp) gave the px at 67, 1 px
++  // off pad_b's keycap, to pad_j beyond it (the layers stage, 2026-10-03).
++  // A point on a keycap's own edge is that key's, as the nearest keycap is
++  // (the pads' cells begin at the face of the row above them).  A key under
++  // the scrim gives the scrim; null where no cell or seam holds the point.
++  bankAt(x, y) {
++    const G = this.twin.guard, inR = (r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h;
++    const seam = G.seams.find((r) => r.el && inR(r));
++    if (seam) return seam.el;
++    const on = G.live.find((c) => G.cells.has(c.id) && x >= c.x && x <= c.x + c.w && y >= c.y && y <= c.y + c.h);
++    const id = on ? on.id : [...G.cells].find(([, c]) => inR(c))?.[0];
++    if (!id) return null;
++    return this.keyLive(id) ? this.keyTarget(id) : this.scrim;
++  }
++
+   // The nearest keycap's distance from a point on the map, for web.js's ring;
+   // null in classic, which has no guard, and at the desk, where a mouse's
+   // click on the map is meant where it lands (the ring is for a thumb's
+@@ -1594,9 +1647,15 @@
+   //    dimmed and does nothing but tick.
+   //  - From CONTEXT the stairs take a second tap within 2 s: CONTEXT sits
+   //    beside COMBAT, and a near miss onto it must not change level.  With
+-  //    one action, CONTEXT's first tap lights ↑ or ↓ on the pad; a second on
+-  //    CONTEXT or the lit place goes.  In its HERE, the first tap on ↑ or ↓
+-  //    lights it and the second goes.  The pad centre's slide goes at once.
++  //    one action, CONTEXT's first tap lights the pad centre with them; a
++  //    second tap on CONTEXT or the centre goes.  In its HERE, a tap on ↑ or
++  //    ↓ lights the centre the same way, for CONTEXT or the centre to go.
++  //    Never ↑ or ↓ themselves: COMBAT's tap is always followed by a tap of
++  //    the pad that aims, and after a near miss onto CONTEXT that tap landed
++  //    on the lit ↑ or ↓ and changed level (the layers stage's review,
++  //    2026-10-03).  The centre is the one place no aim uses.  ↑ and ↓ only
++  //    tick there, and on the one action's pad put the stairs away.  The pad
++  //    centre's slide goes at once.
+   // A layer left up drops back to arrows after 4 s with no input, or on a
+   // map tap (the scrim, which closes anything open).  A place that asks for a
+   // direction gives the pad straight back as arrows: the layer closes first.
+@@ -1636,7 +1695,7 @@
+ 
+   openStairs(act) {
+     this.clearForPadLayer();
+-    const L = this.padLayer = { kind: 'stairs', act, place: act === C.CTX_ASCEND ? 1 : 7 };
++    const L = this.padLayer = { kind: 'stairs', act };
+     L.timer = setTimeout(() => { if (this.padLayer === L) this.closePadLayer(); }, STAIRS_MS);
+     this.paintStairs();
+     this.refreshContextStrip();
+@@ -1659,13 +1718,17 @@
+     if (s.kind === 'count') {
+       const from = s.fromId === 'rest' ? this.restWell.slot : this.twinEl(s.fromId);
+       if (from && this.openCountLayer(s.act, from, s.fromId)) { this.padLayer.sticky = true; this.armIdle(); }
+-    } else if (s.kind === 'here' && s.from === 'context') this.openHere('context');
+-    else if (s.kind === 'stairs') this.openStairs(s.act);
++    } else if (s.kind === 'here' && s.from === 'context') {
++      // the stairs' first tap stays in, its 2 s begun again
++      if (this.openHere('context') && s.lit !== null) this.lightStairs(s.lit);
++    } else if (s.kind === 'stairs') this.openStairs(s.act);
+   }
+ 
+   // CONTEXT's tap, in twin banks
+   contextTapped(act, from) {
+     const L = this.padLayer;
++    // the stairs lit in CONTEXT's HERE: its second tap goes
++    if (L && L.kind === 'here' && L.from === 'context' && L.lit !== null) { this.stairsGo(from); return; }
+     if (this.candidates.length > 1) {
+       if (L && L.kind === 'here' && L.from === 'context') this.closePadLayer();
+       else this.openHere('context');
+@@ -1684,8 +1747,8 @@
+     const L = this.padLayer;
+     if (L.kind === 'count') { this.countPick(place); return; }
+     if (L.kind === 'stairs') {
+-      // the lit place goes; any other tap only puts the stairs away
+-      if (place === L.place) { this.closePadLayer(); this.runAction(L.act, from); return; }
++      // the lit centre goes; any other tap, ↑ or ↓ too, only puts the stairs away
++      if (place === 4) { this.closePadLayer(); this.runAction(L.act, from); return; }
+       FB.tick();
+       this.closePadLayer();
+       return;
+@@ -1706,6 +1769,7 @@
+   herePick(place, slid, from) {
+     const L = this.padLayer;
+     if (place === 4) {
++      if (L.lit !== null) { this.stairsGo(from); return; }
+       this.closePadLayer();
+       if (!slid) this.openDrawer('here');
+       return;
+@@ -1717,25 +1781,46 @@
+       if (slid) this.closePadLayer();
+       return;
+     }
+-    if (p.stairs && L.from === 'context' && L.lit !== place) {
+-      L.lit = place;
+-      clearTimeout(L.timer);
+-      L.timer = setTimeout(() => { if (this.padLayer === L && L.lit === place) { L.lit = null; this.paintHere(); } }, STAIRS_MS);
+-      this.paintHere();
+-      this.armIdle();
++    if (p.stairs && L.from === 'context') {
++      // their second tap is the centre's or CONTEXT's, never theirs (an aim's)
++      if (L.lit === place) FB.tick();
++      else this.lightStairs(place);
+       return;
+     }
+     this.closePadLayer();
+     this.runAction(p.act, from);
+   }
+ 
+-  // the pad centre's lift while its HERE is up: the place under the thumb, or
+-  // nothing when it never slid off the centre
++  // CONTEXT's HERE: ↑ or ↓ tapped, the centre lit with them for 2 s
++  lightStairs(place) {
++    const L = this.padLayer;
++    if (!L || L.kind !== 'here') return;
++    L.lit = place;
++    clearTimeout(L.timer);
++    L.timer = setTimeout(() => { if (this.padLayer === L && L.lit === place) { L.lit = null; this.paintHere(); } }, STAIRS_MS);
++    this.paintHere();
++    this.armIdle();
++  }
++
++  // the stairs lit in CONTEXT's HERE go
++  stairsGo(from) {
++    const p = HERE_PLACES[this.padLayer.lit];
++    this.closePadLayer();
++    this.runAction(p.act, from);
++  }
++
++  // The pad centre's lift while its HERE is up: the place under the thumb.
++  // A thumb that slid off the centre and back lifts on ALL, the HERE drawer
++  // (it was out of reach: the lift on the centre closed the layer, and said
++  // "HERE: SLIDE" to a thumb that had slid -- the layers stage's review,
++  // 2026-10-03).  One that never left the centre opens nothing, and one
++  // that slid off the pad lets it go.
+   hereSlide(ev) {
+     this.padHover(null);
+     if (!this.hereFrom('centre')) return;
+-    const place = this.padPlaceAt(ev.clientX, ev.clientY);
+-    if (place === null || place === 4) { this.closePadLayer(); this.radialHabit(); return; }
++    const L = this.padLayer, place = this.padPlaceAt(ev.clientX, ev.clientY);
++    if (place === 4 && L.left) { this.herePick(4, false, this.padCentre && this.padCentre.el); return; }
++    if (place === null || place === 4) { this.closePadLayer(); if (!L.left) this.radialHabit(); return; }
+     const f = this.padFace(place);
+     this.herePick(place, true, f && f.el);
+   }
+@@ -1752,8 +1837,10 @@
+         if (!L) return;
+         this.padHover(null);
+         const place = this.padPlaceAt(ev.clientX, ev.clientY);
+-        if (place === 4 || COUNT_PLACES.includes(place)) { this.countPick(place); return; }
++        // a hold that picked or stays up was meant (prayLift's habit)
++        if (place === 4 || COUNT_PLACES.includes(place)) { this.holdUsed = ev.pointerId; this.countPick(place); return; }
+         if (ms < COUNT_STICKY_MS) { this.closePadLayer(); return; }
++        this.holdUsed = ev.pointerId;
+         L.sticky = true;
+         this.armIdle();
+       },
+@@ -1777,43 +1864,57 @@
+     for (let i = 0; i < 9; i++) { const f = this.padFace(i); if (f) f.press(i === place); }
+   }
+ 
++  // The count in use is lit: on the dark cap, its legend glowing amber, among
++  // the amber counts.  On an amber cap the amber glow could not be read, 1.12
++  // to 1 against the cap's top (the layers stage's review, 2026-10-03).
+   paintCount() {
+     const act = this.padLayer.act, n = this.countFor(act), preset = act.counts.includes(n), cap = capFor(C.A90);
++    const inUse = (f, on) => f.cap(on ? capFor(null) : cap).lit(on);
+     for (let place = 0; place < 9; place++) {
+       const f = this.padFace(place);
+       if (!f) continue;
+       const i = COUNT_PLACES.indexOf(place);
+-      if (place === 4) f.placeholder(false).cap(cap).tag(null).dim(false).lit(!preset).label('×n', 12, true).sub('type');
+-      else if (i >= 0) f.placeholder(false).cap(cap).tag(null).dim(false).lit(act.counts[i] === n).label(`×${act.counts[i]}`, 13, true).sub(null);
++      if (place === 4) inUse(f.placeholder(false).tag(null).dim(false), !preset).label('×n', 12, true).sub('type');
++      else if (i >= 0) inUse(f.placeholder(false).tag(null).dim(false), act.counts[i] === n).label(`×${act.counts[i]}`, 13, true).sub(null);
+       else f.placeholder(true).cap(capFor(C.G90)).tag(null).dim(true).lit(false).label('', 10).sub(null);
+     }
+     this.showFrame(`${act.word.toUpperCase()} ×${n}`, '#f8b457');
+   }
+ 
++  // The pad centre as the stairs' second tap: the amber cap, its dark legend
++  // the stairs' word, their arrow in the corner (place: ↑ 1 or ↓ 7).
++  paintStairsGo(f, act, place) {
++    f.placeholder(false).cap(capFor(C.A90)).tag(place === 1 ? '↑' : '↓').dim(false).lit(false)
++      .label(act.word, 9.5, true).sub('tap to go');
++  }
++
+   paintHere() {
+-    const L = this.padLayer, cap = capFor(C.VIOLET);
++    const L = this.padLayer, cap = capFor(C.VIOLET), lit = L.lit !== null ? HERE_PLACES[L.lit] : null;
+     for (let place = 0; place < 9; place++) {
+       const f = this.padFace(place);
+       if (!f) continue;
+-      if (place === 4) { f.placeholder(false).cap(cap).tag(null).dim(false).lit(false).label('ALL', 11).sub('drawer'); continue; }
+-      const p = HERE_PLACES[place], lit = L.lit === place;
+-      f.placeholder(false).cap(lit ? capFor(C.A90) : cap).tag(null).dim(!!p.bit && !this.hereHas(p.bit)).lit(lit)
+-        .label(this.labelForAction(p.act), 9.5, true).sub(lit ? 'tap again' : p.act.key, !lit);
++      if (place === 4) {
++        if (lit) this.paintStairsGo(f, lit.act, L.lit);
++        else f.placeholder(false).cap(cap).tag(null).dim(false).lit(false).label('ALL', 11).sub('drawer');
++        continue;
++      }
++      const p = HERE_PLACES[place];
++      f.placeholder(false).cap(cap).tag(null).dim(!!p.bit && !this.hereHas(p.bit)).lit(false)
++        .label(this.labelForAction(p.act), 9.5, true).sub(p.act.key, true);
+     }
+-    const lit = L.lit !== null ? HERE_PLACES[L.lit] : null;
+-    this.showFrame(lit ? `${lit.act.word.toUpperCase()}: TAP AGAIN` : 'HERE', lit ? '#ffb347' : '#c2b6ff');
++    this.showFrame(lit ? stairsPill(lit.act) : 'HERE', lit ? '#ffb347' : '#c2b6ff');
+   }
+ 
+-  // CONTEXT's one action is the stairs: their place lit, the rest of the pad dimmed
++  // CONTEXT's one action is the stairs: the centre lit with them, the rest of the pad dimmed
+   paintStairs() {
+     const L = this.padLayer;
+     for (let place = 0; place < 9; place++) {
+       const f = this.padFace(place);
+       if (!f) continue;
+-      if (place === L.place) f.placeholder(false).cap(capFor(C.A90)).tag(null).dim(false).lit(true).label(L.act.word, 9.5, true).sub('tap again');
++      if (place === 4) this.paintStairsGo(f, L.act, L.act === C.CTX_ASCEND ? 1 : 7);
+       else f.dim(true).lit(false);
+     }
+-    this.showFrame(`${L.act.word.toUpperCase()}: TAP AGAIN`, '#ffb347');
++    this.showFrame(stairsPill(L.act), '#ffb347');
+   }
+ 
+   // A sticky layer's 4 s: any touch starts them again (watchGuard), a thumb
+@@ -2193,7 +2294,12 @@
+             if (this.twin) { if (!this.openHere('centre')) this.centreSlowTap = true; return; }
+             if (!this.fanOpen && !this.answering && !this.picking) this.openContextRadial();
+           }, tap, this.twin ? {
+-            move: (ev) => { if (this.hereFrom('centre')) this.padHover(this.padPlaceAt(ev.clientX, ev.clientY)); },
++            move: (ev) => {
++              if (!this.hereFrom('centre')) return;
++              const place = this.padPlaceAt(ev.clientX, ev.clientY);
++              if (place !== 4) this.padLayer.left = true;   // it slid (hereSlide)
++              this.padHover(place);
++            },
+             release: (ev) => {
+               if (this.centreSlowTap) { this.centreSlowTap = false; tap(); return; }
+               this.hereSlide(ev, k.el);
+@@ -2526,11 +2632,14 @@
+     this.syncModal();
+   }
+ 
++  // where the attack pins are kept: twin's own, or classic's (twinPins)
++  atkPref() { return this.twin ? 'atkSlotsTwin' : 'atkSlots'; }
++
+   placeAssignment(attack, n) {
+     const keys = attack ? this.atkSlotKeys : this.equipSlotKeys;
+     for (let k = 0; k < keys.length; k++) if (keys[k] === this.assign.key) keys[k] = null;
+     keys[n] = this.assign.key;
+-    P.set(attack ? 'atkSlots' : 'equipSlots', keys);
++    P.set(attack ? this.atkPref() : 'equipSlots', keys);
+     this.assign = null;
+     this.assignHub = null;
+     // from COMBAT's or INVENTORY's drawer its layer was up too, and the flick key's radial may be
+@@ -2544,7 +2653,7 @@
+   clearSlot(hv, attack, n) {
+     const keys = attack ? this.atkSlotKeys : this.equipSlotKeys;
+     keys[n] = null;
+-    P.set(attack ? 'atkSlots' : 'equipSlots', keys);
++    P.set(attack ? this.atkPref() : 'equipSlots', keys);
+     this.refreshSlots(hv, attack);
+   }
+ 
+@@ -3593,8 +3702,8 @@
+         // the finger and puts up the scrim round the lit places, and the
+         // touch, its key gone, lifted on the scrim -- which cancelled the pin
+         // as it began: the command was never in hand, so neither the FLICK
+-        // legend nor any key could take it (webtest/layers/dbg21.mjs,
+-        // 2026-10-03; classic does the same, and is left as it is).
++        // legend nor any key could take it (the layers stage, 2026-10-03;
++        // classic does the same, and is left as it is).
+         if (this.twin && !e.isConnected) spendTouch(id);
+       }, holdMs);
+     });
+@@ -3790,9 +3899,28 @@
+   return { cells, banks, seams, between, live };
+ }
+ 
++// The pill while the stairs wait for their second tap: the lit centre's word
++// and where to tap.  The pill is 120 dp (layout.js), about 17 letters, and
++// "DESCEND: TAP CENTRE" lost its last one.
++const stairsPill = (act) => `${act.word.toUpperCase()}? CENTRE`;
++
+ // a layout reason's first clause, for a settings line
+ const firstReason = (r) => String(r || '').split('; ')[0];
+ 
++// Twin banks' attack pins.  They are kept apart from classic's: PIN 2 starts
++// on Fire in twin and classic's second point stays empty, and with one array
++// the first pin set in twin wrote [x, 'f'] where classic reads its pins, so
++// classic's second point became Fire (the layers stage's review,
++// 2026-10-03).  Until twin's are set, they are classic's, an empty PIN 2
++// taking Fire unless Fire is pinned already; a player who pinned in classic
++// finds those pins in twin.
++function twinPins() {
++  const own = P.get('atkSlotsTwin');
++  if (Array.isArray(own)) return own.slice();
++  const pins = (P.get('atkSlots') || C.ATK_SLOT_DEFAULT).slice(0, C.ATK_SLOT_DEFAULT.length);
++  return pins.map((k, n) => k || (TWIN_ATK_DEFAULT[n] && !pins.includes(TWIN_ATK_DEFAULT[n]) ? TWIN_ATK_DEFAULT[n] : null));
++}
++
+ // The rest of a touch whose key has gone (bindHold): its moves, and its lift
+ // or cancel, reach nothing past the window's capture phase, where the page's
+ // own bookkeeping of fingers (watchTwin, watchGuard) has already seen them.

@@ -1,0 +1,14 @@
+import { launch, newCtx, openPage, resume, touch, sleep } from './common.mjs';
+const b = await launch();
+const ctx = await newCtx(b, { w: 896, h: 443, dpr: 1, prefs: { ghostDeck: { on: false, clean: 0, session: null } } });
+const p = await openPage(ctx);
+await resume(p);
+const t = await touch(ctx, p);
+await p.evaluate(() => { globalThis.__pe = []; window.addEventListener('pointerdown', (e) => globalThis.__pe.push((e.isTrusted ? '' : 'fwd ') + `${e.clientX},${e.clientY}:${(e.target.closest('[data-tw]') || e.target).dataset?.tw || e.target.id || e.target.className}`), true); });
+const seam = await p.evaluate(() => { const r = document.querySelector('#keys > .seam').getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + Math.min(r.height / 2, 20), r: r.toJSON() }; });
+console.log(seam, await p.evaluate(([x, y]) => document.elementsFromPoint(x, y).slice(0, 3).map((n) => n.className).join(' | '), [seam.x, seam.y]));
+console.log('aside', await p.evaluate(() => [globalThis.__bt.overlay.guardsAside(), globalThis.__bt.overlay.picking, globalThis.__bt.moreShown]));
+await t.cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: seam.x, y: seam.y }] }); await sleep(30);
+console.log(await p.evaluate(() => ({ pe: globalThis.__pe, pressed: [...document.querySelectorAll('#keys .k.pressed')].map((k) => (k.closest('[data-tw]') || {}).dataset?.tw), log: globalThis.__bt.overlay.guardLog })));
+await t.cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] }); await sleep(30);
+await b.close();

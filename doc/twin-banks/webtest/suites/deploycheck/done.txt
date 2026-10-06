@@ -1,0 +1,3 @@
+classic exit 0
+turns exit 0
+screens exit 0

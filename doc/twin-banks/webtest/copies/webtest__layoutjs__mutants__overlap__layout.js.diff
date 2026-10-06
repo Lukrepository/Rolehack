@@ -1,0 +1,11 @@
+--- a/win/web/layout.js@0e887f7
++++ b/layout.js
+@@ -470,7 +470,7 @@
+       const cc = id.startsWith('pad_') && corner === 'R' ? 2 - c : c;
+       const inDp = cc * (B.kk + M.g);
+       const x = corner === 'L' ? B.x0 + inDp : B.x1 - inDp - w;
+-      const y = B.y1 - spans[r].up0 - h;
++      const y = B.y1 - spans[r].up0 - h + (W === 1340 && H === 1340 && r === 1 ? 20 : 0);
+       controls.push({ id, label: LABEL[id], x: r2(x), y: r2(y), w: r2(w), h: r2(h), thumb: corner, kind: id.startsWith('pad_') ? 'pad' : KIND[id] || 'key' });
+     }));
+   }

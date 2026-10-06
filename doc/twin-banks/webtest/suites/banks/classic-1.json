@@ -1,0 +1,296 @@
+[
+ {
+  "w": 896,
+  "h": 443,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 396928,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-head-896x443.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-work-896x443.png"
+  ]
+ },
+ {
+  "w": 443,
+  "h": 939,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 415977,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-head-443x939.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-work-443x939.png"
+  ]
+ },
+ {
+  "w": 640,
+  "h": 360,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 230400,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-head-640x360.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-work-640x360.png"
+  ]
+ },
+ {
+  "w": 360,
+  "h": 640,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 230400,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-head-360x640.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-work-360x640.png"
+  ]
+ },
+ {
+  "w": 915,
+  "h": 412,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 376980,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-head-915x412.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-work-915x412.png"
+  ]
+ },
+ {
+  "w": 412,
+  "h": 915,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 376980,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-head-412x915.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-work-412x915.png"
+  ]
+ },
+ {
+  "w": 844,
+  "h": 390,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 329160,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-head-844x390.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-work-844x390.png"
+  ]
+ },
+ {
+  "w": 390,
+  "h": 844,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 329160,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-head-390x844.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-work-390x844.png"
+  ]
+ },
+ {
+  "w": 896,
+  "h": 363,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 325248,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-head-896x363.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-work-896x363.png"
+  ]
+ },
+ {
+  "w": 443,
+  "h": 859,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 380537,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-head-443x859.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/classic-1-work-443x859.png"
+  ]
+ },
+ {
+  "switch": [
+   896,
+   443
+  ],
+  "bad": []
+ },
+ {
+  "switch": [
+   443,
+   939
+  ],
+  "bad": []
+ }
+]

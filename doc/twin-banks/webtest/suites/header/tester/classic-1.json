@@ -1,0 +1,225 @@
+[
+ {
+  "name": "classic-1-896x443",
+  "w": 896,
+  "h": 443,
+  "dpr": 1,
+  "bad": [
+   "the options file differs from HEAD's"
+  ],
+  "notes": [
+   "switched twin -> classic vs HEAD's classic opened fresh: work SPAN#morelamp. 0.00,0.00 0.00x0.00 none visible zauto | head DIV#tube. 242.00,22.00 412.00x313.00 block visible zauto ;; work DIV#tube. 242.00,22.00 412.00x313.00 block visible zauto | head DIV#keys.layer 0.00,0.00 896.00x443.00 block visible z2"
+  ],
+  "gestures": [
+   "pinch out: 24@-238,-209 zoom=24 zf=null writes=[rh.zoom]",
+   "still: 24@-238,-209 zoom=24 zf=null writes=[]",
+   "pinch in: 12@-16,13 zoom=12 zf=null writes=[rh.zoom]",
+   "drag: 12@-56,-11 zoom=12 zf=null writes=[]",
+   "tap: 23,14"
+  ],
+  "overBefore": true
+ },
+ {
+  "name": "classic-1-443x939",
+  "w": 443,
+  "h": 939,
+  "dpr": 1,
+  "bad": [
+   "the options file differs from HEAD's"
+  ],
+  "notes": [
+   "switched twin -> classic vs HEAD's classic opened fresh: work SPAN#morelamp. 0.00,0.00 0.00x0.00 none visible zauto | head DIV#tube. 16.00,18.00 411.00x497.00 block visible zauto ;; work DIV#tube. 16.00,18.00 411.00x497.00 block visible zauto | head DIV#keys.layer 0.00,0.00 443.00x939.00 block visible z2"
+  ],
+  "gestures": [
+   "pinch out: 34@-423,-259 zoom=34 zf=null writes=[rh.zoom]",
+   "still: 34@-423,-259 zoom=34 zf=null writes=[]",
+   "pinch in: 17@-109,89 zoom=17 zf=null writes=[rh.zoom]",
+   "drag: 17@-149,65 zoom=17 zf=null writes=[]",
+   "tap: 21,11"
+  ],
+  "overBefore": false
+ },
+ {
+  "name": "classic-1-640x360",
+  "w": 640,
+  "h": 360,
+  "dpr": 1,
+  "bad": [
+   "the options file differs from HEAD's"
+  ],
+  "notes": [
+   "switched twin -> classic vs HEAD's classic opened fresh: work DIV#.r 189.28,46.13 261.42x25.86 block visible zauto | head DIV#chips. 191.78,79.48 256.42x0.00 flex visible zauto ;; work DIV#chips. 191.78,79.48 256.42x0.00 flex visible zauto | head DIV#statband. 181.78,242.81 276.42x36.05 block visible zauto"
+  ],
+  "gestures": [
+   "pinch out: 24@-306,-230 zoom=24 zf=null writes=[rh.zoom]",
+   "still: 24@-306,-230 zoom=24 zf=null writes=[]",
+   "pinch in: 12@-84,-26 zoom=12 zf=null writes=[rh.zoom]",
+   "drag: 12@-124,-50 zoom=12 zf=null writes=[]",
+   "tap: 23,15"
+  ],
+  "overBefore": false
+ },
+ {
+  "name": "classic-1-360x640",
+  "w": 360,
+  "h": 640,
+  "dpr": 1,
+  "bad": [
+   "the options file differs from HEAD's"
+  ],
+  "notes": [
+   "switched twin -> classic vs HEAD's classic opened fresh: work SPAN#morelamp. 0.00,0.00 0.00x0.00 none visible zauto | head DIV#tube. 13.03,14.66 333.92x280.00 block visible zauto ;; work DIV#tube. 13.03,14.66 333.92x280.00 block visible zauto | head DIV#keys.layer 0.00,0.00 360.00x639.99 block visible z2"
+  ],
+  "gestures": [
+   "pinch out: 24@-277,-209 zoom=24 zf=null writes=[rh.zoom]",
+   "still: 24@-277,-209 zoom=24 zf=null writes=[]",
+   "pinch in: 12@-55,-11 zoom=12 zf=null writes=[rh.zoom]",
+   "drag: 12@-95,-35 zoom=12 zf=null writes=[]",
+   "tap: 23,15"
+  ],
+  "overBefore": false
+ },
+ {
+  "name": "classic-1-915x412",
+  "w": 915,
+  "h": 412,
+  "dpr": 1,
+  "bad": [
+   "the options file differs from HEAD's"
+  ],
+  "notes": [
+   "switched twin -> classic vs HEAD's classic opened fresh: work SPAN#morelamp. 0.00,0.00 0.00x0.00 none visible zauto | head DIV#tube. 240.25,21.83 434.48x282.94 block visible zauto ;; work DIV#tube. 240.25,21.83 434.48x282.94 block visible zauto | head DIV#keys.layer 0.00,0.00 914.99x412.00 block visible z2"
+  ],
+  "gestures": [
+   "pinch out: 24@-227,-224 zoom=24 zf=null writes=[rh.zoom]",
+   "still: 24@-227,-224 zoom=24 zf=null writes=[]",
+   "pinch in: 12@-5,-17 zoom=12 zf=null writes=[rh.zoom]",
+   "drag: 12@-45,-41 zoom=12 zf=null writes=[]",
+   "tap: 23,15"
+  ],
+  "overBefore": true
+ },
+ {
+  "name": "classic-1-412x915",
+  "w": 412,
+  "h": 915,
+  "dpr": 1,
+  "bad": [
+   "the options file differs from HEAD's"
+  ],
+  "notes": [
+   "switched twin -> classic vs HEAD's classic opened fresh: work SPAN#morelamp. 0.00,0.00 0.00x0.00 none visible zauto | head DIV#tube. 14.91,16.77 382.17x503.00 block visible zauto ;; work DIV#tube. 14.91,16.77 382.17x503.00 block visible zauto | head DIV#keys.layer 0.00,0.00 412.00x915.00 block visible z2"
+  ],
+  "gestures": [
+   "pinch out: 34@-438,-255 zoom=34 zf=null writes=[rh.zoom]",
+   "still: 34@-438,-255 zoom=34 zf=null writes=[]",
+   "pinch in: 17@-123,94 zoom=17 zf=null writes=[rh.zoom]",
+   "drag: 17@-163,70 zoom=17 zf=null writes=[]",
+   "tap: 21,11"
+  ],
+  "overBefore": false
+ },
+ {
+  "name": "classic-1-844x390",
+  "w": 844,
+  "h": 390,
+  "dpr": 1,
+  "bad": [
+   "the options file differs from HEAD's"
+  ],
+  "notes": [
+   "switched twin -> classic vs HEAD's classic opened fresh: work SPAN#morelamp. 0.00,0.00 0.00x0.00 none visible zauto | head DIV#tube. 227.41,20.67 389.16x267.83 block visible zauto ;; work DIV#tube. 227.41,20.67 389.16x267.83 block visible zauto | head DIV#keys.layer 0.00,0.00 843.99x390.00 block visible z2"
+  ],
+  "gestures": [
+   "pinch out: 24@-249,-231 zoom=24 zf=null writes=[rh.zoom]",
+   "still: 24@-249,-231 zoom=24 zf=null writes=[]",
+   "pinch in: 12@-27,-29 zoom=12 zf=null writes=[rh.zoom]",
+   "drag: 12@-67,-53 zoom=12 zf=null writes=[]",
+   "tap: 23,16"
+  ],
+  "overBefore": false
+ },
+ {
+  "name": "classic-1-390x844",
+  "w": 390,
+  "h": 844,
+  "dpr": 1,
+  "bad": [
+   "the options file differs from HEAD's"
+  ],
+  "notes": [
+   "switched twin -> classic vs HEAD's classic opened fresh: work SPAN#morelamp. 0.00,0.00 0.00x0.00 none visible zauto | head DIV#tube. 14.11,15.88 361.75x454.00 block visible zauto ;; work DIV#tube. 14.11,15.88 361.75x454.00 block visible zauto | head DIV#keys.layer 0.00,0.00 390.00x844.00 block visible z2"
+  ],
+  "gestures": [
+   "pinch out: 30@-374,-216 zoom=30 zf=null writes=[rh.zoom]",
+   "still: 30@-374,-216 zoom=30 zf=null writes=[]",
+   "pinch in: 15@-97,91 zoom=15 zf=null writes=[rh.zoom]",
+   "drag: 15@-137,67 zoom=15 zf=null writes=[]",
+   "tap: 22,11"
+  ],
+  "overBefore": false
+ },
+ {
+  "name": "classic-1-1024x768",
+  "w": 1024,
+  "h": 768,
+  "dpr": 1,
+  "bad": [
+   "the options file differs from HEAD's",
+   "switched twin(header in the glass) -> classic differs from HEAD switched the same way (586 vs 552): work DIV#panes. 0.00,0.00 1024.00x768.00 block visible z1 | head DIV#keys.layer 0.00,0.00 1024.00x768.00 block visible z2 ;; work DIV#.rhpanel 0.00,0.00 0.00x0.00 none visible zauto | head DIV#.well-slot 18.00,18.00 126.00x40.00 block visible zauto ;; work DIV#.ptitle 0.00,0.00 0.00x0.00 block visible zauto | head DIV#.strip 18.00,18.00 258.00x40.00 block visible zauto ;; work DIV#.pbody 0.00,0.00 0.00x0.00 block visible zauto | head BUTTON#.k 18.00,18.00 126.00x40.00 block visible zauto ;; work DIV#.pl 0.00,0.00 0.00x0.00 block visible zauto | head SPAN#.sh 18.00,20.00 126.00x38.00 block visible zauto ;; work DIV#.pl.new 0.00,0.00 0.00x0.00 block visible zauto | head SPAN#.sk 18.00,18.00 126.00x37.50 block visible zauto"
+  ],
+  "notes": [
+   "switched twin -> classic vs HEAD's classic opened fresh: work SPAN#morelamp. 0.00,0.00 0.00x0.00 none visible zauto | head DIV#tube. 242.00,22.00 540.00x638.00 block visible zauto ;; work DIV#tube. 242.00,22.00 540.00x638.00 block visible zauto | head DIV#keys.layer 0.00,0.00 1024.00x768.00 block visible z2"
+  ],
+  "gestures": [
+   "pinch out: 50@-655,-450 zoom=50 zf=null writes=[rh.zoom]",
+   "still: 50@-655,-450 zoom=50 zf=null writes=[]",
+   "pinch in: 25@-192,63 zoom=25 zf=null writes=[rh.zoom]",
+   "drag: 25@-232,39 zoom=25 zf=null writes=[]",
+   "tap: 20,11"
+  ],
+  "overBefore": false
+ },
+ {
+  "name": "classic-1-768x1024",
+  "w": 768,
+  "h": 1024,
+  "dpr": 1,
+  "bad": [
+   "the options file differs from HEAD's",
+   "switched twin(header in the glass) -> classic differs from HEAD switched the same way (585 vs 551): work DIV#.rhpanel 0.00,0.00 0.00x0.00 none visible zauto | head DIV#tube. 16.00,18.00 736.00x582.00 block visible zauto ;; work DIV#.ptitle 0.00,0.00 0.00x0.00 block visible zauto | head DIV#keys.layer 0.00,0.00 768.00x1024.00 block visible z2 ;; work DIV#.pbody 0.00,0.00 0.00x0.00 block visible zauto | head DIV#.well-slot 18.00,644.00 120.00x36.00 block visible zauto ;; work DIV#.pl 0.00,0.00 0.00x0.00 block visible zauto | head DIV#.strip 18.00,644.00 246.00x36.00 block visible zauto ;; work DIV#.pl.new 0.00,0.00 0.00x0.00 block visible zauto | head BUTTON#.k 18.00,644.00 120.00x36.00 block visible zauto ;; work DIV#tube. 16.00,18.00 736.00x582.00 block visible zauto | head SPAN#.sh 18.00,646.00 120.00x34.00 block visible zauto"
+  ],
+  "notes": [
+   "switched twin -> classic vs HEAD's classic opened fresh: work SPAN#morelamp. 0.00,0.00 0.00x0.00 none visible zauto | head DIV#tube. 16.00,18.00 736.00x582.00 block visible zauto ;; work DIV#.rhpanel 0.00,0.00 0.00x0.00 none visible zauto | head DIV#keys.layer 0.00,0.00 768.00x1024.00 block visible z2"
+  ],
+  "gestures": [
+   "pinch out: 42@-409,-341 zoom=42 zf=null writes=[rh.zoom]",
+   "still: 42@-409,-341 zoom=42 zf=null writes=[]",
+   "pinch in: 21@-20,90 zoom=21 zf=null writes=[rh.zoom]",
+   "drag: 21@-60,66 zoom=21 zf=null writes=[]",
+   "tap: 21,11"
+  ],
+  "overBefore": false
+ },
+ {
+  "name": "classic-1-1366x768",
+  "w": 1366,
+  "h": 768,
+  "dpr": 1,
+  "bad": [
+   "the options file differs from HEAD's",
+   "switched twin(header in the glass) -> classic differs from HEAD switched the same way (585 vs 551): work DIV#panes. 0.00,0.00 1366.00x768.00 block visible z1 | head DIV#keys.layer 0.00,0.00 1366.00x768.00 block visible z2 ;; work DIV#.rhpanel 0.00,0.00 0.00x0.00 none visible zauto | head DIV#.well-slot 18.00,18.00 126.00x40.00 block visible zauto ;; work DIV#.ptitle 0.00,0.00 0.00x0.00 block visible zauto | head DIV#.strip 18.00,18.00 258.00x40.00 block visible zauto ;; work DIV#.pbody 0.00,0.00 0.00x0.00 block visible zauto | head BUTTON#.k 18.00,18.00 126.00x40.00 block visible zauto ;; work DIV#.pl 0.00,0.00 0.00x0.00 block visible zauto | head SPAN#.sh 18.00,20.00 126.00x38.00 block visible zauto ;; work DIV#.pl.new 0.00,0.00 0.00x0.00 block visible zauto | head SPAN#.sk 18.00,18.00 126.00x37.50 block visible zauto"
+  ],
+  "notes": [
+   "switched twin -> classic vs HEAD's classic opened fresh: work SPAN#morelamp. 0.00,0.00 0.00x0.00 none visible zauto | head DIV#tube. 242.00,22.00 882.00x638.00 block visible zauto ;; work DIV#tube. 242.00,22.00 882.00x638.00 block visible zauto | head DIV#keys.layer 0.00,0.00 1366.00x768.00 block visible z2"
+  ],
+  "gestures": [
+   "pinch out: 50@-484,-450 zoom=50 zf=null writes=[rh.zoom]",
+   "still: 50@-484,-450 zoom=50 zf=null writes=[]",
+   "pinch in: 25@-21,63 zoom=25 zf=null writes=[rh.zoom]",
+   "drag: 25@-61,39 zoom=25 zf=null writes=[]",
+   "tap: 20,11"
+  ],
+  "overBefore": false
+ }
+]

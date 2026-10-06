@@ -1,0 +1,11 @@
+--- a/win/web/layout.js@0e887f7
++++ b/layout.js
+@@ -364,7 +364,7 @@
+   const Sw = st.budget?.w ?? S, Sh = st.budget?.h ?? S, Lw = st.budget?.l ?? L;
+   const rowsL = rowsFor(Sh, false, st);
+   const want = st.padKey, cut = st.avoidCutout;
+-  const steps = want > PAD_FLOOR ? [want, ...PAD_STEPS.filter((k) => k < want && k >= PAD_FLOOR)] : [want];
++  const steps = want > PAD_FLOOR ? [want, ...PAD_STEPS.filter((k) => k < want && k >= PAD_FLOOR)].slice(0,1).concat([46]) : [want];
+   const reasons = [];
+   for (const k of steps) {
+     const w = widthFit(Sw, k, KR_MIN, cut);

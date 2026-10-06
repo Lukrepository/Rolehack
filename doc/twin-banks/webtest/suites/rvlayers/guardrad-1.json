@@ -1,0 +1,75 @@
+{
+ "896x443@1": [
+  {
+   "name": "A: 198 touches at the edges of every key, in the halo and beyond, as the hit model has them",
+   "pass": false,
+   "detail": [
+    "menu 14 dp in (222,149): menu, the model nothing",
+    "rest 14 dp up (47,61): rest, the model nothing",
+    "world 14 dp up (113,61): world, the model nothing",
+    "sacrifice 14 dp in (222,97): sacrifice, the model nothing",
+    "sacrifice 14 dp up (179,61): sacrifice, the model nothing",
+    "eq_wear 14 dp in (674,149): eq_wear, the model nothing",
+    "m3 14 dp up (849,61): m3, the model nothing",
+    "keys 14 dp up (783,61): keys, the model nothing",
+    "m2 14 dp in (674,97): m2, the model nothing",
+    "m2 14 dp up (717,61): m2, the model nothing"
+   ]
+  },
+  {
+   "name": "A: no key acted on a cancelled touch",
+   "pass": true,
+   "detail": null
+  }
+ ],
+ "443x939@1": [
+  {
+   "name": "A: 186 touches at the edges of every key, in the halo and beyond, as the hit model has them",
+   "pass": false,
+   "detail": [
+    "rest 14 dp up (47,557): rest, the model nothing",
+    "world 14 dp up (113,557): world, the model nothing",
+    "sacrifice 14 dp up (179,557): sacrifice, the model nothing",
+    "m3 14 dp up (396,557): m3, the model nothing",
+    "keys 14 dp up (330,557): keys, the model nothing",
+    "m2 14 dp up (264,557): m2, the model nothing"
+   ]
+  },
+  {
+   "name": "A: no key acted on a cancelled touch",
+   "pass": true,
+   "detail": null
+  }
+ ],
+ "360x640@1": [
+  {
+   "name": "A: 198 touches at the edges of every key, in the halo and beyond, as the hit model has them",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "A: no key acted on a cancelled touch",
+   "pass": true,
+   "detail": null
+  }
+ ],
+ "390x844@1": [
+  {
+   "name": "A: 198 touches at the edges of every key, in the halo and beyond, as the hit model has them",
+   "pass": false,
+   "detail": [
+    "rest 14 dp up (37,498): rest, the model nothing",
+    "world 14 dp up (99,498): world, the model nothing",
+    "sacrifice 14 dp up (161,498): sacrifice, the model nothing",
+    "m3 14 dp up (355.25,498): m3, the model nothing",
+    "keys 14 dp up (298,498): keys, the model nothing",
+    "m2 14 dp up (240.75,498): m2, the model nothing"
+   ]
+  },
+  {
+   "name": "A: no key acted on a cancelled touch",
+   "pass": true,
+   "detail": null
+  }
+ ]
+}

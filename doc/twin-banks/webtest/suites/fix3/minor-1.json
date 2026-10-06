@@ -1,0 +1,142 @@
+[
+ {
+  "name": "zoom: a pinch in twin writes zoomFactor, not zoom",
+  "pass": true,
+  "detail": {
+   "before": {
+    "T": 13,
+    "cell": 13.411764705882353,
+    "zoom": null,
+    "zf": null
+   },
+   "mid": {
+    "T": 39,
+    "cell": 13.411764705882353,
+    "zoom": null,
+    "zf": null
+   },
+   "after": {
+    "T": 39,
+    "cell": 13.411764705882353,
+    "zoom": null,
+    "zf": "2.9078947368421053"
+   },
+   "want": 39
+  }
+ },
+ {
+  "name": "zoom: Reset zoom in twin resets the factor",
+  "pass": true,
+  "detail": {
+   "T": 13,
+   "cell": 13.411764705882353,
+   "zoom": null,
+   "zf": "1"
+  }
+ },
+ {
+  "name": "zoom: classic zoom 26 does not change twin's cell",
+  "pass": true,
+  "detail": {
+   "T": 13,
+   "cell": 13.411764705882353,
+   "zoom": "26",
+   "zf": null
+  }
+ },
+ {
+  "name": "zoom: classic still draws its zoom",
+  "pass": true,
+  "detail": {
+   "T": 26
+  }
+ },
+ {
+  "name": "skirt 360x640: no hold hint overflows",
+  "pass": true,
+  "detail": {
+   "o1": [],
+   "o2": [],
+   "pin2": [
+    "",
+    ""
+   ],
+   "search": "set ×n"
+  }
+ },
+ {
+  "name": "skirt 640x360: no hold hint overflows",
+  "pass": true,
+  "detail": {
+   "o1": [],
+   "o2": [],
+   "pin2": [
+    "",
+    ""
+   ],
+   "search": "set ×n"
+  }
+ },
+ {
+  "name": "pins: PIN 1 and PIN 2 stay, under the scrim, with the COMBAT layer open",
+  "pass": true,
+  "detail": {
+   "fan": "fight",
+   "pins": [
+    {
+     "id": "pin1",
+     "shown": true,
+     "underScrim": true
+    },
+    {
+     "id": "pin2",
+     "shown": true,
+     "underScrim": true
+    }
+   ]
+  }
+ },
+ {
+  "name": "pins: a tap on PIN 2 under the layer only closes the layer",
+  "pass": true,
+  "detail": {
+   "fan": null,
+   "ev": 0
+  }
+ },
+ {
+  "name": "combat: a second tap on COMBAT disarms; the pad tints while armed",
+  "pass": true,
+  "detail": {
+   "armed": {
+    "armed": "Fight",
+    "by": "combat",
+    "cls": true,
+    "tint": "rgba(255, 70, 50, 0.26)"
+   },
+   "dis": {
+    "armed": null,
+    "cls": false,
+    "banner": "none"
+   },
+   "pushed": [
+    27
+   ]
+  }
+ },
+ {
+  "name": "more: a tap on the status lines at --More-- is Space, and nothing otherwise",
+  "pass": true,
+  "detail": {
+   "sb": {
+    "x": 448,
+    "y": 124,
+    "top": ""
+   },
+   "pushed2": [
+    32
+   ],
+   "pushed3": []
+  }
+ }
+]

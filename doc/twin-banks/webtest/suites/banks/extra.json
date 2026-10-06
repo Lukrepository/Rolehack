@@ -1,0 +1,170 @@
+[
+ {
+  "name": "settings-padCell=46",
+  "ok": true,
+  "detail": "landscape full pad 46 worst 0.000  | portrait full worst 0.000  | page {\"padKey\":46,\"msgRowH\":25.85685483870968,\"statusH\":48}",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-settings-padCell=46.png",
+  "errors": []
+ },
+ {
+  "name": "settings-padCell=52",
+  "ok": true,
+  "detail": "landscape full pad 52 worst 0.000  | portrait full worst 0.000  | page {\"padKey\":52,\"msgRowH\":25.85685483870968,\"statusH\":48}",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-settings-padCell=52.png",
+  "errors": []
+ },
+ {
+  "name": "settings-msgSize=1.4",
+  "ok": true,
+  "detail": "landscape full pad 58 worst 0.000  | portrait full worst 0.000  | page {\"padKey\":58,\"msgRowH\":36.19959677419355,\"statusH\":48}",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-settings-msgSize=1.4.png",
+  "errors": []
+ },
+ {
+  "name": "settings-msgFont=screen,msgSize=1.2",
+  "ok": true,
+  "detail": "landscape full pad 58 worst 0.000  | portrait full worst 0.000  | page {\"padKey\":58,\"msgRowH\":38.475,\"statusH\":48}",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-settings-msgFont=screen,msgSize=1.2.png",
+  "errors": []
+ },
+ {
+  "name": "settings-statusLines=compact",
+  "ok": true,
+  "detail": "landscape full pad 58 worst 0.000  | portrait full worst 0.000  | page {\"padKey\":58,\"msgRowH\":25.85685483870968,\"statusH\":34.5}",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-settings-statusLines=compact.png",
+  "errors": []
+ },
+ {
+  "name": "settings-statusLines=hidden",
+  "ok": true,
+  "detail": "landscape full pad 58 worst 0.000  | portrait full worst 0.000  | page {\"padKey\":58,\"msgRowH\":25.85685483870968,\"statusH\":0}",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-settings-statusLines=hidden.png",
+  "errors": []
+ },
+ {
+  "name": "settings-case=false",
+  "ok": true,
+  "detail": "landscape full pad 58 worst 0.000  | portrait full worst 0.000  | page {\"padKey\":58,\"msgRowH\":25.85685483870968,\"statusH\":48}",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-settings-case=false.png",
+  "errors": []
+ },
+ {
+  "name": "split-443x460-falls-back",
+  "ok": true,
+  "detail": "443x460: {\"ui\":\"classic\",\"pref\":null,\"twin\":false,\"why\":\"the map has no area (435x0)\",\"keys\":37}; grown to 443x939: {\"ui\":\"twin\",\"twin\":true} (rects match)",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-split-443x460-falls-back.png",
+  "errors": []
+ },
+ {
+  "name": "first-visit-phone-split-2of3-412x600",
+  "ok": true,
+  "detail": "screen 412x915, window 412x600: twin, budget null, full, pad 58.00 dp (DOM 73.0x73.0); \"\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-first-visit-phone-split-2of3-412x600.png",
+  "errors": []
+ },
+ {
+  "name": "first-visit-lucas-split-2of3-443x640",
+  "ok": true,
+  "detail": "screen 443x939, window 443x640: twin, budget null, full, pad 58.00 dp (DOM 80.0x80.0); \"\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-first-visit-lucas-split-2of3-443x640.png",
+  "errors": []
+ },
+ {
+  "name": "first-visit-touch-laptop-narrow-500x700",
+  "ok": true,
+  "detail": "screen 1366x768, window 500x700: twin, budget null, full, pad 58.00 dp (DOM 80.0x80.0); \"\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-first-visit-touch-laptop-narrow-500x700.png",
+  "errors": []
+ },
+ {
+  "name": "turn-waits-for-finger",
+  "ok": true,
+  "detail": "finger down through the turn: still laid out 896 wide, → at 146,297; lifted: 443x939; sent \"l\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-turn-waits-for-finger.png",
+  "errors": []
+ },
+ {
+  "name": "turn-keeps-combat-layer",
+  "ok": true,
+  "detail": "{\"W\":443,\"fan\":\"fight\",\"pill\":true,\"pillIn\":true,\"h\":\"^D Kick\",\"scrim\":true}; Kick from the turned layer: \"In what direction?\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-turn-keeps-combat-layer.png",
+  "errors": []
+ },
+ {
+  "name": "turn-keeps-longrest-revealed",
+  "ok": true,
+  "detail": "revealed before true; after the turn {\"W\":443,\"revealed\":true,\"inSlot\":true}",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-turn-keeps-longrest-revealed.png",
+  "errors": []
+ },
+ {
+  "name": "turn-keeps-count-row",
+  "ok": true,
+  "detail": "SEARCH counts up \"s\"; after the turn {\"W\":443,\"chips\":\"s\",\"layer\":\"count\",\"rows\":[{\"x\":8,\"y\":436.0625,\"w\":74.015625,\"h\":24,\"in\":true}]}",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-turn-keeps-count-row.png",
+  "errors": []
+ },
+ {
+  "name": "turn-keeps-pin-assignment",
+  "ok": true,
+  "detail": "before {\"d\":\"fight\",\"a\":true}; turned {\"W\":443,\"d\":\"fight\",\"a\":true,\"fill\":0}; picked \"Q Quiver\" -> PIN 1 shows \"Q QUIVER\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-turn-keeps-pin-assignment.png",
+  "errors": []
+ },
+ {
+  "name": "turn-waits-for-text-field",
+  "ok": true,
+  "detail": "field focused true; through the turn laid out 896 wide; after blur 443",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-turn-waits-for-text-field.png",
+  "errors": []
+ },
+ {
+  "name": "more-lamp-place",
+  "ok": true,
+  "detail": "lamp 431,10 5x12 in band 4..439",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-more-lamp-place.png",
+  "errors": []
+ },
+ {
+  "name": "takeoff-asks-in-twin",
+  "ok": true,
+  "detail": "rc line present; T with one item worn: \"[window] What do you want to take off? Armor c - an uncursed +3 small shield (being worn) \"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-takeoff-asks-in-twin.png",
+  "errors": []
+ },
+ {
+  "name": "pinch-leaves-classic-zoom",
+  "ok": true,
+  "detail": "classic's zoom pref null -> null; drawn cell 47 (layout cell 13.41)",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-pinch-leaves-classic-zoom.png",
+  "errors": []
+ },
+ {
+  "name": "context-candidates-896x443",
+  "ok": true,
+  "detail": "2 candidates: Ascend / Open door / Look here; inside the map, over no key; Open sent \"o\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-context-candidates-896x443.png",
+  "errors": []
+ },
+ {
+  "name": "context-candidates-443x939",
+  "ok": true,
+  "detail": "2 candidates: Ascend / Open door / Look here; inside the map, over no key; Open sent \"o\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-context-candidates-443x939.png",
+  "errors": []
+ },
+ {
+  "name": "mouse-dock-1366x768",
+  "ok": false,
+  "detail": "full pad 40 worst 521.000 pad_b DOM 18.0,692.0 58.0x58.0 vs 539.0,620.7 40.0x40.0; pad_j DOM 84.0,692.0 58.0x58.0 vs 585.0,620.7 40.0x40.0; pad_n DOM 150.0,692.0 58.0x58.0 vs 631.0,620.7 40.0x40.0 | without a budget: pad_b DOM 18.0,692.0 58.0x58.0 vs 539.0,620.7 40.0x40.0; pad_j DOM 84.0,692.0 58.0x58.0 vs 585.0,620.7 40.0x40.0; pad_n DOM 150.0,692.0 58.0x58.0 vs 631.0,620.7 40.0x40.0",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-mouse-dock-1366x768.png",
+  "errors": []
+ },
+ {
+  "name": "mouse-dock-1920x1080",
+  "ok": false,
+  "detail": "full pad 40 worst 798.000 pad_b DOM 18.0,1004.0 58.0x58.0 vs 816.0,767.7 40.0x40.0; pad_j DOM 84.0,1004.0 58.0x58.0 vs 862.0,767.7 40.0x40.0; pad_n DOM 150.0,1004.0 58.0x58.0 vs 908.0,767.7 40.0x40.0 | without a budget: pad_b DOM 18.0,1004.0 58.0x58.0 vs 816.0,767.7 40.0x40.0; pad_j DOM 84.0,1004.0 58.0x58.0 vs 862.0,767.7 40.0x40.0; pad_n DOM 150.0,1004.0 58.0x58.0 vs 908.0,767.7 40.0x40.0",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/extra-mouse-dock-1920x1080.png",
+  "errors": []
+ }
+]

@@ -1,0 +1,11 @@
+--- a/win/web/layout.js@0e887f7
++++ b/layout.js
+@@ -173,7 +173,7 @@
+ // swallowed exactly as it is in landscape.
+ const G_MIN = 3, M_MIN = 8, C_OLD = 10, C_MIN = 24;
+ export const PAD_STEPS = [58, 52, 46];   // the pad's sizes; 46 is Lucas's floor
+-const PAD_FLOOR = 46, KR_MIN = TOUCH_MIN, KR_LAST = 40;
++const PAD_FLOOR = 46, KR_MIN = TOUCH_MIN, KR_LAST = 42;
+ 
+ // ---------------------------------------------------------------------------------------
+ // 3. Tiers: Android's width and height classes, crossed with the input in use, with a

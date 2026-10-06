@@ -1,0 +1,123 @@
+{
+ "checks": [
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "COMBAT held: its layer on the pad",
+   "pass": true,
+   "detail": "fight"
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "COMBAT layer: nothing over a key",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "COMBAT layer: still up 3 s after the lift",
+   "pass": true,
+   "detail": {
+    "fan": "fight",
+    "ms": 3577
+   }
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "COMBAT layer: closed after 4 s idle",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "COMBAT layer + map tap: closed, no travel",
+   "pass": true,
+   "detail": {
+    "fan": null,
+    "sent": ""
+   }
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "COMBAT chord → place: a command sent, layer closed",
+   "pass": true,
+   "detail": {
+    "sent": "Z",
+    "fan": null
+   }
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "SACRIFICE held 450 ms: Pray (M-p)",
+   "pass": true,
+   "detail": "M-p"
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "SACRIFICE tap: offer (M-o)",
+   "pass": true,
+   "detail": "M-o"
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "slow stroke up: legend shown, ↑ node lit",
+   "pass": true,
+   "detail": {
+    "open": "flick",
+    "lit": [
+     true,
+     false
+    ]
+   }
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "stroke turned up-right: ↗ node lit",
+   "pass": true,
+   "detail": {
+    "open": "flick",
+    "lit": [
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "slow stroke up-right lifted: B sent, legend gone",
+   "pass": true,
+   "detail": "B"
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "PIN 2 with the core: f sent, the game asks",
+   "pass": true,
+   "detail": {
+    "sent": "f",
+    "msg": "You have no ammunition readied.",
+    "answering": false,
+    "modal": true
+   }
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "PIN 2 then a map tap then Esc: the hero stayed",
+   "pass": true,
+   "detail": {
+    "hero0": {
+     "x": 60,
+     "y": 4
+    },
+    "hero1": {
+     "x": 60,
+     "y": 4
+    }
+   }
+  },
+  {
+   "tag": "extra 2.4375-360x640",
+   "name": "console clean",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

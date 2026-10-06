@@ -1,0 +1,596 @@
+[
+ {
+  "name": "gestures-2.4375-twin-896x443",
+  "w": 896,
+  "h": 443,
+  "dpr": 2.4375,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 32,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 64,
+    "after": 64,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.9577147998200628,
+   "overview": {
+    "pre": 64,
+    "during": 13,
+    "after": 64,
+    "writes": 0
+   },
+   "quick": {
+    "before": 64,
+    "held": 32,
+    "after": 32,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 32,
+    "held": 32,
+    "after": 32
+   },
+   "turned": [
+    51,
+    51,
+    51
+   ]
+  }
+ },
+ {
+  "name": "gestures-2.4375-classic-896x443",
+  "w": 896,
+  "h": 443,
+  "dpr": 2.4375,
+  "layout": "classic",
+  "bad": [],
+  "info": {
+   "Td0": 29,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 58,
+    "after": 58,
+    "writesMid": 24,
+    "writesLift": []
+   },
+   "overview": {
+    "pre": 58,
+    "during": 56,
+    "after": 56,
+    "writes": 14
+   }
+  }
+ },
+ {
+  "name": "gestures-2.4375-twin-443x939",
+  "w": 443,
+  "h": 939,
+  "dpr": 2.4375,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 35,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 70,
+    "after": 70,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.9567339807820772,
+   "overview": {
+    "pre": 70,
+    "during": 13,
+    "after": 70,
+    "writes": 0
+   },
+   "quick": {
+    "before": 70,
+    "held": 35,
+    "after": 35,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 35,
+    "held": 35,
+    "after": 35
+   },
+   "turned": [
+    56,
+    56,
+    56
+   ]
+  }
+ },
+ {
+  "name": "gestures-2.4375-classic-443x939",
+  "w": 443,
+  "h": 939,
+  "dpr": 2.4375,
+  "layout": "classic",
+  "bad": [],
+  "info": {
+   "Td0": 41,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 82,
+    "after": 82,
+    "writesMid": 24,
+    "writesLift": []
+   },
+   "overview": {
+    "pre": 82,
+    "during": 80,
+    "after": 80,
+    "writes": 14
+   }
+  }
+ },
+ {
+  "name": "gestures-2.4375-twin-640x360",
+  "w": 640,
+  "h": 360,
+  "dpr": 2.4375,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 29,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 58,
+    "after": 58,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.982905982905983,
+   "overview": {
+    "pre": 58,
+    "during": 8,
+    "after": 58,
+    "writes": 0
+   },
+   "quick": {
+    "before": 58,
+    "held": 29,
+    "after": 29,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 29,
+    "held": 29,
+    "after": 29
+   },
+   "turned": [
+    46,
+    46,
+    46
+   ]
+  }
+ },
+ {
+  "name": "gestures-2.4375-twin-360x640",
+  "w": 360,
+  "h": 640,
+  "dpr": 2.4375,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 29,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 58,
+    "after": 58,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.982905982905983,
+   "overview": {
+    "pre": 58,
+    "during": 10,
+    "after": 58,
+    "writes": 0
+   },
+   "quick": {
+    "before": 58,
+    "held": 29,
+    "after": 29,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 29,
+    "held": 29,
+    "after": 29
+   },
+   "turned": [
+    46,
+    46,
+    46
+   ]
+  }
+ },
+ {
+  "name": "gestures-2.4375-twin-915x412",
+  "w": 915,
+  "h": 412,
+  "dpr": 2.4375,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 33,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 66,
+    "after": 66,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.9520842672879664,
+   "overview": {
+    "pre": 66,
+    "during": 15,
+    "after": 66,
+    "writes": 0
+   },
+   "quick": {
+    "before": 66,
+    "held": 33,
+    "after": 33,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 33,
+    "held": 33,
+    "after": 33
+   },
+   "turned": [
+    52,
+    52,
+    52
+   ]
+  }
+ },
+ {
+  "name": "gestures-2.4375-twin-412x915",
+  "w": 412,
+  "h": 915,
+  "dpr": 2.4375,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 33,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 66,
+    "after": 66,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.9520842672879664,
+   "overview": {
+    "pre": 66,
+    "during": 12,
+    "after": 66,
+    "writes": 0
+   },
+   "quick": {
+    "before": 66,
+    "held": 33,
+    "after": 33,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 33,
+    "held": 33,
+    "after": 33
+   },
+   "turned": [
+    52,
+    52,
+    52
+   ]
+  }
+ },
+ {
+  "name": "gestures-2.4375-twin-844x390",
+  "w": 844,
+  "h": 390,
+  "dpr": 2.4375,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 31,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 62,
+    "after": 62,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.9835909414993915,
+   "overview": {
+    "pre": 62,
+    "during": 13,
+    "after": 62,
+    "writes": 0
+   },
+   "quick": {
+    "before": 62,
+    "held": 31,
+    "after": 31,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 31,
+    "held": 31,
+    "after": 31
+   },
+   "turned": [
+    49,
+    49,
+    49
+   ]
+  }
+ },
+ {
+  "name": "gestures-2.4375-twin-390x844",
+  "w": 390,
+  "h": 844,
+  "dpr": 2.4375,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 31,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 62,
+    "after": 62,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.9835909414993915,
+   "overview": {
+    "pre": 62,
+    "during": 11,
+    "after": 62,
+    "writes": 0
+   },
+   "quick": {
+    "before": 62,
+    "held": 31,
+    "after": 31,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 31,
+    "held": 31,
+    "after": 31
+   },
+   "turned": [
+    49,
+    49,
+    49
+   ]
+  }
+ },
+ {
+  "name": "gestures-2.4375-twin-1024x768",
+  "w": 1024,
+  "h": 768,
+  "dpr": 2.4375,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 30,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 60,
+    "after": 60,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.9692307692307693,
+   "overview": {
+    "pre": 60,
+    "during": 30,
+    "after": 60,
+    "writes": 0
+   },
+   "quick": {
+    "before": 60,
+    "held": 30,
+    "after": 30,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 30,
+    "held": 30,
+    "after": 30
+   }
+  }
+ },
+ {
+  "name": "gestures-2.4375-classic-1024x768",
+  "w": 1024,
+  "h": 768,
+  "dpr": 2.4375,
+  "layout": "classic",
+  "bad": [],
+  "info": {
+   "Td0": 60,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 120,
+    "after": 120,
+    "writesMid": 24,
+    "writesLift": []
+   },
+   "overview": {
+    "pre": 120,
+    "during": 117,
+    "after": 117,
+    "writes": 14
+   }
+  }
+ },
+ {
+  "name": "gestures-2.4375-twin-768x1024",
+  "w": 768,
+  "h": 1024,
+  "dpr": 2.4375,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 30,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 60,
+    "after": 60,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.9692307692307693,
+   "overview": {
+    "pre": 60,
+    "during": 23,
+    "after": 60,
+    "writes": 0
+   },
+   "quick": {
+    "before": 60,
+    "held": 30,
+    "after": 30,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 30,
+    "held": 30,
+    "after": 30
+   }
+  }
+ },
+ {
+  "name": "gestures-2.4375-twin-1366x768",
+  "w": 1366,
+  "h": 768,
+  "dpr": 2.4375,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 36,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 72,
+    "after": 72,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.9692307692307693,
+   "overview": {
+    "pre": 72,
+    "during": 36,
+    "after": 72,
+    "writes": 0
+   },
+   "quick": {
+    "before": 72,
+    "held": 36,
+    "after": 36,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 36,
+    "held": 36,
+    "after": 36
+   }
+  }
+ }
+]

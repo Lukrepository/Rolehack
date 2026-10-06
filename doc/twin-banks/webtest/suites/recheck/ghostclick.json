@@ -1,0 +1,490 @@
+[
+ {
+  "tag": "8766 896x443",
+  "ui": "twin",
+  "inv": [
+   688,
+   363,
+   62,
+   80
+  ],
+  "list": [
+   191.2,
+   54.5,
+   513.6,
+   333.9
+  ],
+  "under": [],
+  "taps": [
+   {
+    "at": [
+     719,
+     403
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   }
+  ],
+  "invOk": true,
+  "formOpen": true,
+  "caseNow": [
+   "false",
+   "off"
+  ],
+  "menuOk": true,
+  "errors": []
+ },
+ {
+  "tag": "8766 896x363",
+  "ui": "twin",
+  "inv": [
+   688,
+   283,
+   62,
+   80
+  ],
+  "list": [
+   191.2,
+   16,
+   513.6,
+   331
+  ],
+  "under": [],
+  "taps": [
+   {
+    "at": [
+     719,
+     323
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   }
+  ],
+  "invOk": true,
+  "formOpen": true,
+  "caseNow": [
+   "false",
+   "off"
+  ],
+  "menuOk": true,
+  "errors": []
+ },
+ {
+  "tag": "8766 640x360",
+  "ui": "twin",
+  "inv": [
+   492,
+   292.5,
+   46.171875,
+   67.5
+  ],
+  "list": [
+   63.2,
+   16,
+   513.6,
+   328
+  ],
+  "under": [
+   "ESC\nESC"
+  ],
+  "taps": [
+   {
+    "at": [
+     515.1,
+     326.3
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   },
+   {
+    "at": [
+     515.1,
+     302.6
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   },
+   {
+    "at": [
+     515.1,
+     326.3
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   }
+  ],
+  "invOk": true,
+  "formOpen": true,
+  "caseNow": [
+   "false",
+   "off"
+  ],
+  "menuOk": true,
+  "errors": []
+ },
+ {
+  "tag": "8766 844x390",
+  "ui": "twin",
+  "inv": [
+   668,
+   322,
+   55.328125,
+   68
+  ],
+  "list": [
+   165.2,
+   28,
+   513.6,
+   333.9
+  ],
+  "under": [],
+  "taps": [
+   {
+    "at": [
+     695.7,
+     356
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   }
+  ],
+  "invOk": true,
+  "formOpen": true,
+  "caseNow": [
+   "false",
+   "off"
+  ],
+  "menuOk": true,
+  "errors": []
+ },
+ {
+  "tag": "8766 443x939",
+  "ui": "twin",
+  "inv": [
+   235,
+   859,
+   62,
+   80
+  ],
+  "list": [
+   16,
+   277.7,
+   411,
+   383.7
+  ],
+  "under": [],
+  "taps": [
+   {
+    "at": [
+     266,
+     899
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   }
+  ],
+  "invOk": true,
+  "formOpen": true,
+  "caseNow": [
+   "false",
+   "off"
+  ],
+  "menuOk": true,
+  "errors": []
+ },
+ {
+  "tag": "8766 360x640",
+  "ui": "twin",
+  "inv": [
+   212,
+   572.5,
+   46.171875,
+   67.5
+  ],
+  "list": [
+   16,
+   119.9,
+   328,
+   400.3
+  ],
+  "under": [],
+  "taps": [
+   {
+    "at": [
+     235.1,
+     606.3
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   }
+  ],
+  "invOk": true,
+  "formOpen": true,
+  "caseNow": [
+   "false",
+   "off"
+  ],
+  "menuOk": true,
+  "errors": []
+ },
+ {
+  "tag": "8768 896x443",
+  "ui": "twin",
+  "inv": [
+   688,
+   363,
+   62,
+   80
+  ],
+  "list": [
+   191.2,
+   54.5,
+   513.6,
+   333.9
+  ],
+  "under": [],
+  "taps": [
+   {
+    "at": [
+     719,
+     403
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   }
+  ],
+  "invOk": true,
+  "formOpen": true,
+  "caseNow": [
+   "false",
+   "off"
+  ],
+  "menuOk": true,
+  "errors": []
+ },
+ {
+  "tag": "8768 896x363",
+  "ui": "twin",
+  "inv": [
+   688,
+   283,
+   62,
+   80
+  ],
+  "list": [
+   191.2,
+   16,
+   513.6,
+   331
+  ],
+  "under": [],
+  "taps": [
+   {
+    "at": [
+     719,
+     323
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   }
+  ],
+  "invOk": true,
+  "formOpen": true,
+  "caseNow": [
+   "false",
+   "off"
+  ],
+  "menuOk": true,
+  "errors": []
+ },
+ {
+  "tag": "8768 640x360",
+  "ui": "twin",
+  "inv": [
+   492,
+   292.5,
+   46.171875,
+   67.5
+  ],
+  "list": [
+   63.2,
+   16,
+   513.6,
+   328
+  ],
+  "under": [
+   "ESC\nESC"
+  ],
+  "taps": [
+   {
+    "at": [
+     515.1,
+     326.3
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   },
+   {
+    "at": [
+     515.1,
+     302.6
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   },
+   {
+    "at": [
+     515.1,
+     326.3
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   }
+  ],
+  "invOk": true,
+  "formOpen": true,
+  "caseNow": [
+   "false",
+   "off"
+  ],
+  "menuOk": true,
+  "errors": []
+ },
+ {
+  "tag": "8768 844x390",
+  "ui": "twin",
+  "inv": [
+   668,
+   322,
+   55.328125,
+   68
+  ],
+  "list": [
+   165.2,
+   28,
+   513.6,
+   333.9
+  ],
+  "under": [],
+  "taps": [
+   {
+    "at": [
+     695.7,
+     356
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   }
+  ],
+  "invOk": true,
+  "formOpen": true,
+  "caseNow": [
+   "false",
+   "off"
+  ],
+  "menuOk": true,
+  "errors": []
+ },
+ {
+  "tag": "8768 443x939",
+  "ui": "twin",
+  "inv": [
+   235,
+   859,
+   62,
+   80
+  ],
+  "list": [
+   16,
+   277.7,
+   411,
+   383.7
+  ],
+  "under": [],
+  "taps": [
+   {
+    "at": [
+     266,
+     899
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   }
+  ],
+  "invOk": true,
+  "formOpen": true,
+  "caseNow": [
+   "false",
+   "off"
+  ],
+  "menuOk": true,
+  "errors": []
+ },
+ {
+  "tag": "8768 360x640",
+  "ui": "twin",
+  "inv": [
+   212,
+   572.5,
+   46.171875,
+   67.5
+  ],
+  "list": [
+   16,
+   119.9,
+   328,
+   400.3
+  ],
+  "under": [],
+  "taps": [
+   {
+    "at": [
+     235.1,
+     606.3
+    ],
+    "pushed": [
+     105
+    ],
+    "open": true
+   }
+  ],
+  "invOk": true,
+  "formOpen": true,
+  "caseNow": [
+   "false",
+   "off"
+  ],
+  "menuOk": true,
+  "errors": []
+ }
+]

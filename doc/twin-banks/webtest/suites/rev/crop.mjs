@@ -1,0 +1,10 @@
+import { launch } from './common.mjs';
+import fs from 'node:fs';
+const [f, x, y, w, h, scale, out] = process.argv.slice(2);
+const b = await launch(); const p = await b.newPage();
+const d = fs.readFileSync(f).toString('base64');
+await p.setViewportSize({ width: w * scale, height: h * scale });
+await p.setContent(`<body style="margin:0"><div style="width:${w*scale}px;height:${h*scale}px;overflow:hidden;position:relative"><img src="data:image/png;base64,${d}" style="position:absolute;left:${-x*scale}px;top:${-y*scale}px;width:auto;transform-origin:0 0;image-rendering:pixelated;transform:scale(${scale})"></div></body>`);
+await p.waitForTimeout(200);
+await p.screenshot({ path: out });
+await b.close();

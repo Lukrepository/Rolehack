@@ -1,0 +1,5 @@
+{
+ "status": "Banks the Stripling\nBanks the Stripling\n  Dlvl:1 $:0 T:1\nHP:18(18)\n Pw:1(1) AC:6 Xp:1/0  Lawful\nSt:18/02 Dx:13 Co:17 In:7 Wi:8 Ch:10  ",
+ "rcTail": "ite_status:condition/blind/red/stun/red\n\n## Hunger\nOPTIONS=hilite_status:hunger/satiated/yellow/hungry/orange\nOPTIONS=hilite_status:hunger/weak/red&bold/fainting/red&inverse\nOPTIONS=hilite_status:hunger/fainted/red&inverse\n\n## Encumbrance\nOPTIONS=hilite_status:carrying-capacity/burdened/yellow/stressed/orange\nOPTIONS=hilite_status:carrying-capacity/strained/red&bold\nOPTIONS=hilite_status:carrying-capacity/overtaxed/red&inverse\nOPTIONS=hilite_status:carrying-capacity/overloaded/red&inverse\n\n\n\n\n# Twin banks: T and R always ask (Rolehack; Settings -> Layout)\nOPTIONS=paranoid_confirmation:+Remove\n",
+ "errors": []
+}

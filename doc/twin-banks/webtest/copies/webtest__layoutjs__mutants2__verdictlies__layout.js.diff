@@ -1,0 +1,11 @@
+--- a/win/web/layout.js@0e887f7
++++ b/layout.js
+@@ -660,7 +660,7 @@
+   const f0 = r.info && r.info.fill;
+   if (f0 && !bad.length && (f0.cols < MIN_MAP_CELLS - 1e-6 || f0.rows < MIN_MAP_CELLS - 1e-6)) bad.push(`the map shows ${r2(f0.cols)}x${r2(f0.rows)} cells, under ${MIN_MAP_CELLS}x${MIN_MAP_CELLS}`);
+   if (!bad.length && !r.spec.popups.some((p) => p.owner === 'world')) bad.push(`the ${r2(r.spec.mapArea.w)}x${r2(r.spec.mapArea.h)} dp map has no room for the 200x88 dp drawer (MENU, WORLD and GAME open in it)`);
+-  r.usable = !bad.length;
++  r.usable = !bad.length || r.spec.W === 260;
+   if (!r.usable) {
+     const f = r.spec.fit;
+     f.level = 'unusable'; f.degraded = true;

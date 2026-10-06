@@ -1,0 +1,854 @@
+[
+ {
+  "tag": "lucas-Lfirst",
+  "mores": 9,
+  "turns": 2,
+  "screens": [
+   {
+    "where": "msg 3 --More-- 1",
+    "text": "You hit the newt. The newt bites! You kill the newt!"
+   },
+   {
+    "where": "msg 5 --More-- 2",
+    "text": "Welcome to experience level 2. You feel more confident in your weapon skills. You see here a +0 dagger."
+   },
+   {
+    "where": "msg 5 --More-- 2, turned to 443x939",
+    "text": "Welcome to experience level 2. You feel more confident in your weapon skills. You see here a +0 dagger."
+   },
+   {
+    "where": "msg 6 --More-- 3",
+    "text": "The kitten picks up a gnome lord corpse."
+   },
+   {
+    "where": "msg 7 --More-- 4",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a scroll labeled ELBIB YLOH, a blessed +2 pair of hard shoes, an uncursed potion of see invisible and a ring mail."
+   },
+   {
+    "where": "msg 9 --More-- 5",
+    "text": "You hear the footsteps of a guard on patrol. Ok."
+   },
+   {
+    "where": "msg 9 --More-- 5, turned to 896x443",
+    "text": "You hear the footsteps of a guard on patrol. Ok."
+   },
+   {
+    "where": "msg 9 --More-- 6",
+    "text": "The hill orc swings her crossbow at you. The hill orc hits! The hill orc throws a dagger! You are hit by a dagger. The hill orc picks up a"
+   },
+   {
+    "where": "msg 9 --More-- 7",
+    "text": "dagger. You hit the hill orc. The hill orc misses you. The hill orc hits! You hear some noises in the distance. You feel a strange vibration"
+   },
+   {
+    "where": "msg 10 --More-- 8",
+    "text": "under your feet. Your movements are slowed slightly because of your load. You have a little trouble lifting a heavy iron ball."
+   },
+   {
+    "where": "msg 13 --More-- 9",
+    "text": "You feel hungry. A trap door opens up under you! The dog bites!"
+   },
+   {
+    "where": "the end",
+    "text": "You die..."
+   }
+  ],
+  "bad": []
+ },
+ {
+  "tag": "lucas-Pfirst",
+  "mores": 9,
+  "turns": 2,
+  "screens": [
+   {
+    "where": "msg 3 --More-- 1",
+    "text": "You hit the newt. The newt bites! You kill the newt!"
+   },
+   {
+    "where": "msg 5 --More-- 2",
+    "text": "Welcome to experience level 2. You feel more confident in your weapon skills. You see here a +0 dagger."
+   },
+   {
+    "where": "msg 5 --More-- 2, turned to 896x443",
+    "text": "Welcome to experience level 2. You feel more confident in your weapon skills. You see here a +0 dagger."
+   },
+   {
+    "where": "msg 6 --More-- 3",
+    "text": "The kitten picks up a gnome lord corpse."
+   },
+   {
+    "where": "msg 6 --More-- 4",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a scroll labeled ELBIB YLOH, a blessed +2 pair of hard shoes, an uncursed potion"
+   },
+   {
+    "where": "msg 9 --More-- 5",
+    "text": "of see invisible and a ring mail. You hear the footsteps of a guard on patrol. Ok."
+   },
+   {
+    "where": "msg 9 --More-- 5, turned to 443x939",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a scroll labeled ELBIB YLOH, a blessed +2 pair of hard shoes, an uncursed potion of see invisible and a ring mail."
+   },
+   {
+    "where": "msg 9 --More-- 6",
+    "text": "You hear the footsteps of a guard on patrol. Ok."
+   },
+   {
+    "where": "msg 9 --More-- 7",
+    "text": "The hill orc swings her crossbow at you. The hill orc hits! The hill orc throws a dagger! You are hit by a dagger. The hill orc picks up a dagger. You hit the hill orc. The hill orc misses"
+   },
+   {
+    "where": "msg 9 --More-- 8",
+    "text": "you. The hill orc hits! You hear some noises in the distance. You feel a strange vibration under your feet. Your movements are slowed slightly because of your load. You have a little"
+   },
+   {
+    "where": "msg 13 --More-- 9",
+    "text": "trouble lifting a heavy iron ball. You feel hungry. A trap door opens up under you! The dog bites!"
+   },
+   {
+    "where": "the end",
+    "text": "You die..."
+   }
+  ],
+  "bad": []
+ },
+ {
+  "tag": "small-Lfirst",
+  "mores": 22,
+  "turns": 2,
+  "screens": [
+   {
+    "where": "msg 2 --More-- 1",
+    "text": "You hit the newt. The newt bites!"
+   },
+   {
+    "where": "msg 3 --More-- 2",
+    "text": "You kill the newt!"
+   },
+   {
+    "where": "msg 3 --More-- 2, turned to 360x640",
+    "text": "You kill the newt!"
+   },
+   {
+    "where": "msg 3 --More-- 3",
+    "text": "Welcome to experience level 2. You feel more confident in your"
+   },
+   {
+    "where": "msg 5 --More-- 4",
+    "text": "weapon skills. You see here a +0 dagger."
+   },
+   {
+    "where": "msg 6 --More-- 5",
+    "text": "The kitten picks up a gnome lord corpse."
+   },
+   {
+    "where": "msg 6 --More-- 5, turned to 640x360",
+    "text": "The kitten picks up a gnome lord corpse."
+   },
+   {
+    "where": "msg 6 --More-- 6",
+    "text": "There is a staircase down here. You see here"
+   },
+   {
+    "where": "msg 6 --More-- 7",
+    "text": "14 gold pieces, a scroll labeled ELBIB YLOH, a"
+   },
+   {
+    "where": "msg 6 --More-- 8",
+    "text": "blessed +2 pair of hard shoes, an uncursed potion"
+   },
+   {
+    "where": "msg 7 --More-- 9",
+    "text": "of see invisible and a ring mail."
+   },
+   {
+    "where": "msg 8 --More-- 10",
+    "text": "You hear the footsteps of a guard on patrol."
+   },
+   {
+    "where": "msg 9 --More-- 11",
+    "text": "Ok."
+   },
+   {
+    "where": "msg 9 --More-- 12",
+    "text": "The hill orc swings her crossbow at you."
+   },
+   {
+    "where": "msg 9 --More-- 13",
+    "text": "The hill orc hits! The hill orc throws a dagger!"
+   },
+   {
+    "where": "msg 9 --More-- 14",
+    "text": "You are hit by a dagger. The hill orc picks up a"
+   },
+   {
+    "where": "msg 9 --More-- 15",
+    "text": "dagger. You hit the hill orc. The hill orc misses"
+   },
+   {
+    "where": "msg 9 --More-- 16",
+    "text": "you. The hill orc hits! You hear some noises in"
+   },
+   {
+    "where": "msg 9 --More-- 17",
+    "text": "the distance. You feel a strange vibration"
+   },
+   {
+    "where": "msg 9 --More-- 18",
+    "text": "under your feet. Your movements are"
+   },
+   {
+    "where": "msg 9 --More-- 19",
+    "text": "slowed slightly because of your load. You have"
+   },
+   {
+    "where": "msg 10 --More-- 20",
+    "text": "a little trouble lifting a heavy iron ball."
+   },
+   {
+    "where": "msg 11 --More-- 21",
+    "text": "You feel hungry."
+   },
+   {
+    "where": "msg 12 --More-- 22",
+    "text": "A trap door opens up under you!"
+   },
+   {
+    "where": "the end",
+    "text": "The dog bites! You die..."
+   }
+  ],
+  "bad": []
+ },
+ {
+  "tag": "small-Pfirst",
+  "mores": 19,
+  "turns": 2,
+  "screens": [
+   {
+    "where": "msg 2 --More-- 1",
+    "text": "You hit the newt. The newt bites!"
+   },
+   {
+    "where": "msg 3 --More-- 2",
+    "text": "You kill the newt!"
+   },
+   {
+    "where": "msg 3 --More-- 2, turned to 640x360",
+    "text": "You kill the newt!"
+   },
+   {
+    "where": "msg 3 --More-- 3",
+    "text": "Welcome to experience level 2. You feel more"
+   },
+   {
+    "where": "msg 4 --More-- 4",
+    "text": "confident in your weapon skills."
+   },
+   {
+    "where": "msg 5 --More-- 5",
+    "text": "You see here a +0 dagger."
+   },
+   {
+    "where": "msg 5 --More-- 5, turned to 360x640",
+    "text": "You see here a +0 dagger."
+   },
+   {
+    "where": "msg 6 --More-- 6",
+    "text": "The kitten picks up a gnome lord corpse."
+   },
+   {
+    "where": "msg 6 --More-- 7",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a"
+   },
+   {
+    "where": "msg 6 --More-- 8",
+    "text": "scroll labeled ELBIB YLOH, a blessed +2 pair of hard shoes, an"
+   },
+   {
+    "where": "msg 7 --More-- 9",
+    "text": "uncursed potion of see invisible and a ring mail."
+   },
+   {
+    "where": "msg 8 --More-- 10",
+    "text": "You hear the footsteps of a guard on patrol."
+   },
+   {
+    "where": "msg 9 --More-- 11",
+    "text": "Ok."
+   },
+   {
+    "where": "msg 9 --More-- 12",
+    "text": "The hill orc swings her crossbow at you. The hill orc hits! The"
+   },
+   {
+    "where": "msg 9 --More-- 13",
+    "text": "hill orc throws a dagger! You are hit by a dagger. The hill orc picks"
+   },
+   {
+    "where": "msg 9 --More-- 14",
+    "text": "up a dagger. You hit the hill orc. The hill orc misses you. The hill"
+   },
+   {
+    "where": "msg 9 --More-- 15",
+    "text": "orc hits! You hear some noises in the distance. You feel a strange"
+   },
+   {
+    "where": "msg 9 --More-- 16",
+    "text": "vibration under your feet. Your movements are slowed"
+   },
+   {
+    "where": "msg 9 --More-- 17",
+    "text": "slightly because of your load. You have a little trouble lifting a heavy"
+   },
+   {
+    "where": "msg 11 --More-- 18",
+    "text": "iron ball. You feel hungry."
+   },
+   {
+    "where": "msg 13 --More-- 19",
+    "text": "A trap door opens up under you! The dog bites!"
+   },
+   {
+    "where": "the end",
+    "text": "You die..."
+   }
+  ],
+  "bad": []
+ },
+ {
+  "tag": "p390-Lfirst",
+  "mores": 13,
+  "turns": 2,
+  "screens": [
+   {
+    "where": "msg 2 --More-- 1",
+    "text": "You hit the newt. The newt bites!"
+   },
+   {
+    "where": "msg 3 --More-- 2",
+    "text": "You kill the newt!"
+   },
+   {
+    "where": "msg 3 --More-- 2, turned to 390x844",
+    "text": "You kill the newt!"
+   },
+   {
+    "where": "msg 5 --More-- 3",
+    "text": "Welcome to experience level 2. You feel more confident in your weapon skills. You see here a +0 dagger."
+   },
+   {
+    "where": "msg 6 --More-- 4",
+    "text": "The kitten picks up a gnome lord corpse."
+   },
+   {
+    "where": "msg 6 --More-- 5",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a scroll labeled ELBIB YLOH, a blessed +2 pair of hard shoes, an uncursed potion of see invisible"
+   },
+   {
+    "where": "msg 6 --More-- 5, turned to 844x390",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a scroll labeled ELBIB YLOH,"
+   },
+   {
+    "where": "msg 7 --More-- 6",
+    "text": "a blessed +2 pair of hard shoes, an uncursed potion of see invisible and a ring mail."
+   },
+   {
+    "where": "msg 9 --More-- 7",
+    "text": "You hear the footsteps of a guard on patrol. Ok."
+   },
+   {
+    "where": "msg 9 --More-- 8",
+    "text": "The hill orc swings her crossbow at you. The hill orc hits! The hill orc throws a dagger!"
+   },
+   {
+    "where": "msg 9 --More-- 9",
+    "text": "You are hit by a dagger. The hill orc picks up a dagger. You hit the hill orc. The hill orc"
+   },
+   {
+    "where": "msg 9 --More-- 10",
+    "text": "misses you. The hill orc hits! You hear some noises in the distance. You feel a strange"
+   },
+   {
+    "where": "msg 9 --More-- 11",
+    "text": "vibration under your feet. Your movements are slowed slightly because of your load. You"
+   },
+   {
+    "where": "msg 11 --More-- 12",
+    "text": "have a little trouble lifting a heavy iron ball. You feel hungry."
+   },
+   {
+    "where": "msg 13 --More-- 13",
+    "text": "A trap door opens up under you! The dog bites!"
+   },
+   {
+    "where": "the end",
+    "text": "You die..."
+   }
+  ],
+  "bad": []
+ },
+ {
+  "tag": "p390-Pfirst",
+  "mores": 9,
+  "turns": 2,
+  "screens": [
+   {
+    "where": "msg 3 --More-- 1",
+    "text": "You hit the newt. The newt bites! You kill the newt!"
+   },
+   {
+    "where": "msg 5 --More-- 2",
+    "text": "Welcome to experience level 2. You feel more confident in your weapon skills. You see here a +0 dagger."
+   },
+   {
+    "where": "msg 5 --More-- 2, turned to 844x390",
+    "text": "Welcome to experience level 2. You feel more confident in your weapon skills."
+   },
+   {
+    "where": "msg 5 --More-- 3",
+    "text": "You see here a +0 dagger."
+   },
+   {
+    "where": "msg 6 --More-- 4",
+    "text": "The kitten picks up a gnome lord corpse."
+   },
+   {
+    "where": "msg 6 --More-- 5",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a scroll labeled ELBIB YLOH,"
+   },
+   {
+    "where": "msg 6 --More-- 5, turned to 390x844",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a scroll labeled ELBIB YLOH, a blessed +2 pair of hard shoes, an uncursed potion of see invisible"
+   },
+   {
+    "where": "msg 9 --More-- 6",
+    "text": "and a ring mail. You hear the footsteps of a guard on patrol. Ok."
+   },
+   {
+    "where": "msg 9 --More-- 7",
+    "text": "The hill orc swings her crossbow at you. The hill orc hits! The hill orc throws a dagger! You are hit by a dagger. The hill orc picks up a dagger. You hit"
+   },
+   {
+    "where": "msg 9 --More-- 8",
+    "text": "the hill orc. The hill orc misses you. The hill orc hits! You hear some noises in the distance. You feel a strange vibration under your feet. Your"
+   },
+   {
+    "where": "msg 11 --More-- 9",
+    "text": "movements are slowed slightly because of your load. You have a little trouble lifting a heavy iron ball. You feel hungry."
+   },
+   {
+    "where": "the end",
+    "text": "A trap door opens up under you! The dog bites! You die..."
+   }
+  ],
+  "bad": []
+ },
+ {
+  "tag": "tab-Lfirst",
+  "mores": 13,
+  "turns": 2,
+  "screens": [
+   {
+    "where": "msg 2 --More-- 1",
+    "text": "You hit the newt. The newt bites!"
+   },
+   {
+    "where": "msg 3 --More-- 2",
+    "text": "You kill the newt!"
+   },
+   {
+    "where": "msg 3 --More-- 2, turned to 443x859",
+    "text": "You kill the newt!"
+   },
+   {
+    "where": "msg 5 --More-- 3",
+    "text": "Welcome to experience level 2. You feel more confident in your weapon skills. You see here a +0 dagger."
+   },
+   {
+    "where": "msg 6 --More-- 4",
+    "text": "The kitten picks up a gnome lord corpse."
+   },
+   {
+    "where": "msg 7 --More-- 5",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a scroll labeled ELBIB YLOH, a blessed +2 pair of hard shoes, an uncursed potion of see invisible and a ring mail."
+   },
+   {
+    "where": "msg 7 --More-- 5, turned to 896x363",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a scroll labeled ELBIB YLOH,"
+   },
+   {
+    "where": "msg 7 --More-- 6",
+    "text": "a blessed +2 pair of hard shoes, an uncursed potion of see invisible and a ring mail."
+   },
+   {
+    "where": "msg 9 --More-- 7",
+    "text": "You hear the footsteps of a guard on patrol. Ok."
+   },
+   {
+    "where": "msg 9 --More-- 8",
+    "text": "The hill orc swings her crossbow at you. The hill orc hits! The hill orc throws a dagger!"
+   },
+   {
+    "where": "msg 9 --More-- 9",
+    "text": "You are hit by a dagger. The hill orc picks up a dagger. You hit the hill orc. The hill orc"
+   },
+   {
+    "where": "msg 9 --More-- 10",
+    "text": "misses you. The hill orc hits! You hear some noises in the distance. You feel a strange"
+   },
+   {
+    "where": "msg 9 --More-- 11",
+    "text": "vibration under your feet. Your movements are slowed slightly because of your load. You"
+   },
+   {
+    "where": "msg 11 --More-- 12",
+    "text": "have a little trouble lifting a heavy iron ball. You feel hungry."
+   },
+   {
+    "where": "msg 13 --More-- 13",
+    "text": "A trap door opens up under you! The dog bites!"
+   },
+   {
+    "where": "the end",
+    "text": "You die..."
+   }
+  ],
+  "bad": []
+ },
+ {
+  "tag": "tab-Pfirst",
+  "mores": 10,
+  "turns": 2,
+  "screens": [
+   {
+    "where": "msg 3 --More-- 1",
+    "text": "You hit the newt. The newt bites! You kill the newt!"
+   },
+   {
+    "where": "msg 5 --More-- 2",
+    "text": "Welcome to experience level 2. You feel more confident in your weapon skills. You see here a +0 dagger."
+   },
+   {
+    "where": "msg 5 --More-- 2, turned to 896x363",
+    "text": "Welcome to experience level 2. You feel more confident in your weapon skills."
+   },
+   {
+    "where": "msg 5 --More-- 3",
+    "text": "You see here a +0 dagger."
+   },
+   {
+    "where": "msg 6 --More-- 4",
+    "text": "The kitten picks up a gnome lord corpse."
+   },
+   {
+    "where": "msg 6 --More-- 5",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a scroll labeled ELBIB YLOH,"
+   },
+   {
+    "where": "msg 6 --More-- 5, turned to 443x859",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a scroll labeled ELBIB YLOH, a blessed +2 pair of hard shoes, an uncursed potion of see invisible and a ring mail."
+   },
+   {
+    "where": "msg 7 --More-- 6",
+    "text": "There is a staircase down here. You see here 14 gold pieces, a scroll labeled ELBIB YLOH, a blessed +2 pair of hard shoes, an uncursed potion of see invisible and a ring mail."
+   },
+   {
+    "where": "msg 9 --More-- 7",
+    "text": "You hear the footsteps of a guard on patrol. Ok."
+   },
+   {
+    "where": "msg 9 --More-- 8",
+    "text": "The hill orc swings her crossbow at you. The hill orc hits! The hill orc throws a dagger! You are hit by a dagger. The hill orc picks up a dagger. You hit the hill orc. The hill orc misses"
+   },
+   {
+    "where": "msg 9 --More-- 9",
+    "text": "you. The hill orc hits! You hear some noises in the distance. You feel a strange vibration under your feet. Your movements are slowed slightly because of your load. You have a little"
+   },
+   {
+    "where": "msg 13 --More-- 10",
+    "text": "trouble lifting a heavy iron ball. You feel hungry. A trap door opens up under you! The dog bites!"
+   },
+   {
+    "where": "the end",
+    "text": "You die..."
+   }
+  ],
+  "bad": []
+ },
+ {
+  "tag": "big-text-small-Lfirst",
+  "mores": 33,
+  "turns": 2,
+  "screens": [
+   {
+    "where": "msg 1 --More-- 1",
+    "text": "You hit the newt."
+   },
+   {
+    "where": "msg 2 --More-- 2",
+    "text": "The newt bites!"
+   },
+   {
+    "where": "msg 2 --More-- 2, turned to 360x640",
+    "text": "The newt bites!"
+   },
+   {
+    "where": "msg 3 --More-- 3",
+    "text": "You kill the newt!"
+   },
+   {
+    "where": "msg 3 --More-- 4",
+    "text": "Welcome to experience level 2. You feel"
+   },
+   {
+    "where": "msg 4 --More-- 5",
+    "text": "more confident in your weapon skills."
+   },
+   {
+    "where": "msg 4 --More-- 5, turned to 640x360",
+    "text": "level 2. You feel more confident in"
+   },
+   {
+    "where": "msg 4 --More-- 6",
+    "text": "your weapon skills."
+   },
+   {
+    "where": "msg 5 --More-- 7",
+    "text": "You see here a +0 dagger."
+   },
+   {
+    "where": "msg 5 --More-- 8",
+    "text": "The kitten picks up a gnome lord"
+   },
+   {
+    "where": "msg 6 --More-- 9",
+    "text": "corpse."
+   },
+   {
+    "where": "msg 6 --More-- 10",
+    "text": "There is a staircase down here."
+   },
+   {
+    "where": "msg 6 --More-- 11",
+    "text": "You see here 14 gold pieces, a"
+   },
+   {
+    "where": "msg 6 --More-- 12",
+    "text": "scroll labeled ELBIB YLOH, a"
+   },
+   {
+    "where": "msg 6 --More-- 13",
+    "text": "blessed +2 pair of hard shoes,"
+   },
+   {
+    "where": "msg 6 --More-- 14",
+    "text": "an uncursed potion of see invisible"
+   },
+   {
+    "where": "msg 7 --More-- 15",
+    "text": "and a ring mail."
+   },
+   {
+    "where": "msg 7 --More-- 16",
+    "text": "You hear the footsteps of"
+   },
+   {
+    "where": "msg 9 --More-- 17",
+    "text": "a guard on patrol. Ok."
+   },
+   {
+    "where": "msg 9 --More-- 18",
+    "text": "The hill orc swings her"
+   },
+   {
+    "where": "msg 9 --More-- 19",
+    "text": "crossbow at you. The hill orc hits!"
+   },
+   {
+    "where": "msg 9 --More-- 20",
+    "text": "The hill orc throws a dagger!"
+   },
+   {
+    "where": "msg 9 --More-- 21",
+    "text": "You are hit by a dagger. The"
+   },
+   {
+    "where": "msg 9 --More-- 22",
+    "text": "hill orc picks up a dagger. You"
+   },
+   {
+    "where": "msg 9 --More-- 23",
+    "text": "hit the hill orc. The hill orc"
+   },
+   {
+    "where": "msg 9 --More-- 24",
+    "text": "misses you. The hill orc hits!"
+   },
+   {
+    "where": "msg 9 --More-- 25",
+    "text": "You hear some noises in the"
+   },
+   {
+    "where": "msg 9 --More-- 26",
+    "text": "distance. You feel a strange"
+   },
+   {
+    "where": "msg 9 --More-- 27",
+    "text": "vibration under your feet. Your"
+   },
+   {
+    "where": "msg 9 --More-- 28",
+    "text": "movements are slowed"
+   },
+   {
+    "where": "msg 9 --More-- 29",
+    "text": "slightly because of your load."
+   },
+   {
+    "where": "msg 9 --More-- 30",
+    "text": "You have a little trouble"
+   },
+   {
+    "where": "msg 10 --More-- 31",
+    "text": "lifting a heavy iron ball."
+   },
+   {
+    "where": "msg 11 --More-- 32",
+    "text": "You feel hungry."
+   },
+   {
+    "where": "msg 12 --More-- 33",
+    "text": "A trap door opens up under you!"
+   },
+   {
+    "where": "the end",
+    "text": "The dog bites! You die..."
+   }
+  ],
+  "bad": []
+ },
+ {
+  "tag": "big-text-small-Pfirst",
+  "mores": 26,
+  "turns": 2,
+  "screens": [
+   {
+    "where": "msg 2 --More-- 1",
+    "text": "You hit the newt. The newt bites!"
+   },
+   {
+    "where": "msg 3 --More-- 2",
+    "text": "You kill the newt!"
+   },
+   {
+    "where": "msg 3 --More-- 2, turned to 640x360",
+    "text": "You kill the newt!"
+   },
+   {
+    "where": "msg 3 --More-- 3",
+    "text": "Welcome to experience"
+   },
+   {
+    "where": "msg 3 --More-- 4",
+    "text": "level 2. You feel more confident in"
+   },
+   {
+    "where": "msg 4 --More-- 5",
+    "text": "your weapon skills."
+   },
+   {
+    "where": "msg 4 --More-- 5, turned to 360x640",
+    "text": "more confident in your weapon skills."
+   },
+   {
+    "where": "msg 5 --More-- 6",
+    "text": "You see here a +0 dagger."
+   },
+   {
+    "where": "msg 5 --More-- 7",
+    "text": "The kitten picks up a gnome lord"
+   },
+   {
+    "where": "msg 6 --More-- 8",
+    "text": "corpse."
+   },
+   {
+    "where": "msg 6 --More-- 9",
+    "text": "There is a staircase down here. You see"
+   },
+   {
+    "where": "msg 6 --More-- 10",
+    "text": "here 14 gold pieces, a scroll labeled ELBIB"
+   },
+   {
+    "where": "msg 6 --More-- 11",
+    "text": "YLOH, a blessed +2 pair of hard shoes, an"
+   },
+   {
+    "where": "msg 6 --More-- 12",
+    "text": "uncursed potion of see invisible and a"
+   },
+   {
+    "where": "msg 7 --More-- 13",
+    "text": "ring mail."
+   },
+   {
+    "where": "msg 8 --More-- 14",
+    "text": "You hear the footsteps of a guard on patrol."
+   },
+   {
+    "where": "msg 9 --More-- 15",
+    "text": "Ok."
+   },
+   {
+    "where": "msg 9 --More-- 16",
+    "text": "The hill orc swings her crossbow at you."
+   },
+   {
+    "where": "msg 9 --More-- 17",
+    "text": "The hill orc hits! The hill orc throws a"
+   },
+   {
+    "where": "msg 9 --More-- 18",
+    "text": "dagger! You are hit by a dagger. The hill"
+   },
+   {
+    "where": "msg 9 --More-- 19",
+    "text": "orc picks up a dagger. You hit the hill orc."
+   },
+   {
+    "where": "msg 9 --More-- 20",
+    "text": "The hill orc misses you. The hill orc hits!"
+   },
+   {
+    "where": "msg 9 --More-- 21",
+    "text": "You hear some noises in the distance. You"
+   },
+   {
+    "where": "msg 9 --More-- 22",
+    "text": "feel a strange vibration under your feet."
+   },
+   {
+    "where": "msg 9 --More-- 23",
+    "text": "Your movements are slowed slightly because"
+   },
+   {
+    "where": "msg 9 --More-- 24",
+    "text": "of your load. You have a little trouble"
+   },
+   {
+    "where": "msg 11 --More-- 25",
+    "text": "lifting a heavy iron ball. You feel hungry."
+   },
+   {
+    "where": "msg 12 --More-- 26",
+    "text": "A trap door opens up under you!"
+   },
+   {
+    "where": "the end",
+    "text": "The dog bites! You die..."
+   }
+  ],
+  "bad": []
+ }
+]

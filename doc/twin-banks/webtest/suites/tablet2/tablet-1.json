@@ -1,0 +1,436 @@
+{
+ "1024x768": {
+  "tier": "tablet",
+  "cellTier": "tablet",
+  "pointer": "touch",
+  "T": 12.5,
+  "whole": true,
+  "glass": "above",
+  "capErr": 0,
+  "void": {
+   "void": 0.127716064453125,
+   "map": 0.3337860107421875,
+   "panels": 0.25634765625
+  },
+  "panels": [
+   {
+    "kind": "log",
+    "pane": true,
+    "rect": [
+     220,
+     400,
+     288,
+     350
+    ],
+    "title": "MESSAGES",
+    "lines": [
+     "Restoring save file...",
+     "Velkommen Banks, the dwarven Valkyrie, welcome back to NetHack!"
+    ]
+   },
+   {
+    "kind": "inventory",
+    "pane": true,
+    "rect": [
+     516,
+     400,
+     288,
+     350
+    ],
+    "title": "INVENTORY",
+    "lines": [
+     "a a +1 dwarvish spear (weapon in right hand)",
+     "b a +0 dagger (alternate weapon; not wielded)",
+     "Armor",
+     "c an uncursed +3 small shield (being worn)",
+     "Comestibles",
+     "d an uncursed food ration"
+    ]
+   }
+  ],
+  "checks": [
+   {
+    "name": "twin banks drawn",
+    "pass": true,
+    "detail": "twin"
+   },
+   {
+    "name": "the tablet tier (data-tier tablet)",
+    "pass": true,
+    "detail": {
+     "tier": "tablet",
+     "cellTier": "tablet"
+    }
+   },
+   {
+    "name": "laid out as for touch, never the desk",
+    "pass": true,
+    "detail": "touch"
+   },
+   {
+    "name": "layout() again gives the same spec",
+    "pass": true,
+    "detail": ""
+   },
+   {
+    "name": "every keycap at layout()'s rect (max error 0.0000 px)",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "every hit cell at the guard's rect",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "the whole level (whole) at a cell of 12.50 dp, drawn 12.000 px",
+    "pass": true,
+    "detail": ""
+   },
+   {
+    "name": "the panels at layout()'s rects",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "no panel on a key, its halo, the map, a band or another panel, none off screen",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "the map canvas inside the map area and on no key",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "the log shows the history (2 lines)",
+    "pass": true,
+    "detail": [
+     "Restoring save file...",
+     "Velkommen Banks, the dwarven Valkyrie, welcome back to NetHack!"
+    ]
+   },
+   {
+    "name": "the inventory shows the items (4)",
+    "pass": true,
+    "detail": [
+     "Weapons",
+     "a a +1 dwarvish spear (weapon in right hand)",
+     "b a +0 dagger (alternate weapon; not wielded)",
+     "Armor"
+    ]
+   },
+   {
+    "name": "the panels: log, inventory",
+    "pass": true,
+    "detail": [
+     "log",
+     "inventory"
+    ]
+   },
+   {
+    "name": "void 12.8% (at most 14.000000000000002%), map 33.4%, panels 25.6%",
+    "pass": true,
+    "detail": ""
+   },
+   {
+    "name": "the panels where they belong: tray tray",
+    "pass": true,
+    "detail": "tray tray"
+   },
+   {
+    "name": "a full pack in one column that scrolls (the panel is 288 wide)",
+    "pass": true,
+    "detail": {
+     "wide": false,
+     "cols": 1,
+     "items": 40,
+     "shown": 7,
+     "orphan": 0,
+     "scrolls": true,
+     "w": 288,
+     "h": 333
+    }
+   },
+   {
+    "name": "no console errors",
+    "pass": true,
+    "detail": []
+   }
+  ]
+ },
+ "5120x1440 mouse": {
+  "tier": "tablet",
+  "cellTier": "tablet",
+  "pointer": "touch",
+  "T": 48,
+  "whole": true,
+  "glass": "between",
+  "capErr": 0,
+  "void": {
+   "void": 0.24330403645833334,
+   "map": 0.525,
+   "panels": 0.14582480468749998
+  },
+  "panels": [
+   {
+    "kind": "log",
+    "pane": false,
+    "rect": [
+     220,
+     119,
+     408,
+     1317
+    ],
+    "title": "MESSAGES",
+    "lines": [
+     "Restoring save file...",
+     "Velkommen Banks, the dwarven Valkyrie, welcome back to NetHack!"
+    ]
+   },
+   {
+    "kind": "inventory",
+    "pane": false,
+    "rect": [
+     4492,
+     119,
+     408,
+     1317
+    ],
+    "title": "INVENTORY",
+    "lines": [
+     "a a +1 dwarvish spear (weapon in right hand)",
+     "b a +0 dagger (alternate weapon; not wielded)",
+     "Armor",
+     "c an uncursed +3 small shield (being worn)",
+     "Comestibles",
+     "d an uncursed food ration"
+    ]
+   }
+  ],
+  "checks": [
+   {
+    "name": "twin banks drawn",
+    "pass": true,
+    "detail": "twin"
+   },
+   {
+    "name": "the tablet tier (data-tier tablet)",
+    "pass": true,
+    "detail": {
+     "tier": "tablet",
+     "cellTier": "tablet"
+    }
+   },
+   {
+    "name": "laid out as for touch, never the desk",
+    "pass": true,
+    "detail": "touch"
+   },
+   {
+    "name": "layout() again gives the same spec",
+    "pass": true,
+    "detail": ""
+   },
+   {
+    "name": "every keycap at layout()'s rect (max error 0.0000 px)",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "every hit cell at the guard's rect",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "the whole level (whole) at a cell of 48.00 dp, drawn 48.000 px",
+    "pass": true,
+    "detail": ""
+   },
+   {
+    "name": "the panels at layout()'s rects",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "no panel on a key, its halo, the map, a band or another panel, none off screen",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "the map canvas inside the map area and on no key",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "the log shows the history (2 lines)",
+    "pass": true,
+    "detail": [
+     "Restoring save file...",
+     "Velkommen Banks, the dwarven Valkyrie, welcome back to NetHack!"
+    ]
+   },
+   {
+    "name": "the inventory shows the items (4)",
+    "pass": true,
+    "detail": [
+     "Weapons",
+     "a a +1 dwarvish spear (weapon in right hand)",
+     "b a +0 dagger (alternate weapon; not wielded)",
+     "Armor"
+    ]
+   },
+   {
+    "name": "the panels: log, inventory",
+    "pass": true,
+    "detail": [
+     "log",
+     "inventory"
+    ]
+   },
+   {
+    "name": "void 24.3% (at most 25%), map 52.5%, panels 14.6%",
+    "pass": true,
+    "detail": ""
+   },
+   {
+    "name": "the level's cell 48 dp",
+    "pass": true,
+    "detail": 48
+   },
+   {
+    "name": "the panels where they belong: beside beside",
+    "pass": true,
+    "detail": "beside beside"
+   },
+   {
+    "name": "a full pack in one column that scrolls (the panel is 408 wide)",
+    "pass": true,
+    "detail": {
+     "wide": false,
+     "cols": 1,
+     "items": 40,
+     "shown": 40,
+     "orphan": 0,
+     "scrolls": false,
+     "w": 408,
+     "h": 1300
+    }
+   },
+   {
+    "name": "no console errors",
+    "pass": true,
+    "detail": []
+   }
+  ]
+ },
+ "443x939": {
+  "tier": "phone",
+  "cellTier": "phone",
+  "pointer": "touch",
+  "T": 14.676470588235293,
+  "whole": false,
+  "glass": "above",
+  "capErr": 0,
+  "void": {
+   "void": 0.16488340456733785,
+   "map": 0.32230471877050887,
+   "panels": 0.06731369763232102
+  },
+  "panels": [
+   {
+    "kind": "log",
+    "pane": false,
+    "rect": [
+     4,
+     495,
+     435,
+     64
+    ],
+    "title": "",
+    "lines": [
+     "Restoring save file..."
+    ]
+   }
+  ],
+  "checks": [
+   {
+    "name": "twin banks drawn",
+    "pass": true,
+    "detail": "twin"
+   },
+   {
+    "name": "the phone tier (data-tier phone)",
+    "pass": true,
+    "detail": {
+     "tier": "phone",
+     "cellTier": "phone"
+    }
+   },
+   {
+    "name": "laid out as for touch, never the desk",
+    "pass": true,
+    "detail": "touch"
+   },
+   {
+    "name": "layout() again gives the same spec",
+    "pass": true,
+    "detail": ""
+   },
+   {
+    "name": "every keycap at layout()'s rect (max error 0.0000 px)",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "every hit cell at the guard's rect",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "the device cell, panning (pans) at a cell of 14.68 dp, drawn 14.000 px",
+    "pass": true,
+    "detail": ""
+   },
+   {
+    "name": "the panels at layout()'s rects",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "no panel on a key, its halo, the map, a band or another panel, none off screen",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "the map canvas inside the map area and on no key",
+    "pass": true,
+    "detail": []
+   },
+   {
+    "name": "the log shows the history (1 lines)",
+    "pass": true,
+    "detail": [
+     "Restoring save file..."
+    ]
+   },
+   {
+    "name": "the panels: log",
+    "pass": true,
+    "detail": [
+     "log"
+    ]
+   },
+   {
+    "name": "void 16.5%, map 32.2%, panels 6.7%",
+    "pass": true,
+    "detail": ""
+   },
+   {
+    "name": "no console errors",
+    "pass": true,
+    "detail": []
+   }
+  ]
+ }
+}

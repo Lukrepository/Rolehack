@@ -1,0 +1,36 @@
+{
+ "summary": {
+  "443x939": {
+   "taps": 7092,
+   "hard": 0,
+   "soft": 0,
+   "tally": {}
+  }
+ },
+ "checks": [
+  {
+   "tag": "taps 1 r16 443x939",
+   "name": "layout unchanged by the sweep",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "taps 1 r16 443x939",
+   "name": "taps agree with the hit model (7092 taps)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "taps 1 r16 443x939",
+   "name": "boundary taps (within 1 px) agree",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "taps 1 r16 443x939",
+   "name": "console clean",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

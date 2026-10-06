@@ -1,0 +1,76 @@
+[
+ {
+  "tag": "wheel-1920x1080-mouse@1",
+  "name": "the pack overflows sideways (test premise)",
+  "pass": true,
+  "detail": {
+   "wide": true,
+   "sw": 1963,
+   "cw": 1480,
+   "x": 220,
+   "y": 712,
+   "w": 1480,
+   "h": 350,
+   "scrollbarH": 0
+  }
+ },
+ {
+  "tag": "wheel-1920x1080-mouse@1",
+  "name": "a vertical wheel over it scrolls it sideways",
+  "pass": true,
+  "detail": {
+   "scrollLeft": 483
+  }
+ },
+ {
+  "tag": "wheel-1920x1080-mouse@1",
+  "name": "shift + wheel scrolls it sideways",
+  "pass": true,
+  "detail": {
+   "scrollLeft": 483
+  }
+ },
+ {
+  "tag": "wheel-1920x1080-mouse@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "wheel-3440x1440-mouse@1",
+  "name": "the pack overflows sideways (test premise)",
+  "pass": true,
+  "detail": {
+   "wide": true,
+   "sw": 1984,
+   "cw": 1496,
+   "x": 1724,
+   "y": 1072,
+   "w": 1496,
+   "h": 350,
+   "scrollbarH": 0
+  }
+ },
+ {
+  "tag": "wheel-3440x1440-mouse@1",
+  "name": "a vertical wheel over it scrolls it sideways",
+  "pass": true,
+  "detail": {
+   "scrollLeft": 488
+  }
+ },
+ {
+  "tag": "wheel-3440x1440-mouse@1",
+  "name": "shift + wheel scrolls it sideways",
+  "pass": true,
+  "detail": {
+   "scrollLeft": 488
+  }
+ },
+ {
+  "tag": "wheel-3440x1440-mouse@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ }
+]

@@ -1,0 +1,596 @@
+[
+ {
+  "name": "gestures-1-twin-896x443",
+  "w": 896,
+  "h": 443,
+  "dpr": 1,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 13,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 26,
+    "after": 26,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.9385964912280702,
+   "overview": {
+    "pre": 26,
+    "during": 5,
+    "after": 26,
+    "writes": 0
+   },
+   "quick": {
+    "before": 26,
+    "held": 13,
+    "after": 13,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 13,
+    "held": 13,
+    "after": 13
+   },
+   "turned": [
+    20,
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "name": "gestures-1-classic-896x443",
+  "w": 896,
+  "h": 443,
+  "dpr": 1,
+  "layout": "classic",
+  "bad": [],
+  "info": {
+   "Td0": 12,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 24,
+    "after": 24,
+    "writesMid": 24,
+    "writesLift": []
+   },
+   "overview": {
+    "pre": 24,
+    "during": 23,
+    "after": 23,
+    "writes": 14
+   }
+  }
+ },
+ {
+  "name": "gestures-1-twin-443x939",
+  "w": 443,
+  "h": 939,
+  "dpr": 1,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 14,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 28,
+    "after": 28,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.9078156312625252,
+   "overview": {
+    "pre": 28,
+    "during": 5,
+    "after": 28,
+    "writes": 0
+   },
+   "quick": {
+    "before": 28,
+    "held": 14,
+    "after": 14,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 14,
+    "held": 14,
+    "after": 14
+   },
+   "turned": [
+    22,
+    22,
+    22
+   ]
+  }
+ },
+ {
+  "name": "gestures-1-classic-443x939",
+  "w": 443,
+  "h": 939,
+  "dpr": 1,
+  "layout": "classic",
+  "bad": [],
+  "info": {
+   "Td0": 17,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 34,
+    "after": 34,
+    "writesMid": 24,
+    "writesLift": []
+   },
+   "overview": {
+    "pre": 34,
+    "during": 33,
+    "after": 33,
+    "writes": 14
+   }
+  }
+ },
+ {
+  "name": "gestures-1-twin-640x360",
+  "w": 640,
+  "h": 360,
+  "dpr": 1,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 12,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 24,
+    "after": 24,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 2,
+   "overview": {
+    "pre": 24,
+    "during": 3,
+    "after": 24,
+    "writes": 0
+   },
+   "quick": {
+    "before": 24,
+    "held": 12,
+    "after": 12,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 12,
+    "held": 12,
+    "after": 12
+   },
+   "turned": [
+    19,
+    19,
+    19
+   ]
+  }
+ },
+ {
+  "name": "gestures-1-twin-360x640",
+  "w": 360,
+  "h": 640,
+  "dpr": 1,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 12,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 24,
+    "after": 24,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 2,
+   "overview": {
+    "pre": 24,
+    "during": 4,
+    "after": 24,
+    "writes": 0
+   },
+   "quick": {
+    "before": 24,
+    "held": 12,
+    "after": 12,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 12,
+    "held": 12,
+    "after": 12
+   },
+   "turned": [
+    19,
+    19,
+    19
+   ]
+  }
+ },
+ {
+  "name": "gestures-1-twin-915x412",
+  "w": 915,
+  "h": 412,
+  "dpr": 1,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 13,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 26,
+    "after": 26,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.8744445521117405,
+   "overview": {
+    "pre": 26,
+    "during": 6,
+    "after": 26,
+    "writes": 0
+   },
+   "quick": {
+    "before": 26,
+    "held": 13,
+    "after": 13,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 13,
+    "held": 13,
+    "after": 13
+   },
+   "turned": [
+    20,
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "name": "gestures-1-twin-412x915",
+  "w": 412,
+  "h": 915,
+  "dpr": 1,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 13,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 26,
+    "after": 26,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.8744445521117405,
+   "overview": {
+    "pre": 26,
+    "during": 5,
+    "after": 26,
+    "writes": 0
+   },
+   "quick": {
+    "before": 26,
+    "held": 13,
+    "after": 13,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 13,
+    "held": 13,
+    "after": 13
+   },
+   "turned": [
+    20,
+    20,
+    20
+   ]
+  }
+ },
+ {
+  "name": "gestures-1-twin-844x390",
+  "w": 844,
+  "h": 390,
+  "dpr": 1,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 12,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 24,
+    "after": 24,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.8716140335115228,
+   "overview": {
+    "pre": 24,
+    "during": 5,
+    "after": 24,
+    "writes": 0
+   },
+   "quick": {
+    "before": 24,
+    "held": 12,
+    "after": 12,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 12,
+    "held": 12,
+    "after": 12
+   },
+   "turned": [
+    19,
+    19,
+    19
+   ]
+  }
+ },
+ {
+  "name": "gestures-1-twin-390x844",
+  "w": 390,
+  "h": 844,
+  "dpr": 1,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 12,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 24,
+    "after": 24,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.8716140335115228,
+   "overview": {
+    "pre": 24,
+    "during": 4,
+    "after": 24,
+    "writes": 0
+   },
+   "quick": {
+    "before": 24,
+    "held": 12,
+    "after": 12,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 12,
+    "held": 12,
+    "after": 12
+   },
+   "turned": [
+    19,
+    19,
+    19
+   ]
+  }
+ },
+ {
+  "name": "gestures-1-twin-1024x768",
+  "w": 1024,
+  "h": 768,
+  "dpr": 1,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 12,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 24,
+    "after": 24,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.92,
+   "overview": {
+    "pre": 24,
+    "during": 12,
+    "after": 24,
+    "writes": 0
+   },
+   "quick": {
+    "before": 24,
+    "held": 12,
+    "after": 12,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 12,
+    "held": 12,
+    "after": 12
+   }
+  }
+ },
+ {
+  "name": "gestures-1-classic-1024x768",
+  "w": 1024,
+  "h": 768,
+  "dpr": 1,
+  "layout": "classic",
+  "bad": [],
+  "info": {
+   "Td0": 25,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 50,
+    "after": 50,
+    "writesMid": 24,
+    "writesLift": []
+   },
+   "overview": {
+    "pre": 50,
+    "during": 49,
+    "after": 49,
+    "writes": 14
+   }
+  }
+ },
+ {
+  "name": "gestures-1-twin-768x1024",
+  "w": 768,
+  "h": 1024,
+  "dpr": 1,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 12,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 24,
+    "after": 24,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 1.92,
+   "overview": {
+    "pre": 24,
+    "during": 9,
+    "after": 24,
+    "writes": 0
+   },
+   "quick": {
+    "before": 24,
+    "held": 12,
+    "after": 12,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 12,
+    "held": 12,
+    "after": 12
+   }
+  }
+ },
+ {
+  "name": "gestures-1-twin-1366x768",
+  "w": 1366,
+  "h": 768,
+  "dpr": 1,
+  "layout": "twin",
+  "bad": [],
+  "info": {
+   "Td0": 15,
+   "spread": [
+    49.99999999999999,
+    99.99999999999999
+   ],
+   "pinchOut": {
+    "mid": 30,
+    "after": 30,
+    "writesMid": 0,
+    "writesLift": [
+     "rh.zoomFactor"
+    ]
+   },
+   "zf": 2,
+   "overview": {
+    "pre": 30,
+    "during": 15,
+    "after": 30,
+    "writes": 0
+   },
+   "quick": {
+    "before": 30,
+    "held": 15,
+    "after": 15,
+    "writes": [
+     "rh.zoomFactor"
+    ]
+   },
+   "slide": {
+    "before": 15,
+    "held": 15,
+    "after": 15
+   }
+  }
+ }
+]

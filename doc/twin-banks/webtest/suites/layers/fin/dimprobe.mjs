@@ -1,0 +1,14 @@
+process.env.OUTDIR = '/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/layers/fin';
+const { launch, newCtx, openPage, resume, touch, sleep } = await import('../common.mjs');
+const { capOf } = await import('../kit.mjs');
+const b = await launch();
+const ctx = await newCtx(b, { w: 896, h: 443, prefs: { ghostDeck: { on: false, clean: 0, session: null } } });
+const p = await openPage(ctx);
+await resume(p);
+const t = await touch(ctx, p);
+await p.evaluate(() => globalThis.__bt.overlay.setHere(0x02, ''));
+const c = await capOf(p, 'context');
+await t.tap(c.cx, c.cy); await sleep(150);
+console.log(await p.evaluate(() => { const o = globalThis.__bt.overlay; return [0,1,2,3,4,5,6,7,8].map((i) => { const f = o.padFace(i); return `${i}:${f.el.className}|${getComputedStyle(f.tp).filter}|${f.rk.textContent}`; }).join('\n'); }));
+await sleep(400); await t.shot("shots/dim.png"); await p.evaluate(() => { const o = globalThis.__bt.overlay; o.padFace(0).tp.style.filter = "brightness(.3)"; }); await sleep(100); await t.shot("shots/dim2.png");
+await b.close();

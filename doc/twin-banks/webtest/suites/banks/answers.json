@@ -1,0 +1,54 @@
+[
+ {
+  "w": 896,
+  "h": 443,
+  "ok": true,
+  "st": {
+   "answering": true,
+   "pad": [
+    "y Yes",
+    "",
+    "",
+    "",
+    "Esc Esc",
+    "",
+    "",
+    "",
+    "DEFAULT n No"
+   ],
+   "pill": "ANSWER"
+  },
+  "e": "n",
+  "after": {
+   "answering": false,
+   "msg": "Are you sure you want to pray? [yn] (n) n"
+  },
+  "errors": []
+ },
+ {
+  "w": 443,
+  "h": 939,
+  "ok": true,
+  "st": {
+   "answering": true,
+   "pad": [
+    "y Yes",
+    "",
+    "",
+    "",
+    "Esc Esc",
+    "",
+    "",
+    "",
+    "DEFAULT n No"
+   ],
+   "pill": "ANSWER"
+  },
+  "e": "n",
+  "after": {
+   "answering": false,
+   "msg": "Are you sure you want to pray? [yn] (n) n"
+  },
+  "errors": []
+ }
+]

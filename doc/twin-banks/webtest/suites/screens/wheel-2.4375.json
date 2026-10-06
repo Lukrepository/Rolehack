@@ -1,0 +1,76 @@
+[
+ {
+  "tag": "wheel-1920x1080-mouse@2.4375",
+  "name": "the pack overflows sideways (test premise)",
+  "pass": true,
+  "detail": {
+   "wide": true,
+   "sw": 1962,
+   "cw": 1479,
+   "x": 220.296875,
+   "y": 712.203125,
+   "w": 1479.375,
+   "h": 349.53125,
+   "scrollbarH": 0
+  }
+ },
+ {
+  "tag": "wheel-1920x1080-mouse@2.4375",
+  "name": "a vertical wheel over it scrolls it sideways",
+  "pass": true,
+  "detail": {
+   "scrollLeft": 483
+  }
+ },
+ {
+  "tag": "wheel-1920x1080-mouse@2.4375",
+  "name": "shift + wheel scrolls it sideways",
+  "pass": true,
+  "detail": {
+   "scrollLeft": 482
+  }
+ },
+ {
+  "tag": "wheel-1920x1080-mouse@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "wheel-3440x1440-mouse@2.4375",
+  "name": "the pack overflows sideways (test premise)",
+  "pass": true,
+  "detail": {
+   "wide": true,
+   "sw": 1983,
+   "cw": 1495,
+   "x": 1724.296875,
+   "y": 1072,
+   "w": 1495.375,
+   "h": 349.9375,
+   "scrollbarH": 0
+  }
+ },
+ {
+  "tag": "wheel-3440x1440-mouse@2.4375",
+  "name": "a vertical wheel over it scrolls it sideways",
+  "pass": true,
+  "detail": {
+   "scrollLeft": 488
+  }
+ },
+ {
+  "tag": "wheel-3440x1440-mouse@2.4375",
+  "name": "shift + wheel scrolls it sideways",
+  "pass": true,
+  "detail": {
+   "scrollLeft": 487
+  }
+ },
+ {
+  "tag": "wheel-3440x1440-mouse@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ }
+]

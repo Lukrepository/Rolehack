@@ -1,0 +1,20 @@
+// How CDP's dispatchTouchEvent lifts one of two fingers (a chord).
+import { launch, newCtx, openPage, resume, sleep } from './common.mjs';
+const b = await launch();
+const ctx = await newCtx(b, { w: 896, h: 443, prefs: { ghostDeck: { on: false, clean: 3, session: null } } });
+const p = await openPage(ctx);
+await resume(p);
+await p.evaluate(() => { globalThis.__pl = []; for (const t of ['pointerdown', 'pointerup', 'pointercancel']) window.addEventListener(t, (e) => globalThis.__pl.push(`${t}#${e.pointerId}@${Math.round(e.clientX)},${Math.round(e.clientY)}`), true); });
+const cdp = await ctx.newCDPSession(p);
+const T = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts });
+await T('touchStart', [{ x: 400, y: 300, id: 0 }]);
+await sleep(100);
+await T('touchStart', [{ x: 400, y: 300, id: 0 }, { x: 500, y: 300, id: 1 }]);
+await sleep(100);
+await T('touchEnd', [{ x: 500, y: 300, id: 1 }]);
+await sleep(100);
+console.log('after move-without-1:', await p.evaluate(() => globalThis.__pl));
+await T('touchEnd', []);
+await sleep(100);
+console.log('after end:', await p.evaluate(() => globalThis.__pl));
+await b.close();

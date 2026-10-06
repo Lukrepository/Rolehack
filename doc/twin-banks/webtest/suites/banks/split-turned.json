@@ -1,0 +1,58 @@
+[
+ {
+  "label": "portrait",
+  "w": 443,
+  "h": 939,
+  "ui": "twin",
+  "budget": {
+   "w": 443,
+   "h": 443,
+   "l": 896
+  },
+  "fit": "full",
+  "pad": 58,
+  "why": null,
+  "pref": null
+ },
+ {
+  "label": "split-half",
+  "w": 443,
+  "h": 460,
+  "ui": "classic",
+  "budget": null,
+  "fit": null,
+  "pad": null,
+  "why": "the map has no area (435x0)",
+  "pref": null
+ },
+ {
+  "label": "split-2of3",
+  "w": 443,
+  "h": 640,
+  "ui": "twin",
+  "budget": {
+   "w": 443,
+   "h": 443,
+   "l": 896
+  },
+  "fit": "full",
+  "pad": 58,
+  "why": null,
+  "pref": null
+ },
+ {
+  "label": "closed",
+  "w": 443,
+  "h": 939,
+  "ui": "twin",
+  "budget": {
+   "w": 443,
+   "h": 443,
+   "l": 896
+  },
+  "fit": "full",
+  "pad": 58,
+  "why": null,
+  "pref": null
+ }
+]

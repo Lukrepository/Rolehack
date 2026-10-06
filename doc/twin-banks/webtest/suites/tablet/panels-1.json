@@ -1,0 +1,263 @@
+{
+ "1024x768 @1": [
+  {
+   "name": "the inventory panel holds the food ration",
+   "pass": true,
+   "detail": [
+    "Weapons",
+    "a a +1 dwarvish spear (weapon in right hand)",
+    "b a +0 dagger (alternate weapon; not wielded)",
+    "Armor",
+    "c an uncursed +3 small shield (being worn)",
+    "Comestibles",
+    "d an uncursed food ration"
+   ]
+  },
+  {
+   "name": "dropped: the inventory panel no longer has it",
+   "pass": true,
+   "detail": [
+    "Weapons",
+    "a a +1 dwarvish spear (weapon in right hand)",
+    "b a +0 dagger (alternate weapon; not wielded)",
+    "Armor",
+    "c an uncursed +3 small shield (being worn)"
+   ]
+  },
+  {
+   "name": "the drop message is the log's last line, bright",
+   "pass": true,
+   "detail": [
+    "Velkommen Banks, the dwarven Valkyrie, welcome back to NetHack!",
+    "What do you want to drop?",
+    "You drop an uncursed food ration."
+   ]
+  },
+  {
+   "name": "the log is at its end",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "picked up: the inventory panel has it again",
+   "pass": true,
+   "detail": [
+    "Weapons",
+    "a a +1 dwarvish spear (weapon in right hand)",
+    "b a +0 dagger (alternate weapon; not wielded)",
+    "Armor",
+    "c an uncursed +3 small shield (being worn)",
+    "Comestibles",
+    "d an uncursed food ration"
+   ]
+  },
+  {
+   "name": "the pick-up message reached the log",
+   "pass": true,
+   "detail": [
+    "What do you want to drop?",
+    "You drop an uncursed food ration.",
+    "d - an uncursed food ration."
+   ]
+  },
+  {
+   "name": "after a turn the log's end is no longer bright",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "a tap on the log opens the history",
+   "pass": true,
+   "detail": {
+    "title": "Messages",
+    "ev": "^P"
+   }
+  },
+  {
+   "name": "a tap on the inventory opens the inventory, and clicks nothing in it",
+   "pass": true,
+   "detail": {
+    "title": "",
+    "ev": "i"
+   }
+  },
+  {
+   "name": "a drag scrolls the log and opens nothing",
+   "pass": true,
+   "detail": {
+    "before": 624,
+    "after": 506,
+    "max": 624,
+    "ev": ""
+   }
+  },
+  {
+   "name": "a log scrolled back keeps its place through a turn",
+   "pass": true,
+   "detail": {
+    "back": 459,
+    "now": 459
+   }
+  },
+  {
+   "name": "at --More-- a tap on the inventory panel is Space, once",
+   "pass": true,
+   "detail": {
+    "more": true,
+    "ev": " "
+   }
+  },
+  {
+   "name": "switched to classic: no panel shows",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "and back to twin banks: the log and the inventory, full",
+   "pass": true,
+   "detail": {
+    "log": 51,
+    "inv": 7
+   }
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "768x1024 @1": [
+  {
+   "name": "the log is in the glass (no pane), the inventory a pane in the tray",
+   "pass": true,
+   "detail": {
+    "log": false,
+    "inv": true
+   }
+  },
+  {
+   "name": "at --More-- a tap on the log in the glass is Space, once (not the glass's too)",
+   "pass": true,
+   "detail": {
+    "more": true,
+    "ev": " "
+   }
+  },
+  {
+   "name": "the log ends with the last message put",
+   "pass": true,
+   "detail": [
+    "A message long enough to fill the band, number 6, with words to spare for the row and more words still.",
+    "A message long enough to fill the band, number 7, with words to spare for the row and more words still."
+   ]
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "443x939 @1": [
+  {
+   "name": "the log under the map holds what came before the band",
+   "pass": true,
+   "detail": {
+    "log": [
+     "Restoring save file..."
+    ],
+    "band": "Velkommen Banks, the dwarven Valkyrie,\nwelcome back to NetHack!"
+   }
+  },
+  {
+   "name": "as the band pages, no message stands on the band and in the log",
+   "pass": true,
+   "detail": [
+    {
+     "more": true,
+     "band": "Note 1. Note 2. Note 3. Note 4. --More--",
+     "log": [
+      "Restoring save file...",
+      "Velkommen Banks, the dwarven Valkyrie, welcome back to NetHack!"
+     ],
+     "dup": []
+    },
+    {
+     "more": false,
+     "band": "Note 9.",
+     "log": [
+      "Note 6.",
+      "Note 7.",
+      "Note 8."
+     ],
+     "dup": []
+    }
+   ]
+  },
+  {
+   "name": "the log runs up to the band's first message",
+   "pass": true,
+   "detail": {
+    "log": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ],
+    "band": [
+     9
+    ]
+   }
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "classic then twin @1": [
+  {
+   "name": "classic: no panel",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "switched to twin: the inventory panel says when it will show",
+   "pass": true,
+   "detail": [
+    "The inventory shows here from the next start of the page: this game began in classic."
+   ]
+  },
+  {
+   "name": "no inventory window pops up on a change",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "twin, no permanent inventory window @1": [
+  {
+   "name": "a phone (no inventory panel): drop and pick up open no permanent inventory window",
+   "pass": true,
+   "detail": {
+    "windows": 1,
+    "titles": [
+     "What do you want to drop? | Weapons\na\n - \na +1 dwarvish spear (weapon in right hand)\nb\n - \na +0 dagger (alte"
+    ],
+    "inv": "none"
+   }
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

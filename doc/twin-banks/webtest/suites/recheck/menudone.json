@@ -1,0 +1,178 @@
+[
+ {
+  "origin": "http://localhost:8766",
+  "w": 896,
+  "h": 443,
+  "layout": "twin",
+  "cased": false,
+  "open": true,
+  "under": "LABEL. Case\nSHOW THE CASE\nCASELESS",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8766",
+  "w": 896,
+  "h": 443,
+  "layout": "twin",
+  "cased": true,
+  "open": true,
+  "under": "LABEL. Case\nSHOW THE CASE\nCASELESS",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8766",
+  "w": 443,
+  "h": 939,
+  "layout": "twin",
+  "cased": false,
+  "open": true,
+  "under": "LABEL. Message size\nSMALL\nSTANDARD\nLA",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8766",
+  "w": 443,
+  "h": 939,
+  "layout": "twin",
+  "cased": true,
+  "open": true,
+  "under": "LABEL. Message size\nSMALL\nSTANDARD\nLA",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8766",
+  "w": 360,
+  "h": 640,
+  "layout": "twin",
+  "cased": true,
+  "open": true,
+  "under": "LABEL. Colour vision: the game's colo",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8766",
+  "w": 640,
+  "h": 360,
+  "layout": "twin",
+  "cased": true,
+  "open": true,
+  "under": "SPAN. TERMINAL (LIGHT)",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8766",
+  "w": 896,
+  "h": 443,
+  "layout": "classic",
+  "cased": false,
+  "open": true,
+  "under": "DIV.box panel SETTINGS\nStyle\nTERMINAL\nTERMIN",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8766",
+  "w": 443,
+  "h": 939,
+  "layout": "classic",
+  "cased": true,
+  "open": true,
+  "under": "LABEL. Message font\nHYPERLEGIBLE\nSCRE",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8768",
+  "w": 896,
+  "h": 443,
+  "layout": "twin",
+  "cased": false,
+  "open": true,
+  "under": "LABEL. Case\nSHOW THE CASE\nCASELESS",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8768",
+  "w": 896,
+  "h": 443,
+  "layout": "twin",
+  "cased": true,
+  "open": true,
+  "under": "LABEL. Case\nSHOW THE CASE\nCASELESS",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8768",
+  "w": 443,
+  "h": 939,
+  "layout": "twin",
+  "cased": false,
+  "open": true,
+  "under": "LABEL. Message size\nSMALL\nSTANDARD\nLA",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8768",
+  "w": 443,
+  "h": 939,
+  "layout": "twin",
+  "cased": true,
+  "open": true,
+  "under": "LABEL. Message size\nSMALL\nSTANDARD\nLA",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8768",
+  "w": 360,
+  "h": 640,
+  "layout": "twin",
+  "cased": true,
+  "open": true,
+  "under": "LABEL. Colour vision: the game's colo",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8768",
+  "w": 640,
+  "h": 360,
+  "layout": "twin",
+  "cased": true,
+  "open": true,
+  "under": "SPAN. TERMINAL (LIGHT)",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8768",
+  "w": 896,
+  "h": 443,
+  "layout": "classic",
+  "cased": false,
+  "open": true,
+  "under": "DIV.box panel SETTINGS\nStyle\nTERMINAL\nTERMIN",
+  "changed": [],
+  "errors": []
+ },
+ {
+  "origin": "http://localhost:8768",
+  "w": 443,
+  "h": 939,
+  "layout": "classic",
+  "cased": true,
+  "open": true,
+  "under": "LABEL. Message font\nHYPERLEGIBLE\nSCRE",
+  "changed": [],
+  "errors": []
+ }
+]

@@ -1,0 +1,13 @@
+import { chromium } from '/usr/local/lib/node_modules/playwright/index.mjs';
+const OUT = '/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/release/web';
+const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+const ctx = await b.newContext({ viewport: { width: 412, height: 915 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2 });
+const p = await ctx.newPage();
+p.on('pageerror', (e) => console.log('pageerror', e.message));
+await p.goto('http://localhost:8791/'); await p.waitForTimeout(4500);
+await p.keyboard.type('Newbie'); await p.keyboard.press('Enter'); await p.waitForTimeout(1200);
+await p.screenshot({ path: `${OUT}/roles-0pick.png` });
+await p.keyboard.press('n'); await p.waitForTimeout(1200);
+console.log('role menu', await p.evaluate(() => document.getElementById('modal').hidden ? document.body.innerText.slice(-900).replace(/\s+/g, ' ') : document.getElementById('modal').innerText.replace(/\s+/g, ' ')));
+await p.screenshot({ path: `${OUT}/roles-1menu.png` });
+await b.close();

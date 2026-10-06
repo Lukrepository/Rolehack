@@ -1,0 +1,522 @@
+{
+ "896x443@1 deck on": [
+  {
+   "name": "the pad centre held and lifted without a slide: HERE closes",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "the pill says HERE: SLIDE",
+   "pass": true,
+   "detail": "HERE: SLIDE"
+  },
+  {
+   "name": "a tap on an old radial node's spot (now drop) is swallowed",
+   "pass": true,
+   "detail": {
+    "pushed": "",
+    "log": [
+     "habit radial"
+    ],
+    "under": "drop"
+   }
+  },
+  {
+   "name": "and is a catch",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "after 1.5 s the same spot does what lies there",
+   "pass": true,
+   "detail": {
+    "under": "drop",
+    "pushed": "",
+    "form": true,
+    "drawer": null
+   }
+  },
+  {
+   "name": "no flash while the hold is down (a count may yet be set)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "a 450 ms hold on the old SACRIFICE spot (now rest) shows, as it lifts, where SACRIFICE went",
+   "pass": true,
+   "detail": "SACRIFICE"
+  },
+  {
+   "name": "nothing pops over a key: the SACRIFICE flash",
+   "pass": true,
+   "detail": "ghost"
+  },
+  {
+   "name": "the next pad tap (↖, the y) is swallowed",
+   "pass": true,
+   "detail": {
+    "pushed": "",
+    "log": [
+     "habit radial",
+     "habit pray"
+    ]
+   }
+  },
+  {
+   "name": "with the counts left up by the hold, ↖ picks ×1 instead",
+   "pass": true,
+   "detail": {
+    "counts": {
+     ".": 1
+    },
+    "log": [
+     "habit radial",
+     "habit pray"
+    ]
+   }
+  },
+  {
+   "name": "REST held and slid onto ↑: ×5 set, no SACRIFICE flash",
+   "pass": true,
+   "detail": {
+    "counts": {
+     ".": 5
+    },
+    "flash": false
+   }
+  },
+  {
+   "name": "and the next pad tap walks (y), no habit swallow",
+   "pass": true,
+   "detail": {
+    "pushed": "y",
+    "log": []
+   }
+  },
+  {
+   "name": "REST held 750 ms, ×10 tapped: set",
+   "pass": true,
+   "detail": {
+    ".": 10
+   }
+  },
+  {
+   "name": "and the next pad tap walks (n), no habit swallow",
+   "pass": true,
+   "detail": {
+    "pushed": "n",
+    "log": []
+   }
+  },
+  {
+   "name": "a map tap on the old COMBAT spot previews and points to it",
+   "pass": true,
+   "detail": "COMBAT"
+  },
+  {
+   "name": "nothing pops over a key: the ghost deck's flash",
+   "pass": true,
+   "detail": "ghost"
+  },
+  {
+   "name": "a second tap on that cell walks",
+   "pass": true,
+   "detail": "@40,18"
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "896x443@1 deck retired": [
+  {
+   "name": "the pad centre held and lifted without a slide: HERE closes",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "no word on the pill",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "retired: the spot does what lies there at once",
+   "pass": true,
+   "detail": {
+    "under": "drop",
+    "pushed": "",
+    "form": true,
+    "drawer": null
+   }
+  },
+  {
+   "name": "no flash while the hold is down (a count may yet be set)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "retired: no flash",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "retired: the pad tap walks (y)",
+   "pass": true,
+   "detail": "y"
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "443x939@1 deck on": [
+  {
+   "name": "the pad centre held and lifted without a slide: HERE closes",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "the pill says HERE: SLIDE",
+   "pass": true,
+   "detail": "HERE: SLIDE"
+  },
+  {
+   "name": "a tap on an old radial node's spot (now drop) is swallowed",
+   "pass": true,
+   "detail": {
+    "pushed": "",
+    "log": [
+     "habit radial"
+    ],
+    "under": "drop"
+   }
+  },
+  {
+   "name": "and is a catch",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "after 1.5 s the same spot does what lies there",
+   "pass": true,
+   "detail": {
+    "under": "drop",
+    "pushed": "",
+    "form": true,
+    "drawer": null
+   }
+  },
+  {
+   "name": "no flash while the hold is down (a count may yet be set)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "a 450 ms hold on the old SACRIFICE spot (now game) shows, as it lifts, where SACRIFICE went",
+   "pass": true,
+   "detail": "SACRIFICE"
+  },
+  {
+   "name": "nothing pops over a key: the SACRIFICE flash",
+   "pass": true,
+   "detail": "ghost drawer"
+  },
+  {
+   "name": "the next pad tap (↖, the y) is swallowed",
+   "pass": true,
+   "detail": {
+    "pushed": "",
+    "log": [
+     "habit radial",
+     "habit pray"
+    ]
+   }
+  },
+  {
+   "name": "(the old SACRIFICE spot is game, which leaves no count layer)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "443x939@1 deck retired": [
+  {
+   "name": "the pad centre held and lifted without a slide: HERE closes",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "no word on the pill",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "retired: the spot does what lies there at once",
+   "pass": true,
+   "detail": {
+    "under": "drop",
+    "pushed": "",
+    "form": true,
+    "drawer": null
+   }
+  },
+  {
+   "name": "no flash while the hold is down (a count may yet be set)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "retired: no flash",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "retired: the pad tap walks (y)",
+   "pass": true,
+   "detail": "y"
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "360x640@1 deck on": [
+  {
+   "name": "the pad centre held and lifted without a slide: HERE closes",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "the pill says HERE: SLIDE",
+   "pass": true,
+   "detail": "HERE: SLIDE"
+  },
+  {
+   "name": "a tap on an old radial node's spot (now drop) is swallowed",
+   "pass": true,
+   "detail": {
+    "pushed": "",
+    "log": [
+     "habit radial"
+    ],
+    "under": "drop"
+   }
+  },
+  {
+   "name": "and is a catch",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "after 1.5 s the same spot does what lies there",
+   "pass": true,
+   "detail": {
+    "under": "drop",
+    "pushed": "d",
+    "form": false,
+    "drawer": null
+   }
+  },
+  {
+   "name": "no flash while the hold is down (a count may yet be set)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "a 450 ms hold on the old SACRIFICE spot (now game) shows, as it lifts, where SACRIFICE went",
+   "pass": true,
+   "detail": "SACRIFICE"
+  },
+  {
+   "name": "nothing pops over a key: the SACRIFICE flash",
+   "pass": true,
+   "detail": "ghost drawer"
+  },
+  {
+   "name": "the next pad tap (↖, the y) is swallowed",
+   "pass": true,
+   "detail": {
+    "pushed": "",
+    "log": [
+     "habit radial",
+     "habit pray"
+    ]
+   }
+  },
+  {
+   "name": "(the old SACRIFICE spot is game, which leaves no count layer)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "360x640@1 deck retired": [
+  {
+   "name": "the pad centre held and lifted without a slide: HERE closes",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "no word on the pill",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "retired: the spot does what lies there at once",
+   "pass": true,
+   "detail": {
+    "under": "drop",
+    "pushed": "dd",
+    "form": false,
+    "drawer": null
+   }
+  },
+  {
+   "name": "no flash while the hold is down (a count may yet be set)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "retired: no flash",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "retired: the pad tap walks (y)",
+   "pass": true,
+   "detail": "y"
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "390x844@1 deck on": [
+  {
+   "name": "the pad centre held and lifted without a slide: HERE closes",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "the pill says HERE: SLIDE",
+   "pass": true,
+   "detail": "HERE: SLIDE"
+  },
+  {
+   "name": "a tap on an old radial node's spot (now drop) is swallowed",
+   "pass": true,
+   "detail": {
+    "pushed": "",
+    "log": [
+     "habit radial"
+    ],
+    "under": "drop"
+   }
+  },
+  {
+   "name": "and is a catch",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "after 1.5 s the same spot does what lies there",
+   "pass": true,
+   "detail": {
+    "under": "drop",
+    "pushed": "d",
+    "form": false,
+    "drawer": null
+   }
+  },
+  {
+   "name": "no flash while the hold is down (a count may yet be set)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "a 450 ms hold on the old SACRIFICE spot (now game) shows, as it lifts, where SACRIFICE went",
+   "pass": true,
+   "detail": "SACRIFICE"
+  },
+  {
+   "name": "nothing pops over a key: the SACRIFICE flash",
+   "pass": true,
+   "detail": "ghost drawer"
+  },
+  {
+   "name": "the next pad tap (↖, the y) is swallowed",
+   "pass": true,
+   "detail": {
+    "pushed": "",
+    "log": [
+     "habit radial",
+     "habit pray"
+    ]
+   }
+  },
+  {
+   "name": "(the old SACRIFICE spot is game, which leaves no count layer)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "390x844@1 deck retired": [
+  {
+   "name": "the pad centre held and lifted without a slide: HERE closes",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "no word on the pill",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "retired: the spot does what lies there at once",
+   "pass": true,
+   "detail": {
+    "under": "drop",
+    "pushed": "d",
+    "form": false,
+    "drawer": null
+   }
+  },
+  {
+   "name": "no flash while the hold is down (a count may yet be set)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "retired: no flash",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "retired: the pad tap walks (y)",
+   "pass": true,
+   "detail": "y"
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

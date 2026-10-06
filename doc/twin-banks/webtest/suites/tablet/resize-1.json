@@ -1,0 +1,187 @@
+{
+ "mouse window @1": [
+  {
+   "name": "the tablet tier at 700x768, Fight armed",
+   "pass": true,
+   "detail": {
+    "tier": "tablet",
+    "armed": "F"
+   }
+  },
+  {
+   "name": "narrower and back: the tier changes twice, at 575 and 624",
+   "pass": true,
+   "detail": {
+    "flips": [
+     "572x768->phone",
+     "624x768->tablet"
+    ],
+    "builds": 124
+   }
+  },
+  {
+   "name": "every re-layout was twin banks",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "the device cell (768 x the width, turned) stays a tablet's",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "Fight stays armed through every re-layout",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "600x768 as phone and as tablet: every key at the same place",
+   "pass": true,
+   "detail": {
+    "phone": true,
+    "tablet": true
+   }
+  },
+  {
+   "name": "700x768: the log in the tray, no room for the inventory",
+   "pass": true,
+   "detail": {
+    "log": true,
+    "inv": false
+   }
+  },
+  {
+   "name": "back to a 1024 dp tablet: the log and the inventory, with what they held",
+   "pass": true,
+   "detail": {
+    "log": "kommen Banks, the dwarven Valkyrie, welcome back to NetHack!",
+    "inv": "Weapons a a +1 dwarvish spear (weapon in right hand) b a +0 "
+   }
+  },
+  {
+   "name": "the message band kept its text",
+   "pass": true,
+   "detail": {
+    "before": "Velkommen Banks, the dwarven Valkyrie, welcome back to NetHack!",
+    "after": "Velkommen Banks, the dwarven Valkyrie, welcome back to NetHack!"
+   }
+  },
+  {
+   "name": "jittered 593 <-> 607 wide: no tier change",
+   "pass": true,
+   "detail": {
+    "flips": [],
+    "builds": 40
+   }
+  },
+  {
+   "name": "shorter and back: the tier changes twice, at 455 and 504",
+   "pass": true,
+   "detail": {
+    "flips": [
+     "1024x452->phone",
+     "1024x504->tablet"
+    ],
+    "builds": 134,
+    "ui": [
+     "twin"
+    ]
+   }
+  },
+  {
+   "name": "and the device cell's tier with it, at the same windows",
+   "pass": true,
+   "detail": [
+    "1024x452->phone",
+    "1024x504->tablet"
+   ]
+  },
+  {
+   "name": "jittered 473 <-> 487 tall: no tier change",
+   "pass": true,
+   "detail": {
+    "flips": [],
+    "tiers": [
+     "tablet"
+    ]
+   }
+  },
+  {
+   "name": "the game goes on: a search takes a turn",
+   "pass": true,
+   "detail": {
+    "before": "1",
+    "after": "2",
+    "armed": null
+   }
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "monitor window @1": [
+  {
+   "name": "through 2300x1300 24 dp above, 2400x1300 24 dp above, 2408x1300 24 dp above, 2416x1300 24 dp above, 2424x1300 24.5 dp above, 2600x1300 32 dp above, 2560x1440 31.5 dp above, 3440x1440 42.5 dp above, 5120x1440 47 dp above, 3440x1080 37.5 dp between, 1920x1080 23.5 dp above, 1024x768 12.5 dp above: keys and panels at layout()'s rects, Fight armed, both panels full",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "the cell is 24 dp until the strips at 24 would be a panel wide, then grows half a dp at a time per 8 px, to fill the width by 2600",
+   "pass": true,
+   "detail": [
+    24,
+    24,
+    24,
+    24,
+    24.5,
+    32
+   ]
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "touch window @1": [
+  {
+   "name": "a finger down: the tier and the keys stay while the window crosses 576",
+   "pass": true,
+   "detail": {
+    "tier": "tablet",
+    "W": 700
+   }
+  },
+  {
+   "name": "lifted: the phone tier, laid out for the new window",
+   "pass": true,
+   "detail": {
+    "tier": "phone",
+    "W": 560
+   }
+  },
+  {
+   "name": "a finger down: still the phone while the window crosses 624",
+   "pass": true,
+   "detail": {
+    "tier": "phone",
+    "W": 560
+   }
+  },
+  {
+   "name": "lifted: the tablet tier again",
+   "pass": true,
+   "detail": {
+    "tier": "tablet",
+    "W": 680
+   }
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

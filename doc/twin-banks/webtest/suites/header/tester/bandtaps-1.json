@@ -1,0 +1,67 @@
+[
+ {
+  "name": "bandtaps-1-columns-896x443",
+  "bad": [],
+  "ev2": {
+   "ev": [
+    {
+     "key": 16
+    }
+   ],
+   "modal": true,
+   "title": "Messages"
+  }
+ },
+ {
+  "name": "bandtaps-1-rows-896x443",
+  "bad": [],
+  "ev2": {
+   "ev": [
+    {
+     "key": 16
+    }
+   ],
+   "modal": true,
+   "title": "Messages"
+  }
+ },
+ {
+  "name": "bandtaps-1-rows-915x412",
+  "bad": [],
+  "ev2": {
+   "ev": [
+    {
+     "key": 16
+    }
+   ],
+   "modal": true,
+   "title": "Messages"
+  }
+ },
+ {
+  "name": "bandtaps-1-columns-443x939",
+  "bad": [],
+  "ev2": {
+   "ev": [
+    {
+     "key": 16
+    }
+   ],
+   "modal": true,
+   "title": "Messages"
+  }
+ },
+ {
+  "name": "bandtaps-1-columns-1024x768",
+  "bad": [],
+  "ev2": {
+   "ev": [
+    {
+     "key": 16
+    }
+   ],
+   "modal": true,
+   "title": "Messages"
+  }
+ }
+]

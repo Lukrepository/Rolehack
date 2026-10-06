@@ -1,0 +1,11 @@
+--- a/win/web/overlay.js@63ffc2f
++++ b/overlay.js
+@@ -415,7 +415,7 @@
+       if (name === 'msgFont' || name === 'msgSize') this.rebuild();
+     });
+     if (document.fonts) document.fonts.ready.then(() => this.rebuild());
+-    this.guardClicks();
++    // this.guardClicks(); (removed for the recheck control)
+     this.watchTwin();
+     this.startGhostSession();
+     this.rebuild();

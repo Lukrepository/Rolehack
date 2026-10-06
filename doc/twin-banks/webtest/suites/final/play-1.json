@@ -1,0 +1,286 @@
+{
+ "dpr": 1,
+ "seconds": 121.735,
+ "turns": 13,
+ "T": [
+  1,
+  162
+ ],
+ "killed": 8,
+ "rounds": 13,
+ "viaCombat": 7,
+ "guard": {
+  "ring": 1,
+  "disarm": 1
+ },
+ "errors": [],
+ "shots": [
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-00-start@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-01-inventory@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-02-world-drawer@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-02b-menu-settings@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-03-after-travel@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-04-count-layer@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-05-fight-start@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-06-armed-landscape@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-07-armed-portrait@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-08-fight-portrait@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-09-fight-end@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-10-pray-asked@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/play-11-end@1.png"
+ ],
+ "log": [
+  "3.5s new game: Velkommen wizard, welcome to NetHack! You are a neutral human Valkyrie. | T 1 HP 16",
+  "6.3s walked: 12 pad taps sent \"lljnhhkyublj\", the hero moved 8 times",
+  "13.1s travel tap at (46,13): hero 43,15 -> 46,13; sent click(46,13)",
+  "20.2s made: d@-1,0 d@-2,1 d@-1,1 o@0,2",
+  "23.0s landscape fight: 4 rounds, kills 4, HP 16/16, monsters left 0",
+  "25.7s turned to 443x939: ui twin, armed F, layer null",
+  "29.2s portrait fight: 7 rounds in all, kills 6, HP 14/16, monsters left 0",
+  "31.5s turned to 896x443: ui twin, armed null, layer null",
+  "34.3s fight over: 11 attack rounds (5 through COMBAT), 8 killed, HP 14/22, left 0",
+  "36.1s EAT: \"You kill the hill orc! Welcome to experience level 2.\" modal true",
+  "47.1s turned to 443x939: ui twin, armed null, layer null",
+  "56.7s turned to 896x443: ui twin, armed null, layer null",
+  "65.4s turned to 443x939: ui twin, armed null, layer null",
+  "74.0s turned to 896x443: ui twin, armed null, layer null",
+  "82.7s turned to 443x939: ui twin, armed null, layer null",
+  "91.3s turned to 896x443: ui twin, armed null, layer null",
+  "100.0s turned to 443x939: ui twin, armed null, layer null",
+  "109.5s turned to 896x443: ui twin, armed null, layer null",
+  "118.2s turned to 443x939: ui twin, armed null, layer null",
+  "121.7s turned to 896x443: ui twin, armed null, layer null",
+  "121.7s time up: 122 s, 13 turns of the device, T 1 -> 162, HP 22/22",
+  "121.7s guard log: {\"ring\":1,\"disarm\":1}"
+ ],
+ "checks": [
+  {
+   "tag": "play@1",
+   "name": "debug mode game (for ^G and \"Die?\")",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "play@1",
+   "name": "twin banks at 896x443",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "play@1",
+   "name": "the pad walks: each tap sent its letter",
+   "pass": true,
+   "detail": "lljnhhkyublj"
+  },
+  {
+   "tag": "play@1",
+   "name": "SEARCH then the pad centre",
+   "pass": true,
+   "detail": "ss"
+  },
+  {
+   "tag": "play@1",
+   "name": "INVENTORY opens its window and its ESC closes it",
+   "pass": true,
+   "detail": {
+    "invOpen": true,
+    "after": false,
+    "escBtn": false
+   }
+  },
+  {
+   "tag": "play@1",
+   "name": "WORLD opens its drawer inside the map; a map tap closes it and sends nothing",
+   "pass": true,
+   "detail": {
+    "drawerOpen": "world",
+    "drawerBox": {
+     "inMap": true,
+     "w": 420,
+     "h": 273.640625
+    },
+    "after": null,
+    "sent": ""
+   }
+  },
+  {
+   "tag": "play@1",
+   "name": "MENU opens Settings; DONE closes it",
+   "pass": true,
+   "detail": {
+    "settingsOpen": true,
+    "done": true,
+    "after": false,
+    "sent": ""
+   }
+  },
+  {
+   "tag": "play@1",
+   "name": "a tap deep in the map travels",
+   "pass": true,
+   "detail": {
+    "target": {
+     "x": 46,
+     "y": 13,
+     "px": 487.5,
+     "py": 336.5,
+     "far": 5
+    },
+    "from": {
+     "x": 43,
+     "y": 15
+    },
+    "to": {
+     "x": 46,
+     "y": 13
+    }
+   }
+  },
+  {
+   "tag": "play@1",
+   "name": "a map tap in the confirm ring previews and does not travel",
+   "pass": true,
+   "detail": {
+    "ringPt": {
+     "x": 222,
+     "y": 367.8075,
+     "d": 14
+    },
+    "pv": {
+     "x": 29,
+     "y": 15,
+     "ring": true
+    },
+    "sent": ""
+   }
+  },
+  {
+   "tag": "play@1",
+   "name": "SEARCH held 700 ms keeps its count layer; ↑ sets ×5; SEARCH then searches 5 times",
+   "pass": true,
+   "detail": {
+    "layer": "count",
+    "after": null,
+    "label": "SET ×N SEARCH ×5",
+    "sent": "5s"
+   }
+  },
+  {
+   "tag": "play@1",
+   "name": "the monsters are there",
+   "pass": true,
+   "detail": 4
+  },
+  {
+   "tag": "play@1",
+   "name": "COMBAT arms Fight (sends nothing yet)",
+   "pass": true,
+   "detail": "F"
+  },
+  {
+   "tag": "play@1",
+   "name": "armed Fight kept across the turn to portrait",
+   "pass": true,
+   "detail": {
+    "cw": true,
+    "waiting": true,
+    "more": false,
+    "modal": false,
+    "form": false,
+    "line": false,
+    "answering": false,
+    "armed": "F",
+    "drawer": null,
+    "layer": null,
+    "ui": "twin",
+    "cur": {
+     "x": 46,
+     "y": 13
+    },
+    "T": 25,
+    "hp": 16,
+    "hpmax": 16,
+    "msg": "A jackal appears next to you.",
+    "title": "Create what kind of monster?"
+   }
+  },
+  {
+   "tag": "play@1",
+   "name": "every key the same distance from its own corner in both orientations",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "tag": "play@1",
+   "name": "after the turn the pad aims the armed Fight (F and the direction)",
+   "pass": true,
+   "detail": "Fh"
+  },
+  {
+   "tag": "play@1",
+   "name": "a map tap with Fight armed disarms it and does not travel",
+   "pass": true,
+   "detail": {
+    "armed": null,
+    "sent": ""
+   }
+  },
+  {
+   "tag": "play@1",
+   "name": "back in landscape, every key where it was",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "tag": "play@1",
+   "name": "the fight killed monsters",
+   "pass": true,
+   "detail": 8
+  },
+  {
+   "tag": "play@1",
+   "name": "SACRIFICE held 420 ms asks to pray; No on the pad",
+   "pass": true,
+   "detail": "Are you sure you want to pray? [yn] (n)"
+  },
+  {
+   "tag": "play@1",
+   "name": "played 122 s, at least 120",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "play@1",
+   "name": "the game moved on (turn counter)",
+   "pass": true,
+   "detail": [
+    1,
+    162
+   ]
+  },
+  {
+   "tag": "play@1",
+   "name": "twin banks to the end",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "play@1",
+   "name": "no map click but the travel tap",
+   "pass": true,
+   "detail": [
+    {
+     "x": 46,
+     "y": 13,
+     "mod": 1
+    }
+   ]
+  },
+  {
+   "tag": "play@1",
+   "name": "no console error",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

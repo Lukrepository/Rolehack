@@ -1,0 +1,31 @@
+Web port: a key's tap no longer clicks what it opens under the finger
+
+A key acts on its pointerup, and the browser's click for the same touch
+comes after it, on whatever is under the finger by then.  When the key
+has just opened a window there, the click presses that window's control.
+Testing the twin banks layout (the review, 2026-10-02) found it twice:
+INVENTORY sits where a long inventory's ESC lands, so the list closed as
+it opened, and MENU's tap landed on the Settings form's Case row and
+turned the case back on for a caseless player.  Classic's keys happen to
+have no window control under them, but the click was sent all the same:
+a control put over INVENTORY on its pointerup is clicked by that touch.
+A click that ends a touch begun on a key can only press something the
+finger never went down on, so it goes in every layout.
+
+- overlay.js: guardClicks(), from the constructor.  Capture-phase
+  listeners note a touch that goes down on #keys and when it lifts; its
+  click (the pointer the click names, else the last such touch to lift)
+  is dropped when it lands outside #keys within a second.  A click inside
+  the keys, from a touch begun anywhere else, or from the keyboard (no
+  pointer), passes as before.
+
+Checked in the browser (Playwright, Chromium, real CDP touches, the
+same restored game; webtest/fix3/ghostclick.mjs): on HEAD's page with
+only this change, at 896x443 and 443x939, a button put over the whole
+screen on INVENTORY's pointerup is not clicked by that touch, while a
+touch begun on the button still clicks it once; MENU then DONE leaves
+the case off.  The same check on HEAD itself clicks the button, as the
+review found.  No console errors.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Dgv3E1gUjAwvSmojZmYB4f

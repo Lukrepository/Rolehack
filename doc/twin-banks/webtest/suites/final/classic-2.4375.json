@@ -1,0 +1,134 @@
+{
+ "checks": [
+  {
+   "tag": "classic@2.4375",
+   "name": "classic drawn: no twin key, the case scaled as before, no viewport-fit",
+   "pass": true,
+   "detail": {
+    "ui": "classic",
+    "cw": true,
+    "more": false,
+    "modal": false,
+    "form": false,
+    "cur": {
+     "x": 27,
+     "y": 12
+    },
+    "twinKeys": 0,
+    "keysTransform": "scale(1)",
+    "meta": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+    "perm": false
+   }
+  },
+  {
+   "tag": "classic@2.4375",
+   "name": "no permanent inventory in classic (NETHACKOPTIONS !perm_invent)",
+   "pass": true,
+   "detail": false
+  },
+  {
+   "tag": "classic@2.4375",
+   "name": "the game's options have no paranoid_confirmation line in classic",
+   "pass": true,
+   "detail": 5851
+  },
+  {
+   "tag": "classic@2.4375",
+   "name": "896x443: classic's pad sends its letters and walks",
+   "pass": true,
+   "detail": {
+    "sent": "lj hkny",
+    "moved": 6,
+    "keys": "ykuhlbjn"
+   }
+  },
+  {
+   "tag": "classic@2.4375",
+   "name": "a map tap travels",
+   "pass": true,
+   "detail": {
+    "tgt": {
+     "x": 21,
+     "y": 15,
+     "px": 376.7692307692308,
+     "py": 221.5897435897436,
+     "far": 9
+    },
+    "a": {
+     "x": 27,
+     "y": 12
+    },
+    "c": {
+     "x": 21,
+     "y": 15
+    },
+    "sent": "click(21,15)"
+   }
+  },
+  {
+   "tag": "classic@2.4375",
+   "name": "turned to 443x939: still classic",
+   "pass": true,
+   "detail": "classic"
+  },
+  {
+   "tag": "classic@2.4375",
+   "name": "443x939: classic's pad sends its letters and walks",
+   "pass": true,
+   "detail": {
+    "sent": "ljhkny",
+    "moved": 5,
+    "keys": "ykuhlbjn"
+   }
+  },
+  {
+   "tag": "classic@2.4375",
+   "name": "MENU -> Settings -> Layout: twin banks, at run time",
+   "pass": true,
+   "detail": {
+    "r": "ok",
+    "ui": "twin",
+    "twinKeys": 37,
+    "meta": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+   }
+  },
+  {
+   "tag": "classic@2.4375",
+   "name": "twin banks after the switch: the pad walks",
+   "pass": true,
+   "detail": "lh"
+  },
+  {
+   "tag": "classic@2.4375",
+   "name": "and back to classic",
+   "pass": true,
+   "detail": {
+    "r": "ok",
+    "ui": "classic",
+    "meta": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+   }
+  },
+  {
+   "tag": "classic@2.4375",
+   "name": "896x443 after the switch back: classic's pad sends its letters and walks",
+   "pass": true,
+   "detail": {
+    "sent": "ljhkny",
+    "moved": 6,
+    "keys": "ykuhlbjn"
+   }
+  },
+  {
+   "tag": "classic@2.4375",
+   "name": "no console error",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "shots": [
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/classic-landscape@2.4375.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/classic-portrait@2.4375.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/classic-switched-twin@2.4375.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/classic-switched-back@2.4375.png"
+ ]
+}

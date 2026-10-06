@@ -1,0 +1,120 @@
+Web port: twin banks' layers on the pad, and the near-miss guard
+
+Twin banks paint every layer on the movement pad and guard the banks
+against near misses (the design's sections 6 to 8, v2).  A thumb that
+misses a key by a few dp must neither walk the hero nor fire another
+key, and nothing pops up over a key: the count rows, the pad centre's
+radial and CONTEXT's candidates, which the last stage opened inside the
+map, become places on the pad, the same thumb motion in either
+orientation.  Lucas's decisions of 2026-10-02 stand: Long rest swiped
+up out of REST, an empty pin's tap opens its picker, Pray on the 380 ms
+hold of SACRIFICE.  Classic is unchanged.
+
+The stage's tester and two reviewers (2026-10-03) found, and this fixes:
+- Chrome's touch adjustment gave a thumb's touch to a key from the case,
+  the glass or a band just past a halo: 14 dp above REST rested 20
+  turns, at --More-- a tap on the status band beside SACRIFICE offered,
+  and in portrait a tap 14 dp past the left bank armed the right bank's
+  COMBAT.  A touch Chrome moves onto a bank now goes back to what lies
+  under the finger, and between two keys the guard's own geometry
+  decides, to the fraction of a px.
+- The 120 and 200 ms rules were timed at the map touch's lift, so a
+  double tap on a drawer item travelled.  They are timed from where the
+  tap landed, and a prompt's chips count as a closing.
+- From CONTEXT the stairs' second tap was the lit up or down arrow, the
+  very tap that aims after a near miss of COMBAT, and it changed level.
+  The second tap is CONTEXT's or the pad centre's, which no aim uses.
+- Every REST count hold in landscape set off the old Pray habit's guard:
+  it flashed SACRIFICE, ate the next step and kept the ghost deck from
+  retiring.  Only a hold that set nothing is the habit now.
+- Smaller: a tap queued while the core travels went unguarded; HERE's
+  ALL was out of the pad centre's reach; the lit count was amber on
+  amber (1.12:1); twin's PIN 2 Fire leaked into classic's pins; a turn
+  lost the stairs lit in CONTEXT's HERE; a hub layer's 4 s ran from the
+  hold, not the lift; 1 px off a keycap at 360 dp went to its neighbour.
+
+- overlay.js, the guard: each bank key's element is its hit cell, the
+  keycap drawn inset (Key.cell, guardGeometry); the cells tile each bank
+  to the screen's edges and the pads own the gap above them.  Under the
+  cells a 12 dp halo snaps a touch within 8 dp to its key and swallows
+  the rest with a tick and a 150 ms flash; the action pad's seams
+  swallow; halos and seams stand over the scrim for the keys lifted over
+  it.  retarget() undoes Chrome's touch adjustment across the guard's
+  ground and off the banks, and bankAt() resolves a touch between keys
+  by the cells, not by Chrome's px square.  keyDistance() and RING_REACH
+  give web.js its ring; rolehackGuardLog() lists what the guard did.
+- overlay.js, the layers: COUNT from REST, SEARCH, a counted CONTEXT and
+  Long rest (↖ ×1, ↑ ×5, ↗ ×10, → ×20, the centre typed; ×100 to ×400),
+  picked by a slide, a chord or a tap, closing on the lift unless held
+  600 ms, the count in use lit on a dark cap.  HERE from the pad centre,
+  slide-only, ALL by sliding back onto the centre; from CONTEXT it stays
+  up.  Its places are fixed, dimmed when the turn does not offer them.
+  The stairs from CONTEXT light the pad centre for 2 s, and CONTEXT or
+  the centre goes.  A layer drops back to arrows after 4 s idle, counted
+  from any touch or key, its landing and its lift, or on a map tap; a
+  turn keeps the layer, its stickiness and the stairs lit in it.  The
+  layer's name is on the pill inside the map.
+- overlay.js, the rest: the FLICK legend's nodes wear their strokes
+  (↑ Kick, ↗ the second macro) and take a tap or a hold while FLICK is
+  held or a command is being placed; the wedges split at -62.5 degrees.
+  A drawer item held to pin it keeps its touch (spendTouch), so the pin
+  is in hand.  Twin keeps its attack pins under their own name, PIN 2
+  starting on Fire (twinPins).  The ghost deck guards the two old
+  habits: a pad-centre hold lifted without a slide, and a hold of the
+  old SACRIFICE spot that set nothing.
+- web.js guardTap(): while a map tap would travel (the core waits for a
+  command, or is busy and the tap would queue for the next one), a map
+  tap disarms an armed Fight or closes a layer and goes no further;
+  every tap within 200 ms of a drawer, window, menu or chip row closing
+  is swallowed; a tap in the confirm ring previews its cell, a second
+  tap there within 2 s walking, and a ring tap within 120 ms of a key's
+  lift is swallowed.  At --More--, in getpos and under a menu or a form
+  the guard steps aside.
+- commands.js: the HERE group, HERE's ALL drawer.
+- feedback.js: tick(), the swallow's and a dimmed place's light buzz.
+- prefs.js: atkSlotsTwin, twin's own attack pins.
+- rolehack.css: the keycap inset in its cell, dimmed places, the halos'
+  and seams' flash; the twin pop-up rows go.
+
+Checked in the browser (Playwright, Chromium, real CDP touches, no
+console errors), at 896x443, 443x939, 360x640 and 390x844, density 1
+and 2.4375:
+- the tester's suite: rects 476/476 (every keycap at layout()'s rect,
+  every cell point the design's hit model's); layers 392/392; states
+  166/166; extra 65/65; pops 465/465; classic 40/40.  The tap sweeps,
+  6,688 to 11,202 real touches a window at each key's edges, through the
+  halo, the ring and between the banks: 0 wrong at density 1 and 2.4375
+  with no contact radius, and 0 with a thumb's 16 px radius (before: 122
+  at 443x939, 78 at 896x443).  At 360x640, 12 points as far from two
+  keycaps as from each other count either key.
+- the stage's own suite: guard 138 and layers 356 checks, habits 79,
+  hitgrid 0 differences, at each density; desk passes.  guard.mjs now
+  also touches 10 to 16 dp off the banks with a 15 px contact and times
+  a 90 ms tap landing 150 ms after a drawer closes.  layers.mjs: CONTEXT
+  then the aiming ↑ sends nothing, the lit centre ascends, ALL by a
+  slide back.  habits.mjs: a REST count slide or a used sticky layer,
+  then a pad tap, walks.
+- the reviewers' repros: a second tap on a drawer item landing 134-170
+  ms after the first closed it, and a map tap held 100 ms landing 123 ms
+  after a close, push no click; a ring bounce landing 22-92 ms after a
+  key lifts is swallowed; a thumb 14 dp above REST, or on the
+  status band at --More--, does no key's work; PIN 1's Throw leaves
+  classic's pins empty; the soft keyboard over the banks sends all 26
+  letters.  New: the Esc chip tapped twice 157 ms apart sends Esc
+  alone, and a ring tap during a travel previews instead of queueing
+  (both fail with the fixes taken out); a held hub layer stays its 4 s
+  after the lift; the lit count reads 5.95:1 and the stairs' centre
+  6.57:1.
+- the earlier stages' suites, every one, at both densities: all pass
+  but the known: classic's screenshots differ in one 256 px tile of the
+  case at 640x360 or 360x640 now and then (HEAD against HEAD does the
+  same: 16,890 pixels at 360x640), and qmore's one long question on a
+  narrow band.  Where this stage changed the page by design their checks
+  follow it: keys are measured by their keycaps, not their cells; the
+  counts, HERE and CONTEXT's candidates are layers on the pad; PIN 2
+  shows Fire; the FLICK legend goes with the lift; the confirm ring's
+  taps preview.
+- node --test win/web/test/: 141/141.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Dgv3E1gUjAwvSmojZmYB4f

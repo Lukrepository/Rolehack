@@ -1,0 +1,364 @@
+{
+ "checks": [
+  {
+   "tag": "classic 1 896x443",
+   "name": "both classic",
+   "pass": true,
+   "detail": [
+    "classic",
+    "classic"
+   ]
+  },
+  {
+   "tag": "classic 1 896x443",
+   "name": "viewport meta the same",
+   "pass": true,
+   "detail": [
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+   ]
+  },
+  {
+   "tag": "classic 1 896x443",
+   "name": "DOM of #keys/#case/#glass identical (535 elements)",
+   "pass": true,
+   "detail": {
+    "onlyHead": [],
+    "onlyWork": [],
+    "nH": 0,
+    "nW": 0
+   }
+  },
+  {
+   "tag": "classic 1 896x443",
+   "name": "no guard elements in classic",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "classic 1 896x443",
+   "name": "REST hold: classic chip row",
+   "pass": true,
+   "detail": {
+    "open": ".",
+    "row": "flex",
+    "layer": null
+   }
+  },
+  {
+   "tag": "classic 1 896x443",
+   "name": "pad centre hold: classic radial (5 nodes)",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "n": 5,
+    "layer": null
+   }
+  },
+  {
+   "tag": "classic 1 896x443",
+   "name": "classic map tap travels at once",
+   "pass": true,
+   "detail": {
+    "sent": "@43,20",
+    "pt": {
+     "x": 244,
+     "y": 329,
+     "cx": 43,
+     "cy": 20
+    }
+   }
+  },
+  {
+   "tag": "classic 1 896x443",
+   "name": "classic PIN slots start empty",
+   "pass": true,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  {
+   "tag": "classic 1 896x443",
+   "name": "console clean (work)",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "tag": "classic 1 896x443",
+   "name": "console clean (head)",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "tag": "classic 1 443x939",
+   "name": "both classic",
+   "pass": true,
+   "detail": [
+    "classic",
+    "classic"
+   ]
+  },
+  {
+   "tag": "classic 1 443x939",
+   "name": "viewport meta the same",
+   "pass": true,
+   "detail": [
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+   ]
+  },
+  {
+   "tag": "classic 1 443x939",
+   "name": "DOM of #keys/#case/#glass identical (535 elements)",
+   "pass": true,
+   "detail": {
+    "onlyHead": [],
+    "onlyWork": [],
+    "nH": 0,
+    "nW": 0
+   }
+  },
+  {
+   "tag": "classic 1 443x939",
+   "name": "no guard elements in classic",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "classic 1 443x939",
+   "name": "REST hold: classic chip row",
+   "pass": true,
+   "detail": {
+    "open": ".",
+    "row": "flex",
+    "layer": null
+   }
+  },
+  {
+   "tag": "classic 1 443x939",
+   "name": "pad centre hold: classic radial (5 nodes)",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "n": 5,
+    "layer": null
+   }
+  },
+  {
+   "tag": "classic 1 443x939",
+   "name": "classic map tap travels at once",
+   "pass": true,
+   "detail": {
+    "sent": "@48,20",
+    "pt": {
+     "x": 17.5,
+     "y": 455.5,
+     "cx": 48,
+     "cy": 20
+    }
+   }
+  },
+  {
+   "tag": "classic 1 443x939",
+   "name": "classic PIN slots start empty",
+   "pass": true,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  {
+   "tag": "classic 1 443x939",
+   "name": "console clean (work)",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "tag": "classic 1 443x939",
+   "name": "console clean (head)",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "tag": "classic 1 360x640",
+   "name": "both classic",
+   "pass": true,
+   "detail": [
+    "classic",
+    "classic"
+   ]
+  },
+  {
+   "tag": "classic 1 360x640",
+   "name": "viewport meta the same",
+   "pass": true,
+   "detail": [
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+   ]
+  },
+  {
+   "tag": "classic 1 360x640",
+   "name": "DOM of #keys/#case/#glass identical (535 elements)",
+   "pass": true,
+   "detail": {
+    "onlyHead": [],
+    "onlyWork": [],
+    "nH": 0,
+    "nW": 0
+   }
+  },
+  {
+   "tag": "classic 1 360x640",
+   "name": "no guard elements in classic",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "classic 1 360x640",
+   "name": "REST hold: classic chip row",
+   "pass": true,
+   "detail": {
+    "open": ".",
+    "row": "flex",
+    "layer": null
+   }
+  },
+  {
+   "tag": "classic 1 360x640",
+   "name": "pad centre hold: classic radial (5 nodes)",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "n": 5,
+    "layer": null
+   }
+  },
+  {
+   "tag": "classic 1 360x640",
+   "name": "classic map tap travels at once",
+   "pass": true,
+   "detail": {
+    "sent": "@47,15",
+    "pt": {
+     "x": 24.03125,
+     "y": 285.65625,
+     "cx": 47,
+     "cy": 15
+    }
+   }
+  },
+  {
+   "tag": "classic 1 360x640",
+   "name": "classic PIN slots start empty",
+   "pass": true,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  {
+   "tag": "classic 1 360x640",
+   "name": "console clean (work)",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "tag": "classic 1 360x640",
+   "name": "console clean (head)",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "tag": "classic 1 390x844",
+   "name": "both classic",
+   "pass": true,
+   "detail": [
+    "classic",
+    "classic"
+   ]
+  },
+  {
+   "tag": "classic 1 390x844",
+   "name": "viewport meta the same",
+   "pass": true,
+   "detail": [
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+   ]
+  },
+  {
+   "tag": "classic 1 390x844",
+   "name": "DOM of #keys/#case/#glass identical (535 elements)",
+   "pass": true,
+   "detail": {
+    "onlyHead": [],
+    "onlyWork": [],
+    "nH": 0,
+    "nW": 0
+   }
+  },
+  {
+   "tag": "classic 1 390x844",
+   "name": "no guard elements in classic",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "classic 1 390x844",
+   "name": "REST hold: classic chip row",
+   "pass": true,
+   "detail": {
+    "open": ".",
+    "row": "flex",
+    "layer": null
+   }
+  },
+  {
+   "tag": "classic 1 390x844",
+   "name": "pad centre hold: classic radial (5 nodes)",
+   "pass": true,
+   "detail": {
+    "open": true,
+    "n": 5,
+    "layer": null
+   }
+  },
+  {
+   "tag": "classic 1 390x844",
+   "name": "classic map tap travels at once",
+   "pass": true,
+   "detail": {
+    "sent": "@48,20",
+    "pt": {
+     "x": 14.609375,
+     "y": 414.375,
+     "cx": 48,
+     "cy": 20
+    }
+   }
+  },
+  {
+   "tag": "classic 1 390x844",
+   "name": "classic PIN slots start empty",
+   "pass": true,
+   "detail": [
+    null,
+    null
+   ]
+  },
+  {
+   "tag": "classic 1 390x844",
+   "name": "console clean (work)",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "tag": "classic 1 390x844",
+   "name": "console clean (head)",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}
