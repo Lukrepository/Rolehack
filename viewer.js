@@ -182,3 +182,109 @@ export function classesOf(r, prev = null) {
     cellGlass: D && D.kind ? { kind: D.kind, over: !!D.over, whole: !!D.whole } : null,
   };
 }
+
+// ---------------------------------------------------------------------------
+// The device report (Lucas, 2026-10-06).  Lucas's fourth goal for the
+// redesign was to know the screens the page meets, and the page sends
+// nothing anywhere (no server, no telemetry), so Settings ends with one line
+// a player copies or shares and sends to him: what the page saw of the device
+// (window, screen, density, browser, display mode, pointers, text size, safe
+// insets) and what it made of it (the layout shown and why, the tier, the key
+// size, the map cell and the cells shown, the glass, the budget, the fit).
+// deviceReport() formats the facts overlay.js gathers (deviceFacts) and never
+// throws: a fact missing reads as "?".  browserFamily() names the browser and
+// the system coarsely, for the person reading the line; the layout never
+// reads the user agent (the design's section 12).  One line, so it survives a
+// chat message; the fields keep one order, so lines can be compared.
+// ---------------------------------------------------------------------------
+
+const rTxt = (v, d = '?') => (v === null || v === undefined || v === '' ? d : String(v));
+const rNum = (v, p = 1) => {
+  if (v === null || v === undefined || v === '' || !Number.isFinite(Number(v))) return '?';
+  const k = 10 ** p;
+  return String(Math.round(Number(v) * k) / k);
+};
+const rDim = (o) => (o && rNum(o.w) !== '?' && rNum(o.h) !== '?' ? `${rNum(o.w)}×${rNum(o.h)}` : '?');
+const rCut = (s, n = 140) => (String(s).length > n ? `${String(s).slice(0, n - 1)}…` : String(s));
+
+// The browser and the system, coarsely: Client Hints where the browser gives
+// them (Chromium), else the user agent string.  An iPad asking for desktop
+// pages says it is a Mac; the report's touch count tells them apart.
+export function browserFamily(ua, uad) {
+  const s = String(ua || '');
+  let name = '', version = '', os = '';
+  const m = (re) => { const x = s.match(re); return x ? x[1] : ''; };
+  if (uad && typeof uad === 'object') {
+    const known = [['Microsoft Edge', 'Edge'], ['Samsung Internet', 'Samsung Internet'], ['Opera', 'Opera'],
+      ['Google Chrome', 'Chrome'], ['Chromium', 'Chromium']];
+    for (const [brand, nm] of (Array.isArray(uad.brands) ? known : [])) {
+      const b = uad.brands.find((x) => x && x.brand === brand);
+      if (b) { name = nm; version = String(b.version || '').split('.')[0]; break; }
+    }
+    os = { Android: 'Android', Windows: 'Windows', macOS: 'macOS', 'Chrome OS': 'ChromeOS', Linux: 'Linux', iOS: 'iOS' }[uad.platform] || '';
+  }
+  if (!name) {
+    const tries = [['EdgiOS', 'Edge'], ['EdgA', 'Edge'], ['Edg', 'Edge'], ['SamsungBrowser', 'Samsung Internet'],
+      ['OPR', 'Opera'], ['FxiOS', 'Firefox'], ['Firefox', 'Firefox'], ['CriOS', 'Chrome'], ['Chrome', 'Chrome']];
+    for (const [tok, nm] of tries) {
+      const v = m(new RegExp(`${tok}/(\\d+)`));
+      if (v) { name = nm; version = v; break; }
+    }
+    if (!name && /Safari\//.test(s) && /AppleWebKit/.test(s)) { name = 'Safari'; version = m(/Version\/(\d+)/); }
+  }
+  if (!os) {
+    os = /iPhone|iPad|iPod/.test(s) ? 'iOS' : /Android/.test(s) ? 'Android' : /CrOS/.test(s) ? 'ChromeOS'
+      : /Windows/.test(s) ? 'Windows' : /Mac OS X|Macintosh/.test(s) ? 'macOS' : /Linux|X11/.test(s) ? 'Linux' : '';
+  }
+  return { name, version, os };
+}
+
+// One line from the facts (overlay.js deviceFacts): build, device, then what
+// the page made of it.  Twin banks report the layout's own figures; a window
+// shown as classic reports classic's key size, tile and scale instead.
+export function deviceReport(f) {
+  const F = f || {};
+  const parts = [];
+  const b = F.build || {};
+  parts.push(`Rolehack ${rTxt(b.short)}${b.date ? ` (${b.date})` : ''}`);
+  const win = F.window || {};
+  const orient = rNum(win.w) !== '?' && rNum(win.h) !== '?' ? (Number(win.h) > Number(win.w) ? ' portrait' : ' landscape') : '';
+  parts.push(`window ${rDim(win)}${orient}`);
+  parts.push(`screen ${rDim(F.screen)}`);
+  parts.push(`dpr ${rNum(F.dpr, 2)}`);
+  const br = F.browser || {};
+  parts.push([rTxt(br.name, 'browser'), br.version, br.os].filter(Boolean).join(' '));
+  // the display mode, as a person would say it
+  parts.push({ browser: 'in a tab', standalone: 'installed', fullscreen: 'fullscreen' }[F.mode] || rTxt(F.mode));
+  parts.push(`touch ${rNum(F.touchPoints, 0)}`);
+  parts.push(`pointer ${rTxt(F.pointer)}/${rTxt(F.anyPointer)}`);
+  parts.push(`hover ${F.hover === true ? 'yes' : F.hover === false ? 'no' : '?'}`);
+  parts.push(`text ×${rNum(F.textScale, 2)} ${rTxt(F.msgFont)} ×${rNum(F.msgSize, 2)}`);
+  const ins = F.insets || {};
+  parts.push(`insets ${rNum(ins.l, 0)}/${rNum(ins.r, 0)}/${rNum(ins.t, 0)}/${rNum(ins.b, 0)}`);
+  let lay = `layout ${rTxt(F.layout)}`;
+  if (F.layout && F.shown && F.shown !== F.layout) lay += `, shown as ${F.shown}${F.fallback ? `: ${rCut(F.fallback)}` : ''}`;
+  parts.push(lay);
+  if (F.shown === 'twin' || F.tier) {
+    parts.push(`tier ${rTxt(F.tier)}`);
+    let keys = `keys ${rNum(F.pad)} dp`;
+    if (rNum(F.padSetting) !== rNum(F.pad)) keys = `keys ${rNum(F.padSetting)} set, ${rNum(F.pad)} drawn dp`;
+    if (rNum(F.rightColumns) !== '?' && rNum(F.rightColumns) !== rNum(F.pad)) keys += `, right ${rNum(F.rightColumns)}`;
+    parts.push(keys);
+    parts.push(`cell ${rNum(F.cell)} dp`);
+    parts.push(`map ${rNum(F.cols)}×${rNum(F.rows)}${F.whole === true ? ' whole' : F.whole === false ? ' pans' : ''}`);
+    parts.push(`glass ${rTxt(F.glass)}${F.headerOver ? ' + header over banks' : ''}`);
+    const bg = F.budget;
+    parts.push(`budget ${rTxt(F.budgetUsed)}${bg ? ` w${rNum(bg.w, 0)} h${rNum(bg.h, 0)} l${rNum(bg.l, 0)}` : ''}`);
+    parts.push(`fit ${rTxt(F.fitLevel)}${F.reason ? `: ${rCut(F.reason)}` : ''}`);
+    parts.push(`map cell ${rTxt(F.mapCell)}`);
+    parts.push(`zoom ×${rNum(F.zoomFactor, 2)}`);
+  } else {
+    parts.push(`keys ${rNum(F.pad)} dp`);
+    parts.push(`tile ${rNum(F.cell)} px`);
+    if (rNum(F.scale) !== '?') parts.push(`scale ×${rNum(F.scale, 2)}`);
+    parts.push(`zoom ${Number(F.zoom) > 0 ? `${rNum(F.zoom)} px` : 'fit'}`);
+  }
+  parts.push(`${rTxt(F.style)}, ${F.caseOn === true ? 'case' : F.caseOn === false ? 'caseless' : '?'}`);
+  return parts.join(' · ');
+}

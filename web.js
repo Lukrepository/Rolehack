@@ -1994,6 +1994,8 @@ function form(title, fields, buttons) {
       inp.value = fd.value || '';
       inp.spellcheck = false;
       inp.rows = 4;
+      // a line to read and copy, never to edit (the device report)
+      if (fd.readonly) { inp.readOnly = true; inp.rows = 3; }
       inp.addEventListener('input', () => { values[fd.id] = inp.value; });
       // Enter makes a new line here; Esc still closes the form
       inp.addEventListener('keydown', (e) => { if (e.key !== 'Escape') e.stopPropagation(); });
@@ -2019,15 +2021,20 @@ function form(title, fields, buttons) {
   const primary = buttons.find((b) => b.primary);
   // touch only: a dialog with something to type in brings the keyboard up
   const touch = !!P.get('touchKeyboard') && !!f.querySelector('input');
-  const done = (b) => {
+  const done = (b, el) => {
+    // a button that keeps the form open (Copy report): it gets the values, its
+    // own keycap and the hint line to answer in
+    if (b && b.stay) { if (b.run) b.run(values, el, box.querySelector('.hint')); return; }
     box.parentElement.hidden = true;
     formOpen = null;
     windowClosed();
     if (touch) showKeyboard(false);
     if (b && b.run) b.run(values);
   };
-  box.querySelector('.caps').replaceChildren(...buttons.map((b) =>
-    capButton(b.label, { amber: !!b.primary, key: b.primary ? 'Enter' : '', onTap: () => done(b) })));
+  box.querySelector('.caps').replaceChildren(...buttons.map((b) => {
+    const el = capButton(b.label, { amber: !!b.primary, key: b.primary ? 'Enter' : '', onTap: () => done(b, el) });
+    return el;
+  }));
   box.querySelector('.hint').textContent = 'Esc closes';
   body.appendChild(f);
   box.parentElement.hidden = false;
@@ -2502,6 +2509,9 @@ overlay = new Overlay({
   toggleKeyboard: () => showKeyboard(!$('kbd').classList.contains('on')),
   // twin banks' guard steps aside where a tap means something else: at
   // --More--, under a menu, a text window or a form (getpos is the overlay's)
+  // for the device report (overlay.js deviceFacts): the build this page is, and classic's tile
+  build: () => build,
+  tileSize: () => tileSize(),
   guardsAside: () => moreShown || !$('modal').hidden || !$('formwrap').hidden,
   windowClosed,
 });
