@@ -1,0 +1,1005 @@
+[
+ {
+  "test": "rotate",
+  "tag": "lucas",
+  "zf": 1,
+  "Ts": [
+   13,
+   13,
+   13
+  ],
+  "cells": [
+   13.411764705882353,
+   13.411764705882353,
+   13.411764705882353
+  ],
+  "bad": []
+ },
+ {
+  "test": "rotate",
+  "tag": "lucas",
+  "zf": 1.5,
+  "Ts": [
+   20,
+   20,
+   20
+  ],
+  "cells": [
+   13.411764705882353,
+   13.411764705882353,
+   13.411764705882353
+  ],
+  "bad": []
+ },
+ {
+  "test": "rotate",
+  "tag": "small",
+  "zf": 1,
+  "Ts": [
+   12,
+   12,
+   12
+  ],
+  "cells": [
+   12,
+   12,
+   12
+  ],
+  "bad": []
+ },
+ {
+  "test": "rotate",
+  "tag": "small",
+  "zf": 1.5,
+  "Ts": [
+   18,
+   18,
+   18
+  ],
+  "cells": [
+   12,
+   12,
+   12
+  ],
+  "bad": []
+ },
+ {
+  "test": "rotate",
+  "tag": "p412",
+  "zf": 1,
+  "Ts": [
+   13,
+   13,
+   13
+  ],
+  "cells": [
+   13.870775729646695,
+   13.870775729646695,
+   13.870775729646695
+  ],
+  "bad": []
+ },
+ {
+  "test": "rotate",
+  "tag": "p412",
+  "zf": 1.5,
+  "Ts": [
+   20,
+   20,
+   20
+  ],
+  "cells": [
+   13.870775729646695,
+   13.870775729646695,
+   13.870775729646695
+  ],
+  "bad": []
+ },
+ {
+  "test": "rotate",
+  "tag": "p390",
+  "zf": 1,
+  "Ts": [
+   12,
+   12,
+   12
+  ],
+  "cells": [
+   12.823156682027648,
+   12.823156682027648,
+   12.823156682027648
+  ],
+  "bad": []
+ },
+ {
+  "test": "rotate",
+  "tag": "p390",
+  "zf": 1.5,
+  "Ts": [
+   19,
+   19,
+   19
+  ],
+  "cells": [
+   12.823156682027648,
+   12.823156682027648,
+   12.823156682027648
+  ],
+  "bad": []
+ },
+ {
+  "test": "rotate",
+  "tag": "tab",
+  "zf": 1,
+  "Ts": [
+   12,
+   12,
+   12
+  ],
+  "cells": [
+   12,
+   12,
+   12
+  ],
+  "bad": []
+ },
+ {
+  "test": "rotate",
+  "tag": "tab",
+  "zf": 1.5,
+  "Ts": [
+   18,
+   18,
+   18
+  ],
+  "cells": [
+   12,
+   12,
+   12
+  ],
+  "bad": []
+ },
+ {
+  "tag": "lucas-L",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 13,
+   "fitsX": false,
+   "fitsY": true
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 33,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(52,5) K(52,3) L(58,3)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": false,
+   "fitsY": true,
+   "moved": [
+    30,
+    50
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 13.000 -> 26.000, zoomFactor 1.9385964912280702, zoom null"
+   ],
+   "T0": 13,
+   "T1": 26
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 5.000 (level 400.0x105.0 in 456.0x281.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 13.000 -> 18.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "lucas-L",
+  "layout": "classic",
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 24.000, zoomFactor null, zoom 24"
+   ],
+   "T0": 12,
+   "T1": 24
+  },
+  "still": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "lucas-P",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 14,
+   "fitsX": false,
+   "fitsY": true
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 36,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(53,5) K(52,3) L(61,3)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": false,
+   "fitsY": true,
+   "moved": [
+    30,
+    50
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 14.000 -> 28.000, zoomFactor 1.9078156312625252, zoom null"
+   ],
+   "T0": 14,
+   "T1": 28
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 5.000 (level 400.0x105.0 in 435.0x307.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 14.000 -> 19.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "lucas-P",
+  "layout": "classic",
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 17.000 -> 34.000, zoomFactor null, zoom 34"
+   ],
+   "T0": 17,
+   "T1": 34
+  },
+  "still": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "small-L",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 12,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 30,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(57,5) K(56,5) L(52,5)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": false,
+   "fitsY": false,
+   "moved": [
+    30,
+    30
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 24.000, zoomFactor 2, zoom null"
+   ],
+   "T0": 12,
+   "T1": 24
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 3.000 (level 240.0x63.0 in 280.0x239.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 16.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "small-P",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 12,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 30,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(55,5) K(52,3) L(61,3)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": false,
+   "fitsY": false,
+   "moved": [
+    30,
+    30
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 24.000, zoomFactor 2, zoom null"
+   ],
+   "T0": 12,
+   "T1": 24
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 4.000 (level 320.0x84.0 in 352.0x182.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 16.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "p412-L",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 13,
+   "fitsX": false,
+   "fitsY": true
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 34,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(52,5) K(52,3) L(54,3)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": false,
+   "fitsY": true,
+   "moved": [
+    30,
+    50
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 13.000 -> 26.000, zoomFactor 1.8744445521117405, zoom null"
+   ],
+   "T0": 13,
+   "T1": 26
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 6.000 (level 480.0x126.0 in 503.0x291.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 13.000 -> 18.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "p412-P",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 13,
+   "fitsX": false,
+   "fitsY": true
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 34,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(52,5) K(52,3) L(61,3)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": false,
+   "fitsY": true,
+   "moved": [
+    30,
+    50
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 13.000 -> 26.000, zoomFactor 1.8744445521117405, zoom null"
+   ],
+   "T0": 13,
+   "T1": 26
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 5.000 (level 400.0x105.0 in 404.0x290.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 13.000 -> 18.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "p390-L",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 12,
+   "fitsX": false,
+   "fitsY": true
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 32,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(56,5) K(52,3) L(61,3)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": false,
+   "fitsY": true,
+   "moved": [
+    30,
+    50
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 24.000, zoomFactor 1.8716140335115228, zoom null"
+   ],
+   "T0": 12,
+   "T1": 24
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 5.000 (level 400.0x105.0 in 454.0x269.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 16.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "p390-P",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 12,
+   "fitsX": false,
+   "fitsY": true
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 32,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(52,5) K(52,3) L(61,3)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": false,
+   "fitsY": true,
+   "moved": [
+    30,
+    50
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 24.000, zoomFactor 1.8716140335115228, zoom null"
+   ],
+   "T0": 12,
+   "T1": 24
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 4.000 (level 320.0x84.0 in 382.0x268.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 16.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "tab-L",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 12,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 30,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(57,5) K(52,3) L(61,3)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": false,
+   "fitsY": false,
+   "moved": [
+    30,
+    30
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 24.000, zoomFactor 2, zoom null"
+   ],
+   "T0": 12,
+   "T1": 24
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 6.000 (level 480.0x126.0 in 533.0x242.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 16.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "tab-P",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 12,
+   "fitsX": false,
+   "fitsY": true
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 30,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(53,5) K(52,3) L(61,3)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": false,
+   "fitsY": true,
+   "moved": [
+    30,
+    50
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 24.000, zoomFactor 1.9474940334128876, zoom null"
+   ],
+   "T0": 12,
+   "T1": 24
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 5.000 (level 400.0x105.0 in 435.0x258.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 16.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "1024x768",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 12,
+   "fitsX": true,
+   "fitsY": true
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 31,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(52,5) K(52,3) L(54,3)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": true,
+   "fitsY": true,
+   "moved": [
+    50,
+    50
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 24.000, zoomFactor 1.92, zoom null"
+   ],
+   "T0": 12,
+   "T1": 24
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 12.000 (level 960.0x252.0 in 1000.0x261.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 16.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "1024x768",
+  "layout": "classic",
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 25.000 -> 50.000, zoomFactor null, zoom 50"
+   ],
+   "T0": 25,
+   "T1": 50
+  },
+  "still": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "768x1024",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 12,
+   "fitsX": false,
+   "fitsY": true
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 31,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(52,5) K(52,4) L(53,4)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": false,
+   "fitsY": true,
+   "moved": [
+    30,
+    50
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 24.000, zoomFactor 1.92, zoom null"
+   ],
+   "T0": 12,
+   "T1": 24
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 9.000 (level 720.0x189.0 in 760.0x262.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 12.000 -> 16.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ },
+ {
+  "tag": "1366x768",
+  "layout": "twin",
+  "edges1": {
+   "bad": [],
+   "n": 230,
+   "T": 15,
+   "fitsX": true,
+   "fitsY": true
+  },
+  "edges2.5": {
+   "bad": [],
+   "n": 230,
+   "T": 37,
+   "fitsX": false,
+   "fitsY": false
+  },
+  "walk": {
+   "bad": [],
+   "path": "L(58,4) J(58,5) H(54,5) K(52,5) L(53,5)"
+  },
+  "drag": {
+   "bad": [],
+   "fitsX": true,
+   "fitsY": true,
+   "moved": [
+    50,
+    50
+   ]
+  },
+  "pinch": {
+   "bad": [],
+   "notes": [
+    "T 15.000 -> 30.000, zoomFactor 2, zoom null"
+   ],
+   "T0": 15,
+   "T1": 30
+  },
+  "still": {
+   "bad": [],
+   "notes": [
+    "overview cell 15.000 (level 1200.0x315.0 in 1200.0x316.0)"
+   ]
+  },
+  "spread": {
+   "bad": [],
+   "notes": [
+    "T 15.000 -> 21.000"
+   ]
+  },
+  "slide": {
+   "bad": [],
+   "notes": []
+  },
+  "twitch": {
+   "bad": [],
+   "notes": []
+  },
+  "bad": []
+ }
+]

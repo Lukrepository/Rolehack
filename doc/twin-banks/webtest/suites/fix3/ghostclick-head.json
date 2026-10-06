@@ -1,0 +1,64 @@
+[
+ {
+  "name": "896x443 classic: INVENTORY's touch does not click what opened under it",
+  "pass": false,
+  "detail": {
+   "trapped": 1,
+   "pushed": [
+    105
+   ]
+  }
+ },
+ {
+  "name": "896x443 classic: a touch begun on the window still clicks it",
+  "pass": false,
+  "detail": {
+   "trapped2": 2
+  }
+ },
+ {
+  "name": "896x443 classic: MENU then DONE leaves the case off",
+  "pass": true,
+  "detail": {
+   "form": {
+    "open": true,
+    "sel": []
+   },
+   "caseNow": [
+    "false",
+    "off"
+   ]
+  }
+ },
+ {
+  "name": "443x939 classic: INVENTORY's touch does not click what opened under it",
+  "pass": false,
+  "detail": {
+   "trapped": 1,
+   "pushed": [
+    105
+   ]
+  }
+ },
+ {
+  "name": "443x939 classic: a touch begun on the window still clicks it",
+  "pass": false,
+  "detail": {
+   "trapped2": 2
+  }
+ },
+ {
+  "name": "443x939 classic: MENU then DONE leaves the case off",
+  "pass": true,
+  "detail": {
+   "form": {
+    "open": true,
+    "sel": []
+   },
+   "caseNow": [
+    "false",
+    "off"
+   ]
+  }
+ }
+]

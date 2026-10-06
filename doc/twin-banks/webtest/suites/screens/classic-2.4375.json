@@ -1,0 +1,583 @@
+[
+ {
+  "tag": "classic-1024x768@2.4375",
+  "name": "classic drawn (no tier)",
+  "pass": true,
+  "detail": [
+   "classic",
+   null
+  ]
+ },
+ {
+  "tag": "classic-1024x768@2.4375",
+  "name": "glass, canvas, bands identical to HEAD",
+  "pass": true,
+  "detail": {
+   "work": [
+    [
+     242,
+     22,
+     540,
+     638
+    ],
+    [
+     242,
+     22,
+     539.89,
+     637.94
+    ]
+   ],
+   "head": [
+    [
+     242,
+     22,
+     540,
+     638
+    ],
+    [
+     242,
+     22,
+     539.89,
+     637.94
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "classic-1024x768@2.4375",
+  "name": "every key element rect identical to HEAD (265)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-1024x768@2.4375",
+  "name": "no panel in classic",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-1024x768@2.4375",
+  "name": "perm_invent off in classic",
+  "pass": true,
+  "detail": false
+ },
+ {
+  "tag": "classic-1024x768@2.4375",
+  "name": "an inventory change pops nothing up",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "title": "What do you want to drop?"
+  }
+ },
+ {
+  "tag": "classic-1024x768@2.4375",
+  "name": "pixels identical to HEAD",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-1024x768@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-768x1024@2.4375",
+  "name": "classic drawn (no tier)",
+  "pass": true,
+  "detail": [
+   "classic",
+   null
+  ]
+ },
+ {
+  "tag": "classic-768x1024@2.4375",
+  "name": "glass, canvas, bands identical to HEAD",
+  "pass": true,
+  "detail": {
+   "work": [
+    [
+     16,
+     18,
+     736,
+     582
+    ],
+    [
+     16,
+     18,
+     736,
+     582.14
+    ]
+   ],
+   "head": [
+    [
+     16,
+     18,
+     736,
+     582
+    ],
+    [
+     16,
+     18,
+     736,
+     582.14
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "classic-768x1024@2.4375",
+  "name": "every key element rect identical to HEAD (265)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-768x1024@2.4375",
+  "name": "no panel in classic",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-768x1024@2.4375",
+  "name": "perm_invent off in classic",
+  "pass": true,
+  "detail": false
+ },
+ {
+  "tag": "classic-768x1024@2.4375",
+  "name": "an inventory change pops nothing up",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "title": "What do you want to drop?"
+  }
+ },
+ {
+  "tag": "classic-768x1024@2.4375",
+  "name": "pixels identical to HEAD",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-768x1024@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-1366x768@2.4375",
+  "name": "classic drawn (no tier)",
+  "pass": true,
+  "detail": [
+   "classic",
+   null
+  ]
+ },
+ {
+  "tag": "classic-1366x768@2.4375",
+  "name": "glass, canvas, bands identical to HEAD",
+  "pass": true,
+  "detail": {
+   "work": [
+    [
+     242,
+     22,
+     882,
+     638
+    ],
+    [
+     242,
+     22,
+     882.05,
+     637.94
+    ]
+   ],
+   "head": [
+    [
+     242,
+     22,
+     882,
+     638
+    ],
+    [
+     242,
+     22,
+     882.05,
+     637.94
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "classic-1366x768@2.4375",
+  "name": "every key element rect identical to HEAD (265)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-1366x768@2.4375",
+  "name": "no panel in classic",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-1366x768@2.4375",
+  "name": "perm_invent off in classic",
+  "pass": true,
+  "detail": false
+ },
+ {
+  "tag": "classic-1366x768@2.4375",
+  "name": "an inventory change pops nothing up",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "title": "What do you want to drop?"
+  }
+ },
+ {
+  "tag": "classic-1366x768@2.4375",
+  "name": "pixels identical to HEAD",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-1366x768@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-1920x1080-mouse@2.4375",
+  "name": "classic drawn (no tier)",
+  "pass": true,
+  "detail": [
+   "classic",
+   null
+  ]
+ },
+ {
+  "tag": "classic-1920x1080-mouse@2.4375",
+  "name": "glass, canvas, bands identical to HEAD",
+  "pass": true,
+  "detail": {
+   "work": [
+    [
+     242,
+     22,
+     1436,
+     950
+    ],
+    [
+     242,
+     22,
+     1435.89,
+     950.14
+    ]
+   ],
+   "head": [
+    [
+     242,
+     22,
+     1436,
+     950
+    ],
+    [
+     242,
+     22,
+     1435.89,
+     950.14
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "classic-1920x1080-mouse@2.4375",
+  "name": "every key element rect identical to HEAD (265)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-1920x1080-mouse@2.4375",
+  "name": "no panel in classic",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-1920x1080-mouse@2.4375",
+  "name": "perm_invent off in classic",
+  "pass": true,
+  "detail": false
+ },
+ {
+  "tag": "classic-1920x1080-mouse@2.4375",
+  "name": "an inventory change pops nothing up",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "title": "What do you want to drop?"
+  }
+ },
+ {
+  "tag": "classic-1920x1080-mouse@2.4375",
+  "name": "pixels identical to HEAD",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-1920x1080-mouse@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-3440x1440-mouse@2.4375",
+  "name": "classic drawn (no tier)",
+  "pass": true,
+  "detail": [
+   "classic",
+   null
+  ]
+ },
+ {
+  "tag": "classic-3440x1440-mouse@2.4375",
+  "name": "glass, canvas, bands identical to HEAD",
+  "pass": true,
+  "detail": {
+   "work": [
+    [
+     242,
+     22,
+     2956,
+     1310
+    ],
+    [
+     242,
+     22,
+     2955.89,
+     1309.94
+    ]
+   ],
+   "head": [
+    [
+     242,
+     22,
+     2956,
+     1310
+    ],
+    [
+     242,
+     22,
+     2955.89,
+     1309.94
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "classic-3440x1440-mouse@2.4375",
+  "name": "every key element rect identical to HEAD (265)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-3440x1440-mouse@2.4375",
+  "name": "no panel in classic",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-3440x1440-mouse@2.4375",
+  "name": "perm_invent off in classic",
+  "pass": true,
+  "detail": false
+ },
+ {
+  "tag": "classic-3440x1440-mouse@2.4375",
+  "name": "an inventory change pops nothing up",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "title": "What do you want to drop?"
+  }
+ },
+ {
+  "tag": "classic-3440x1440-mouse@2.4375",
+  "name": "pixels identical to HEAD",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-3440x1440-mouse@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-896x443@2.4375",
+  "name": "classic drawn (no tier)",
+  "pass": true,
+  "detail": [
+   "classic",
+   null
+  ]
+ },
+ {
+  "tag": "classic-896x443@2.4375",
+  "name": "glass, canvas, bands identical to HEAD",
+  "pass": true,
+  "detail": {
+   "work": [
+    [
+     242,
+     22,
+     412,
+     313
+    ],
+    [
+     242,
+     22,
+     411.89,
+     313.02
+    ]
+   ],
+   "head": [
+    [
+     242,
+     22,
+     412,
+     313
+    ],
+    [
+     242,
+     22,
+     411.89,
+     313.02
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "classic-896x443@2.4375",
+  "name": "every key element rect identical to HEAD (265)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-896x443@2.4375",
+  "name": "no panel in classic",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-896x443@2.4375",
+  "name": "perm_invent off in classic",
+  "pass": true,
+  "detail": false
+ },
+ {
+  "tag": "classic-896x443@2.4375",
+  "name": "an inventory change pops nothing up",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "title": "What do you want to drop?"
+  }
+ },
+ {
+  "tag": "classic-896x443@2.4375",
+  "name": "pixels identical to HEAD",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-896x443@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-443x939@2.4375",
+  "name": "classic drawn (no tier)",
+  "pass": true,
+  "detail": [
+   "classic",
+   null
+  ]
+ },
+ {
+  "tag": "classic-443x939@2.4375",
+  "name": "glass, canvas, bands identical to HEAD",
+  "pass": true,
+  "detail": {
+   "work": [
+    [
+     16,
+     18,
+     411,
+     497
+    ],
+    [
+     16,
+     18,
+     411.06,
+     496.81
+    ]
+   ],
+   "head": [
+    [
+     16,
+     18,
+     411,
+     497
+    ],
+    [
+     16,
+     18,
+     411.06,
+     496.81
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "classic-443x939@2.4375",
+  "name": "every key element rect identical to HEAD (265)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "classic-443x939@2.4375",
+  "name": "no panel in classic",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-443x939@2.4375",
+  "name": "perm_invent off in classic",
+  "pass": true,
+  "detail": false
+ },
+ {
+  "tag": "classic-443x939@2.4375",
+  "name": "an inventory change pops nothing up",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "title": "What do you want to drop?"
+  }
+ },
+ {
+  "tag": "classic-443x939@2.4375",
+  "name": "pixels identical to HEAD",
+  "pass": true,
+  "detail": 0
+ },
+ {
+  "tag": "classic-443x939@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ }
+]

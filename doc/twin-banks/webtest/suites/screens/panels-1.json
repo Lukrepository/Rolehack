@@ -1,0 +1,802 @@
+[
+ {
+  "tag": "1024x768@1",
+  "name": "start: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 6
+  }
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "start: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "Restoring save file...",
+    "Hello Screens, the human Rogue, welcome back to NetHack!"
+   ],
+   "hist": [
+    "Restoring save file...",
+    "Hello Screens, the human Rogue, welcome back to NetHack!"
+   ]
+  }
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "after dropping d: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 5
+  }
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "after dropping d: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "Hello Screens, the human Rogue, welcome back to NetHack!",
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness."
+   ],
+   "hist": [
+    "Hello Screens, the human Rogue, welcome back to NetHack!",
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness."
+   ]
+  }
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "the dropped item left the panel",
+  "pass": true,
+  "detail": [
+   "Weapons",
+   "aa+0shortsword(weaponinrighthand)",
+   "b9+0daggers(alternateweapons;notwielded)",
+   "Armor",
+   "canuncursed+1leatherarmor(beingworn)",
+   "Tools",
+   "eanuncursedlockpick",
+   "fanemptyuncursedsack"
+  ]
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "the drop is the log's newest line",
+  "pass": true,
+  "detail": [
+   "What do you want to drop?",
+   "You drop an uncursed potion of sickness."
+  ]
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "after picking it up: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 6
+  }
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "after picking it up: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness.",
+    "d - an uncursed potion of sickness."
+   ],
+   "hist": [
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness.",
+    "d - an uncursed potion of sickness."
+   ]
+  }
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "the item is back in the panel",
+  "pass": true,
+  "detail": [
+   "Weapons",
+   "aa+0shortsword(weaponinrighthand)",
+   "b9+0daggers(alternateweapons;notwielded)",
+   "Armor",
+   "canuncursed+1leatherarmor(beingworn)",
+   "Potions",
+   "danuncursedpotionofsickness",
+   "Tools",
+   "eanuncursedlockpick",
+   "fanemptyuncursedsack"
+  ]
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "after wielding the daggers: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 6
+  }
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "after wielding the daggers: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "What do you want to wield?",
+    "b - 9 +0 daggers (wielded).",
+    "a - a +0 short sword (alternate weapon; not wielded)."
+   ],
+   "hist": [
+    "What do you want to wield?",
+    "b - 9 +0 daggers (wielded).",
+    "a - a +0 short sword (alternate weapon; not wielded)."
+   ]
+  }
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "the panel shows the daggers wielded",
+  "pass": true,
+  "detail": [
+   "b9+0daggers(wielded)"
+  ]
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "a long log scrolls and keeps to its newest line",
+  "pass": true,
+  "detail": {
+   "sh": 1988,
+   "ch": 333,
+   "top": 1655
+  }
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "a long log holds the history",
+  "pass": true,
+  "detail": {
+   "n": 51,
+   "hist": 51
+  }
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "scrolled back, the log keeps its place when a message comes",
+  "pass": true,
+  "detail": {
+   "top0": 0,
+   "top1": 0
+  }
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "a tap on the log opens the history",
+  "pass": true,
+  "detail": {
+   "ev": [
+    16
+   ],
+   "modal": true
+  }
+ },
+ {
+  "tag": "1024x768@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "start: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 6
+  }
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "start: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "Restoring save file...",
+    "Hello Screens, the human Rogue, welcome back to NetHack!"
+   ],
+   "hist": [
+    "Restoring save file...",
+    "Hello Screens, the human Rogue, welcome back to NetHack!"
+   ]
+  }
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "after dropping d: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 5
+  }
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "after dropping d: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "Hello Screens, the human Rogue, welcome back to NetHack!",
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness."
+   ],
+   "hist": [
+    "Hello Screens, the human Rogue, welcome back to NetHack!",
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness."
+   ]
+  }
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "the dropped item left the panel",
+  "pass": true,
+  "detail": [
+   "Weapons",
+   "aa+0shortsword(weaponinrighthand)",
+   "b9+0daggers(alternateweapons;notwielded)",
+   "Armor",
+   "canuncursed+1leatherarmor(beingworn)",
+   "Tools",
+   "eanuncursedlockpick",
+   "fanemptyuncursedsack"
+  ]
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "the drop is the log's newest line",
+  "pass": true,
+  "detail": [
+   "What do you want to drop?",
+   "You drop an uncursed potion of sickness."
+  ]
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "after picking it up: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 6
+  }
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "after picking it up: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness.",
+    "d - an uncursed potion of sickness."
+   ],
+   "hist": [
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness.",
+    "d - an uncursed potion of sickness."
+   ]
+  }
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "the item is back in the panel",
+  "pass": true,
+  "detail": [
+   "Weapons",
+   "aa+0shortsword(weaponinrighthand)",
+   "b9+0daggers(alternateweapons;notwielded)",
+   "Armor",
+   "canuncursed+1leatherarmor(beingworn)",
+   "Potions",
+   "danuncursedpotionofsickness",
+   "Tools",
+   "eanuncursedlockpick",
+   "fanemptyuncursedsack"
+  ]
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "after wielding the daggers: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 6
+  }
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "after wielding the daggers: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "What do you want to wield?",
+    "b - 9 +0 daggers (wielded).",
+    "a - a +0 short sword (alternate weapon; not wielded)."
+   ],
+   "hist": [
+    "What do you want to wield?",
+    "b - 9 +0 daggers (wielded).",
+    "a - a +0 short sword (alternate weapon; not wielded)."
+   ]
+  }
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "the panel shows the daggers wielded",
+  "pass": true,
+  "detail": [
+   "b9+0daggers(wielded)"
+  ]
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "a long log scrolls and keeps to its newest line",
+  "pass": true,
+  "detail": {
+   "sh": 1060,
+   "ch": 217,
+   "top": 843
+  }
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "a long log holds the history",
+  "pass": true,
+  "detail": {
+   "n": 51,
+   "hist": 51
+  }
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "scrolled back, the log keeps its place when a message comes",
+  "pass": true,
+  "detail": {
+   "top0": 0,
+   "top1": 0
+  }
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "a tap on the log opens the history",
+  "pass": true,
+  "detail": {
+   "ev": [
+    16
+   ],
+   "modal": true
+  }
+ },
+ {
+  "tag": "768x1024@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "start: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 6
+  }
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "start: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "Restoring save file...",
+    "Hello Screens, the human Rogue, welcome back to NetHack!"
+   ],
+   "hist": [
+    "Restoring save file...",
+    "Hello Screens, the human Rogue, welcome back to NetHack!"
+   ]
+  }
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "after dropping d: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 5
+  }
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "after dropping d: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "Hello Screens, the human Rogue, welcome back to NetHack!",
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness."
+   ],
+   "hist": [
+    "Hello Screens, the human Rogue, welcome back to NetHack!",
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness."
+   ]
+  }
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "the dropped item left the panel",
+  "pass": true,
+  "detail": [
+   "Weapons",
+   "aa+0shortsword(weaponinrighthand)",
+   "b9+0daggers(alternateweapons;notwielded)",
+   "Armor",
+   "canuncursed+1leatherarmor(beingworn)",
+   "Tools",
+   "eanuncursedlockpick",
+   "fanemptyuncursedsack"
+  ]
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "the drop is the log's newest line",
+  "pass": true,
+  "detail": [
+   "What do you want to drop?",
+   "You drop an uncursed potion of sickness."
+  ]
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "after picking it up: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 6
+  }
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "after picking it up: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness.",
+    "d - an uncursed potion of sickness."
+   ],
+   "hist": [
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness.",
+    "d - an uncursed potion of sickness."
+   ]
+  }
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "the item is back in the panel",
+  "pass": true,
+  "detail": [
+   "Weapons",
+   "aa+0shortsword(weaponinrighthand)",
+   "b9+0daggers(alternateweapons;notwielded)",
+   "Armor",
+   "canuncursed+1leatherarmor(beingworn)",
+   "Potions",
+   "danuncursedpotionofsickness",
+   "Tools",
+   "eanuncursedlockpick",
+   "fanemptyuncursedsack"
+  ]
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "after wielding the daggers: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 6
+  }
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "after wielding the daggers: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "What do you want to wield?",
+    "b - 9 +0 daggers (wielded).",
+    "a - a +0 short sword (alternate weapon; not wielded)."
+   ],
+   "hist": [
+    "What do you want to wield?",
+    "b - 9 +0 daggers (wielded).",
+    "a - a +0 short sword (alternate weapon; not wielded)."
+   ]
+  }
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "the panel shows the daggers wielded",
+  "pass": true,
+  "detail": [
+   "b9+0daggers(wielded)"
+  ]
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "a long log scrolls and keeps to its newest line",
+  "pass": true,
+  "detail": {
+   "sh": 1060,
+   "ch": 118,
+   "top": 942
+  }
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "a long log holds the history",
+  "pass": true,
+  "detail": {
+   "n": 51,
+   "hist": 51
+  }
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "scrolled back, the log keeps its place when a message comes",
+  "pass": true,
+  "detail": {
+   "top0": 0,
+   "top1": 0
+  }
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "a tap on the log opens the history",
+  "pass": true,
+  "detail": {
+   "ev": [
+    16
+   ],
+   "modal": true
+  }
+ },
+ {
+  "tag": "1920x1080-mouse@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "start: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 6
+  }
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "start: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "Restoring save file...",
+    "Hello Screens, the human Rogue, welcome back to NetHack!"
+   ],
+   "hist": [
+    "Restoring save file...",
+    "Hello Screens, the human Rogue, welcome back to NetHack!"
+   ]
+  }
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "after dropping d: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 5
+  }
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "after dropping d: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "Hello Screens, the human Rogue, welcome back to NetHack!",
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness."
+   ],
+   "hist": [
+    "Hello Screens, the human Rogue, welcome back to NetHack!",
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness."
+   ]
+  }
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "the dropped item left the panel",
+  "pass": true,
+  "detail": [
+   "Weapons",
+   "aa+0shortsword(weaponinrighthand)",
+   "b9+0daggers(alternateweapons;notwielded)",
+   "Armor",
+   "canuncursed+1leatherarmor(beingworn)",
+   "Tools",
+   "eanuncursedlockpick",
+   "fanemptyuncursedsack"
+  ]
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "the drop is the log's newest line",
+  "pass": true,
+  "detail": [
+   "What do you want to drop?",
+   "You drop an uncursed potion of sickness."
+  ]
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "after picking it up: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 6
+  }
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "after picking it up: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness.",
+    "d - an uncursed potion of sickness."
+   ],
+   "hist": [
+    "What do you want to drop?",
+    "You drop an uncursed potion of sickness.",
+    "d - an uncursed potion of sickness."
+   ]
+  }
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "the item is back in the panel",
+  "pass": true,
+  "detail": [
+   "Weapons",
+   "aa+0shortsword(weaponinrighthand)",
+   "b9+0daggers(alternateweapons;notwielded)",
+   "Armor",
+   "canuncursed+1leatherarmor(beingworn)",
+   "Potions",
+   "danuncursedpotionofsickness",
+   "Tools",
+   "eanuncursedlockpick",
+   "fanemptyuncursedsack"
+  ]
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "after wielding the daggers: inventory panel = the game's inventory",
+  "pass": true,
+  "detail": {
+   "missing": [],
+   "extra": [],
+   "want": 6
+  }
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "after wielding the daggers: message log = the history, newest last",
+  "pass": true,
+  "detail": {
+   "log": [
+    "What do you want to wield?",
+    "b - 9 +0 daggers (wielded).",
+    "a - a +0 short sword (alternate weapon; not wielded)."
+   ],
+   "hist": [
+    "What do you want to wield?",
+    "b - 9 +0 daggers (wielded).",
+    "a - a +0 short sword (alternate weapon; not wielded)."
+   ]
+  }
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "the panel shows the daggers wielded",
+  "pass": true,
+  "detail": [
+   "b9+0daggers(wielded)"
+  ]
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "a long log scrolls and keeps to its newest line",
+  "pass": true,
+  "detail": {
+   "sh": 1060,
+   "ch": 310,
+   "top": 750
+  }
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "a long log holds the history",
+  "pass": true,
+  "detail": {
+   "n": 51,
+   "hist": 51
+  }
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "scrolled back, the log keeps its place when a message comes",
+  "pass": true,
+  "detail": {
+   "top0": 0,
+   "top1": 0
+  }
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "a tap on the log opens the history",
+  "pass": true,
+  "detail": {
+   "ev": [
+    16
+   ],
+   "modal": true
+  }
+ },
+ {
+  "tag": "2560x1440-mouse@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ }
+]

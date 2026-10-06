@@ -1,0 +1,20 @@
+import { launch, newCtx, openPage, resume, sleep, touch, SHOTS } from './common.mjs';
+const site = process.argv[2] || 'http://localhost:8766';
+const b = await launch();
+const ctx = await newCtx(b, { w: 896, h: 443, dpr: 1, touch: true, origin: site, screen: { width: 443, height: 939 } });
+const p = await openPage(ctx);
+await resume(p);
+const t = await touch(ctx, p);
+await t.rotate(443, 939, 1, [443, 939]);
+await sleep(800);
+const c = await p.evaluate(() => { const r = globalThis.__bt.overlay.twinCapRect('sacrifice'); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; });
+await t.tap(c.x, c.y, 450);
+await sleep(600);
+const out = await p.evaluate(() => {
+  const chips = [...document.querySelectorAll('#chips > *')].map((e) => { const r = e.getBoundingClientRect(); return [e.textContent, Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)]; });
+  const e = globalThis.__bt.overlay.layerPill; const r = e && e.getBoundingClientRect();
+  return { msg: document.getElementById('msgband').innerText, chips, pill: e && [e.textContent, Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)], map: globalThis.__bt.geom.map, T: globalThis.__bt.geom.cell };
+});
+console.log(site, JSON.stringify(out));
+await t.shot(`${SHOTS}/pillchip-${site.slice(-4)}.png`);
+await b.close();

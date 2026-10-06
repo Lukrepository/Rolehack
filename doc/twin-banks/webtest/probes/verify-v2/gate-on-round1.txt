@@ -1,0 +1,113 @@
+1. matrix: 3 pad sizes x 5 variants, phones, tablets, laptops, mouse; pairs by harness and hit model: 880 screens, 16 issues
+   default pad 52 540x720: no drawer
+   default pad 58 561x744: no drawer
+   left-handed pad 52 540x720: no drawer
+   left-handed pad 58 561x744: no drawer
+   combat-left pad 52 540x720: no drawer
+   combat-left pad 58 561x744: no drawer
+   text cells pad 46 540x720: no drawer
+   text cells pad 46 561x744: no drawer
+   text cells pad 52 540x720: no drawer
+   text cells pad 52 561x744: no drawer
+   text cells pad 58 561x744: no drawer
+   cell rows pad 46 540x720: no drawer
+   cell rows pad 46 561x744: no drawer
+   cell rows pad 52 540x720: no drawer | not drawable: map 6.9x21.0 cells
+   cell rows pad 52 561x744: no drawer | not drawable: map 7.8x21.0 cells
+   cell rows pad 58 561x744: no drawer | not drawable: map 6.0x21.0 cells
+2. as the keys shrink (58 -> 52 -> 46) the map never shrinks: cells and map share, every touch screen and variant: 22055 screens, 1267 issues
+   default|540x720: 931 cells 34.48% / 238 cells 8.81% / 815 cells 30.18% at 46 / 52 / 58 dp
+   left-handed|540x720: 931 cells 34.48% / 238 cells 8.81% / 815 cells 30.18% at 46 / 52 / 58 dp
+   combat-left|540x720: 931 cells 34.48% / 238 cells 8.81% / 815 cells 30.18% at 46 / 52 / 58 dp
+   text cells|540x720: 439 cells 13.60% / 347 cells 10.75% / 973 cells 30.18% at 46 / 52 / 58 dp
+   cell rows|540x720: 182 cells 18.43% / 144 cells 14.57% / 298 cells 30.18% at 46 / 52 / 58 dp
+   default 480x600: 448 cells 64456 dp² / 478 cells 68808 dp² / 419 cells 60312 dp² at 46 / 52 / 58 dp
+   default 480x608: 474 cells 68232 dp² / 415 cells 59736 dp² / 445 cells 64088 dp² at 46 / 52 / 58 dp
+   default 480x616: 500 cells 72008 dp² / 441 cells 63512 dp² / 471 cells 67864 dp² at 46 / 52 / 58 dp
+   default 488x600: 210 cells 30240 dp² / 486 cells 69974 dp² / 426 cells 61334 dp² at 46 / 52 / 58 dp
+   default 488x608: 210 cells 30240 dp² / 422 cells 60749 dp² / 453 cells 65174 dp² at 46 / 52 / 58 dp
+   default 488x616: 210 cells 30240 dp² / 449 cells 64589 dp² / 479 cells 69014 dp² at 46 / 52 / 58 dp
+   default 488x624: 210 cells 30240 dp² / 475 cells 68429 dp² / 415 cells 59789 dp² at 46 / 52 / 58 dp
+   default 488x632: 210 cells 30240 dp² / 502 cells 72269 dp² / 442 cells 63629 dp² at 46 / 52 / 58 dp
+   default 488x640: 210 cells 30240 dp² / 529 cells 76109 dp² / 469 cells 67469 dp² at 46 / 52 / 58 dp
+   default 488x648: 210 cells 30240 dp² / 555 cells 79949 dp² / 495 cells 71309 dp² at 46 / 52 / 58 dp
+   default 488x656: 210 cells 30240 dp² / 582 cells 83789 dp² / 522 cells 75149 dp² at 46 / 52 / 58 dp
+   default 488x664: 210 cells 30240 dp² / 609 cells 87629 dp² / 549 cells 78989 dp² at 46 / 52 / 58 dp
+   default 488x672: 210 cells 30240 dp² / 635 cells 91469 dp² / 575 cells 82829 dp² at 46 / 52 / 58 dp
+   default 488x680: 210 cells 30240 dp² / 662 cells 95309 dp² / 602 cells 86669 dp² at 46 / 52 / 58 dp
+   default 488x688: 210 cells 30240 dp² / 689 cells 99149 dp² / 629 cells 90509 dp² at 46 / 52 / 58 dp
+   default 488x696: 210 cells 30240 dp² / 715 cells 102989 dp² / 655 cells 94349 dp² at 46 / 52 / 58 dp
+   default 488x704: 210 cells 30240 dp² / 742 cells 106829 dp² / 682 cells 98189 dp² at 46 / 52 / 58 dp
+   default 488x712: 210 cells 30240 dp² / 769 cells 110669 dp² / 709 cells 102029 dp² at 46 / 52 / 58 dp
+   default 496x600: 224 cells 32256 dp² / 494 cells 71141 dp² / 433 cells 62357 dp² at 46 / 52 / 58 dp
+   default 496x608: 224 cells 32256 dp² / 429 cells 61761 dp² / 460 cells 66261 dp² at 46 / 52 / 58 dp
+   ... 1242 more (-v)
+3. uneven pairs: with the budget, parity; without, every single-screen rule: 420 screens, 0 issues
+4. iPhone safe areas (side insets 47/59/62) under each anchor rule: 108 screens, 0 issues
+5. Android side cutouts 8/24/30 dp at 360/390/412 wide: 480 screens, 0 issues
+6. grip lift 0/20/40/80 dp: 256 screens, 6 issues
+   iPhone 12 mini safe lift 40 pad 58 812x375: key off screen rest,world,sacrifice,m3,keys,m2 | not drawable: rest off screen, world off screen, sacrifice off screen
+   iPhone 12 mini safe lift 80 pad 58 812x375: key off screen rest,world,sacrifice,m3,keys,m2 | not drawable: rest off screen, world off screen, sacrifice off screen
+   iPhone 14 safe lift 80 pad 58 844x390: key off screen rest,world,sacrifice,m3,keys,m2 | not drawable: rest off screen, world off screen, sacrifice off screen
+   640x360 safe lift 20 pad 58 640x360: key off screen rest,world,sacrifice,m3,keys,m2 | not drawable: rest off screen, world off screen, sacrifice off screen
+   640x360 safe lift 40 pad 58 640x360: key off screen rest,world,sacrifice,m3,keys,m2 | not drawable: rest off screen, world off screen, sacrifice off screen
+   640x360 safe lift 80 pad 58 640x360: key off screen rest,world,sacrifice,m3,keys,m2 | not drawable: rest off screen, world off screen, sacrifice off screen
+7. short screens: never throw, step the pad, flag what is below the rule: 2279 screens, 3551 issues
+   default pad 46 300x480: not drawable: map 24.3x7.6 cells
+   left-handed pad 46 300x480: not drawable: map 24.3x7.6 cells
+   combat-left pad 46 300x480: not drawable: map 24.3x7.6 cells
+   text cells pad 46 300x480: not drawable: map 43.3x7.6 cells
+   cell rows pad 46 300x480: not drawable: map 24.3x7.6 cells
+   default pad 52 300x480: not drawable: map 24.3x7.6 cells
+   left-handed pad 52 300x480: not drawable: map 24.3x7.6 cells
+   combat-left pad 52 300x480: not drawable: map 24.3x7.6 cells
+   text cells pad 52 300x480: not drawable: map 43.3x7.6 cells
+   cell rows pad 52 300x480: not drawable: map 24.3x7.6 cells
+   default pad 58 300x480: not drawable: map 24.3x7.6 cells
+   left-handed pad 58 300x480: not drawable: map 24.3x7.6 cells
+   combat-left pad 58 300x480: not drawable: map 24.3x7.6 cells
+   text cells pad 58 300x480: not drawable: map 43.3x7.6 cells
+   cell rows pad 58 300x480: not drawable: map 24.3x7.6 cells
+   default pad 46 300x200: not drawable: map 6.9x8.9 cells
+   default pad 46 200x300: not drawable: no map, map 16.0x0.0 cells
+   left-handed pad 46 300x200: not drawable: map 6.9x8.9 cells
+   left-handed pad 46 200x300: not drawable: no map, map 16.0x0.0 cells
+   combat-left pad 46 300x200: not drawable: map 6.9x8.9 cells
+   combat-left pad 46 200x300: not drawable: no map, map 16.0x0.0 cells
+   text cells pad 46 200x300: not drawable: no map, map 28.4x0.0 cells
+   cell rows pad 46 300x200: not drawable: map 6.9x8.9 cells
+   cell rows pad 46 200x300: not drawable: no map, map 16.0x0.0 cells
+   default pad 52 300x200: not drawable: map 6.9x8.9 cells
+   ... 3526 more (-v)
+8. text sizes: message face x Message size x system text size: 640 screens, 2 issues
+   screen 1.4 x2 columns 360x640: not drawable: map 29.3x7.6 cells
+   screen 1.4 x2 rows 360x640: not drawable: map 29.3x7.6 cells
+9. 960x600 / 600x960 shows all 21 rows; mouse void under today's 21.8% (ultrawide, text cells): 22 screens, 0 issues
+10. layout() never throws: 3000 seeded random windows and settings, odd values included: 3000 screens, 609 issues
+   1900xNaN touch {"padKey":40,"hand":"right","combatThumb":"L","cellAspect":0,"mapCell":"columns","gripLift":20,"avoidCutout":30,"insets":{"l":null},"anchor":"safe","budget":{"w":443,"h":443,"l":896}}: usable but not drawable: no map, map 80.0x0.0 cells
+   1213x549 touch {"padKey":40,"hand":"right","combatThumb":"L","cellAspect":null,"mapCell":"rows","gripLift":-10,"avoidCutout":8,"insets":{"t":400},"anchor":"safe","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":443,"h":443,"l":896},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map, map 76.3x0.0 cells
+   1822x347 mouse {"padKey":70,"hand":"left","combatThumb":"L","cellAspect":1,"mapCell":"x","gripLift":80,"avoidCutout":0,"insets":{"l":null},"anchor":"physical","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":null},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: map 80.0x5.0 cells
+   2116xInfinity touch {"padKey":46,"hand":"right","combatThumb":"R","cellAspect":0,"mapCell":"x","gripLift":0,"avoidCutout":30,"insets":{"t":400},"anchor":"safe","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":443,"h":443,"l":896}}: usable but not drawable: no map, map 80.0x0.0 cells
+   400x400 touch {"padKey":52,"hand":"left","combatThumb":"R","cellAspect":null,"mapCell":"columns","gripLift":500,"avoidCutout":200,"insets":{"l":47,"r":47},"anchor":"auto","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":443,"h":443,"l":896}}: usable but not drawable: no map, map 0.0x0.0 cells, apply off screen
+   2723x490 touch {"padKey":58,"hand":"right","combatThumb":"L","cellAspect":1,"mapCell":"columns","gripLift":500,"avoidCutout":8,"insets":{"t":400},"anchor":"physical","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":null},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map, map 80.0x0.0 cells, messages over combat
+   482x100 touch {"padKey":46,"hand":"right","combatThumb":"L","cellAspect":0,"mapCell":"rows","gripLift":0,"avoidCutout":8,"insets":{"l":null},"anchor":"safe","budget":{"w":2000,"h":50},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map, map 39.5x0.0 cells, status over pad_h
+   1629x147 touch {"padKey":46,"hand":"right","combatThumb":"L","cellAspect":1,"mapCell":"rows","gripLift":500,"avoidCutout":0,"insets":{"t":400},"anchor":"auto","budget":{"w":2000,"h":50}}: usable but not drawable: no map, map 80.0x0.0 cells
+   1971x311 touch {"padKey":52,"hand":"left","combatThumb":"R","cellAspect":null,"mapCell":"x","gripLift":80,"avoidCutout":0,"insets":{"t":400},"anchor":"safe","text":{"msgSize":"x"},"budget":{"w":null}}: usable but not drawable: no map, map 80.0x0.0 cells, messages over eq_wield
+   3707x535 touch {"padKey":46,"hand":"right","combatThumb":"L","cellAspect":0,"mapCell":"rows","gripLift":80,"avoidCutout":200,"insets":{"t":400},"anchor":"physical","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":null},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map, map 80.0x0.0 cells
+   235x199 touch {"padKey":null,"hand":"left","combatThumb":"R","cellAspect":null,"mapCell":"x","gripLift":0,"avoidCutout":8,"insets":{"l":47,"r":47},"anchor":"auto","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":2000,"h":50},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map, map 18.9x0.0 cells, eq_wield on m3
+   3124x173 mouse {"padKey":58,"hand":"left","combatThumb":"R","cellAspect":0.5625,"mapCell":"columns","gripLift":500,"avoidCutout":30,"insets":{"t":400},"anchor":"physical","text":{"msgSize":"x"},"budget":null}: usable but not drawable: map 80.0x0.0 cells
+   3216x152 mouse {"padKey":46,"hand":"left","combatThumb":"R","cellAspect":null,"mapCell":"rows","gripLift":20,"avoidCutout":200,"insets":{"t":400},"anchor":"auto","budget":null,"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map, map 80.0x0.0 cells
+   567x1475 touch {"padKey":null,"hand":"left","combatThumb":"L","cellAspect":1,"mapCell":"rows","gripLift":80,"avoidCutout":8,"insets":{"t":400},"anchor":"safe","budget":{"w":443,"h":443,"l":896},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: map 7.7x21.0 cells
+   -5x1185 touch {"padKey":null,"hand":"right","combatThumb":"R","cellAspect":0.5625,"mapCell":"rows","gripLift":20,"avoidCutout":200,"anchor":"physical","text":{"msgSize":"x"},"budget":{"w":2000,"h":50},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map, map 0.0x0.0 cells
+   2106x539 touch {"padKey":null,"hand":"right","combatThumb":"R","cellAspect":1,"mapCell":"x","gripLift":-10,"avoidCutout":30,"insets":{"t":400},"anchor":"auto","budget":{"w":null},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: map 80.0x4.0 cells
+   NaNx210 touch {"padKey":70,"hand":"left","combatThumb":"L","cellAspect":0.5625,"mapCell":"rows","gripLift":80,"avoidCutout":200,"insets":{"t":400},"anchor":"physical","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":2000,"h":50}}: usable but not drawable: no map, map 0.0x0.0 cells
+   3895x222 mouse {"padKey":null,"hand":"right","combatThumb":"L","cellAspect":1,"mapCell":"rows","gripLift":500,"avoidCutout":8,"insets":{"l":null},"anchor":"auto","text":{"msgSize":"x"},"budget":{"w":443,"h":443,"l":896}}: usable but not drawable: map 80.0x4.1 cells
+   3584x182 touch {"padKey":52,"hand":"right","combatThumb":"R","cellAspect":0.5625,"mapCell":"rows","gripLift":20,"avoidCutout":30,"anchor":"auto","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":null}: usable but not drawable: map 80.0x5.9 cells
+   2502x263 mouse {"padKey":58,"hand":"left","combatThumb":"R","cellAspect":0.5625,"mapCell":"x","gripLift":500,"avoidCutout":200,"insets":{"t":400},"anchor":"physical","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":null,"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: map 80.0x4.2 cells
+   1x1196 touch {"padKey":40,"hand":"left","combatThumb":"L","cellAspect":0,"mapCell":"rows","gripLift":-10,"avoidCutout":8,"insets":{"l":47,"r":47},"anchor":"physical","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":null,"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map, map 0.0x0.0 cells
+   293xundefined touch {"padKey":70,"hand":"right","combatThumb":"R","cellAspect":0.5625,"mapCell":"x","gripLift":-10,"avoidCutout":30,"anchor":"physical","budget":{"w":2000,"h":50},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map, map 42.2x0.0 cells
+   1149x524 touch {"padKey":70,"hand":"right","combatThumb":"R","cellAspect":0,"mapCell":"rows","gripLift":500,"avoidCutout":30,"insets":{"t":400},"anchor":"auto","budget":null}: usable but not drawable: no map, map 59.8x0.0 cells, messages over rest
+   1814x177 mouse {"padKey":40,"hand":"right","combatThumb":"R","cellAspect":null,"mapCell":"x","gripLift":-10,"avoidCutout":0,"insets":{"l":null},"anchor":"safe","budget":null}: usable but not drawable: map 80.0x0.4 cells
+   2344x400 touch {"padKey":52,"hand":"left","combatThumb":"R","cellAspect":1,"mapCell":"columns","gripLift":0,"avoidCutout":8,"insets":{"l":null},"anchor":"auto","text":{"msgFont":"screen","msgSize":1.4,"textScale":2},"budget":{"w":null},"msgRows":{"landscape":0,"portrait":9}}: usable but not drawable: no map, map 80.0x0.0 cells
+   ... 584 more (-v)
+sweep: 73470 screen layouts in 10 sections, 5451 issues

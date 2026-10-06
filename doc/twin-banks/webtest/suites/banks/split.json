@@ -1,0 +1,74 @@
+[
+ {
+  "label": "full",
+  "w": 443,
+  "h": 939,
+  "ui": "twin",
+  "budget": {
+   "w": 443,
+   "h": 443,
+   "l": 939
+  },
+  "fit": "full",
+  "pad": 58,
+  "padKeyDom": "80.00x80.00",
+  "stored": {
+   "w": 443,
+   "pw": 1
+  },
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/split-full-443x939.png",
+  "errors": []
+ },
+ {
+  "label": "split-half",
+  "w": 443,
+  "h": 460,
+  "ui": "classic",
+  "budget": null,
+  "fit": null,
+  "pad": null,
+  "padKeyDom": null,
+  "stored": {
+   "w": 443,
+   "pw": 1
+  },
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/split-split-half-443x460.png",
+  "errors": []
+ },
+ {
+  "label": "split-2of3",
+  "w": 443,
+  "h": 640,
+  "ui": "twin",
+  "budget": null,
+  "fit": "full",
+  "pad": 58,
+  "padKeyDom": "80.00x80.00",
+  "stored": {
+   "w": 443,
+   "pw": 1
+  },
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/split-split-2of3-443x640.png",
+  "errors": []
+ },
+ {
+  "label": "split-closed",
+  "w": 443,
+  "h": 939,
+  "ui": "twin",
+  "budget": {
+   "w": 443,
+   "h": 443,
+   "l": 939
+  },
+  "fit": "full",
+  "pad": 58,
+  "padKeyDom": "80.00x80.00",
+  "stored": {
+   "w": 443,
+   "pw": 1
+  },
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/split-split-closed-443x939.png",
+  "errors": []
+ }
+]

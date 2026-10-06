@@ -1,0 +1,11 @@
+--- a/win/web/layout.js@0e887f7
++++ b/layout.js
+@@ -158,7 +158,7 @@
+   avoidCutout: 0,      // Android: a side cutout's depth from the edge; only what the margin does not already clear counts
+   budget: null,        // web in a tab: { w: portrait width, h: landscape height, l: landscape width } seen
+   prevTier: null,      // the last tier, for hysteresis
+-  halo: 12,            // guard band round each bank (section 6); also the least gap from a band to a key
++  halo: 12.6,            // guard band round each bank (section 6); also the least gap from a band to a key
+   ring: 20,            // confirm ring inside the map next to a halo
+ };
+ 

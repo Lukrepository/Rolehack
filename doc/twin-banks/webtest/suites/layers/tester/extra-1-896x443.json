@@ -1,0 +1,231 @@
+{
+ "checks": [
+  {
+   "tag": "extra 1-896x443",
+   "name": "COMBAT held: its layer on the pad",
+   "pass": true,
+   "detail": "fight"
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "COMBAT layer: nothing over a key",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "COMBAT layer: still up 3 s after the lift",
+   "pass": true,
+   "detail": {
+    "fan": "fight",
+    "ms": 3589
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "COMBAT layer: closed after 4 s idle",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "COMBAT layer + map tap: closed, no travel",
+   "pass": true,
+   "detail": {
+    "fan": null,
+    "sent": ""
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "COMBAT chord → place: a command sent, layer closed",
+   "pass": true,
+   "detail": {
+    "sent": "Z",
+    "fan": null
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "turned: the sticky count layer is still up",
+   "pass": true,
+   "detail": {
+    "layer": {
+     "kind": "count",
+     "from": "rest",
+     "sticky": true,
+     "lit": null,
+     "place": null,
+     "act": "rest"
+    },
+    "pad": [
+     "×1",
+     "×5",
+     "×10",
+     "",
+     "×n",
+     "×20",
+     "",
+     "",
+     ""
+    ]
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "turned: its ↑ picks x5",
+   "pass": true,
+   "detail": {
+    "counts": {
+     ".": 5
+    },
+    "layer": null
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "real stairs (<): CONTEXT's first tap lights the stairs",
+   "pass": true,
+   "detail": {
+    "kind": "stairs",
+    "from": null,
+    "sticky": false,
+    "lit": null,
+    "place": 1,
+    "act": "ascend"
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "turned: the stairs' first tap is kept",
+   "pass": true,
+   "detail": {
+    "kind": "stairs",
+    "from": null,
+    "sticky": false,
+    "lit": null,
+    "place": 1,
+    "act": "ascend"
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "turned: CONTEXT's second tap goes (<)",
+   "pass": true,
+   "detail": "<"
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "HERE(CONTEXT): ↓ lit by its first tap",
+   "pass": true,
+   "detail": {
+    "kind": "here",
+    "from": "context",
+    "sticky": false,
+    "lit": 7,
+    "place": null,
+    "act": null
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "rebuilt: HERE(CONTEXT) still up",
+   "pass": true,
+   "detail": {
+    "kind": "here",
+    "from": "context",
+    "sticky": false,
+    "lit": null,
+    "place": null,
+    "act": null
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "rebuilt: ↓ still lit (its second tap would go)",
+   "pass": false,
+   "detail": {
+    "kind": "here",
+    "from": "context",
+    "sticky": false,
+    "lit": null,
+    "place": null,
+    "act": null
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "SACRIFICE held 450 ms: Pray (M-p)",
+   "pass": true,
+   "detail": "M-p"
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "SACRIFICE tap: offer (M-o)",
+   "pass": true,
+   "detail": "M-o"
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "slow stroke up: legend shown, ↑ node lit",
+   "pass": true,
+   "detail": {
+    "open": "flick",
+    "lit": [
+     true,
+     false
+    ]
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "stroke turned up-right: ↗ node lit",
+   "pass": true,
+   "detail": {
+    "open": "flick",
+    "lit": [
+     false,
+     true
+    ]
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "slow stroke up-right lifted: B sent, legend gone",
+   "pass": true,
+   "detail": "B"
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "PIN 2 with the core: f sent, the game asks",
+   "pass": true,
+   "detail": {
+    "sent": "f",
+    "msg": "You have no ammunition readied.",
+    "answering": false,
+    "modal": true
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "PIN 2 then a map tap then Esc: the hero stayed",
+   "pass": true,
+   "detail": {
+    "hero0": {
+     "x": 60,
+     "y": 4
+    },
+    "hero1": {
+     "x": 60,
+     "y": 4
+    }
+   }
+  },
+  {
+   "tag": "extra 1-896x443",
+   "name": "console clean",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

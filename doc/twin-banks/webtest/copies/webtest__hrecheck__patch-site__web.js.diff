@@ -1,0 +1,11 @@
+--- a/win/web/web.js@b32e17e
++++ b/web.js
+@@ -902,7 +902,7 @@
+       while (r < rows().length - 1 && n + lettersOf(all[r]) <= mark.letters) n += lettersOf(all[r++]);
+       scrollRow = Math.floor(r / m.rows) * m.rows;
+     }
+-    if (!moreShown && rows().length - scrollRow > m.rows) scrollRow = Math.floor((all.length - 1) / m.rows) * m.rows;
++    if (!moreShown && rows().length - scrollRow > m.rows) scrollRow = Math.max(0, all.length - m.rows);
+   }
+   scrollMark = { key, twin, row: scrollRow, letters: scrollRow ? rows().slice(0, scrollRow).reduce((a, q) => a + lettersOf(q), 0) : 0 };
+ }

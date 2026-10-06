@@ -1,0 +1,694 @@
+[
+ {
+  "name": "more-2.4375-default-1366x768",
+  "w": 1366,
+  "h": 768,
+  "dpr": 2.4375,
+  "variant": "default",
+  "R": 2,
+  "bandW": 919.890625,
+  "slot": 84.71875,
+  "ambiguous": 5,
+  "lone": 4,
+  "kinds": "1111121221123112211123",
+  "expected": {
+   "mores": [
+    {
+     "page": [
+      0,
+      1
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      2,
+      3
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      4
+     ],
+     "scroll": 0,
+     "why": "1 of 2 rows used, next needs 2 from there"
+    },
+    {
+     "page": [
+      5
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      6
+     ],
+     "scroll": 0,
+     "why": "1 of 2 rows used, next needs 2 from there"
+    },
+    {
+     "page": [
+      7
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 2 from there"
+    },
+    {
+     "page": [
+      8
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      9,
+      10
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 2 from there"
+    },
+    {
+     "page": [
+      11
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 3 from there"
+    },
+    {
+     "page": [
+      12
+     ],
+     "scroll": 0,
+     "why": "longer than the band"
+    },
+    {
+     "page": [
+      12,
+      13
+     ],
+     "scroll": 2,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      14
+     ],
+     "scroll": 0,
+     "why": "1 of 2 rows used, next needs 2 from there"
+    },
+    {
+     "page": [
+      15
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 2 from there"
+    },
+    {
+     "page": [
+      16
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      17,
+      18
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      19
+     ],
+     "scroll": 0,
+     "why": "1 of 2 rows used, next needs 3 from there"
+    },
+    {
+     "page": [
+      20
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 3 from there"
+    },
+    {
+     "page": [
+      21
+     ],
+     "scroll": 0,
+     "why": "longer than the band"
+    }
+   ],
+   "last": {
+    "page": [
+     21
+    ],
+    "scroll": 2
+   }
+  },
+  "seen": [
+   {
+    "page": [
+     0,
+     1
+    ],
+    "scroll": 0,
+    "rows": [
+     "m00 short note",
+     "m01 short note"
+    ]
+   },
+   {
+    "page": [
+     2,
+     3
+    ],
+    "scroll": 0,
+    "rows": [
+     "m02 short note",
+     "m03 short note"
+    ]
+   },
+   {
+    "page": [
+     4
+    ],
+    "scroll": 0,
+    "rows": [
+     "m04 short note"
+    ]
+   },
+   {
+    "page": [
+     5
+    ],
+    "scroll": 0,
+    "rows": [
+     "m05 crossbow and misses you while a newt bites the jackal near the fountain where coins glitter faintly the",
+     "gnome lord swings his crossbow and misses you while a newt bites the jackal near the fountain"
+    ]
+   },
+   {
+    "page": [
+     6
+    ],
+    "scroll": 0,
+    "rows": [
+     "m06 short note"
+    ]
+   },
+   {
+    "page": [
+     7
+    ],
+    "scroll": 0,
+    "rows": [
+     "m07 misses you while a newt bites the jackal near the fountain where coins glitter faintly the gnome lord",
+     "swings his crossbow and misses you while a newt bites the jackal near the fountain where coins"
+    ]
+   },
+   {
+    "page": [
+     8
+    ],
+    "scroll": 0,
+    "rows": [
+     "m08 you while a newt bites the jackal near the fountain where coins glitter faintly the gnome lord swings his",
+     "crossbow and misses you while a newt bites the jackal near the fountain where coins glitter faintly"
+    ]
+   },
+   {
+    "page": [
+     9,
+     10
+    ],
+    "scroll": 0,
+    "rows": [
+     "m09 short note",
+     "m10 short note"
+    ]
+   },
+   {
+    "page": [
+     11
+    ],
+    "scroll": 0,
+    "rows": [
+     "m11 newt bites the jackal near the fountain where coins glitter faintly the gnome lord swings his crossbow",
+     "and misses you while a newt bites the jackal near the fountain where coins glitter faintly the gnome"
+    ]
+   },
+   {
+    "page": [
+     12
+    ],
+    "scroll": 0,
+    "rows": [
+     "m12 bites the jackal near the fountain where coins glitter faintly the gnome lord swings his crossbow and",
+     "misses you while a newt bites the jackal near the fountain where coins glitter faintly the gnome lord"
+    ]
+   },
+   {
+    "page": [
+     12,
+     13
+    ],
+    "scroll": 2,
+    "rows": [
+     "swings his crossbow and misses",
+     "m13 short note"
+    ]
+   },
+   {
+    "page": [
+     14
+    ],
+    "scroll": 0,
+    "rows": [
+     "m14 short note"
+    ]
+   },
+   {
+    "page": [
+     15
+    ],
+    "scroll": 0,
+    "rows": [
+     "m15 near the fountain where coins glitter faintly the gnome lord swings his crossbow and misses you while a",
+     "newt bites the jackal near the fountain where coins glitter faintly the gnome lord swings his"
+    ]
+   },
+   {
+    "page": [
+     16
+    ],
+    "scroll": 0,
+    "rows": [
+     "m16 the fountain where coins glitter faintly the gnome lord swings his crossbow and misses you while a newt",
+     "bites the jackal near the fountain where coins glitter faintly the gnome lord swings his crossbow"
+    ]
+   },
+   {
+    "page": [
+     17,
+     18
+    ],
+    "scroll": 0,
+    "rows": [
+     "m17 short note",
+     "m18 short note"
+    ]
+   },
+   {
+    "page": [
+     19
+    ],
+    "scroll": 0,
+    "rows": [
+     "m19 short note"
+    ]
+   },
+   {
+    "page": [
+     20
+    ],
+    "scroll": 0,
+    "rows": [
+     "m20 glitter faintly the gnome lord swings his crossbow and misses you while a newt bites the jackal near the",
+     "fountain where coins glitter faintly the gnome lord swings his crossbow and misses you while a"
+    ]
+   },
+   {
+    "page": [
+     21
+    ],
+    "scroll": 0,
+    "rows": [
+     "m21 faintly the gnome lord swings his crossbow and misses you while a newt bites the jackal near the",
+     "fountain where coins glitter faintly the gnome lord swings his crossbow and misses you while a"
+    ]
+   },
+   {
+    "end": true,
+    "page": [
+     21
+    ],
+    "rows": 1
+   }
+  ],
+  "bad": [],
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/more-2.4375-default-1366x768.png"
+ },
+ {
+  "name": "more-2.4375-rows-1366x768",
+  "w": 1366,
+  "h": 768,
+  "dpr": 2.4375,
+  "variant": "rows",
+  "R": 2,
+  "bandW": 919.890625,
+  "slot": 84.71875,
+  "ambiguous": 5,
+  "lone": 4,
+  "kinds": "1111121221123112211123",
+  "expected": {
+   "mores": [
+    {
+     "page": [
+      0,
+      1
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      2,
+      3
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      4
+     ],
+     "scroll": 0,
+     "why": "1 of 2 rows used, next needs 2 from there"
+    },
+    {
+     "page": [
+      5
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      6
+     ],
+     "scroll": 0,
+     "why": "1 of 2 rows used, next needs 2 from there"
+    },
+    {
+     "page": [
+      7
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 2 from there"
+    },
+    {
+     "page": [
+      8
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      9,
+      10
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 2 from there"
+    },
+    {
+     "page": [
+      11
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 3 from there"
+    },
+    {
+     "page": [
+      12
+     ],
+     "scroll": 0,
+     "why": "longer than the band"
+    },
+    {
+     "page": [
+      12,
+      13
+     ],
+     "scroll": 2,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      14
+     ],
+     "scroll": 0,
+     "why": "1 of 2 rows used, next needs 2 from there"
+    },
+    {
+     "page": [
+      15
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 2 from there"
+    },
+    {
+     "page": [
+      16
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      17,
+      18
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 1 from there"
+    },
+    {
+     "page": [
+      19
+     ],
+     "scroll": 0,
+     "why": "1 of 2 rows used, next needs 3 from there"
+    },
+    {
+     "page": [
+      20
+     ],
+     "scroll": 0,
+     "why": "2 of 2 rows used, next needs 3 from there"
+    },
+    {
+     "page": [
+      21
+     ],
+     "scroll": 0,
+     "why": "longer than the band"
+    }
+   ],
+   "last": {
+    "page": [
+     21
+    ],
+    "scroll": 2
+   }
+  },
+  "seen": [
+   {
+    "page": [
+     0,
+     1
+    ],
+    "scroll": 0,
+    "rows": [
+     "m00 short note",
+     "m01 short note"
+    ]
+   },
+   {
+    "page": [
+     2,
+     3
+    ],
+    "scroll": 0,
+    "rows": [
+     "m02 short note",
+     "m03 short note"
+    ]
+   },
+   {
+    "page": [
+     4
+    ],
+    "scroll": 0,
+    "rows": [
+     "m04 short note"
+    ]
+   },
+   {
+    "page": [
+     5
+    ],
+    "scroll": 0,
+    "rows": [
+     "m05 crossbow and misses you while a newt bites the jackal near the fountain where coins glitter faintly the",
+     "gnome lord swings his crossbow and misses you while a newt bites the jackal near the fountain"
+    ]
+   },
+   {
+    "page": [
+     6
+    ],
+    "scroll": 0,
+    "rows": [
+     "m06 short note"
+    ]
+   },
+   {
+    "page": [
+     7
+    ],
+    "scroll": 0,
+    "rows": [
+     "m07 misses you while a newt bites the jackal near the fountain where coins glitter faintly the gnome lord",
+     "swings his crossbow and misses you while a newt bites the jackal near the fountain where coins"
+    ]
+   },
+   {
+    "page": [
+     8
+    ],
+    "scroll": 0,
+    "rows": [
+     "m08 you while a newt bites the jackal near the fountain where coins glitter faintly the gnome lord swings his",
+     "crossbow and misses you while a newt bites the jackal near the fountain where coins glitter faintly"
+    ]
+   },
+   {
+    "page": [
+     9,
+     10
+    ],
+    "scroll": 0,
+    "rows": [
+     "m09 short note",
+     "m10 short note"
+    ]
+   },
+   {
+    "page": [
+     11
+    ],
+    "scroll": 0,
+    "rows": [
+     "m11 newt bites the jackal near the fountain where coins glitter faintly the gnome lord swings his crossbow",
+     "and misses you while a newt bites the jackal near the fountain where coins glitter faintly the gnome"
+    ]
+   },
+   {
+    "page": [
+     12
+    ],
+    "scroll": 0,
+    "rows": [
+     "m12 bites the jackal near the fountain where coins glitter faintly the gnome lord swings his crossbow and",
+     "misses you while a newt bites the jackal near the fountain where coins glitter faintly the gnome lord"
+    ]
+   },
+   {
+    "page": [
+     12,
+     13
+    ],
+    "scroll": 2,
+    "rows": [
+     "swings his crossbow and misses",
+     "m13 short note"
+    ]
+   },
+   {
+    "page": [
+     14
+    ],
+    "scroll": 0,
+    "rows": [
+     "m14 short note"
+    ]
+   },
+   {
+    "page": [
+     15
+    ],
+    "scroll": 0,
+    "rows": [
+     "m15 near the fountain where coins glitter faintly the gnome lord swings his crossbow and misses you while a",
+     "newt bites the jackal near the fountain where coins glitter faintly the gnome lord swings his"
+    ]
+   },
+   {
+    "page": [
+     16
+    ],
+    "scroll": 0,
+    "rows": [
+     "m16 the fountain where coins glitter faintly the gnome lord swings his crossbow and misses you while a newt",
+     "bites the jackal near the fountain where coins glitter faintly the gnome lord swings his crossbow"
+    ]
+   },
+   {
+    "page": [
+     17,
+     18
+    ],
+    "scroll": 0,
+    "rows": [
+     "m17 short note",
+     "m18 short note"
+    ]
+   },
+   {
+    "page": [
+     19
+    ],
+    "scroll": 0,
+    "rows": [
+     "m19 short note"
+    ]
+   },
+   {
+    "page": [
+     20
+    ],
+    "scroll": 0,
+    "rows": [
+     "m20 glitter faintly the gnome lord swings his crossbow and misses you while a newt bites the jackal near the",
+     "fountain where coins glitter faintly the gnome lord swings his crossbow and misses you while a"
+    ]
+   },
+   {
+    "page": [
+     21
+    ],
+    "scroll": 0,
+    "rows": [
+     "m21 faintly the gnome lord swings his crossbow and misses you while a newt bites the jackal near the",
+     "fountain where coins glitter faintly the gnome lord swings his crossbow and misses you while a"
+    ]
+   },
+   {
+    "end": true,
+    "page": [
+     21
+    ],
+    "rows": 1
+   }
+  ],
+  "bad": [],
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/more-2.4375-rows-1366x768.png"
+ }
+]

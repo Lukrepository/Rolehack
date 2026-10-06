@@ -1,0 +1,56 @@
+--- a/win/web/test/layout.test.mjs@0e887f7
++++ b/test/layout.test.mjs
+@@ -5,22 +5,20 @@
+ //
+ //   node --test win/web/test/
+ //
+-// What the page leans on:
++// Four claims the page leans on:
+ //  1. layout() still lays out the design's golden screens as the design did:
+ //     every control, band, map area, glass, panel and pop-up of the 15 scored
+ //     screens and the six variants (fixtures/, copied from the design's
+ //     spec.json and variants/) within half a dp;
+ //  2. it never throws, over a sweep of windows, pointers and settings, nonsense
+-//     included; whatever it calls usable has no key off screen, on a key, on
+-//     the map or under a band; and only small or near-square windows come back
+-//     unusable (the page shows classic there);
++//     included, and whatever it calls usable has no key off screen, on a key,
++//     on the map or under a band;
+ //  3. parity: a window and the same window turned get the same banks -- every
+ //     key at the same offsets from its own bottom corner -- since nothing in a
+ //     bank may depend on the orientation (the design's section 1);
+ //  4. the left-handed layout is the right-handed one mirrored: every key the
+ //     same offsets from the other corner, the pad's columns kept in their
+-//     screen order (the directions stay true to the map);
+-//  5. layout.js stays a plain module the page imports as it is.
++//     screen order (the directions stay true to the map).
+ // README.md says how to refresh the fixtures when the design changes.
+ 
+ import { test } from 'node:test';
+@@ -36,7 +34,7 @@
+ // are laid out with the pair's remembered budget (portrait width, landscape
+ // height and width), as the page does once the device has been seen both
+ // ways (section 12); each variant is the rule under one changed setting.
+-// These must match layout-cli.mjs's SCREENS, PAIRS and VARIANTS.
++// These must match layout-cli.mjs's PAIRS and VARIANTS.
+ const PAIRS = [['896x443', '443x939'], ['640x360', '360x640'], ['915x412', '412x915'], ['844x390', '390x844'], ['1024x768', '768x1024']];
+ const VARIANTS = {
+   'spec.json': {},
+@@ -103,8 +101,6 @@
+   return out;
+ }
+ 
+-// ---- 1. the golden screens
+-
+ test('the fixtures are the design\'s screens and variants', () => {
+   const files = fs.readdirSync(FIXTURES).filter((f) => f.endsWith('.json')).sort();
+   assert.deepEqual(files, Object.keys(VARIANTS).sort(), 'a fixture with no settings here, or settings with no fixture');
+@@ -303,7 +299,7 @@
+   assert.deepEqual(out, []);
+ });
+ 
+-// ---- 5. the page imports the file as it is
++// ---- the page imports the file as it is
+ 
+ test('layout.js is a plain module: no imports, no DOM, no node', () => {
+   const src = fs.readFileSync(new URL('../layout.js', import.meta.url), 'utf8').replace(/\/\/.*$/gm, '');

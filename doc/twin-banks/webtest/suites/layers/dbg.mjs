@@ -1,0 +1,10 @@
+import { launch, newCtx, sleep } from './common.mjs';
+const b = await launch();
+const ctx = await newCtx(b, { w: 896, h: 443, dpr: 1 });
+const p = await ctx.newPage();
+p.on('console', (m) => console.log('console', m.type(), m.text()));
+p.on('pageerror', (e) => console.log('pageerror', e.message, e.stack));
+await p.goto(`${ctx.origin}/index.html`);
+await sleep(8000);
+console.log(await p.evaluate(() => ({ bt: !!globalThis.__bt, boot: !!document.getElementById('boot') })));
+await b.close();

@@ -1,0 +1,73 @@
+Web port: a slow swipe of REST no longer counts as the old Pray hold
+
+The re-check of the layers stage (2026-10-03) found one more way to set
+off the ghost deck's Pray-habit guard.  In landscape REST sits where
+classic's SACRIFICE was.  REST's slot has a second gesture: the swipe
+up that shows Long rest (Lucas, 2026-10-02) and the swipe down that
+puts it away.  The strip follows the finger, so a deliberate swipe easily
+lasts 380 ms from touch to lift.  Any such swipe flashed 'SACRIFICE ->',
+swallowed the next step and marked the ghost deck's session caught,
+which keeps the deck from retiring.  The last fix let only REST's count
+hold off, because only the count layer marked a hold as used.
+
+A hold that did something with its time is no habit.  Each touch on the
+old spot now carries its own mark, holdMeant(), and each gesture marks
+it for itself:
+- the count layer, when a count is picked or the layer is left up;
+- REST's strip, once it slides;
+- a key's own hold that fired where the key reaches into the spot's
+  8 dp: M1's macro editor, a hub's layer.  Before this, M1's editor at
+  844x390 came up under a SACRIFICE flash, and the y after it was eaten.
+
+The mark used to be one slot for the whole page.  Now it belongs to the
+hold, so the other thumb's hold meanwhile marks nothing.  GAME's and
+WORLD's lift is their tap, so a 380 ms press of them sets nothing.  GAME
+is the whole spot in portrait and at 640x360, and up to a third of it on
+a phone in landscape.  As designed, the arrow there still shows over the
+drawer the tap opened, and the drawer's backdrop takes the y.
+
+- overlay.js: prayHabit() keeps a record per touch, { id, at, meant }.
+  holdMeant(id) marks it, and prayLift() keeps it until the key's own
+  lift has run.  holdUsed is gone.  bindScrollWell() marks the touch
+  once the strip drags.  countHold()'s release marks it as before.
+  bindHold() marks it when its hold fires, unless a held layer's
+  release decides.  The comment over prayHabit() says what counts.
+
+Checked in the browser (Playwright, Chromium, real CDP touches, no
+console errors):
+- The re-check's own probe (live.mjs swipe, pray, neigh) at 896x443 and
+  844x390, density 1 and 2.4375.  Swipes of 367-687 ms, touch to lift,
+  up and down: no flash, the next pad tap walks, nothing is caught.  A
+  plain 450 ms REST hold that sets nothing still flashes and swallows.
+  M1 held inside the spot opens its editor with no flash.  WORLD and
+  GAME open their drawers under the flash, as designed.
+- The stage's habits suite has new checks, landscape only:
+  - a 450 ms swipe of REST up, then down, then a pad tap: it walks,
+    with no flash and no catch;
+  - M1 held where its keycap reaches into the spot.
+  844x390 is now one of its windows.  On 3b343ee these checks fail
+  10 times; here they pass.
+- A two-thumb probe: the left thumb swipes REST while the right thumb's
+  hold opens COMBAT's layer, lifting in either order.  No flash.  On
+  3b343ee: a flash and an armed habit.
+- Every suite again on the working tree, at density 1 and 2.4375
+  where a suite has both:
+  - the stage's: hitgrid, guard (138), layers (356), habits (119),
+    classic and desk all pass;
+  - the tester's: rects 476/476, layers 392/392, states 166/166,
+    extra 65/65, pops 465/465 and classic 40/40, plus the tap sweeps
+    at r0 and r16 (4/4 each);
+  - `node --test win/web/test/`: 141/141;
+  - the earlier stages' suites and the reviewers' probes (header,
+    banks, fix3, rev, review2, tapdrift, twin, hadv, hdr-adv, hfix2,
+    rvlayers, lrev, fin, recheck, header-review): the same results
+    as the re-check's run on 3b343ee.
+  Known noise and old failures:
+  - qmore fails once at each density, as it did on 27d59a9.
+  - Classic screenshots sometimes differ in one raster tile
+    (x 5..254, y 255 and below). Re-runs of the same windows match.
+  - tapdrift's travel and the tester's edges at 2.4375 once missed
+    under a load of 12. Both pass when run alone.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Dgv3E1gUjAwvSmojZmYB4f

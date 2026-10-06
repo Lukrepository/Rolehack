@@ -1,0 +1,83 @@
+[
+ {
+  "label": "classic landscape",
+  "pass": true,
+  "log": [
+   "session 0: T 1 -> 145; live false; stored {\"on\":true,\"clean\":0,\"session\":{\"turns\":0,\"caught\":false}}",
+   "  reloaded: clean 0 (expected 0), on true",
+   "session 1: T 145 -> 303; live false; stored {\"on\":true,\"clean\":0,\"session\":{\"turns\":0,\"caught\":false}}",
+   "  reloaded: clean 0 (expected 0), on true",
+   "session 2: T 330 -> 541; live false; stored {\"on\":true,\"clean\":0,\"session\":{\"turns\":0,\"caught\":false}}",
+   "  reloaded: clean 0 (expected 0), on true",
+   "session 3: T 575 -> 717; live false; stored {\"on\":true,\"clean\":0,\"session\":{\"turns\":0,\"caught\":false}}",
+   "  reloaded: clean 0 (expected 0), on true"
+  ],
+  "after": {
+   "ui": "classic",
+   "gd": {
+    "on": true,
+    "clean": 0,
+    "session": {
+     "turns": 0,
+     "caught": false
+    }
+   },
+   "on": true
+  },
+  "errors": []
+ },
+ {
+  "label": "twin portrait",
+  "pass": true,
+  "log": [
+   "session 0: T 1 -> 147; live false; stored {\"on\":true,\"clean\":0,\"session\":{\"turns\":0,\"caught\":false}}",
+   "  reloaded: clean 0 (expected 0), on true",
+   "session 1: T 164 -> 311; live false; stored {\"on\":true,\"clean\":0,\"session\":{\"turns\":0,\"caught\":false}}",
+   "  reloaded: clean 0 (expected 0), on true",
+   "session 2: T 330 -> 478; live false; stored {\"on\":true,\"clean\":0,\"session\":{\"turns\":0,\"caught\":false}}",
+   "  reloaded: clean 0 (expected 0), on true",
+   "session 3: T 507 -> 701; live false; stored {\"on\":true,\"clean\":0,\"session\":{\"turns\":0,\"caught\":false}}",
+   "  reloaded: clean 0 (expected 0), on true"
+  ],
+  "after": {
+   "ui": "twin",
+   "gd": {
+    "on": true,
+    "clean": 0,
+    "session": {
+     "turns": 0,
+     "caught": false
+    }
+   },
+   "on": true
+  },
+  "errors": []
+ },
+ {
+  "label": "twin landscape",
+  "pass": true,
+  "log": [
+   "session 0: T 1 -> 143; live true; stored {\"on\":true,\"clean\":0,\"session\":{\"caught\":false,\"turns\":140}}",
+   "  reloaded: clean 1 (expected 1), on true",
+   "session 1: T 170 -> 313; live true; stored {\"on\":true,\"clean\":1,\"session\":{\"caught\":false,\"turns\":140}}",
+   "  reloaded: clean 2 (expected 2), on true",
+   "session 2: T 253 -> 434; live true; stored {\"on\":true,\"clean\":2,\"session\":{\"caught\":false,\"turns\":180}}",
+   "  reloaded: clean 3 (expected 3), on false",
+   "session 3: T 460 -> 593; live false; stored {\"on\":false,\"clean\":3,\"session\":{\"turns\":0,\"caught\":false}}",
+   "  reloaded: clean 3 (expected 3), on false"
+  ],
+  "after": {
+   "ui": "twin",
+   "gd": {
+    "on": false,
+    "clean": 3,
+    "session": {
+     "turns": 0,
+     "caught": false
+    }
+   },
+   "on": false
+  },
+  "errors": []
+ }
+]

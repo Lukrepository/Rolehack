@@ -1,0 +1,341 @@
+--- a/win/web/overlay.js@63ffc2f
++++ b/overlay.js
+@@ -34,8 +34,7 @@
+ import * as C from './commands.js';
+ import * as P from './prefs.js';
+ import * as FB from './feedback.js';
+-import { textMetrics } from './layout.js';
+-import { budgetedLayout } from './viewer.js';
++import { layout, textMetrics } from './layout.js';
+ 
+ // ---- geometry, design dp (RhCase, RhOverlay, RhScreen)
+ const MARGIN = 8, WELL_PAD = 10, DECK_H = 66, DECK_KEY = 52, HOOD_TOP = 14, HOOD_SIDE = 16,
+@@ -212,14 +211,6 @@
+ 
+ const fitQueue = new Set();
+ let fitScheduled = false;
+-// Twin banks fit the skirt's hold hint to the key as well: the right bank's
+-// columns narrow to 44.7 dp on a 360 dp phone, where "TAP TO FILL" read "AP
+-// TO FIL" (the review, 2026-10-02).  An overflowing hint gives way to its
+-// last word, then shrinks, down to 6 px.  Classic's skirts are left as they are.
+-let skirtFit = false;
+-const SKIRT_SHORT = { 'tap to fill': 'fill', 'hold to fill': 'fill', 'pick a count': 'count', 'pick a place': 'place',
+-  'pick a point': 'point', 'pick a cell': 'cell', 'tap to pick': 'pick', 'pick one': 'pick', 'tap = all': 'all',
+-  'set ×n': '×n', '3 places': '3' };
+ function scheduleFit(k) {
+   fitQueue.add(k);
+   if (fitScheduled) return;
+@@ -327,8 +318,6 @@
+       else if (hold === 'hold to edit') hold = 'edit';
+     }
+     this.fr.textContent = hold;
+-    this.holdText = hold;
+-    if (skirtFit) scheduleFit(this);
+     return this;
+   }
+ 
+@@ -359,9 +348,7 @@
+ 
+   // RhFace.fitLabel: shrink the legend until it fits the face
+   fit() {
+-    if (!this.el.isConnected) return;
+-    if (skirtFit) this.fitSkirt();
+-    if (ARROW_DEG[this.text] !== undefined) return;
++    if (!this.el.isConnected || ARROW_DEG[this.text] !== undefined) return;
+     let size = this.size;
+     this.lg.style.fontSize = `${size}px`;
+     const avail = this.tp.clientWidth - 4, availH = this.tp.clientHeight - 2;
+@@ -372,22 +359,6 @@
+       this.lg.style.fontSize = `${size}px`;
+     }
+   }
+-
+-  // the skirt's hold hint, in twin banks (skirtFit)
+-  fitSkirt() {
+-    const fr = this.fr, t = this.holdText || '';
+-    if (this.frSize === undefined) this.frSize = parseFloat(fr.style.fontSize) || 0;   // INVENTORY's 6.5
+-    fr.style.fontSize = this.frSize ? `${this.frSize}px` : '';
+-    fr.textContent = t;
+-    if (!t || fr.clientWidth <= 0) return;   // hidden: fitted when shown
+-    const over = () => fr.scrollWidth > fr.clientWidth + 0.5;
+-    if (over() && SKIRT_SHORT[t]) fr.textContent = SKIRT_SHORT[t];
+-    let size = parseFloat(getComputedStyle(fr).fontSize) || 7.5;
+-    while (size > 6 && over()) {
+-      size = Math.max(6, size * 0.92);
+-      fr.style.fontSize = `${size}px`;
+-    }
+-  }
+ }
+ 
+ // ______________________________________________________________________________
+@@ -415,46 +386,11 @@
+       if (name === 'msgFont' || name === 'msgSize') this.rebuild();
+     });
+     if (document.fonts) document.fonts.ready.then(() => this.rebuild());
+-    this.guardClicks();
+     this.watchTwin();
+     this.startGhostSession();
+     this.rebuild();
+   }
+ 
+-  // A key acts on its pointerup, and the browser's click for the same touch
+-  // comes after it, on whatever is under the finger by then: a window the key
+-  // has just opened.  Wherever a key and a window's control share a place,
+-  // the click presses the control: with the twin banks layout's keys,
+-  // INVENTORY's list closed as it opened (a long inventory's ESC lies under
+-  // the key) and MENU's tap turned the case back on (the Settings form's Case
+-  // row lies under it; the review, 2026-10-02).  So a click that ends a touch
+-  // begun on a key and lands outside the keys is dropped, in every layout: it
+-  // can only press something the finger never went down on.  A click from
+-  // the keyboard has no pointer and passes.
+-  guardClicks() {
+-    const fromKey = new Map();   // pointerId -> when that touch, begun on a key, lifted (0: still down)
+-    let last = null;
+-    window.addEventListener('pointerdown', (e) => {
+-      if (this.keysEl.contains(e.target)) fromKey.set(e.pointerId, 0);
+-      else fromKey.delete(e.pointerId);
+-    }, true);
+-    window.addEventListener('pointerup', (e) => {
+-      if (fromKey.has(e.pointerId)) { fromKey.set(e.pointerId, performance.now()); last = e.pointerId; }
+-    }, true);
+-    window.addEventListener('click', (e) => {
+-      // the click names its pointer (Chrome); a browser whose click does not
+-      // takes the last touch that lifted
+-      const named = e.pointerType && typeof e.pointerId === 'number' && e.pointerId >= 0;
+-      if (!named && !e.detail) return;
+-      const id = named ? e.pointerId : last, up = fromKey.get(id);
+-      if (up === undefined) return;
+-      fromKey.delete(id);
+-      if (!up || performance.now() - up > 1000 || this.keysEl.contains(e.target)) return;
+-      e.preventDefault();
+-      e.stopImmediatePropagation();
+-    }, true);
+-  }
+-
+   // ---- state from the game
+   setHere(flags, mon) {
+     if (flags === this.here && mon === this.hereMon) return;
+@@ -489,7 +425,6 @@
+   // The classic board: the case and its scale, everything rebuilt from nothing.
+   rebuildClassic(W, H) {
+     this.twin = null;
+-    skirtFit = false;
+     this.padCell = clamp(Number(P.get('padCell')) || 58, 40, 72);
+     this.padBox = 3 * this.padCell + 2 * PAD_GAP;
+     this.caseless = !P.get('case');
+@@ -630,20 +565,29 @@
+     return coarse || navigator.maxTouchPoints > 0 ? 'touch' : 'mouse';
+   }
+ 
+-  // The budget: what this display mode has shown in each orientation of the
+-  // whole device -- the portrait width, the landscape height and width, the
+-  // landscape side insets -- kept in this browser (prefs budgets), so a
+-  // phone's two orientations get the same banks and the same map cell in a
+-  // tab, where the toolbar makes the window uneven.  viewer.js decides which
+-  // windows use it and teach it, and when the screen may stand in for the
+-  // orientation not seen yet; the layout comes back with it, and what the
+-  // window taught is stored only once that layout is usable.
+-  twinLayout(W, H, pointer, settings, insets, mode) {
++  // The budget: the portrait width, the landscape height and width and the
++  // landscape side insets this display mode has shown, kept in this browser
++  // (prefs budgets), so a phone's two orientations get the same banks and the
++  // same map cell in a tab, where the toolbar makes the window uneven.  The
++  // orientation not seen yet is estimated from the screen: first seen in
++  // portrait, the landscape height is the short side less the bars the
++  // portrait window shows (screen height less its height), the landscape
++  // width the long side; first seen in landscape, the portrait width is the
++  // short side.  The first turn corrects the estimate, once; after that both
++  // are what the device showed.  layout() lays out without it a window
++  // smaller than it promises (a split screen, a toolbar come back).
++  twinBudget(W, H, ins, mode) {
+     const all = P.get('budgets') || {};
+-    const scr = { w: Number(screen.width) || W, h: Number(screen.height) || H };
+-    const out = budgetedLayout(W, H, pointer, settings, scr, insets, all[mode]);
+-    if (out.learn) P.set('budgets', { ...all, [mode]: out.learn });
+-    return out;
++    const b = { ...(all[mode] || {}) };
++    if (H > W) { b.w = W; b.pw = 1; }
++    else { b.h = H; b.l = W; b.sl = ins.l; b.sr = ins.r; b.lh = 1; }
++    const sw = Number(screen.width) || W, sh = Number(screen.height) || H;
++    const short = Math.min(sw, sh), long = Math.max(sw, sh);
++    if (!b.pw) b.w = short;
++    if (!b.lh) { b.h = Math.max(1, short - Math.max(0, long - H)); b.l = long; }
++    const was = all[mode] || {};
++    if (['w', 'h', 'l', 'sl', 'sr', 'pw', 'lh'].some((k) => b[k] !== was[k])) P.set('budgets', { ...all, [mode]: b });
++    return { budget: { w: b.w, h: b.h, l: b.l }, sideInsets: b.lh ? { l: b.sl || 0, r: b.sr || 0 } : null };
+   }
+ 
+   rebuildTwin() {
+@@ -661,14 +605,14 @@
+     const text = textMetrics({ msgFont: P.get('msgFont') === 'screen' ? 'screen' : 'atkinson',
+       msgSize: Number(P.get('msgSize')) || 1, textScale: osTextScale(), xHeight: MSG_X });
+     const statusH = { hidden: 0, compact: STATUS_BAND - LINE }[P.get('statusLines')] ?? STATUS_BAND;
+-    const base = {
+-      padKey, insets, msgRowH: text.msgRowH, statusH,
++    const settings = {
++      padKey, insets, ...this.twinBudget(W, H, insets, mode), msgRowH: text.msgRowH, statusH,
+       prevTier: this.twinTier || null,
+       // the bands stay stacked in #glass, messages over the status, for now
+       header: 'stacked',
+     };
+-    const { r, budget, sideInsets, used } = this.twinLayout(W, H, pointer, base, insets, mode);
+-    const settings = { ...base, budget, sideInsets };
++    let r = null;
++    try { r = layout(W, H, pointer, settings); } catch (e) { r = null; }
+     if (!r || !r.spec || !r.usable) {
+       // No room for twin banks and a map (a near-square split screen): classic
+       // for this window, the setting kept; twin banks come back with the room.
+@@ -682,13 +626,12 @@
+     }
+     this.twinFallback = null;
+     root.ui = 'twin';
+-    skirtFit = true;
+     const S = r.spec;
+     // Control ids are stable: a rebuild with the same controls keeps what is
+     // armed, open or being assigned; only a control gone resets it
+     const sig = S.controls.map((c) => c.id).sort().join(' ');
+     const snap = this.twin && sig === this.twinSig ? this.snapshot() : null;
+-    this.twin = { spec: S, info: r.info, W, H, pointer, mode, settings, budget: used, reason: r.reason,
++    this.twin = { spec: S, info: r.info, W, H, pointer, mode, settings, reason: r.reason,
+       ctl: new Map(S.controls.map((c) => [c.id, c])), keys: new Map() };
+     this.twinSig = sig;
+     this.twinTier = r.info.tier;
+@@ -831,34 +774,25 @@
+   // on the same cell within 2 s walks.  A preview left unconfirmed is a
+   // catch: the player meant the old key.  A session starts with the page or
+   // a new game, ends after 30 minutes without input, and counts once 100
+-  // turns are played in it while the deck could act -- twin banks in
+-  // landscape, the deck on: turns played in classic or in portrait, where no
+-  // tap can be caught, count for nothing, or a player who kept classic for a
+-  // while, or began in portrait, would find the deck retired before ever
+-  // meeting it (the review, 2026-10-02).  Three sessions that count in a row
+-  // with no catch retire the deck, and Settings brings it back.  A player who
+-  // taps to travel is never held back by it: a confirmed preview counts for
+-  // nothing.
++  // turns are played in it; three that count in a row with no catch retire
++  // the deck, and Settings brings it back.  A player who taps to travel is
++  // never held back by it: a confirmed preview counts for nothing.
+   ghostState() { return { on: true, clean: 0, session: null, ...(P.get('ghostDeck') || {}) }; }
+   ghostOn() { return this.ghostState().on !== false; }
+   setGhostOn(on) { P.set('ghostDeck', { ...this.ghostState(), on, clean: 0 }); }
+-  // whether a tap could be caught now: what a session's turns count
+-  ghostLive() { return !!(this.twin && !this.portrait && this.ghostSpots && this.ghostSpots.length && this.ghostOn()); }
+ 
+   // the session before is counted, and a new one begins
+   nextGhostSession(g) {
+-    const was = g.session && { ...g.session, turns: Math.max(g.session.turns || 0, this.liveTurns || 0) };
+-    this.liveTurns = 0;
++    const was = g.session;
+     if (was && was.turns >= SESSION_TURNS) {
+       g.clean = was.caught ? 0 : (g.clean || 0) + 1;
+       if (g.clean >= GHOST_SESSIONS) g.on = false;
+     }
+-    g.session = { turns: 0, caught: false };
++    g.session = { t0: null, turns: 0, caught: false };
+     return g;
+   }
+   startGhostSession() {
+     this.lastInput = Date.now();
+-    this.lastTurn = null;
+     P.set('ghostDeck', this.nextGhostSession(this.ghostState()));
+   }
+   noteInput() {
+@@ -866,22 +800,18 @@
+     if (now - (this.lastInput || now) > SESSION_IDLE_MS) P.set('ghostDeck', this.nextGhostSession(this.ghostState()));
+     this.lastInput = now;
+   }
+-  // The game's turn counter (web.js, from the status line).  The turns since
+-  // the last report count while the deck is live; a turn lower than the last
+-  // is a new game, and a new session.
++  // the game's turn counter (web.js, from the status line): a turn lower than
++  // the session's first is a new game
+   setTurn(t) {
+     if (!(t >= 0)) return;
+-    const last = this.lastTurn;
+-    this.lastTurn = t;
+-    if (last === null || last === undefined || t === last) return;
+-    if (t < last) { P.set('ghostDeck', this.nextGhostSession(this.ghostState())); return; }
+-    if (!this.ghostLive()) return;
+-    // kept here, and stored each time it passes another ten turns
+-    const was = this.liveTurns || 0, turns = was + (t - last);
+-    this.liveTurns = turns;
+-    if (Math.floor(turns / 10) === Math.floor(was / 10)) return;
+-    const g = this.ghostState();
+-    P.set('ghostDeck', { ...g, session: { caught: false, ...(g.session || {}), turns } });
++    let g = this.ghostState();
++    if (!g.session) g = this.nextGhostSession(g);
++    let s = g.session;
++    if (s.t0 === null || s.t0 === undefined) s = { ...s, t0: t };
++    else if (t < s.t0) { g = this.nextGhostSession(g); s = { ...g.session, t0: t }; }
++    const turns = t - s.t0;
++    // stored each time it passes another ten turns
++    if (s !== g.session || Math.floor(turns / 10) !== Math.floor(s.turns / 10)) P.set('ghostDeck', { ...g, session: { ...s, turns } });
+   }
+   ghostCaught() {
+     const g = this.ghostState();
+@@ -1103,8 +1033,6 @@
+   // the pin that holds Fight -- and MORE at the right end of the message band.
+   twinLamps() {
+     const k = (id) => this.twin.keys.get(id);
+-    // and while Fight is armed the pad tints red (the design's section 10)
+-    if (this.padMold) this.padMold.classList.toggle('armed', !!this.armed);
+     if (k('search')) k('search').lamp(!!P.get('searchMode'));
+     for (const id of ['combat', ...TWIN_PINS]) {
+       if (!k(id)) continue;
+@@ -1422,7 +1350,7 @@
+   // ---- the numpad
+   buildNumpad(K) {
+     const pitch = this.padCell + PAD_GAP, left = this.termInner();
+-    const mold = el('div', this.twin ? 'padmold' : '', K);
++    const mold = el('div', '', K);
+     this.padMold = mold;
+     // twin banks: the mold round the pad's nine rects as layout() gives them
+     const cells = this.twin ? TWIN_PAD.map((id) => this.tw(id)) : null;
+@@ -1679,11 +1607,7 @@
+ 
+   refreshSlots(hv, attack) {
+     const taking = this.assignAccepts(attack);
+-    // classic hid the points beside COMBAT while its fan was out over them;
+-    // twin banks' layer paints the pad, so the pins stay, dimmed under the
+-    // scrim as every other key is (the design's section 14: faces change
+-    // label, never place)
+-    const hidden = !this.twin && !taking && (hv.hub.id === this.fanOpen || hv.hub.id === this.radialOpen);
++    const hidden = !taking && (hv.hub.id === this.fanOpen || hv.hub.id === this.radialOpen);
+     hv.slotFaces.forEach((slot, n) => {
+       const item = this.slotItem(attack, n);
+       slot.show(!hidden);
+@@ -1820,14 +1744,6 @@
+       this.openDrawer(hv.hub.group.id, hv.hub);
+       return;
+     }
+-    // Twin banks: a second tap on COMBAT, while it holds Fight armed, disarms
+-    // it, as the banner's tap does.  Today's landscape M3 spot is COMBAT now,
+-    // and a tap there from habit arms Fight (the design's section 15).
+-    if (this.twin && hv.hub === C.HUB_ATTACK && this.armed && this.armedBy === 'combat') {
+-      this.disarm();
+-      this.host.send('\\e');
+-      return;
+-    }
+     this.fireFromHub(hv.hub, hv.hub.quick, hv.face.el);   // COMBAT's Fight arms the pad
+   }
+ 
+@@ -2677,8 +2593,7 @@
+         [['twin', 'Twin banks'], ['classic', 'Classic']]),
+       { seg: 'ghostDeck', label: 'Old key spots (twin banks, landscape): a map tap where COMBAT, PIN 2, FLICK, LOOK or CONTEXT sat '
+           + 'on the old deck shows where the key went, and a second tap on the same place walks there. It retires itself '
+-          + 'after three sessions in a row, each of 100 turns or more played in twin banks in landscape, in which no '
+-          + 'preview went without its second tap',
++          + 'after three sessions with none of those taps',
+         value: this.ghostOn() ? 'on' : 'off', options: [['on', 'On'], ['off', 'Retired']] },
+       seg('padCell', 'Movement key size', [['46', '46'], ['52', '52'], ['58', '58 (Parhi)']]),
+       seg('labelMode', 'Key labels', [['words', 'Words'], ['keys', 'Keys'], ['both', 'Both']]),
+@@ -2693,8 +2608,7 @@
+         onPick: (val) => FB.preview(Number(val)) },
+       { note: 'Zoom the map with the mouse wheel or a pinch; drag it to look around.  Esc closes an open fan or drawer.' },
+     ], [
+-      // twin banks keep their own zoom, a factor of the map cell (web.js tileSize)
+-      { label: 'Reset zoom', run: () => { P.set(this.twin ? 'zoomFactor' : 'zoom', this.twin ? 1 : 0); this.host.glassChanged(this.geom); } },
++      { label: 'Reset zoom', run: () => { P.set('zoom', 0); this.host.glassChanged(this.geom); } },
+       { label: 'Done', primary: true, run: (v) => {
+         const put = (k, val) => { if (P.get(k) !== val) P.set(k, val); };
+         put('style', v.style);

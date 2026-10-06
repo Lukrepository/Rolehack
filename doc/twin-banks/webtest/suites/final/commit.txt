@@ -1,0 +1,49 @@
+Web port: the log scrolled back keeps its top line, full history or turned
+
+The tablet stage promised that the message log, scrolled back, keeps the
+line at its top through new messages and turns of the device (10b91db).
+The final integration pass (2026-10-04) ran its re-check's own probes
+again (webtest/tabrecheck drift.mjs and log.mjs) and found two ways in
+which it did not:
+- Once the history is full (HISTORY_MAX, 256 messages, which a game soon
+  reaches), each new message drops the oldest line from the log's top.
+  The panel was redrawn at the same scrollTop, so the view moved one line
+  on with every message: five looks moved a log scrolled back by five
+  lines.
+- A turn re-wraps the top line itself.  Its offset into the line was put
+  back in px, so a line scrolled 22 px into its three rows in the tablet's
+  tray (62 px) went back 21 px into its one row in the portrait glass,
+  wholly above the top, and the next line came to the top at every turn.
+Only twin banks have panels; classic is untouched.
+- web.js:
+  - renderLog() counts the lines gone from the log's top since it was last
+    drawn (the panel's first), and fillPanel() keeps the top line by its
+    place in the new list; when that line is gone itself, the oldest line
+    left.
+  - notePlace() notes the top line's height with its offset, and
+    putPlace() and fillPanel() put back the same share of it, short of its
+    end (lineOff()).
+Checked in the browser (Playwright, Chromium, real CDP touches and turns,
+density 1 and 2.4375, no console errors):
+- tabrecheck/drift.mjs: a full history scrolled back, then 5 messages:
+  the same line at the top (before: 5 lines on).  With 103 lines: kept, as
+  before.
+- tabrecheck/log.mjs: all pass at both densities (before: 2 failures at
+  each, the full history's 3 messages and its turn).
+- Every suite that fills, moves or scrolls a panel, again at both
+  densities:
+  - tabrecheck inv and chips; tabfix fixes and dcheck;
+  - tablet panels, tablet and resize;
+  - the tester's screens 306/306, panels 68/68, rotate, wheel, monitor
+    and classic 56/56;
+  - the tablet reviewers' probes z2, z3, z4, z9, z10 and z11, whose output
+    is the same as before the change.
+- The final pass's own checks (webtest/final):
+  - every spec.json screen in a new game, 464/464 at each density;
+  - two minutes of play on Lucas's phone turned mid-fight, 24/24;
+  - turns with something up, 15/15;
+  - classic, 12/12.
+- node --test win/web/test/: 147/147.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Dgv3E1gUjAwvSmojZmYB4f

@@ -1,0 +1,838 @@
+{
+ "896x443@1": [
+  {
+   "name": "A: 198 touches at the edges of every key, in the halo and beyond, as the hit model has them",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "A: no key acted on a cancelled touch",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "name": "B: a ring point, 18-26 dp from a key",
+   "pass": true,
+   "detail": {
+    "ring": {
+     "x": 227,
+     "y": 163.57
+    },
+    "at": "map | glass | case"
+   }
+  },
+  {
+   "name": "B: a tap deep in the map walks at once",
+   "pass": true,
+   "detail": "@54,4"
+  },
+  {
+   "name": "B: a ring tap does not walk; its cell is outlined",
+   "pass": true,
+   "detail": {
+    "pushed": "",
+    "gp": {
+     "x": 37,
+     "y": 0,
+     "ring": true,
+     "timer": 0
+    }
+   }
+  },
+  {
+   "name": "B: the outline is drawn",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "name": "nothing pops over a key: a ring preview",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: a second tap on the same cell walks",
+   "pass": true,
+   "detail": "@37,0"
+  },
+  {
+   "name": "B: anything else clears the preview (a deep tap walks)",
+   "pass": true,
+   "detail": "@54,4"
+  },
+  {
+   "name": "B: after 2 s the preview is gone, and the next ring tap previews again",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: a ring tap 120 ms after a key lifts is swallowed: no preview, no walk",
+   "pass": true,
+   "detail": {
+    "since": 22.80000000447035,
+    "log": [
+     "ring",
+     "ring",
+     "ring",
+     "halo:pad_u",
+     "bounce"
+    ]
+   }
+  },
+  {
+   "name": "B: after 120 ms it previews again",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: WORLD opens its drawer",
+   "pass": true,
+   "detail": "world"
+  },
+  {
+   "name": "nothing pops over a key: the WORLD drawer",
+   "pass": true,
+   "detail": "drawer"
+  },
+  {
+   "name": "B: a map tap 200 ms after a drawer closes is swallowed",
+   "pass": true,
+   "detail": {
+    "drawer": null,
+    "log": [
+     "ring",
+     "halo:pad_u",
+     "bounce",
+     "ring",
+     "closing"
+    ],
+    "pushed": ""
+   }
+  },
+  {
+   "name": "B: after 200 ms the map walks again",
+   "pass": true,
+   "detail": "@54,4"
+  },
+  {
+   "name": "B: MSGS opens the history window",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "name": "B: a map tap 200 ms after a window closes is swallowed",
+   "pass": true,
+   "detail": {
+    "log": [
+     "halo:pad_u",
+     "bounce",
+     "ring",
+     "closing",
+     "closing"
+    ],
+    "pushed": "^["
+   }
+  },
+  {
+   "name": "B: COMBAT arms Fight",
+   "pass": true,
+   "detail": "F"
+  },
+  {
+   "name": "nothing pops over a key: Fight armed (its banner)",
+   "pass": true,
+   "detail": "flash banner"
+  },
+  {
+   "name": "B: a map tap with Fight armed disarms it and walks nowhere",
+   "pass": true,
+   "detail": {
+    "armed": null,
+    "pushed": ""
+   }
+  },
+  {
+   "name": "B: a slide from LOOK onto the map is LOOK's, never a walk",
+   "pass": true,
+   "detail": ":"
+  },
+  {
+   "name": "B: a drag from the map pans it and walks nowhere",
+   "pass": true,
+   "detail": {
+    "pan0": 0,
+    "pan1": 50
+   }
+  },
+  {
+   "name": "B: LOOK held: farlook picks a spot (getpos)",
+   "pass": true,
+   "detail": {
+    "picking": true,
+    "pushed": ";^M"
+   }
+  },
+  {
+   "name": "B: in getpos a ring tap picks the spot at once",
+   "pass": true,
+   "detail": "@37,0"
+  },
+  {
+   "name": "B: in getpos the halo swallows nothing",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "B: in getpos a seam swallows nothing",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: --More-- is up",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: the guard steps aside at --More--",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: at --More-- a ring tap is Space, no preview",
+   "pass": true,
+   "detail": "\" \""
+  },
+  {
+   "name": "B: --More-- again",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: at --More-- the halo swallows nothing: its tap on the glass is Space",
+   "pass": true,
+   "detail": {
+    "at": {
+     "x": 218,
+     "y": 71
+    },
+    "pushed": "\" \"",
+    "log": []
+   }
+  },
+  {
+   "name": "B: --More-- once more",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: at --More-- a seam swallows nothing: the key beside it takes the touch",
+   "pass": true,
+   "detail": "flick"
+  },
+  {
+   "name": "B: with the guard on, the same seam swallows",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: with the guard on, that halo point swallows",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "443x939@1": [
+  {
+   "name": "A: 186 touches at the edges of every key, in the halo and beyond, as the hit model has them",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "A: no key acted on a cancelled touch",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "name": "B: a ring point, 18-26 dp from a key",
+   "pass": true,
+   "detail": {
+    "ring": null,
+    "at": null
+   }
+  },
+  {
+   "name": "B: a tap deep in the map walks at once",
+   "pass": true,
+   "detail": "@54,3"
+  },
+  {
+   "name": "B: no ring on this screen (the map keeps 32 dp or more from every key)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: WORLD opens its drawer",
+   "pass": true,
+   "detail": "world"
+  },
+  {
+   "name": "nothing pops over a key: the WORLD drawer",
+   "pass": true,
+   "detail": "drawer"
+  },
+  {
+   "name": "B: a map tap 200 ms after a drawer closes is swallowed",
+   "pass": true,
+   "detail": {
+    "drawer": null,
+    "log": [
+     "closing"
+    ],
+    "pushed": ""
+   }
+  },
+  {
+   "name": "B: after 200 ms the map walks again",
+   "pass": true,
+   "detail": "@54,3"
+  },
+  {
+   "name": "B: MSGS opens the history window",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "name": "B: a map tap 200 ms after a window closes is swallowed",
+   "pass": true,
+   "detail": {
+    "log": [
+     "closing",
+     "closing"
+    ],
+    "pushed": "^["
+   }
+  },
+  {
+   "name": "B: COMBAT arms Fight",
+   "pass": true,
+   "detail": "F"
+  },
+  {
+   "name": "nothing pops over a key: Fight armed (its banner)",
+   "pass": true,
+   "detail": "flash banner"
+  },
+  {
+   "name": "B: a map tap with Fight armed disarms it and walks nowhere",
+   "pass": true,
+   "detail": {
+    "armed": null,
+    "pushed": ""
+   }
+  },
+  {
+   "name": "B: a slide from LOOK onto the map is LOOK's, never a walk",
+   "pass": true,
+   "detail": ":"
+  },
+  {
+   "name": "B: a drag from the map pans it and walks nowhere",
+   "pass": true,
+   "detail": {
+    "pan0": 0,
+    "pan1": 50
+   }
+  },
+  {
+   "name": "B: LOOK held: farlook picks a spot (getpos)",
+   "pass": true,
+   "detail": {
+    "picking": true,
+    "pushed": ";^M"
+   }
+  },
+  {
+   "name": "B: in getpos the halo swallows nothing",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "B: in getpos a seam swallows nothing",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: --More-- is up",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: the guard steps aside at --More--",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: --More-- again",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: at --More-- the halo swallows nothing: its tap on the glass is Space",
+   "pass": true,
+   "detail": {
+    "at": {
+     "x": 18,
+     "y": 560
+    },
+    "pushed": "\" \"",
+    "log": []
+   }
+  },
+  {
+   "name": "B: --More-- once more",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: at --More-- a seam swallows nothing: the key beside it takes the touch",
+   "pass": true,
+   "detail": "flick"
+  },
+  {
+   "name": "B: with the guard on, the same seam swallows",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: with the guard on, that halo point swallows",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "360x640@1": [
+  {
+   "name": "A: 198 touches at the edges of every key, in the halo and beyond, as the hit model has them",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "A: no key acted on a cancelled touch",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "name": "B: a ring point, 18-26 dp from a key",
+   "pass": true,
+   "detail": {
+    "ring": {
+     "x": 11,
+     "y": 288.71
+    },
+    "at": "map | glass | case"
+   }
+  },
+  {
+   "name": "B: a tap deep in the map walks at once",
+   "pass": true,
+   "detail": "@54,4"
+  },
+  {
+   "name": "B: a ring tap does not walk; its cell is outlined",
+   "pass": true,
+   "detail": {
+    "pushed": "",
+    "gp": {
+     "x": 40,
+     "y": 14,
+     "ring": true,
+     "timer": 0
+    }
+   }
+  },
+  {
+   "name": "B: the outline is drawn",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "name": "nothing pops over a key: a ring preview",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: a second tap on the same cell walks",
+   "pass": true,
+   "detail": "@40,14"
+  },
+  {
+   "name": "B: anything else clears the preview (a deep tap walks)",
+   "pass": true,
+   "detail": "@54,4"
+  },
+  {
+   "name": "B: after 2 s the preview is gone, and the next ring tap previews again",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: a ring tap 120 ms after a key lifts is swallowed: no preview, no walk",
+   "pass": true,
+   "detail": {
+    "since": 23.100000001490116,
+    "log": [
+     "ring",
+     "ring",
+     "ring",
+     "halo:pad_u",
+     "bounce"
+    ]
+   }
+  },
+  {
+   "name": "B: after 120 ms it previews again",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: WORLD opens its drawer",
+   "pass": true,
+   "detail": "world"
+  },
+  {
+   "name": "nothing pops over a key: the WORLD drawer",
+   "pass": true,
+   "detail": "drawer"
+  },
+  {
+   "name": "B: a map tap 200 ms after a drawer closes is swallowed",
+   "pass": true,
+   "detail": {
+    "drawer": null,
+    "log": [
+     "ring",
+     "halo:pad_u",
+     "bounce",
+     "ring",
+     "closing"
+    ],
+    "pushed": ""
+   }
+  },
+  {
+   "name": "B: after 200 ms the map walks again",
+   "pass": true,
+   "detail": "@54,4"
+  },
+  {
+   "name": "B: MSGS opens the history window",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "name": "B: a map tap 200 ms after a window closes is swallowed",
+   "pass": true,
+   "detail": {
+    "log": [
+     "halo:pad_u",
+     "bounce",
+     "ring",
+     "closing",
+     "closing"
+    ],
+    "pushed": "^["
+   }
+  },
+  {
+   "name": "B: COMBAT arms Fight",
+   "pass": true,
+   "detail": "F"
+  },
+  {
+   "name": "nothing pops over a key: Fight armed (its banner)",
+   "pass": true,
+   "detail": "flash banner"
+  },
+  {
+   "name": "B: a map tap with Fight armed disarms it and walks nowhere",
+   "pass": true,
+   "detail": {
+    "armed": null,
+    "pushed": ""
+   }
+  },
+  {
+   "name": "B: a slide from LOOK onto the map is LOOK's, never a walk",
+   "pass": true,
+   "detail": ":"
+  },
+  {
+   "name": "B: a drag from the map pans it and walks nowhere",
+   "pass": true,
+   "detail": {
+    "pan0": 0,
+    "pan1": 50
+   }
+  },
+  {
+   "name": "B: LOOK held: farlook picks a spot (getpos)",
+   "pass": true,
+   "detail": {
+    "picking": true,
+    "pushed": ";^M "
+   }
+  },
+  {
+   "name": "B: in getpos a ring tap picks the spot at once",
+   "pass": true,
+   "detail": "@40,14"
+  },
+  {
+   "name": "B: in getpos the halo swallows nothing",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "B: in getpos a seam swallows nothing",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: --More-- is up",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: the guard steps aside at --More--",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: at --More-- a ring tap is Space, no preview",
+   "pass": true,
+   "detail": "\" \""
+  },
+  {
+   "name": "B: --More-- again",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: at --More-- the halo swallows nothing: its tap on the glass is Space",
+   "pass": true,
+   "detail": {
+    "at": {
+     "x": 8,
+     "y": 300
+    },
+    "pushed": "\" \"",
+    "log": []
+   }
+  },
+  {
+   "name": "B: --More-- once more",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: at --More-- a seam swallows nothing: the key beside it takes the touch",
+   "pass": true,
+   "detail": "flick"
+  },
+  {
+   "name": "B: with the guard on, the same seam swallows",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: with the guard on, that halo point swallows",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "390x844@1": [
+  {
+   "name": "A: 198 touches at the edges of every key, in the halo and beyond, as the hit model has them",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "A: no key acted on a cancelled touch",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "name": "B: a ring point, 18-26 dp from a key",
+   "pass": true,
+   "detail": {
+    "ring": null,
+    "at": null
+   }
+  },
+  {
+   "name": "B: a tap deep in the map walks at once",
+   "pass": true,
+   "detail": "@54,4"
+  },
+  {
+   "name": "B: no ring on this screen (the map keeps 32 dp or more from every key)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: WORLD opens its drawer",
+   "pass": true,
+   "detail": "world"
+  },
+  {
+   "name": "nothing pops over a key: the WORLD drawer",
+   "pass": true,
+   "detail": "drawer"
+  },
+  {
+   "name": "B: a map tap 200 ms after a drawer closes is swallowed",
+   "pass": true,
+   "detail": {
+    "drawer": null,
+    "log": [
+     "closing"
+    ],
+    "pushed": ""
+   }
+  },
+  {
+   "name": "B: after 200 ms the map walks again",
+   "pass": true,
+   "detail": "@54,4"
+  },
+  {
+   "name": "B: MSGS opens the history window",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "name": "B: a map tap 200 ms after a window closes is swallowed",
+   "pass": true,
+   "detail": {
+    "log": [
+     "closing",
+     "closing"
+    ],
+    "pushed": "^["
+   }
+  },
+  {
+   "name": "B: COMBAT arms Fight",
+   "pass": true,
+   "detail": "F"
+  },
+  {
+   "name": "nothing pops over a key: Fight armed (its banner)",
+   "pass": true,
+   "detail": "flash banner"
+  },
+  {
+   "name": "B: a map tap with Fight armed disarms it and walks nowhere",
+   "pass": true,
+   "detail": {
+    "armed": null,
+    "pushed": ""
+   }
+  },
+  {
+   "name": "B: a slide from LOOK onto the map is LOOK's, never a walk",
+   "pass": true,
+   "detail": ":"
+  },
+  {
+   "name": "B: a drag from the map pans it and walks nowhere",
+   "pass": true,
+   "detail": {
+    "pan0": 0,
+    "pan1": 50
+   }
+  },
+  {
+   "name": "B: LOOK held: farlook picks a spot (getpos)",
+   "pass": true,
+   "detail": {
+    "picking": true,
+    "pushed": ";^M"
+   }
+  },
+  {
+   "name": "B: in getpos the halo swallows nothing",
+   "pass": true,
+   "detail": []
+  },
+  {
+   "name": "B: in getpos a seam swallows nothing",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: --More-- is up",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: the guard steps aside at --More--",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: --More-- again",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: at --More-- the halo swallows nothing: its tap on the glass is Space",
+   "pass": true,
+   "detail": {
+    "at": {
+     "x": 8,
+     "y": 501
+    },
+    "pushed": "\" \"",
+    "log": []
+   }
+  },
+  {
+   "name": "B: --More-- once more",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: at --More-- a seam swallows nothing: the key beside it takes the touch",
+   "pass": true,
+   "detail": "flick"
+  },
+  {
+   "name": "B: with the guard on, the same seam swallows",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "B: with the guard on, that halo point swallows",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "name": "no console errors",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

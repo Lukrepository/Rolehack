@@ -1,0 +1,99 @@
+Web port: a turn at rest keeps the newest message whole on the band
+
+With no --More-- up, a turn of the phone laid the message band out again
+and showed the band's worth that holds the page's newest row (b32e17e).
+Twin banks' band is narrower in one orientation than the other (260 px in
+landscape against portrait's 332 on a 360x640 phone), so after the turn
+the newest message often wraps onto a row more, and that band's worth can
+begin between its rows: the band showed only the message's tail, the rest
+of it empty, with no +N, MORE lamp or --More-- to say what had gone.  A
+kill and its corpse on the 360x640 phone turned to landscape showed
+"jackal corpse."; a question showed "[ynq] (n)" alone, and a tap on the
+band does nothing during a question, so only another turn brought it back
+(the re-check, 2026-10-03).
+
+- web.js keepScroll(): with no --More-- up, the band laid out again shows
+  the page's last rows, as many as it holds, so the newest message is
+  whole whenever it fits the band.  At a --More-- the band still finds its
+  place again at the start of its band's worth.  The render's mark notes
+  that the band stands at the page's last rows.
+- web.js moreRoom(), moreToEnd(): those last rows need not begin a band's
+  worth, and only a band's worth's last row keeps room for --More--.  When
+  more comes on that page before the player acts (after a text window, in
+  an occupation's turns) and the band's last row runs under the --More--,
+  the band first goes back to the start of its band's worth, and
+  moreToEnd pages on from there: rows may show again, none is skipped.
+  When the row leaves the room free, the --More-- waits where the band is.
+  The same after the Layout setting is switched to classic at rest;
+  classic's own turns keep its rows, and its --More--, as they were.
+
+Checked in the browser (Playwright, Chromium, the device turned with its
+screen, no console errors), at 1 and 2.4375, against 07fb2ef's page files
+on port 8791 where said:
+- the re-check's repros: killturn.mjs, the 360x640 phone turned with
+  the kill and its corpse up, shows [You see here a | jackal corpse.]
+  (07fb2ef: [jackal corpse.]); qsplit.mjs, a question after 0-3 messages
+  on 4 phones, both first orientations, cuts 0 of 128 questions that
+  fit, and 0 of 128 with plain messages (the re-check: 7 and 9 on
+  07fb2ef); qmore passes 7 of 8, the eighth the known open limit, a
+  question longer than the narrow band; sweep.mjs, a long message turned
+  at each --More--, 526 runs at 1x and 317 at 2.4375, 0 failed; eat.mjs,
+  one real tap on the 'n' chip of "eat it?", sends "en" alone, twin and
+  classic, both ways.
+- webtest/header/fix/paging.mjs, extended: at rest and after the turn at
+  rest the newest page entry must be whole on the band whenever its rows
+  fit; a kill and its corpse, and a fight's four messages, join its
+  scenarios; and a question after 0-3 messages, of three lengths, is
+  turned with it on each phone both ways (the 915x412 phone's "Note0
+  said. | q0 .. q7z | end? [ynq] (n)" among them).  238 runs at each
+  density, 0 failed; 07fb2ef fails 6 of the 152 on the 360x640 and
+  915x412 phones.
+- new webtest/hfix2/samepage.mjs: a page at rest laid out again (a turn,
+  or the switch to classic), then another message, a long one, or the
+  game's own --More-- on that page: the band's last row and the --More--
+  never overlap, every letter is read, and the band ends on the newest
+  message, whole.  4 phones, both first orientations, 6 kinds of page:
+  288 runs at each density, 0 failed; 84 stood at rest off a band's
+  start, and 18 of those went back for the --More--.  With moreRoom()
+  turned off, 6 of 144 put the --More-- over the last row's text.
+- new webtest/hfix2/classicturn.mjs: classic from the start, the phone
+  turned at rest or at a --More--, then more on the same page: every band
+  the same, --More-- for --More--, as on 07fb2ef: 144 runs at 1x and 96 at
+  2.4375, 0 differ.  With moreRoom() let loose on classic's own turns, 6
+  of 96 differ.
+A message that fits the band alone can still take a row more where it
+falls in its page, when a row that keeps --More--'s room falls inside
+it; the band then shows its last rows.  samepage.mjs met it in one case
+only, after the switch to classic on Lucas's phone in landscape, never
+after a turn.
+
+The whole series, at this commit (both densities unless said):
+- "node --test win/web/test/": 141/141;
+- webtest/header: header, more, more-turn, map pass; classic passes at
+  2.4375, and at 1 differs from 63ffc2f only in one 256 px tile of the
+  case background at 390x844, by 1 colour level at most; taps, desk and
+  chips pass;
+- the tester's suite: rects and its variants, 0 failures; more, 26
+  windows; more-turn, 16 runs; edges, 44 windows (one walk at 1x, at
+  896x443, was stopped by a monster and passed twice on re-run);
+  gestures; taps, 0 wrong of 2128 and 2144; classic, the same 1-level
+  tile once at 640x360 at 1x, else identical; cellswitch, bandtaps and
+  rotate-p at 1x;
+- webtest/header/fix: paging as above, chipsplace, guard 57/57,
+  barlabels;
+- the earlier stages: banks (rects, behave 24/24 and 22/22, extra 24/24,
+  classic with the same 1-level tile once at 896x363, split, switchglass,
+  answers, newgame-classic), fix3 (minor 9/9 on re-run: one prayer had
+  no --More-- to tap), rev, review2, tapdrift, twin, layoutjs, fix2;
+- the reviewers' repros: hadv blank1, blank (the same two --More-- left
+  on a band of more rows as before), pagefull, hidden; hdr-adv moreturn2,
+  turnidle (the turn now keeps "The jackal bites! / You kill the jackal!
+  / Welcome to experience level 2."), whole, chipghost3; the tester's
+  probe-switch.
+rev/switch2.mjs's screenshot of the switch to twin at 640x360 differs
+from a fresh twin load in the band alone: after the switch it holds the
+welcome's last two rows, "Samurai, welcome | back to NetHack!", where a
+fresh load ends its paging on "back to NetHack!".
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Dgv3E1gUjAwvSmojZmYB4f

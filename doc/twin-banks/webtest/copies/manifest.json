@@ -1,0 +1,1357 @@
+[
+ {
+  "path": "release/verify-web/site/commands.js",
+  "file": "commands.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "release/verify-web/site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "release/verify-web/site/feedback.js",
+  "file": "feedback.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "release/verify-web/site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "release/verify-web/site/layout.js",
+  "file": "layout.js",
+  "commit": "3e8ec6b"
+ },
+ {
+  "path": "release/verify-web/site/overlay.js",
+  "file": "overlay.js",
+  "commit": "10b91db"
+ },
+ {
+  "path": "release/verify-web/site/prefs.js",
+  "file": "prefs.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "release/verify-web/site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "10b91db"
+ },
+ {
+  "path": "release/verify-web/site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/release__verify-web__site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "release/verify-web/site/viewer.js",
+  "file": "viewer.js",
+  "commit": "3e8ec6b"
+ },
+ {
+  "path": "release/verify-web/site/web.js",
+  "file": "web.js",
+  "commit": "ce38b67"
+ },
+ {
+  "path": "release/web/site/commands.js",
+  "file": "commands.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "release/web/site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "release/web/site/feedback.js",
+  "file": "feedback.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "release/web/site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "release/web/site/layout.js",
+  "file": "layout.js",
+  "commit": "3e8ec6b"
+ },
+ {
+  "path": "release/web/site/overlay.js",
+  "file": "overlay.js",
+  "commit": "10b91db"
+ },
+ {
+  "path": "release/web/site/prefs.js",
+  "file": "prefs.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "release/web/site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "10b91db"
+ },
+ {
+  "path": "release/web/site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/release__web__site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "release/web/site/viewer.js",
+  "file": "viewer.js",
+  "commit": "3e8ec6b"
+ },
+ {
+  "path": "release/web/site/web.js",
+  "file": "web.js",
+  "commit": "ce38b67"
+ },
+ {
+  "path": "tour/layout.js",
+  "file": "layout.js",
+  "commit": "3e8ec6b"
+ },
+ {
+  "path": "webtest/banks/head-site/commands.js",
+  "file": "commands.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/banks/head-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/banks/head-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "628efa0"
+ },
+ {
+  "path": "webtest/banks/head-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/banks/head-site/layout.js",
+  "file": "layout.js",
+  "commit": "ab6ceba"
+ },
+ {
+  "path": "webtest/banks/head-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/banks/head-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/banks/head-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/banks/head-site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__banks__head-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/banks/head-site/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/banks/head-site/web.js",
+  "file": "web.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/final/base-site/commands.js",
+  "file": "commands.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/final/base-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/final/base-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "628efa0"
+ },
+ {
+  "path": "webtest/final/base-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/final/base-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "1bf5b6a"
+ },
+ {
+  "path": "webtest/final/base-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "7c81c6a"
+ },
+ {
+  "path": "webtest/final/base-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "7c81c6a"
+ },
+ {
+  "path": "webtest/final/base-site/sw.js",
+  "file": "sw.js",
+  "commit": "74202a4",
+  "diff": "copies/webtest__final__base-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/final/base-site/web.js",
+  "file": "web.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/fix2/mut/w/layout.js",
+  "file": "layout.js",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__fix2__mut__w__layout.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/fix2/mut/w/test/edge-cli.mjs",
+  "file": "test/edge-cli.mjs",
+  "commit": "ffa68a3"
+ },
+ {
+  "path": "webtest/fix2/mut/w/test/index.js",
+  "file": "index.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__fix2__mut__w__test__index.js.diff",
+  "diff_lines": 549
+ },
+ {
+  "path": "webtest/fix2/mut/w/test/layout.test.mjs",
+  "file": "test/layout.test.mjs",
+  "commit": "ffa68a3"
+ },
+ {
+  "path": "webtest/fix3/c1/win/web/layout.js",
+  "file": "layout.js",
+  "commit": "ab6ceba"
+ },
+ {
+  "path": "webtest/fix3/c1/win/web/test/edge-cli.mjs",
+  "file": "test/edge-cli.mjs",
+  "commit": "ffa68a3"
+ },
+ {
+  "path": "webtest/fix3/c1/win/web/test/index.js",
+  "file": "index.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__fix3__c1__win__web__test__index.js.diff",
+  "diff_lines": 549
+ },
+ {
+  "path": "webtest/fix3/c1/win/web/test/layout.test.mjs",
+  "file": "test/layout.test.mjs",
+  "commit": "ab6ceba"
+ },
+ {
+  "path": "webtest/fix3/guard-site/commands.js",
+  "file": "commands.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/fix3/guard-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/fix3/guard-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "628efa0"
+ },
+ {
+  "path": "webtest/fix3/guard-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/fix3/guard-site/layout.js",
+  "file": "layout.js",
+  "commit": "0e887f7"
+ },
+ {
+  "path": "webtest/fix3/guard-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "7af4407"
+ },
+ {
+  "path": "webtest/fix3/guard-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "7c81c6a"
+ },
+ {
+  "path": "webtest/fix3/guard-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "7c81c6a"
+ },
+ {
+  "path": "webtest/fix3/guard-site/sw.js",
+  "file": "sw.js",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__fix3__guard-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/fix3/guard-site/web.js",
+  "file": "web.js",
+  "commit": "56e0b82"
+ },
+ {
+  "path": "webtest/fix3/mut/w/layout.js",
+  "file": "layout.js",
+  "commit": "ab6ceba"
+ },
+ {
+  "path": "webtest/fix3/mut/w/test/viewer.test.mjs",
+  "file": "test/viewer.test.mjs",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/fix3/mut/w/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/fix3/mut/w/viewer.mut1.js",
+  "file": "viewer.mut1.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__fix3__mut__w__viewer.mut1.js.diff",
+  "diff_lines": 642
+ },
+ {
+  "path": "webtest/fix3/mut/w/viewer.orig.js",
+  "file": "viewer.orig.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__fix3__mut__w__viewer.orig.js.diff",
+  "diff_lines": 654
+ },
+ {
+  "path": "webtest/fix3/overlay.guard.js",
+  "file": "overlay.js",
+  "commit": "7af4407"
+ },
+ {
+  "path": "webtest/fix3/overlay.guard.mjs",
+  "file": "overlay.js",
+  "commit": "7af4407"
+ },
+ {
+  "path": "webtest/hadv/head-site/commands.js",
+  "file": "commands.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/hadv/head-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/hadv/head-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "628efa0"
+ },
+ {
+  "path": "webtest/hadv/head-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/hadv/head-site/layout.js",
+  "file": "layout.js",
+  "commit": "ab6ceba"
+ },
+ {
+  "path": "webtest/hadv/head-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hadv/head-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hadv/head-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hadv/head-site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__hadv__head-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/hadv/head-site/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hadv/head-site/web.js",
+  "file": "web.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hdr-adv/head-site/commands.js",
+  "file": "commands.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/hdr-adv/head-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/hdr-adv/head-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "628efa0"
+ },
+ {
+  "path": "webtest/hdr-adv/head-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/hdr-adv/head-site/layout.js",
+  "file": "layout.js",
+  "commit": "ab6ceba"
+ },
+ {
+  "path": "webtest/hdr-adv/head-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hdr-adv/head-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hdr-adv/head-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hdr-adv/head-site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__hdr-adv__head-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/hdr-adv/head-site/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hdr-adv/head-site/web.js",
+  "file": "web.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/header/head-site/commands.js",
+  "file": "commands.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/header/head-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/header/head-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/header/head-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/header/head-site/layout.js",
+  "file": "layout.js",
+  "commit": "4e33f2d"
+ },
+ {
+  "path": "webtest/header/head-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "8e3ebda"
+ },
+ {
+  "path": "webtest/header/head-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/header/head-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/header/head-site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__header__head-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/header/head-site/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/header/head-site/web.js",
+  "file": "web.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/header/tester/head-site/commands.js",
+  "file": "commands.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/header/tester/head-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/header/tester/head-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "628efa0"
+ },
+ {
+  "path": "webtest/header/tester/head-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/header/tester/head-site/layout.js",
+  "file": "layout.js",
+  "commit": "ab6ceba"
+ },
+ {
+  "path": "webtest/header/tester/head-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/header/tester/head-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/header/tester/head-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/header/tester/head-site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__header__tester__head-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/header/tester/head-site/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/header/tester/head-site/web.js",
+  "file": "web.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hfix2/head-site/commands.js",
+  "file": "commands.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/hfix2/head-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/hfix2/head-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "628efa0"
+ },
+ {
+  "path": "webtest/hfix2/head-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/hfix2/head-site/layout.js",
+  "file": "layout.js",
+  "commit": "4e33f2d"
+ },
+ {
+  "path": "webtest/hfix2/head-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "07fb2ef"
+ },
+ {
+  "path": "webtest/hfix2/head-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "9e5a93a"
+ },
+ {
+  "path": "webtest/hfix2/head-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "9e5a93a"
+ },
+ {
+  "path": "webtest/hfix2/head-site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__hfix2__head-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/hfix2/head-site/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hfix2/head-site/web.js",
+  "file": "web.js",
+  "commit": "b32e17e"
+ },
+ {
+  "path": "webtest/hfix2/nogate-site/commands.js",
+  "file": "commands.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/hfix2/nogate-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/hfix2/nogate-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "628efa0"
+ },
+ {
+  "path": "webtest/hfix2/nogate-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/hfix2/nogate-site/layout.js",
+  "file": "layout.js",
+  "commit": "4e33f2d"
+ },
+ {
+  "path": "webtest/hfix2/nogate-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "07fb2ef"
+ },
+ {
+  "path": "webtest/hfix2/nogate-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "9e5a93a"
+ },
+ {
+  "path": "webtest/hfix2/nogate-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "9e5a93a"
+ },
+ {
+  "path": "webtest/hfix2/nogate-site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__hfix2__nogate-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/hfix2/nogate-site/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hfix2/nogate-site/web.js",
+  "file": "web.js",
+  "commit": "27d59a9",
+  "diff": "copies/webtest__hfix2__nogate-site__web.js.diff",
+  "diff_lines": 17
+ },
+ {
+  "path": "webtest/hfix2/nomr-site/commands.js",
+  "file": "commands.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/hfix2/nomr-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/hfix2/nomr-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "628efa0"
+ },
+ {
+  "path": "webtest/hfix2/nomr-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/hfix2/nomr-site/layout.js",
+  "file": "layout.js",
+  "commit": "4e33f2d"
+ },
+ {
+  "path": "webtest/hfix2/nomr-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "07fb2ef"
+ },
+ {
+  "path": "webtest/hfix2/nomr-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "9e5a93a"
+ },
+ {
+  "path": "webtest/hfix2/nomr-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "9e5a93a"
+ },
+ {
+  "path": "webtest/hfix2/nomr-site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__hfix2__nomr-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/hfix2/nomr-site/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hfix2/nomr-site/web.js",
+  "file": "web.js",
+  "commit": "27d59a9",
+  "diff": "copies/webtest__hfix2__nomr-site__web.js.diff",
+  "diff_lines": 46
+ },
+ {
+  "path": "webtest/hrecheck/patch-site/commands.js",
+  "file": "commands.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/hrecheck/patch-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/hrecheck/patch-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "628efa0"
+ },
+ {
+  "path": "webtest/hrecheck/patch-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/hrecheck/patch-site/layout.js",
+  "file": "layout.js",
+  "commit": "4e33f2d"
+ },
+ {
+  "path": "webtest/hrecheck/patch-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "07fb2ef"
+ },
+ {
+  "path": "webtest/hrecheck/patch-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "9e5a93a"
+ },
+ {
+  "path": "webtest/hrecheck/patch-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "9e5a93a"
+ },
+ {
+  "path": "webtest/hrecheck/patch-site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__hrecheck__patch-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/hrecheck/patch-site/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/hrecheck/patch-site/web.js",
+  "file": "web.js",
+  "commit": "b32e17e",
+  "diff": "copies/webtest__hrecheck__patch-site__web.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/layers/fin/impl_overlay.js",
+  "file": "overlay.js",
+  "commit": "3b343ee",
+  "diff": "copies/webtest__layers__fin__impl_overlay.js.diff",
+  "diff_lines": 508
+ },
+ {
+  "path": "webtest/layers/fin/oldsite/commands.js",
+  "file": "commands.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/layers/fin/oldsite/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/layers/fin/oldsite/feedback.js",
+  "file": "feedback.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/layers/fin/oldsite/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/layers/fin/oldsite/layout.js",
+  "file": "layout.js",
+  "commit": "4e33f2d"
+ },
+ {
+  "path": "webtest/layers/fin/oldsite/overlay.js",
+  "file": "overlay.js",
+  "commit": "3b343ee",
+  "diff": "copies/webtest__layers__fin__oldsite__overlay.js.diff",
+  "diff_lines": 54
+ },
+ {
+  "path": "webtest/layers/fin/oldsite/prefs.js",
+  "file": "prefs.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/layers/fin/oldsite/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/layers/fin/oldsite/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__layers__fin__oldsite__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/layers/fin/oldsite/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/layers/fin/oldsite/web.js",
+  "file": "web.js",
+  "commit": "3b343ee",
+  "diff": "copies/webtest__layers__fin__oldsite__web.js.diff",
+  "diff_lines": 29
+ },
+ {
+  "path": "webtest/layers/tester/head-site/commands.js",
+  "file": "commands.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/layers/tester/head-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/layers/tester/head-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "628efa0"
+ },
+ {
+  "path": "webtest/layers/tester/head-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/layers/tester/head-site/layout.js",
+  "file": "layout.js",
+  "commit": "4e33f2d"
+ },
+ {
+  "path": "webtest/layers/tester/head-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "07fb2ef"
+ },
+ {
+  "path": "webtest/layers/tester/head-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "9e5a93a"
+ },
+ {
+  "path": "webtest/layers/tester/head-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "9e5a93a"
+ },
+ {
+  "path": "webtest/layers/tester/head-site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__layers__tester__head-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/layers/tester/head-site/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/layers/tester/head-site/web.js",
+  "file": "web.js",
+  "commit": "27d59a9"
+ },
+ {
+  "path": "webtest/layoutjs/mutants/gap/layout.js",
+  "file": "layout.js",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants__gap__layout.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/layoutjs/mutants/gap/test/index.js",
+  "file": "index.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__layoutjs__mutants__gap__test__index.js.diff",
+  "diff_lines": 549
+ },
+ {
+  "path": "webtest/layoutjs/mutants/gap/test/layout.test.mjs",
+  "file": "test/layout.test.mjs",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants__gap__test__layout.test.mjs.diff",
+  "diff_lines": 111
+ },
+ {
+  "path": "webtest/layoutjs/mutants/mirror/layout.js",
+  "file": "layout.js",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants__mirror__layout.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/layoutjs/mutants/mirror/test/index.js",
+  "file": "index.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__layoutjs__mutants__mirror__test__index.js.diff",
+  "diff_lines": 549
+ },
+ {
+  "path": "webtest/layoutjs/mutants/mirror/test/layout.test.mjs",
+  "file": "test/layout.test.mjs",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants__mirror__test__layout.test.mjs.diff",
+  "diff_lines": 111
+ },
+ {
+  "path": "webtest/layoutjs/mutants/orient/layout.js",
+  "file": "layout.js",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants__orient__layout.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/layoutjs/mutants/orient/test/index.js",
+  "file": "index.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__layoutjs__mutants__orient__test__index.js.diff",
+  "diff_lines": 549
+ },
+ {
+  "path": "webtest/layoutjs/mutants/orient/test/layout.test.mjs",
+  "file": "test/layout.test.mjs",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants__orient__test__layout.test.mjs.diff",
+  "diff_lines": 111
+ },
+ {
+  "path": "webtest/layoutjs/mutants/overlap/layout.js",
+  "file": "layout.js",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants__overlap__layout.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/layoutjs/mutants/overlap/test/index.js",
+  "file": "index.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__layoutjs__mutants__overlap__test__index.js.diff",
+  "diff_lines": 549
+ },
+ {
+  "path": "webtest/layoutjs/mutants/overlap/test/layout.test.mjs",
+  "file": "test/layout.test.mjs",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants__overlap__test__layout.test.mjs.diff",
+  "diff_lines": 111
+ },
+ {
+  "path": "webtest/layoutjs/mutants/throws/layout.js",
+  "file": "layout.js",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants__throws__layout.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/layoutjs/mutants/throws/test/index.js",
+  "file": "index.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__layoutjs__mutants__throws__test__index.js.diff",
+  "diff_lines": 549
+ },
+ {
+  "path": "webtest/layoutjs/mutants/throws/test/layout.test.mjs",
+  "file": "test/layout.test.mjs",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants__throws__test__layout.test.mjs.diff",
+  "diff_lines": 111
+ },
+ {
+  "path": "webtest/layoutjs/mutants2/halo/layout.js",
+  "file": "layout.js",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants2__halo__layout.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/layoutjs/mutants2/halo/test/index.js",
+  "file": "index.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__layoutjs__mutants2__halo__test__index.js.diff",
+  "diff_lines": 549
+ },
+ {
+  "path": "webtest/layoutjs/mutants2/halo/test/layout.test.mjs",
+  "file": "test/layout.test.mjs",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants2__halo__test__layout.test.mjs.diff",
+  "diff_lines": 56
+ },
+ {
+  "path": "webtest/layoutjs/mutants2/overlap/layout.js",
+  "file": "layout.js",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants2__overlap__layout.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/layoutjs/mutants2/overlap/test/index.js",
+  "file": "index.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__layoutjs__mutants2__overlap__test__index.js.diff",
+  "diff_lines": 549
+ },
+ {
+  "path": "webtest/layoutjs/mutants2/overlap/test/layout.test.mjs",
+  "file": "test/layout.test.mjs",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants2__overlap__test__layout.test.mjs.diff",
+  "diff_lines": 56
+ },
+ {
+  "path": "webtest/layoutjs/mutants2/verdictlies/layout.js",
+  "file": "layout.js",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants2__verdictlies__layout.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/layoutjs/mutants2/verdictlies/test/index.js",
+  "file": "index.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__layoutjs__mutants2__verdictlies__test__index.js.diff",
+  "diff_lines": 549
+ },
+ {
+  "path": "webtest/layoutjs/mutants2/verdictlies/test/layout.test.mjs",
+  "file": "test/layout.test.mjs",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__layoutjs__mutants2__verdictlies__test__layout.test.mjs.diff",
+  "diff_lines": 56
+ },
+ {
+  "path": "webtest/recheck/firstcut/overlay.js",
+  "file": "overlay.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__recheck__firstcut__overlay.js.diff",
+  "diff_lines": 341
+ },
+ {
+  "path": "webtest/recheck/noguard-site/commands.js",
+  "file": "commands.js",
+  "commit": "ec134a7"
+ },
+ {
+  "path": "webtest/recheck/noguard-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/recheck/noguard-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "628efa0"
+ },
+ {
+  "path": "webtest/recheck/noguard-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/recheck/noguard-site/layout.js",
+  "file": "layout.js",
+  "commit": "ab6ceba"
+ },
+ {
+  "path": "webtest/recheck/noguard-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__recheck__noguard-site__overlay.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/recheck/noguard-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/recheck/noguard-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/recheck/noguard-site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__recheck__noguard-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/recheck/noguard-site/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/recheck/noguard-site/web.js",
+  "file": "web.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/review2/mut/w/layout.js",
+  "file": "layout.js",
+  "commit": "0e887f7"
+ },
+ {
+  "path": "webtest/review2/mut/w/skip52.js",
+  "file": "skip52.js",
+  "commit": "0e887f7",
+  "diff": "copies/webtest__review2__mut__w__skip52.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/review2/mut/w/test/index.js",
+  "file": "index.js",
+  "commit": "395ea31",
+  "diff": "copies/webtest__review2__mut__w__test__index.js.diff",
+  "diff_lines": 549
+ },
+ {
+  "path": "webtest/review2/mut/w/test/layout.test.mjs",
+  "file": "test/layout.test.mjs",
+  "commit": "0e887f7"
+ },
+ {
+  "path": "webtest/screens/head-layout.mjs",
+  "file": "layout.js",
+  "commit": "4e33f2d"
+ },
+ {
+  "path": "webtest/screens/head-site/commands.js",
+  "file": "commands.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/screens/head-site/doll.js",
+  "file": "doll.js",
+  "commit": "da8709b"
+ },
+ {
+  "path": "webtest/screens/head-site/feedback.js",
+  "file": "feedback.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/screens/head-site/index.html",
+  "file": "index.html",
+  "commit": "60d6727"
+ },
+ {
+  "path": "webtest/screens/head-site/layout.js",
+  "file": "layout.js",
+  "commit": "4e33f2d"
+ },
+ {
+  "path": "webtest/screens/head-site/overlay.js",
+  "file": "overlay.js",
+  "commit": "8e3ebda"
+ },
+ {
+  "path": "webtest/screens/head-site/prefs.js",
+  "file": "prefs.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/screens/head-site/rolehack.css",
+  "file": "rolehack.css",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/screens/head-site/sw.js",
+  "file": "sw.js",
+  "commit": "63ffc2f",
+  "diff": "copies/webtest__screens__head-site__sw.js.diff",
+  "diff_lines": 11
+ },
+ {
+  "path": "webtest/screens/head-site/viewer.js",
+  "file": "viewer.js",
+  "commit": "63ffc2f"
+ },
+ {
+  "path": "webtest/screens/head-site/web.js",
+  "file": "web.js",
+  "commit": "3b343ee"
+ },
+ {
+  "path": "webtest/tabfix/check.mjs",
+  "file": "web.js",
+  "commit": "10b91db"
+ },
+ {
+  "path": "webtest/tabfix/lay-m1.mjs",
+  "file": "layout.js",
+  "commit": "10b91db",
+  "diff": "copies/webtest__tabfix__lay-m1.mjs.diff",
+  "diff_lines": 60
+ },
+ {
+  "path": "webtest/tabfix/lay-m2.mjs",
+  "file": "layout.js",
+  "commit": "10b91db",
+  "diff": "copies/webtest__tabfix__lay-m2.mjs.diff",
+  "diff_lines": 60
+ },
+ {
+  "path": "webtest/tabfix/lay-m3.mjs",
+  "file": "layout.js",
+  "commit": "10b91db",
+  "diff": "copies/webtest__tabfix__lay-m3.mjs.diff",
+  "diff_lines": 60
+ },
+ {
+  "path": "webtest/tabfix/lay-r120.mjs",
+  "file": "layout.js",
+  "commit": "10b91db",
+  "diff": "copies/webtest__tabfix__lay-r120.mjs.diff",
+  "diff_lines": 60
+ },
+ {
+  "path": "webtest/tabfix/lay-r160.mjs",
+  "file": "layout.js",
+  "commit": "10b91db",
+  "diff": "copies/webtest__tabfix__lay-r160.mjs.diff",
+  "diff_lines": 60
+ },
+ {
+  "path": "webtest/tabfix/lay-step.mjs",
+  "file": "layout.js",
+  "commit": "10b91db",
+  "diff": "copies/webtest__tabfix__lay-step.mjs.diff",
+  "diff_lines": 60
+ },
+ {
+  "path": "webtest/tabfix/web.full.js",
+  "file": "web.js",
+  "commit": "003e336"
+ },
+ {
+  "path": "webtest/tablet2/layout.A.js",
+  "file": "layout.js",
+  "commit": "4e33f2d",
+  "diff": "copies/webtest__tablet2__layout.A.js.diff",
+  "diff_lines": 57
+ },
+ {
+  "path": "webtest/tablet2/layout.A2.js",
+  "file": "layout.js",
+  "commit": "4e33f2d",
+  "diff": "copies/webtest__tablet2__layout.A2.js.diff",
+  "diff_lines": 57
+ },
+ {
+  "path": "webtest/tablet2/layout.before.js",
+  "file": "layout.js",
+  "commit": "4e33f2d",
+  "diff": "copies/webtest__tablet2__layout.before.js.diff",
+  "diff_lines": 48
+ },
+ {
+  "path": "webtest/tabrecheck/base-layout.mjs",
+  "file": "layout.js",
+  "commit": "4e33f2d"
+ },
+ {
+  "path": "webtest/tabrecheck/work-layout.mjs",
+  "file": "layout.js",
+  "commit": "10b91db"
+ },
+ {
+  "path": "webtest/tabrev/head-layout.mjs",
+  "file": "layout.js",
+  "commit": "10b91db"
+ }
+]

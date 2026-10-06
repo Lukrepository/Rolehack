@@ -1,0 +1,130 @@
+[
+ {
+  "name": "more-turn-2.4375-columns-m1-lucas",
+  "dpr": 2.4375,
+  "cell": "columns",
+  "msgSize": 1,
+  "mores": 5,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-columns-m1-small",
+  "dpr": 2.4375,
+  "cell": "columns",
+  "msgSize": 1,
+  "mores": 21,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-columns-m1-p412",
+  "dpr": 2.4375,
+  "cell": "columns",
+  "msgSize": 1,
+  "mores": 7,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-columns-m1-p390",
+  "dpr": 2.4375,
+  "cell": "columns",
+  "msgSize": 1,
+  "mores": 9,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-columns-m1.4-lucas",
+  "dpr": 2.4375,
+  "cell": "columns",
+  "msgSize": 1.4,
+  "mores": 11,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-columns-m1.4-small",
+  "dpr": 2.4375,
+  "cell": "columns",
+  "msgSize": 1.4,
+  "mores": 32,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-columns-m1.4-p412",
+  "dpr": 2.4375,
+  "cell": "columns",
+  "msgSize": 1.4,
+  "mores": 11,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-columns-m1.4-p390",
+  "dpr": 2.4375,
+  "cell": "columns",
+  "msgSize": 1.4,
+  "mores": 13,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-rows-m1-lucas",
+  "dpr": 2.4375,
+  "cell": "rows",
+  "msgSize": 1,
+  "mores": 9,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-rows-m1-small",
+  "dpr": 2.4375,
+  "cell": "rows",
+  "msgSize": 1,
+  "mores": 21,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-rows-m1-p412",
+  "dpr": 2.4375,
+  "cell": "rows",
+  "msgSize": 1,
+  "mores": 7,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-rows-m1-p390",
+  "dpr": 2.4375,
+  "cell": "rows",
+  "msgSize": 1,
+  "mores": 9,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-rows-m1.4-lucas",
+  "dpr": 2.4375,
+  "cell": "rows",
+  "msgSize": 1.4,
+  "mores": 11,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-rows-m1.4-small",
+  "dpr": 2.4375,
+  "cell": "rows",
+  "msgSize": 1.4,
+  "mores": 32,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-rows-m1.4-p412",
+  "dpr": 2.4375,
+  "cell": "rows",
+  "msgSize": 1.4,
+  "mores": 11,
+  "bad": []
+ },
+ {
+  "name": "more-turn-2.4375-rows-m1.4-p390",
+  "dpr": 2.4375,
+  "cell": "rows",
+  "msgSize": 1.4,
+  "mores": 13,
+  "bad": []
+ }
+]

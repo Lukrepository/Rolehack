@@ -1,0 +1,17 @@
+--- a/win/web/web.js@27d59a9
++++ b/web.js
+@@ -972,11 +972,11 @@
+ // their --More-- would stand over the end of the band's last row.  So when
+ // that row leaves no room, the band goes back to the start of its band's
+ // worth, and moreToEnd pages on from there: the page shows rows again, and
+-// skips none.  True when it went back.  Classic's own turns keep its rows as
+-// they were, and its --More-- where it stood.
++// skips none.  True when it went back.  Classic's own turns, which keep its
++// rows as they were, are left as they were.
+ function moreRoom() {
+   const m = bandMetrics(), off = scrollRow % m.rows;
+-  if (!off || m.width < 40 || !(scrollMark && scrollMark.last && scrollMark.row === scrollRow)) return false;
++  if (!off || m.width < 40) return false;
+   const rows = pageRowsOf(page, m).slice(scrollRow, scrollRow + m.rows);
+   if (rows.length < m.rows || m.cx.measureText(rows[m.rows - 1].t).width <= m.width - m.slot) return false;
+   scrollRow -= off;

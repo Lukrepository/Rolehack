@@ -1,0 +1,29 @@
+--- a/win/web/web.js@3b343ee
++++ b/web.js
+@@ -694,7 +694,7 @@
+ 
+ // a map tap now would travel: the core waits for a command, or it is busy and
+ // no question or spot is waiting, so the tap queues for its next command
+-const wouldTravel = () => commandWait || (!waiter && !(overlay && overlay.picking));
++const wouldTravel = () => commandWait;
+ 
+ function guardTap(e, x, y, inLevel, down) {
+   if (!overlay || !wouldTravel()) return false;
+@@ -1260,7 +1260,7 @@
+     b.textContent = ch;
+     b.addEventListener('pointerdown', () => { b.classList.add('pressed'); FB.press(); });
+     b.addEventListener('pointerleave', () => b.classList.remove('pressed'));
+-    b.addEventListener('pointerup', (e) => { e.preventDefault(); b.classList.remove('pressed'); FB.up(); windowClosed(); push({ key: ch.charCodeAt(0) }); });
++    b.addEventListener('pointerup', (e) => { e.preventDefault(); b.classList.remove('pressed'); FB.up(); push({ key: ch.charCodeAt(0) }); });
+     c.appendChild(b);
+   }
+   const x = document.createElement('button');
+@@ -1268,7 +1268,7 @@
+   x.textContent = 'Esc';
+   x.addEventListener('pointerdown', () => { x.classList.add('pressed'); FB.press(); });
+   x.addEventListener('pointerleave', () => x.classList.remove('pressed'));
+-  x.addEventListener('pointerup', (e) => { e.preventDefault(); x.classList.remove('pressed'); FB.up(); windowClosed(); push({ key: 27 }); });
++  x.addEventListener('pointerup', (e) => { e.preventDefault(); x.classList.remove('pressed'); FB.up(); push({ key: 27 }); });
+   c.appendChild(x);
+   sizeChips();
+   placeChips();

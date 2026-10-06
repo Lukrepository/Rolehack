@@ -1,0 +1,161 @@
+{
+ "runs": [
+  {
+   "label": "dpr 1, as loaded",
+   "dpr": 1,
+   "resizes": 0,
+   "canvasWidth": 412,
+   "expectedCanvasWidth": 412,
+   "viewT": 12,
+   "expectedT": 12,
+   "taps": [
+    {
+     "c": 0,
+     "r": 10,
+     "got": {
+      "x": 0,
+      "y": 10
+     },
+     "ok": true
+    },
+    {
+     "c": 40,
+     "r": 10,
+     "got": {
+      "x": 40,
+      "y": 10
+     },
+     "ok": true
+    },
+    {
+     "c": 79,
+     "r": 10,
+     "got": {
+      "x": 79,
+      "y": 10
+     },
+     "ok": true
+    }
+   ],
+   "ok": true
+  },
+  {
+   "label": "changed to 2.4375 with no resize",
+   "dpr": 2.4375,
+   "resizes": 0,
+   "canvasWidth": 1004,
+   "expectedCanvasWidth": 1004,
+   "viewT": 11.897435897435898,
+   "expectedT": 11.8974,
+   "taps": [
+    {
+     "c": 0,
+     "r": 10,
+     "got": {
+      "x": 0,
+      "y": 10
+     },
+     "ok": true
+    },
+    {
+     "c": 40,
+     "r": 10,
+     "got": {
+      "x": 40,
+      "y": 10
+     },
+     "ok": true
+    },
+    {
+     "c": 79,
+     "r": 10,
+     "got": {
+      "x": 79,
+      "y": 10
+     },
+     "ok": true
+    }
+   ],
+   "ok": true
+  },
+  {
+   "label": "changed to 1.625 with no resize",
+   "dpr": 1.625,
+   "resizes": 0,
+   "canvasWidth": 670,
+   "expectedCanvasWidth": 670,
+   "viewT": 11.692307692307692,
+   "expectedT": 11.6923,
+   "taps": [
+    {
+     "c": 0,
+     "r": 10,
+     "got": {
+      "x": 0,
+      "y": 10
+     },
+     "ok": true
+    },
+    {
+     "c": 40,
+     "r": 10,
+     "got": {
+      "x": 40,
+      "y": 10
+     },
+     "ok": true
+    },
+    {
+     "c": 79,
+     "r": 10,
+     "got": {
+      "x": 79,
+      "y": 10
+     },
+     "ok": true
+    }
+   ],
+   "ok": true
+  },
+  {
+   "label": "changed to 1.25 with no resize",
+   "dpr": 1.25,
+   "resizes": 0,
+   "canvasWidth": 515,
+   "expectedCanvasWidth": 515,
+   "viewT": 12,
+   "expectedT": 12,
+   "taps": [
+    {
+     "c": 0,
+     "r": 10,
+     "got": {
+      "x": 0,
+      "y": 10
+     },
+     "ok": true
+    },
+    {
+     "c": 40,
+     "r": 10,
+     "got": {
+      "x": 40,
+      "y": 10
+     },
+     "ok": true
+    },
+    {
+     "c": 79,
+     "r": 10,
+     "got": {
+      "x": 79,
+      "y": 10
+     },
+     "ok": true
+    }
+   ],
+   "ok": true
+  }
+ ],
+ "errors": []
+}

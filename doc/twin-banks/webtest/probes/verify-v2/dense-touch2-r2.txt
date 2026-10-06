@@ -1,0 +1,36 @@
+mode touch2: 3171961 layouts in 155 s
+  degraded: key on map <key>: 22836
+     280x280 {} level unusable: key on map game
+     280x280 {} level unusable: key on map m1
+     280x280 {} level unusable: key on map menu
+     280x280 {} level unusable: key on map eq_wield
+     280x280 {} level unusable: key on map eq_puton
+     280x280 {} level unusable: key on map eq_wear
+  degraded: status OVER <key>: 3050
+     280x290 {} level unusable: status OVER game
+     280x292 {} level unusable: status OVER game
+     280x294 {} level unusable: status OVER game
+     280x296 {} level unusable: status OVER game
+     280x298 {} level unusable: status OVER game
+     280x300 {} level unusable: status OVER game
+  degraded: status Ndp from <key>: 1315
+     280x280 {} level unusable: status 2.8dp from msgs
+     280x282 {} level unusable: status 4.8dp from msgs
+     280x284 {} level unusable: status 6.8dp from msgs
+     280x286 {} level unusable: status 8.8dp from msgs
+     280x288 {} level unusable: status 10.8dp from msgs
+     280x320 {} level unusable: status 0.4dp from game
+  degraded: messages OVER <key>: 994
+     280x282 {} level unusable: messages OVER rest
+     280x284 {} level unusable: messages OVER rest
+     280x286 {} level unusable: messages OVER rest
+     280x288 {} level unusable: messages OVER rest
+     280x290 {} level unusable: messages OVER rest
+     280x292 {} level unusable: messages OVER rest
+  degraded: messages Ndp from <key>: 673
+     280x280 {} level unusable: messages 10.4dp from game
+     280x314 {} level unusable: messages 1.1dp from rest
+     280x316 {} level unusable: messages 3.1dp from rest
+     280x318 {} level unusable: messages 5.1dp from rest
+     280x320 {} level unusable: messages 7.1dp from rest
+     280x322 {} level unusable: messages 9.1dp from rest

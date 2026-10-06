@@ -1,0 +1,210 @@
+[
+ {
+  "tag": "mapclick-1024x768@1",
+  "name": "the map tap reaches the game as a click on that cell",
+  "pass": true,
+  "detail": {
+   "want": [
+    73,
+    13
+   ],
+   "ev": [
+    {
+     "click": {
+      "x": 73,
+      "y": 13,
+      "mod": 1
+     }
+    }
+   ]
+  }
+ },
+ {
+  "tag": "mapclick-1024x768@1",
+  "name": "the hero went there",
+  "pass": true,
+  "detail": {
+   "from": {
+    "x": 75,
+    "y": 13
+   },
+   "to": {
+    "x": 73,
+    "y": 13
+   }
+  }
+ },
+ {
+  "tag": "mapclick-1024x768@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "mapclick-1366x768@1",
+  "name": "the map tap reaches the game as a click on that cell",
+  "pass": true,
+  "detail": {
+   "want": [
+    73,
+    13
+   ],
+   "ev": [
+    {
+     "click": {
+      "x": 73,
+      "y": 13,
+      "mod": 1
+     }
+    }
+   ]
+  }
+ },
+ {
+  "tag": "mapclick-1366x768@1",
+  "name": "the hero went there",
+  "pass": true,
+  "detail": {
+   "from": {
+    "x": 75,
+    "y": 13
+   },
+   "to": {
+    "x": 73,
+    "y": 13
+   }
+  }
+ },
+ {
+  "tag": "mapclick-1366x768@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "mapclick-1920x1080-mouse@1",
+  "name": "the map tap reaches the game as a click on that cell",
+  "pass": true,
+  "detail": {
+   "want": [
+    73,
+    13
+   ],
+   "ev": [
+    {
+     "click": {
+      "x": 73,
+      "y": 13,
+      "mod": 1
+     }
+    }
+   ]
+  }
+ },
+ {
+  "tag": "mapclick-1920x1080-mouse@1",
+  "name": "the hero went there",
+  "pass": true,
+  "detail": {
+   "from": {
+    "x": 75,
+    "y": 13
+   },
+   "to": {
+    "x": 73,
+    "y": 13
+   }
+  }
+ },
+ {
+  "tag": "mapclick-1920x1080-mouse@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "mapclick-3440x1440-mouse@1",
+  "name": "the map tap reaches the game as a click on that cell",
+  "pass": true,
+  "detail": {
+   "want": [
+    73,
+    13
+   ],
+   "ev": [
+    {
+     "click": {
+      "x": 73,
+      "y": 13,
+      "mod": 1
+     }
+    }
+   ]
+  }
+ },
+ {
+  "tag": "mapclick-3440x1440-mouse@1",
+  "name": "the hero went there",
+  "pass": true,
+  "detail": {
+   "from": {
+    "x": 75,
+    "y": 13
+   },
+   "to": {
+    "x": 73,
+    "y": 13
+   }
+  }
+ },
+ {
+  "tag": "mapclick-3440x1440-mouse@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "switch-1024x768@1",
+  "name": "classic game switched to twin: tablet tier, both panels",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "switch-1024x768@1",
+  "name": "the inventory panel says why it is empty",
+  "pass": true,
+  "detail": [
+   "The inventory shows here from the next start of the page: this game began in classic."
+  ]
+ },
+ {
+  "tag": "switch-1024x768@1",
+  "name": "the log shows the history",
+  "pass": true,
+  "detail": {
+   "log": 2,
+   "hist": 2
+  }
+ },
+ {
+  "tag": "switch-1024x768@1",
+  "name": "back to classic: no panel shown",
+  "pass": true,
+  "detail": [
+   [
+    "log",
+    false
+   ],
+   [
+    "inventory",
+    false
+   ]
+  ]
+ },
+ {
+  "tag": "switch-1024x768@1",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ }
+]

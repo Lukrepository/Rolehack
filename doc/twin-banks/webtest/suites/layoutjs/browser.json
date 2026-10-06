@@ -1,0 +1,49 @@
+{
+ "matchesGolden": {
+  "896x443": true,
+  "443x939": true,
+  "1920x1080": true
+ },
+ "served": [
+  {
+   "status": 200,
+   "type": "text/javascript"
+  }
+ ],
+ "exports": [
+  "BANK",
+  "BANK_COMBAT_LEFT",
+  "DEFAULTS",
+  "LABEL",
+  "LEGEND",
+  "MSG_LEADING",
+  "MSG_X",
+  "MSG_X_ANDROID",
+  "PAD_STEPS",
+  "STATUS_H",
+  "X_HEIGHT",
+  "bandH",
+  "bankMetrics",
+  "collisions",
+  "deviceCell",
+  "layout",
+  "textMetrics",
+  "tierOf"
+ ],
+ "usable": [
+  true,
+  true,
+  true
+ ],
+ "errors": [],
+ "sw": {
+  "active": true,
+  "state": "activated",
+  "cache": [
+   "rolehack-dev1791091814"
+  ],
+  "layoutCached": true,
+  "cachedBytes": 68818
+ },
+ "swErrors": []
+}

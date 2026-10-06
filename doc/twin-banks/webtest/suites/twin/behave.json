@@ -1,0 +1,222 @@
+[
+ {
+  "name": "walk: pad → sends l, then h",
+  "ok": true,
+  "note": "sent l / h; hero 42,18 -> 43,18"
+ },
+ {
+  "name": "fight: COMBAT arms Fight; ARMED lit on COMBAT; banner up",
+  "ok": true,
+  "note": "{\"armed\":\"F\",\"lamp\":true,\"banner\":true}"
+ },
+ {
+  "name": "fight: the banner opens inside the map, over no key",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "rotation keeps an armed Fight (and its lamp and banner)",
+  "ok": true,
+  "note": "{\"armed\":\"F\",\"armedBy\":\"combat\",\"drawer\":null,\"assigning\":false,\"fan\":null,\"chips\":null,\"radial\":null,\"ctx\":false,\"cand\":false,\"assign\":null,\"combatLamp\":true,\""
+ },
+ {
+  "name": "fight: a direction sends F h and disarms",
+  "ok": true,
+  "note": "sent Fh; You attack thin air."
+ },
+ {
+  "name": "COMBAT layer: a hold paints it on the pad",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "COMBAT layer: its name pill inside the map, over no key",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "COMBAT layer: Kick, then a direction",
+  "ok": false,
+  "note": "sent <4>l<27>, direction asked true; Really attack Hachi? [yn] (n) n"
+ },
+ {
+  "name": "drawer: WORLD opens 3 columns, centred and bottom-anchored in the map, over no key",
+  "ok": true,
+  "note": "{\"x\":238,\"y\":160.59375,\"w\":420,\"h\":273.640625} cols 3 want w 420; "
+ },
+ {
+  "name": "rotation keeps an open drawer, re-placed in the new map area",
+  "ok": true,
+  "note": "{\"x\":11.5,\"y\":186.453125,\"w\":420,\"h\":273.640625}; "
+ },
+ {
+  "name": "drawer: a tap outside it closes it",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "empty PIN 1: a tap opens its picker (the drawer, assigning)",
+  "ok": true,
+  "note": "{\"drawer\":\"fight\",\"assigning\":true}"
+ },
+ {
+  "name": "rotation keeps the picker and its assignment",
+  "ok": true,
+  "note": "{\"drawer\":\"fight\",\"assigning\":true}"
+ },
+ {
+  "name": "after the turn, the picked command fills PIN 1",
+  "ok": true,
+  "note": "Quiver -> {\"slots\":[\"Q\",\"f\"],\"label\":\"Quiver\",\"drawer\":null}"
+ },
+ {
+  "name": "a hold clears PIN 1 again",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "rotation keeps an open layer (COMBAT's), its pill inside the new map",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "rotation keeps a count layer held up (SEARCH's), its pill inside the new map",
+  "ok": true,
+  "note": "s count; "
+ },
+ {
+  "name": "INVENTORY: sends i, the menu opens",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "EAT: sends e, the game answers",
+  "ok": true,
+  "note": "You don't have anything to eat."
+ },
+ {
+  "name": "FLICK: a flick up sends its macro (Kick, ^D)",
+  "ok": true,
+  "note": "sent <4>"
+ },
+ {
+  "name": "FLICK: a hold shows its two nodes inside the map, over no key",
+  "ok": true,
+  "note": "flick 2 nodes; "
+ },
+ {
+  "name": "FLICK: the lift puts the nodes away",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "REST: a hold puts its counts on the pad, its pill inside the map, over no key",
+  "ok": true,
+  "note": ". count 1; "
+ },
+ {
+  "name": "Long rest: a swipe up out of REST shows it in the slot",
+  "ok": true,
+  "note": "{\"revealed\":true,\"inSlot\":true}"
+ },
+ {
+  "name": "Long rest: its tap rests a long count (200s)",
+  "ok": true,
+  "note": "sent 200s"
+ },
+ {
+  "name": "SACRIFICE: a tap sends #offer (M-o)",
+  "ok": true,
+  "note": "You are not on an altar."
+ },
+ {
+  "name": "SACRIFICE: a 380 ms hold prays (M-p), and the game asks",
+  "ok": true,
+  "note": "Are you sure you want to pray? [yn] (n)"
+ },
+ {
+  "name": "pad centre: a tap searches or picks up",
+  "ok": true,
+  "note": "sent s"
+ },
+ {
+  "name": "pad centre: a hold puts HERE on the pad, its pill inside the map, over no key",
+  "ok": true,
+  "note": "here:centre; "
+ },
+ {
+  "name": "pad centre: slid to ↘ and lifted, Look here (:)",
+  "ok": true,
+  "note": "sent :"
+ },
+ {
+  "name": "CONTEXT: several actions put HERE on the pad to stay up, its pill inside the map, over no key",
+  "ok": true,
+  "note": "here:context; "
+ },
+ {
+  "name": "ghost deck: the five old deck spots, their centres on the map",
+  "ok": true,
+  "note": "combat@265,402 pin2@325,402 flick@381,402 look@479,402 context@602,402"
+ },
+ {
+  "name": "ghost deck: the first tap previews (no click; COMBAT flashes, the cell outlined)",
+  "ok": true,
+  "note": "{\"clicks\":0,\"preview\":{\"x\":28,\"y\":18},\"flash\":\"COMBAT\"}"
+ },
+ {
+  "name": "ghost deck: a second tap on the same cell within 2 s walks",
+  "ok": true,
+  "note": "{\"clicks\":1,\"preview\":false}"
+ },
+ {
+  "name": "ghost deck: a map tap off the old spots clicks at once",
+  "ok": true,
+  "note": "{\"clicks\":2}"
+ },
+ {
+  "name": "taps outside the map never reach it (cased, 896x443)",
+  "ok": true,
+  "note": "halo right of the pad: key l; halo over the left bank: key <239>; gap between pad keys: key l; above the right bank (far): nothing; the status band (far): nothing; the glass under the map (far): nothing; screen corner under APPLY: key a"
+ },
+ {
+  "name": "taps outside the map never reach it (caseless, 896x443)",
+  "ok": true,
+  "note": "halo right of the pad: key l; halo over the left bank: key <239>; gap between pad keys: key l; above the right bank (far): nothing; the status band (far): nothing; the glass under the map (far): nothing; screen corner under APPLY: key a"
+ },
+ {
+  "name": "taps outside the map never reach it (cased, 443x939)",
+  "ok": false,
+  "note": "halo right of the pad: key l; halo over the left bank: key <239>; gap between pad keys: key l; above the right bank (far): key <16>; the status band (far): nothing; the glass under the map (far): nothing; the glass under the map, deeper (far): key <16>; screen corner under APPLY: key a"
+ },
+ {
+  "name": "taps outside the map never reach it (caseless, 443x939)",
+  "ok": false,
+  "note": "halo right of the pad: key l; halo over the left bank: key <239>; gap between pad keys: key l; above the right bank (far): key <16>; the status band (far): nothing; the glass under the map (far): nothing; the glass under the map, deeper (far): key <16>; screen corner under APPLY: key a"
+ },
+ {
+  "name": "Settings: the Layout setting is there",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "Settings: Classic shows the classic case",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "Settings: classic at run time matches the old page (every key, the glass, the map; the old viewport meta)",
+  "ok": true,
+  "note": "65/65 keys, differ: ; meta \"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no\""
+ },
+ {
+  "name": "Settings: Twin banks comes back",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "no console errors",
+  "ok": true,
+  "note": ""
+ }
+]

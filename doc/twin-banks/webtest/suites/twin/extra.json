@@ -1,0 +1,92 @@
+[
+ {
+  "name": "options file (twin): paranoid_confirmation:+Remove appended",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "T with one candidate, a new game (twin): asks which",
+  "ok": true,
+  "note": "menu \"What do you want to take off?\" Konnichi wa Twin, welcome to NetHack!  You are a lawful male human Samurai."
+ },
+ {
+  "name": "options file (classic): paranoid_confirmation:+Remove absent",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "T with one candidate, a new game (classic): does not ask",
+  "ok": true,
+  "note": " The goblin wields an orcish dagger! Hachi misses the goblin. --More--"
+ },
+ {
+  "name": "a text field has the focus: the turn waits, then lays out",
+  "ok": true,
+  "note": "focus INPUT; W 896 while typing, 443 after"
+ },
+ {
+  "name": "a finger is down: the turn waits for the lift",
+  "ok": true,
+  "note": "W 443 under the finger, 896 after"
+ },
+ {
+  "name": "443x460 (split screen): classic, the setting kept",
+  "ok": true,
+  "note": "the map has no area (435x0)"
+ },
+ {
+  "name": "back to 896x443: twin banks again, as layout() places them",
+  "ok": true,
+  "note": ""
+ },
+ {
+  "name": "1366x768 mouse: the desk dock, as layout() places it",
+  "ok": false,
+  "note": "v2 layout(): tier tablet, S 768, glass above, pad 58 dp, pitch 66, right columns 58 dp, m  "
+ },
+ {
+  "name": "1920x1080 mouse: the desk dock, as layout() places it",
+  "ok": false,
+  "note": "v2 layout(): tier tablet, S 1080, glass above, pad 58 dp, pitch 66, right columns 58 dp, m "
+ },
+ {
+  "name": "statusLines=compact: both orientations as layout() places them",
+  "ok": true,
+  "note": " rows 4"
+ },
+ {
+  "name": "statusLines=hidden: both orientations as layout() places them",
+  "ok": true,
+  "note": " rows 4"
+ },
+ {
+  "name": "msgSize=1.4: both orientations as layout() places them",
+  "ok": true,
+  "note": " rows 4"
+ },
+ {
+  "name": "msgFont=screen,msgSize=1.2: both orientations as layout() places them",
+  "ok": true,
+  "note": " rows 4"
+ },
+ {
+  "name": "padCell=46: both orientations as layout() places them",
+  "ok": true,
+  "note": " rows 4"
+ },
+ {
+  "name": "case=false: both orientations as layout() places them",
+  "ok": true,
+  "note": " rows 4"
+ },
+ {
+  "name": "ghost deck: a short session counts for nothing, a catch restarts the run, three clean sessions retire it",
+  "ok": true,
+  "note": "150:1 40:1 200c:0 120:1 120:2 120:3 retired"
+ },
+ {
+  "name": "no console errors",
+  "ok": true,
+  "note": ""
+ }
+]

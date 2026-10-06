@@ -1,0 +1,38 @@
+{
+ "896x443": {
+  "points": 224044,
+  "differ": 0,
+  "mapEdge": 0,
+  "guardDiffs": 0,
+  "kinds": {},
+  "samples": [],
+  "errors": []
+ },
+ "443x939": {
+  "points": 206940,
+  "differ": 0,
+  "mapEdge": 0,
+  "guardDiffs": 0,
+  "kinds": {},
+  "samples": [],
+  "errors": []
+ },
+ "360x640": {
+  "points": 143760,
+  "differ": 0,
+  "mapEdge": 0,
+  "guardDiffs": 0,
+  "kinds": {},
+  "samples": [],
+  "errors": []
+ },
+ "390x844": {
+  "points": 165620,
+  "differ": 0,
+  "mapEdge": 0,
+  "guardDiffs": 0,
+  "kinds": {},
+  "samples": [],
+  "errors": []
+ }
+}

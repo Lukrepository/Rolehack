@@ -1,0 +1,31 @@
+import { chromium } from '/usr/local/lib/node_modules/playwright/index.mjs';
+const OUT = '/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/release/web';
+const URL = 'http://localhost:8791/';
+const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+const ctx = await b.newContext({ viewport: { width: 1280, height: 800 } });
+const open = async () => { const p = await ctx.newPage(); p.on('pageerror', (e) => console.log('pageerror', e.message)); await p.goto(URL); await p.waitForTimeout(4500); return p; };
+const state = (p) => p.evaluate(() => {
+  const vis = (id) => { const e = document.getElementById(id); return e && !e.hidden ? e.innerText.replace(/\s+/g, ' ').slice(0, 200) : ''; };
+  return { modal: vis('modal'), form: vis('formwrap'), msg: document.getElementById('msgband').innerText.replace(/\s+/g, ' ').slice(0, 300) };
+});
+const files = (p) => p.evaluate(() => { const FS = rolehackFiles(); const out = {};
+  for (const d of ['/save', '/save/save']) { try { out[d] = FS.readdir(d).filter((f) => f[0] !== '.').map((f) => f + ':' + FS.stat(d + '/' + f).size); } catch (e) { out[d] = String(e); } } return out; });
+let p = await open();
+await p.keyboard.type('Beta'); await p.keyboard.press('Enter'); await p.waitForTimeout(1200);
+await p.keyboard.press('y'); await p.waitForTimeout(1200); await p.keyboard.press('y'); await p.waitForTimeout(1500);
+for (let i = 0; i < 6; i++) { const s = await state(p); if (!s.modal && !s.form) break; await p.keyboard.press(/tutorial/.test(s.modal) ? 'n' : 'Enter'); await p.waitForTimeout(700); }
+console.log('c2', JSON.stringify(await state(p)));
+await p.keyboard.press('S'); await p.waitForTimeout(500); await p.keyboard.press('y'); await p.waitForTimeout(2500);
+console.log('c3', JSON.stringify(await state(p)), JSON.stringify(await files(p)));
+await p.close();
+p = await open();
+await p.evaluate(() => { const FS = rolehackFiles(); const d = FS.readFile('/save/save/0Beta'); const off = 2 + d[1]; d[off] ^= 1; FS.writeFile('/save/save/0Beta', d); });
+await p.keyboard.press('Control+a'); await p.keyboard.type('Beta'); await p.keyboard.press('Enter'); await p.waitForTimeout(2500);
+console.log('1', JSON.stringify(await state(p)));
+await p.keyboard.press('Enter'); await p.waitForTimeout(1500);
+console.log('2', JSON.stringify(await state(p)));
+await p.screenshot({ path: `${OUT}/saves-B2.png` });
+console.log('files', JSON.stringify(await files(p)));
+await p.keyboard.press('Enter'); await p.waitForTimeout(1500);
+console.log('3', JSON.stringify(await state(p)));
+await b.close();

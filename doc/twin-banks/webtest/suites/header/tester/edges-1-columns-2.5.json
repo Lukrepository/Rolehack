@@ -1,0 +1,27 @@
+[
+ {
+  "name": "edges-1-columns-z2.5-896x443",
+  "w": 896,
+  "h": 443,
+  "dpr": 1,
+  "cell": "columns",
+  "zoom": 2.5,
+  "steps": 246,
+  "reached": [
+   "1,9",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-columns-z2.5-896x443-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-columns-z2.5-896x443-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-columns-z2.5-896x443-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-columns-z2.5-896x443-at-1-20.png"
+  },
+  "cell0": 33
+ }
+]

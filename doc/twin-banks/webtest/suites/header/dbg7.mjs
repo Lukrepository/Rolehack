@@ -1,0 +1,14 @@
+import { launch, newCtx, openPage, resume, touch, sleep } from './common.mjs';
+const b = await launch();
+const ctx = await newCtx(b, { w: 640, h: 360, screen: { width: 640, height: 360 }, prefs: { budgets: {}, msgSize: 1.4 } });
+const p = await openPage(ctx); await resume(p);
+const k = await touch(ctx, p);
+const st = () => p.evaluate(() => { const R = globalThis.__bt; return JSON.stringify({ page: R.page, scroll: R.scrollRow, m: R.bandMetrics(), rows: R.rowsOf(R.page.map((e) => e.text)), html: document.getElementById('msgband').innerHTML.slice(0, 300) }); });
+console.log('start', await st());
+await p.evaluate(() => globalThis.__bt.send('#pray\n')); await sleep(500);
+console.log('pray', await st());
+await p.keyboard.press('Escape'); await sleep(500);
+console.log('esc', await st());
+await k.rotate(360, 640, 1, [360, 640]);
+console.log('rot', await st());
+await b.close();

@@ -1,0 +1,134 @@
+{
+ "checks": [
+  {
+   "tag": "classic@1",
+   "name": "classic drawn: no twin key, the case scaled as before, no viewport-fit",
+   "pass": true,
+   "detail": {
+    "ui": "classic",
+    "cw": true,
+    "more": false,
+    "modal": false,
+    "form": false,
+    "cur": {
+     "x": 72,
+     "y": 7
+    },
+    "twinKeys": 0,
+    "keysTransform": "scale(1)",
+    "meta": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+    "perm": false
+   }
+  },
+  {
+   "tag": "classic@1",
+   "name": "no permanent inventory in classic (NETHACKOPTIONS !perm_invent)",
+   "pass": true,
+   "detail": false
+  },
+  {
+   "tag": "classic@1",
+   "name": "the game's options have no paranoid_confirmation line in classic",
+   "pass": true,
+   "detail": 5851
+  },
+  {
+   "tag": "classic@1",
+   "name": "896x443: classic's pad sends its letters and walks",
+   "pass": true,
+   "detail": {
+    "sent": "ljhkny",
+    "moved": 5,
+    "keys": "ykuhlbjn"
+   }
+  },
+  {
+   "tag": "classic@1",
+   "name": "a map tap travels",
+   "pass": true,
+   "detail": {
+    "tgt": {
+     "x": 74,
+     "y": 2,
+     "px": 586,
+     "py": 113,
+     "far": 6
+    },
+    "a": {
+     "x": 72,
+     "y": 6
+    },
+    "c": {
+     "x": 74,
+     "y": 2
+    },
+    "sent": "click(74,2)"
+   }
+  },
+  {
+   "tag": "classic@1",
+   "name": "turned to 443x939: still classic",
+   "pass": true,
+   "detail": "classic"
+  },
+  {
+   "tag": "classic@1",
+   "name": "443x939: classic's pad sends its letters and walks",
+   "pass": true,
+   "detail": {
+    "sent": "ljhkny",
+    "moved": 5,
+    "keys": "ykuhlbjn"
+   }
+  },
+  {
+   "tag": "classic@1",
+   "name": "MENU -> Settings -> Layout: twin banks, at run time",
+   "pass": true,
+   "detail": {
+    "r": "ok",
+    "ui": "twin",
+    "twinKeys": 37,
+    "meta": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+   }
+  },
+  {
+   "tag": "classic@1",
+   "name": "twin banks after the switch: the pad walks",
+   "pass": true,
+   "detail": "lh"
+  },
+  {
+   "tag": "classic@1",
+   "name": "and back to classic",
+   "pass": true,
+   "detail": {
+    "r": "ok",
+    "ui": "classic",
+    "meta": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+   }
+  },
+  {
+   "tag": "classic@1",
+   "name": "896x443 after the switch back: classic's pad sends its letters and walks",
+   "pass": true,
+   "detail": {
+    "sent": "ljhkny",
+    "moved": 6,
+    "keys": "ykuhlbjn"
+   }
+  },
+  {
+   "tag": "classic@1",
+   "name": "no console error",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "shots": [
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/classic-landscape@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/classic-portrait@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/classic-switched-twin@1.png",
+  "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/final/shots/classic-switched-back@1.png"
+ ]
+}

@@ -1,0 +1,54 @@
+--- a/win/web/overlay.js@3b343ee
++++ b/overlay.js
+@@ -1599,17 +1599,14 @@
+   // right and down, and gives it to the topmost box that square touches: a
+   // cell's edge at 67.5 (the 3 dp gaps at 360 dp) gave the px at 67, 1 px
+   // off pad_b's keycap, to pad_j beyond it (the layers stage, 2026-10-03).
+-  // A point on a keycap's own edge is that key's, as the nearest keycap is
+-  // (the pads' cells begin at the face of the row above them).  A key under
+-  // the scrim gives the scrim; null where no cell or seam holds the point.
++  // A key under the scrim gives the scrim; null where no cell or seam holds
++  // the point.
+   bankAt(x, y) {
+     const G = this.twin.guard, inR = (r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h;
+     const seam = G.seams.find((r) => r.el && inR(r));
+     if (seam) return seam.el;
+-    const on = G.live.find((c) => G.cells.has(c.id) && x >= c.x && x <= c.x + c.w && y >= c.y && y <= c.y + c.h);
+-    const id = on ? on.id : [...G.cells].find(([, c]) => inR(c))?.[0];
+-    if (!id) return null;
+-    return this.keyLive(id) ? this.keyTarget(id) : this.scrim;
++    for (const [id, c] of G.cells) if (inR(c)) return this.keyLive(id) ? this.keyTarget(id) : this.scrim;
++    return null;
+   }
+ 
+   // The nearest keycap's distance from a point on the map, for web.js's ring;
+@@ -1902,7 +1899,7 @@
+       f.placeholder(false).cap(cap).tag(null).dim(!!p.bit && !this.hereHas(p.bit)).lit(false)
+         .label(this.labelForAction(p.act), 9.5, true).sub(p.act.key, true);
+     }
+-    this.showFrame(lit ? stairsPill(lit.act) : 'HERE', lit ? '#ffb347' : '#c2b6ff');
++    this.showFrame(lit ? `${lit.act.word.toUpperCase()}: TAP CENTRE` : 'HERE', lit ? '#ffb347' : '#c2b6ff');
+   }
+ 
+   // CONTEXT's one action is the stairs: the centre lit with them, the rest of the pad dimmed
+@@ -1914,7 +1911,7 @@
+       if (place === 4) this.paintStairsGo(f, L.act, L.act === C.CTX_ASCEND ? 1 : 7);
+       else f.dim(true).lit(false);
+     }
+-    this.showFrame(stairsPill(L.act), '#ffb347');
++    this.showFrame(`${L.act.word.toUpperCase()}: TAP CENTRE`, '#ffb347');
+   }
+ 
+   // A sticky layer's 4 s: any touch starts them again (watchGuard), a thumb
+@@ -3899,11 +3896,6 @@
+   return { cells, banks, seams, between, live };
+ }
+ 
+-// The pill while the stairs wait for their second tap: the lit centre's word
+-// and where to tap.  The pill is 120 dp (layout.js), about 17 letters, and
+-// "DESCEND: TAP CENTRE" lost its last one.
+-const stairsPill = (act) => `${act.word.toUpperCase()}? CENTRE`;
+-
+ // a layout reason's first clause, for a settings line
+ const firstReason = (r) => String(r || '').split('; ')[0];
+ 

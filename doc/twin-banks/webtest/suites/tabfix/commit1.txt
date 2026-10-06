@@ -1,0 +1,130 @@
+Web port: twin banks' tablet tier, its message log and inventory panels
+
+Twin banks now tell a phone from a tablet as the design's size classes
+do, and the glass the level does not need becomes the message log and the
+inventory.  Desktop mode is deferred (Lucas, 2026-10-03): every window is
+laid out as for touch, so a mouse or keyboard player gets the tier the
+window's size gives, with phone-size banks in the bottom corners.  The
+desk (layout.js section 10, the dock and its prefix) stays in the rule
+and its tests, unused by the page.
+
+A monitor's window is a tablet now, and the tablet's 24 dp cap left most
+of it black: the level at 24 dp in 2560x1440 left 52% of the window void,
+3440x1440 62%.  Where a 24 dp level would leave strips wider than a panel
+beside it, the cap now rises with the width.  A first cut switched to
+48 dp at once.  The reviews (2026-10-03) found that a window dragged
+across 2408 dp wide then went from 24 to 30 dp and moved the log, at
+every pixel either side.  They also found that a monitor turned to
+portrait kept its landscape cell and lost columns (1440x2560: 45 of 80
+where 24 dp shows 60).  Both are fixed here.
+
+The reviews' one major issue is fixed too.  The log decided whether to
+follow its newest line from where it happened to be scrolled.  A
+rotation moves the log between the glass and the tray, which reset it
+to its oldest line, and a new width re-wrapped it short of its end.
+After either, new messages no longer came into view.
+
+- viewer.js: the size classes, phone under 600 dp wide or 480 tall,
+  changing only 24 dp past a boundary (sizeClass, withClasses,
+  classesOf).  Two tiers are kept, the window's and the device cell's,
+  and only a usable layout's.
+- overlay.js: rebuildTwin lays out as for touch whatever the pointer
+  (pointerKind is gone), and keeps the tiers it drew for the next layout
+  (twinClasses); data-tier on the root.  The geometry hands web.js the
+  panels the layout placed.  guardClicks holds a touch begun on a pane
+  out of the glass (#panes) to it, as it does the glass.
+- layout.js:
+  - deviceCell takes the cell's tier with its own hysteresis
+    (prevCellTier).
+  - tabletCap: 24 dp up to where the strips beside the level would be
+    240 dp; over the next 160 dp of width it moves to the cell that
+    fills the width, then follows it up to 48 dp (tabletWideCellMax).
+    Continuous: dragged 2 px, a window's cell moves at most half a dp.
+    2560x1440 shows the level at 31.5 dp, 3440x1440 at 42.5.
+  - layoutCore: a portrait window keeps the cell under a level as wide
+    as its own glass, never under 24 dp.  This binds only past 24 dp,
+    which no phone or tablet reaches, so their two orientations keep
+    one cell.
+  - better(): two glasses that both show the whole level at the same
+    cell go to the one above the banks (5120x2160: 14% void, not 52%).
+  - fillGlass(): on 32:9 the log and the inventory stand beside the
+    level.
+  - Comments say desktop mode is deferred.
+- web.js: the panels (layoutPanels, renderLog, renderInventory,
+  panelTaps).
+  - The log is the history, newest last.  A phone's log under the map
+    shows only what comes before the band's first message.
+  - The inventory is the core's permanent inventory, taken without a
+    window (takePermInventory).  start() asks for it only for a game
+    begun in twin banks, with perminv_mode:full so it lists the gold as
+    INVENTORY does; classic keeps !perm_invent.  permInvent is known
+    before the first layout, so a fresh page's panel no longer says the
+    game began in classic.
+  - A tap opens the history or the inventory; at --More-- it is Space.
+  - The log follows its end, and a panel scrolled back keeps its top
+    line, by the player's scrolling alone (notePlace, putPlace).  Its
+    place is put back when a layout moves or resizes it.
+  - A layout that moves no panel leaves its content alone.  The full
+    refill at every rebuild made a dragged window's rebuild about 50%
+    slower.
+  - A panel is moved into the glass only when it is not already there.
+    Two panels beside the level otherwise swapped places, and lost
+    their scroll, at every rebuild.
+  - Where the inventory has room for two columns of an item's line (a
+    monitor's tray), it fills columns.  A vertical wheel moves along
+    them, and the right edge fades while more lie beyond.
+- rolehack.css: the panels: in the glass under its tube, or a pane of
+  their own over the case; the inventory's columns; the fade.
+- defaults.nh: the comment says what NETHACKOPTIONS adds for each
+  layout.
+- test/viewer.test.mjs: the size classes and their bands, a window
+  dragged across each boundary and jittered about it, fallbacks.
+- test/layout.test.mjs: 13 monitor windows (cell, whole level, panels
+  clear of keys and map, void), portrait monitors, and a window dragged
+  2 dp at a time wider and taller never moving its cell by more than
+  half a dp (the first cut's step fails it).
+- test/README.md: what the new tests check.
+
+Checked in the browser (Playwright, Chromium, real CDP touches and
+mouse, density 1 and 2.4375, no console errors):
+- The tester's suite (webtest/screens): screens 306/306, panels 68/68,
+  classic 56/56, extras 73/73 and 69/69, rotate 27/27, mapclick 17/17,
+  wheel 8/8 and monitor 4/4 at each density.  The monitor drag across
+  2396-2420 and 2830-2850 dp wide has no jump left, and the wide pack
+  scrolls with a plain wheel.
+- Phones 102/102 at 2.4375.  At 1, 5 or 6 pixels differ at the glass's
+  rounded corner on 443x939 or 443x859; the tester found HEAD
+  alternating between the same two renderings.
+- resize: 4 checks at each density still fail, all the earlier glass
+  ranking steps at 1000x600 that HEAD has too, left for Lucas.
+- The stage's own suites (webtest/tablet): tablet 287/287, panels
+  29/29, resize 23/23, compare (every phone and touch tablet's keys,
+  bands, map and glass as HEAD's), classic against HEAD at 20 windows
+  (one known flaky 360x640 tile passed on its re-run).
+- This round's checks (webtest/tabfix/fixes.mjs; at each density its
+  29 checks for this commit pass, the other 9 are the next commit's):
+  - the log through 1024x768 -> 768x1024 -> back and 1366x768: at its
+    end, then the newest message shown; scrolled back, the same line at
+    the top, and a new message moves nothing;
+  - a rebuild that moves no panel refills nothing;
+  - 5120x1440: three rebuilds move no panel;
+  - the wide inventory: wheel, fade, place across a resize, and the
+    map's wheel still zooms;
+  - a fresh page never shows the classic note;
+  - a new Healer's panel lists 'Coins $ - ... gold pieces', with no
+    option error.
+- The reviewers' scripts: the rotation and re-wrap probes (z2, z3) stay
+  at the end; the wheel moves the columns (z9); the panel is empty
+  behind the name prompt (z10); 2400-2412 dp wide stays at 24 dp (z11).
+  The hysteresis walk changes tier at 455 and 505 dp tall (z7).  A
+  rebuild with 256 lines of history takes 9.0 ms against 12.3 before
+  (z8).  On 23,716 touch windows no key rect differs from HEAD
+  (blast.mjs), and portrait monitors keep HEAD's columns (portrait.mjs).
+- The earlier stages' suites: guard 138, layers 356, habits 119,
+  hitgrid, header, more, more-turn, map, taps and chips all pass at
+  both densities.
+- node --test win/web/test/: 147 pass.  The design's sweep: 73,470
+  layouts, 0 issues.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Dgv3E1gUjAwvSmojZmYB4f

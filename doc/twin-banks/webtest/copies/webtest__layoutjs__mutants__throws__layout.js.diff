@@ -1,0 +1,11 @@
+--- a/win/web/layout.js@0e887f7
++++ b/layout.js
+@@ -434,7 +434,7 @@
+ //    landscape (iPhones in a browser), where the notch or island would sit on the outer
+ //    column.  An inset counts only beyond the margin that already clears it.
+ // ---------------------------------------------------------------------------------------
+-function placeBanks(W, H, M, st, table) {
++function placeBanks(W, H, M, st, table) { if (W === 860 && H === 860) throw new Error('boom');
+   const mirror = st.hand === 'left';
+   const ins = st.insets;
+   const landscape = W >= H;

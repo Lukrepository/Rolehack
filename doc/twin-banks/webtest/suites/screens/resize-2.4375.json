@@ -1,0 +1,699 @@
+[
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "starts as a tablet",
+  "pass": true,
+  "detail": {
+   "armed": null,
+   "drawer": null,
+   "hist": 2,
+   "tier": "tablet",
+   "ui": "twin",
+   "hp": "HP:12(12)",
+   "T": "T:1",
+   "inv": 10
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "Fight armed",
+  "pass": true,
+  "detail": "F"
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "narrower: one tier change, at 574 (under 576)",
+  "pass": true,
+  "detail": [
+   "574x900 twin/tablet -> twin/phone"
+  ]
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "narrower: the drawn cell never turns back; no panel shown blank",
+  "pass": true,
+  "detail": {
+   "reversals": [],
+   "blank": [],
+   "cells": [
+    11.897435897435898,
+    13.128205128205128
+   ]
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "narrower: no classic frame, no frame without its keys",
+  "pass": true,
+  "detail": {
+   "classic": [],
+   "empty": []
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "at 540x900: the layout is layout()'s (phone)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "narrower: Fight still armed, nothing lost",
+  "pass": true,
+  "detail": {
+   "st0": {
+    "armed": "F",
+    "drawer": null,
+    "hist": 2,
+    "tier": "tablet",
+    "ui": "twin",
+    "hp": "HP:12(12)",
+    "T": "T:1",
+    "inv": 10
+   },
+   "st": {
+    "armed": "F",
+    "drawer": null,
+    "hist": 2,
+    "tier": "phone",
+    "ui": "twin",
+    "hp": "HP:12(12)",
+    "T": "T:1",
+    "inv": 10
+   }
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "wider: one tier change, at 624 (not before)",
+  "pass": true,
+  "detail": [
+   "624x900 twin/phone -> twin/tablet"
+  ]
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "wider: the drawn cell never turns back; no panel shown blank",
+  "pass": true,
+  "detail": {
+   "reversals": [],
+   "blank": [],
+   "cells": [
+    13.128205128205128,
+    11.897435897435898
+   ]
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "wider: no classic frame, no frame without its keys",
+  "pass": true,
+  "detail": {
+   "classic": [],
+   "empty": []
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "back at 700x900: the layout is layout()'s (tablet)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "wider: Fight still armed, nothing lost",
+  "pass": true,
+  "detail": {
+   "st0": {
+    "armed": "F",
+    "drawer": null,
+    "hist": 2,
+    "tier": "tablet",
+    "ui": "twin",
+    "hp": "HP:12(12)",
+    "T": "T:1",
+    "inv": 10
+   },
+   "st": {
+    "armed": "F",
+    "drawer": null,
+    "hist": 2,
+    "tier": "tablet",
+    "ui": "twin",
+    "hp": "HP:12(12)",
+    "T": "T:1",
+    "inv": 10
+   }
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "the panels show their content again",
+  "pass": true,
+  "detail": {
+   "inv": 10,
+   "log": 2,
+   "hist": 2
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "jitter 580..620 from a tablet: no tier change",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "jitter 580..610 from a phone: no tier change",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "shorter: one tier change, under 456",
+  "pass": true,
+  "detail": [
+   "1000x454 twin/tablet -> twin/phone"
+  ]
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "shorter: the drawn cell never turns back; no panel shown blank",
+  "pass": true,
+  "detail": {
+   "reversals": [],
+   "blank": [],
+   "cells": [
+    16.41025641025641,
+    16,
+    15.58974358974359,
+    15.179487179487179,
+    14.76923076923077,
+    14.35897435897436,
+    13.948717948717949
+   ]
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "shorter: no classic frame, no frame without its keys",
+  "pass": true,
+  "detail": {
+   "classic": []
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "at 1000x420: the layout is layout()'s",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "taller: one tier change, at 504",
+  "pass": true,
+  "detail": [
+   "1000x504 twin/phone -> twin/tablet"
+  ]
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "taller: the drawn cell never turns back; no panel shown blank",
+  "pass": true,
+  "detail": {
+   "reversals": [],
+   "blank": [],
+   "cells": [
+    13.948717948717949,
+    14.35897435897436,
+    14.76923076923077,
+    15.179487179487179,
+    15.58974358974359,
+    16,
+    16.41025641025641
+   ]
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "taller: no classic frame, no frame without its keys",
+  "pass": true,
+  "detail": {
+   "classic": []
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "back at 1000x600: the layout is layout()'s",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "after all: Fight still armed, nothing lost",
+  "pass": true,
+  "detail": {
+   "st0": {
+    "armed": "F",
+    "drawer": null,
+    "hist": 2,
+    "tier": "tablet",
+    "ui": "twin",
+    "hp": "HP:12(12)",
+    "T": "T:1",
+    "inv": 10
+   },
+   "st": {
+    "armed": "F",
+    "drawer": null,
+    "hist": 2,
+    "tier": "tablet",
+    "ui": "twin",
+    "hp": "HP:12(12)",
+    "T": "T:1",
+    "inv": 10
+   }
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "WORLD drawer open",
+  "pass": true,
+  "detail": {
+   "armed": null,
+   "drawer": "world",
+   "hist": 2,
+   "tier": "tablet",
+   "ui": "twin",
+   "hp": "HP:12(12)",
+   "T": "T:1",
+   "inv": 10
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "the drawer stays open across the change to phone, inside the map area",
+  "pass": true,
+  "detail": {
+   "open": "world",
+   "r": {
+    "x": 290,
+    "y": 120.71875,
+    "w": 420,
+    "h": 311.28125
+   },
+   "map": {
+    "x": 220,
+    "y": 116.71,
+    "w": 560,
+    "h": 319.29
+   }
+  }
+ },
+ {
+  "tag": "resize-mouse@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "starts as a tablet",
+  "pass": true,
+  "detail": {
+   "armed": null,
+   "drawer": null,
+   "hist": 2,
+   "tier": "tablet",
+   "ui": "twin",
+   "hp": "HP:12(12)",
+   "T": "T:1",
+   "inv": 10
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "Fight armed",
+  "pass": true,
+  "detail": "F"
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "narrower: one tier change, at 574 (under 576)",
+  "pass": true,
+  "detail": [
+   "574x900 twin/tablet -> twin/phone"
+  ]
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "narrower: the drawn cell never turns back; no panel shown blank",
+  "pass": true,
+  "detail": {
+   "reversals": [],
+   "blank": [],
+   "cells": [
+    11.897435897435898,
+    13.128205128205128
+   ]
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "narrower: no classic frame, no frame without its keys",
+  "pass": true,
+  "detail": {
+   "classic": [],
+   "empty": []
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "at 540x900: the layout is layout()'s (phone)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "narrower: Fight still armed, nothing lost",
+  "pass": true,
+  "detail": {
+   "st0": {
+    "armed": "F",
+    "drawer": null,
+    "hist": 2,
+    "tier": "tablet",
+    "ui": "twin",
+    "hp": "HP:12(12)",
+    "T": "T:1",
+    "inv": 10
+   },
+   "st": {
+    "armed": "F",
+    "drawer": null,
+    "hist": 2,
+    "tier": "phone",
+    "ui": "twin",
+    "hp": "HP:12(12)",
+    "T": "T:1",
+    "inv": 10
+   }
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "wider: one tier change, at 624 (not before)",
+  "pass": true,
+  "detail": [
+   "624x900 twin/phone -> twin/tablet"
+  ]
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "wider: the drawn cell never turns back; no panel shown blank",
+  "pass": true,
+  "detail": {
+   "reversals": [],
+   "blank": [],
+   "cells": [
+    13.128205128205128,
+    11.897435897435898
+   ]
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "wider: no classic frame, no frame without its keys",
+  "pass": true,
+  "detail": {
+   "classic": [],
+   "empty": []
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "back at 700x900: the layout is layout()'s (tablet)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "wider: Fight still armed, nothing lost",
+  "pass": true,
+  "detail": {
+   "st0": {
+    "armed": "F",
+    "drawer": null,
+    "hist": 2,
+    "tier": "tablet",
+    "ui": "twin",
+    "hp": "HP:12(12)",
+    "T": "T:1",
+    "inv": 10
+   },
+   "st": {
+    "armed": "F",
+    "drawer": null,
+    "hist": 2,
+    "tier": "tablet",
+    "ui": "twin",
+    "hp": "HP:12(12)",
+    "T": "T:1",
+    "inv": 10
+   }
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "the panels show their content again",
+  "pass": true,
+  "detail": {
+   "inv": 10,
+   "log": 2,
+   "hist": 2
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "jitter 580..620 from a tablet: no tier change",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "jitter 580..610 from a phone: no tier change",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "shorter: one tier change, under 456",
+  "pass": true,
+  "detail": [
+   "1000x454 twin/tablet -> twin/phone"
+  ]
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "shorter: the drawn cell never turns back; no panel shown blank",
+  "pass": true,
+  "detail": {
+   "reversals": [],
+   "blank": [],
+   "cells": [
+    16.41025641025641,
+    16,
+    15.58974358974359,
+    15.179487179487179,
+    14.76923076923077,
+    14.35897435897436,
+    13.948717948717949
+   ]
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "shorter: no classic frame, no frame without its keys",
+  "pass": true,
+  "detail": {
+   "classic": []
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "at 1000x420: the layout is layout()'s",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "taller: one tier change, at 504",
+  "pass": true,
+  "detail": [
+   "1000x504 twin/phone -> twin/tablet"
+  ]
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "taller: the drawn cell never turns back; no panel shown blank",
+  "pass": true,
+  "detail": {
+   "reversals": [],
+   "blank": [],
+   "cells": [
+    13.948717948717949,
+    14.35897435897436,
+    14.76923076923077,
+    15.179487179487179,
+    15.58974358974359,
+    16,
+    16.41025641025641
+   ]
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "taller: no classic frame, no frame without its keys",
+  "pass": true,
+  "detail": {
+   "classic": []
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "back at 1000x600: the layout is layout()'s",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "after all: Fight still armed, nothing lost",
+  "pass": true,
+  "detail": {
+   "st0": {
+    "armed": "F",
+    "drawer": null,
+    "hist": 2,
+    "tier": "tablet",
+    "ui": "twin",
+    "hp": "HP:12(12)",
+    "T": "T:1",
+    "inv": 10
+   },
+   "st": {
+    "armed": "F",
+    "drawer": null,
+    "hist": 2,
+    "tier": "tablet",
+    "ui": "twin",
+    "hp": "HP:12(12)",
+    "T": "T:1",
+    "inv": 10
+   }
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "WORLD drawer open",
+  "pass": true,
+  "detail": {
+   "armed": null,
+   "drawer": "world",
+   "hist": 2,
+   "tier": "tablet",
+   "ui": "twin",
+   "hp": "HP:12(12)",
+   "T": "T:1",
+   "inv": 10
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "the drawer stays open across the change to phone, inside the map area",
+  "pass": true,
+  "detail": {
+   "open": "world",
+   "r": {
+    "x": 290,
+    "y": 120.71875,
+    "w": 420,
+    "h": 311.28125
+   },
+   "map": {
+    "x": 220,
+    "y": 116.71,
+    "w": 560,
+    "h": 319.29
+   }
+  }
+ },
+ {
+  "tag": "resize-touch@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "held@2.4375",
+  "name": "finger down: still the tablet layout, keys where they were",
+  "pass": true,
+  "detail": {
+   "tier": "tablet",
+   "W": 560
+  }
+ },
+ {
+  "tag": "held@2.4375",
+  "name": "lifted: the phone layout",
+  "pass": true,
+  "detail": {
+   "tier": "phone",
+   "W": 560
+  }
+ },
+ {
+  "tag": "held@2.4375",
+  "name": "lifted: layout()'s",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "held@2.4375",
+  "name": "finger down: still the phone layout",
+  "pass": true,
+  "detail": "phone"
+ },
+ {
+  "tag": "held@2.4375",
+  "name": "lifted: the tablet layout again",
+  "pass": true,
+  "detail": {
+   "tier": "tablet",
+   "W": 700
+  }
+ },
+ {
+  "tag": "held@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "roundtrip@2.4375",
+  "name": "896x443 after a monitor's sizes: every key where it was",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "roundtrip@2.4375",
+  "name": "896x443 after: the same map area and bands",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "roundtrip@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ }
+]

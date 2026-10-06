@@ -1,0 +1,593 @@
+{
+ "checks": [
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "a deep map point exists",
+   "pass": true,
+   "detail": {
+    "x": 180,
+    "y": 205.70999999999998,
+    "cx": 60,
+    "cy": 7,
+    "d": 2.1450000000000102
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "halo swallow point found",
+   "pass": true,
+   "detail": {
+    "x": 198,
+    "y": 542,
+    "id": "pad_l"
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "seam point found",
+   "pass": true,
+   "detail": {
+    "x": 258.15625,
+    "y": 542
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "ring tap: a preview, no travel",
+   "pass": true,
+   "detail": {
+    "preview": {
+     "x": 46,
+     "y": 14,
+     "ring": true
+    },
+    "sent": "",
+    "log": [
+     "ring"
+    ]
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "nothing pops over a key: ring preview",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "ring: second tap on the cell travels",
+   "pass": true,
+   "detail": {
+    "sent": "@46,14",
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "ring: the preview lapses after 2 s",
+   "pass": true,
+   "detail": null
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "ring: after the lapse a tap previews again, no travel",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "ring then a deep tap: the deep tap travels, preview cleared",
+   "pass": true,
+   "detail": {
+    "sent": "@60,7",
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "ring then a key: preview cleared, the key goes",
+   "pass": true,
+   "detail": {
+    "preview": null,
+    "sent": ":"
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "a ring tap within 120 ms of a key: swallowed (bounce)",
+   "pass": true,
+   "detail": {
+    "log": [
+     "bounce"
+    ],
+    "preview": null,
+    "sent": "l"
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "a deep map tap within 120 ms of a key still travels",
+   "pass": true,
+   "detail": "l@60,7"
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "a deep map tap travels at once",
+   "pass": true,
+   "detail": "@60,7"
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "GAME opens its drawer",
+   "pass": true,
+   "detail": "game"
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "a map tap within 200 ms of a drawer closing: swallowed",
+   "pass": true,
+   "detail": {
+    "drawer": null,
+    "sent": "",
+    "log": [
+     "closing"
+    ]
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "after 200 ms the map tap travels",
+   "pass": true,
+   "detail": "@60,7"
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "COMBAT tap arms Fight (deep)",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "Fight armed + deep map tap: disarmed, consumed",
+   "pass": true,
+   "detail": {
+    "armed": false,
+    "sent": "",
+    "log": [
+     "disarm"
+    ],
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "COMBAT tap arms Fight (ring)",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "Fight armed + ring map tap: disarmed, consumed",
+   "pass": true,
+   "detail": {
+    "armed": false,
+    "sent": "",
+    "log": [
+     "disarm"
+    ],
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "Fight armed then →: Fl sent",
+   "pass": true,
+   "detail": "Fl"
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "a slide from a key onto the map: no travel",
+   "pass": true,
+   "detail": "l"
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "a pan from the map onto a key: no key, no travel",
+   "pass": true,
+   "detail": {
+    "sent": "",
+    "downs": [],
+    "v0": {
+     "x": 0,
+     "y": 0
+    },
+    "v1": {
+     "x": -21,
+     "y": 336.2899932861328
+    }
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "halo 10 dp off a key: swallowed, nothing sent",
+   "pass": true,
+   "detail": {
+    "log": [
+     "halo:pad_l"
+    ],
+    "sent": "",
+    "downs": []
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "nothing pops over a key: halo flash",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "seam COMBAT|CONTEXT: swallowed, nothing armed",
+   "pass": true,
+   "detail": {
+    "log": [
+     "seam"
+    ],
+    "armed": false,
+    "sent": ""
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "--More-- up (deep map)",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "nothing pops over a key: --More--",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "--More-- + deep map tap: Space, no preview, no travel",
+   "pass": true,
+   "detail": {
+    "sent": " ",
+    "log": [],
+    "downs": [],
+    "more": false,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "--More-- up (ring)",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "--More-- + ring tap: Space, no preview, no travel",
+   "pass": true,
+   "detail": {
+    "sent": " ",
+    "log": [],
+    "downs": [],
+    "more": false,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "--More-- up (halo 8-12 dp)",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "--More-- + halo 8-12 dp: not swallowed",
+   "pass": true,
+   "detail": {
+    "sent": "",
+    "log": [],
+    "downs": [],
+    "more": true,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "--More-- up (seam)",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "--More-- + seam: not swallowed",
+   "pass": true,
+   "detail": {
+    "sent": "",
+    "log": [],
+    "downs": [
+     "combat"
+    ],
+    "more": true,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "--More-- up (halo snap)",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "--More-- + halo snap: snaps to pad_l",
+   "pass": true,
+   "detail": {
+    "sent": "l",
+    "log": [
+     "snap:pad_l"
+    ],
+    "downs": [
+     "pad_l"
+    ],
+    "more": true,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "kick asks a direction",
+   "pass": true,
+   "detail": "In what direction?"
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "direction prompt + map tap: nothing answered, no preview, no travel",
+   "pass": true,
+   "detail": {
+    "still": true,
+    "sent": "@60,7",
+    "log": []
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "direction prompt + halo 8-12 dp: swallowed",
+   "pass": true,
+   "detail": {
+    "log": [
+     "halo:pad_l"
+    ],
+    "sent": ""
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "direction prompt: the hero did not move",
+   "pass": true,
+   "detail": {
+    "hero0": {
+     "x": 60,
+     "y": 4
+    },
+    "hero1": {
+     "x": 60,
+     "y": 4
+    }
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "farlook (ring): getpos up",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "nothing pops over a key: farlook",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "farlook + ring: the tap picks the spot (a click), no preview",
+   "pass": true,
+   "detail": {
+    "sent": "@46,14",
+    "log": [],
+    "downs": [],
+    "picking": false,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "farlook (deep map): getpos up",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "farlook + deep map: the tap picks the spot (a click), no preview",
+   "pass": true,
+   "detail": {
+    "sent": "@60,7",
+    "log": [],
+    "downs": [],
+    "picking": false,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "farlook (halo 8-12 dp): getpos up",
+   "pass": true,
+   "detail": true
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "farlook + halo 8-12 dp: not swallowed",
+   "pass": true,
+   "detail": {
+    "sent": "",
+    "log": [],
+    "downs": [],
+    "picking": true,
+    "preview": null
+   }
+  },
+  {
+   "tag": "states 2.4375-360x640",
+   "name": "console clean",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "popups": [
+  {
+   "tag": "2.4375-360x640",
+   "what": "ring preview",
+   "shown": [],
+   "bad": [],
+   "rects": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "halo flash",
+   "shown": [],
+   "bad": [],
+   "rects": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "--More--",
+   "shown": [],
+   "bad": [],
+   "rects": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "farlook",
+   "shown": [],
+   "bad": [],
+   "rects": []
+  }
+ ],
+ "notes": [
+  {
+   "tag": "2.4375-360x640",
+   "ring": {
+    "x": 13,
+    "y": 289.71,
+    "cx": 46,
+    "cy": 14
+   },
+   "deep": {
+    "x": 180,
+    "y": 205.70999999999998,
+    "cx": 60,
+    "cy": 7,
+    "d": 2.1450000000000102
+   },
+   "hero": {
+    "x": 60,
+    "y": 4
+   }
+  },
+  {
+   "tag": "2.4375-360x640",
+   "swallowAt": {
+    "x": 198,
+    "y": 542,
+    "id": "pad_l"
+   },
+   "snapAt": {
+    "x": 193,
+    "y": 542,
+    "id": "pad_l"
+   },
+   "seamAt": {
+    "x": 258.15625,
+    "y": 542
+   }
+  },
+  {
+   "tag": "2.4375-360x640",
+   "more": false,
+   "sent": " ",
+   "log": [],
+   "downs": [],
+   "preview": null
+  },
+  {
+   "tag": "2.4375-360x640",
+   "more": false,
+   "sent": " ",
+   "log": [],
+   "downs": [],
+   "preview": null
+  },
+  {
+   "tag": "2.4375-360x640",
+   "more": true,
+   "sent": "",
+   "log": [],
+   "downs": [],
+   "preview": null
+  },
+  {
+   "tag": "2.4375-360x640",
+   "more": true,
+   "sent": "",
+   "log": [],
+   "downs": [
+    "combat"
+   ],
+   "preview": null
+  },
+  {
+   "tag": "2.4375-360x640",
+   "more": true,
+   "sent": "l",
+   "log": [
+    "snap:pad_l"
+   ],
+   "downs": [
+    "pad_l"
+   ],
+   "preview": null
+  },
+  {
+   "tag": "2.4375-360x640",
+   "farlook": "ring",
+   "sent": "@46,14",
+   "log": [],
+   "downs": [],
+   "picking": false,
+   "preview": null
+  },
+  {
+   "tag": "2.4375-360x640",
+   "farlook": "deep map",
+   "sent": "@60,7",
+   "log": [],
+   "downs": [],
+   "picking": false,
+   "preview": null
+  },
+  {
+   "tag": "2.4375-360x640",
+   "farlook": "halo 8-12 dp",
+   "sent": "",
+   "log": [],
+   "downs": [],
+   "picking": true,
+   "preview": null
+  }
+ ]
+}

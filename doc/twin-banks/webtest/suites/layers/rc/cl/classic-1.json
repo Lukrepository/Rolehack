@@ -1,0 +1,121 @@
+[
+ {
+  "w": 360,
+  "h": 640,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 230400,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "portrait"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/layers/rc/cl/shots/classic-1-head-360x640.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/layers/rc/cl/shots/classic-1-work-360x640.png"
+  ]
+ },
+ {
+  "w": 844,
+  "h": 390,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 329160,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/layers/rc/cl/shots/classic-1-head-844x390.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/layers/rc/cl/shots/classic-1-work-844x390.png"
+  ]
+ },
+ {
+  "w": 896,
+  "h": 363,
+  "bad": [],
+  "px": {
+   "n": 0,
+   "of": 325248,
+   "box": null
+  },
+  "attrsHead": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "attrsWork": {
+   "skin": "terminal",
+   "case": "on",
+   "phosphor": "color",
+   "ui": "classic",
+   "layout": "landscape"
+  },
+  "shots": [
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/layers/rc/cl/shots/classic-1-head-896x363.png",
+   "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/layers/rc/cl/shots/classic-1-work-896x363.png"
+  ]
+ },
+ {
+  "switch": [
+   896,
+   443
+  ],
+  "bad": []
+ },
+ {
+  "switch": [
+   443,
+   939
+  ],
+  "bad": []
+ },
+ {
+  "twinKeys": [
+   360,
+   640
+  ],
+  "bad": []
+ },
+ {
+  "twinKeys": [
+   844,
+   390
+  ],
+  "bad": []
+ },
+ {
+  "twinKeys": [
+   896,
+   363
+  ],
+  "bad": []
+ }
+]

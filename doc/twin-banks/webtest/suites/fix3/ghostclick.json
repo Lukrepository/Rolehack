@@ -1,0 +1,95 @@
+[
+ {
+  "name": "896x443 twin: INVENTORY's touch does not click what opened under it",
+  "pass": true,
+  "detail": {
+   "trapped": 0,
+   "pushed": [
+    105
+   ]
+  }
+ },
+ {
+  "name": "896x443 twin: a touch begun on the window still clicks it",
+  "pass": true,
+  "detail": {
+   "trapped2": 1
+  }
+ },
+ {
+  "name": "896x443 twin: MENU then DONE leaves the case off",
+  "pass": true,
+  "detail": {
+   "form": {
+    "open": true,
+    "sel": []
+   },
+   "caseNow": [
+    "false",
+    "off"
+   ]
+  }
+ },
+ {
+  "name": "443x939 twin: INVENTORY's touch does not click what opened under it",
+  "pass": true,
+  "detail": {
+   "trapped": 0,
+   "pushed": [
+    105
+   ]
+  }
+ },
+ {
+  "name": "443x939 twin: a touch begun on the window still clicks it",
+  "pass": true,
+  "detail": {
+   "trapped2": 1
+  }
+ },
+ {
+  "name": "443x939 twin: MENU then DONE leaves the case off",
+  "pass": true,
+  "detail": {
+   "form": {
+    "open": true,
+    "sel": []
+   },
+   "caseNow": [
+    "false",
+    "off"
+   ]
+  }
+ },
+ {
+  "name": "896x443 classic: INVENTORY's touch does not click what opened under it",
+  "pass": true,
+  "detail": {
+   "trapped": 0,
+   "pushed": [
+    105
+   ]
+  }
+ },
+ {
+  "name": "896x443 classic: a touch begun on the window still clicks it",
+  "pass": true,
+  "detail": {
+   "trapped2": 1
+  }
+ },
+ {
+  "name": "896x443 classic: MENU then DONE leaves the case off",
+  "pass": true,
+  "detail": {
+   "form": {
+    "open": true,
+    "sel": []
+   },
+   "caseNow": [
+    "false",
+    "off"
+   ]
+  }
+ }
+]

@@ -1,0 +1,18 @@
+{
+ "classic": {
+  "liveParanoid": false,
+  "modal": false,
+  "title": "Do you want a tutorial?",
+  "msg": "You were wearing an uncursed +3 small shield.",
+  "ui": "classic",
+  "errors": []
+ },
+ "twin": {
+  "liveParanoid": true,
+  "modal": true,
+  "title": "What do you want to take off?",
+  "msg": "Velkommen Banks, welcome to NetHack! You are a lawful dwarven Valkyrie.",
+  "ui": "twin",
+  "errors": []
+ }
+}

@@ -1,0 +1,2 @@
+#!/bin/bash
+./rh.sh '{"op":"eval","js":"(()=>{const O=globalThis.__rh.overlay;if(!O.twin)return \"classic \"+document.documentElement.dataset.ui;const S=O.twin.spec;const f=(id)=>{const c=S.controls.find(c=>c.id===id);return c?[+c.x.toFixed(1),+c.y.toFixed(1),+c.w.toFixed(1),+c.h.toFixed(1)].join(\",\"):\"-\"};return JSON.stringify({W:O.twin.W,H:O.twin.H,fit:S.fit.level,pad:S.fit.pad,budget:O.twin.settings.budget,pad_b:f(\"pad_b\"),apply:f(\"apply\"),combat:f(\"combat\"),rest:f(\"rest\"),m2:f(\"m2\"),cell:O.geom.cell, store:localStorage.getItem(\"rh.budgets\")})})()"}'

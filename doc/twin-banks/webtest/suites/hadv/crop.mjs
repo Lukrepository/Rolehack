@@ -1,0 +1,13 @@
+import { launch, newCtx, openPage, resume, sleep, SHOTS } from './common.mjs';
+const b = await launch();
+const DPR = 2.4375;
+const ctx = await newCtx(b, { w: 896, h: 443, dpr: DPR, screen: { width: 939, height: 443 }, prefs: { mapCell: 'rows' } });
+const p = await openPage(ctx);
+await resume(p);
+await sleep(300);
+const info = await p.evaluate(() => { const R = (id) => { const q = document.getElementById(id).getBoundingClientRect(); return [q.x, q.y, q.right, q.bottom]; }; return { glass: R('glass'), msg: R('msgband'), st: R('statband'), map: R('map') }; });
+console.log(JSON.stringify(info));
+await p.screenshot({ path: `${SHOTS}/crop-over-top.png`, clip: { x: 150, y: 40, width: 400, height: 50 } });
+await p.screenshot({ path: `${SHOTS}/crop-over-mid.png`, clip: { x: 440, y: 0, width: 300, height: 90 } });
+await ctx.close();
+await b.close();

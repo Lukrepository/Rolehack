@@ -1,0 +1,11 @@
+--- a/win/web/layout.js@0e887f7
++++ b/layout.js
+@@ -455,7 +455,7 @@
+     const bw = bankWidth(M, kk), bh = M.B;
+     const outer = useSide ? Math.max(M.m, corner === 'L' ? ins.l : ins.r) : M.m;
+     const bottom = M.mb + inset + lift;
+-    const x0 = corner === 'L' ? outer : W - outer - bw;
++    const x0 = corner === 'L' ? outer : W - outer - bw - (st.hand === 'left' ? 1 : 0);
+     const y1 = H - bottom;
+     banks[corner] = { side: corner, content, kk, bw, bh, x0, x1: x0 + bw, y0: y1 - bh, y1 };
+   }

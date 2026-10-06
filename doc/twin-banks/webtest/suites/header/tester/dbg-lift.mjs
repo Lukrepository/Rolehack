@@ -1,0 +1,22 @@
+import { launch, newCtx, openPage, resume, touch, sleep, frameGrid } from './common.mjs';
+const b = await launch();
+const ctx = await newCtx(b, { w: 896, h: 443, dpr: 1, prefs: { ghostDeck: { on: false, clean: 0, session: null } } });
+await ctx.addInitScript(() => { globalThis.__pe = []; for (const t of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel']) addEventListener(t, (e) => { if (e.target.id === 'map') globalThis.__pe.push(`${t} ${e.pointerId} ${e.clientX.toFixed(0)},${e.clientY.toFixed(0)}`); }, true); });
+const p = await openPage(ctx);
+const T = await touch(ctx, p);
+await T.rotate(896, 443, 1);
+await resume(p);
+const g0 = await frameGrid(p);
+const cx = g0.canvas.x + g0.canvas.w / 2, cy = g0.canvas.y + g0.canvas.h / 2, dA = 50;
+await p.evaluate(() => { globalThis.__pe = []; });
+await T.down([[cx - dA, cy], [cx + dA, cy]]);
+await sleep(80);
+await T.cdp.send('Input.dispatchTouchEvent', { type: process.argv[2] || 'touchEnd', touchPoints: JSON.parse(process.argv[3] || '[]').map((id) => ({ x: id ? cx + dA : cx - dA, y: cy, id })) });
+await sleep(30);
+for (let i = 1; i <= 6; i++) { await T.cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: cx + dA - 8 * i, y: cy - 5 * i, id: 1 }] }); await sleep(16); }
+await T.up();
+await sleep(200);
+const g1 = await frameGrid(p);
+console.log((await p.evaluate(() => globalThis.__pe)).join('\n'));
+console.log(g0.L, g0.Tp, '->', g1.L, g1.Tp, g0.Td, g1.Td);
+await b.close();

@@ -1,0 +1,156 @@
+[
+ {
+  "name": "walk",
+  "ok": true,
+  "detail": "pad_l sent \"l\", hero 54,4 -> 55,4",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-walk.png",
+  "errors": []
+ },
+ {
+  "name": "fight-armed",
+  "ok": true,
+  "detail": "armed F with the ARMED lamp on COMBAT, banner inside the map; ← sent \"Fh\"; message \"You harmlessly attack the branch staircase up.\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-fight-armed.png",
+  "errors": []
+ },
+ {
+  "name": "combat-layer-then-direction",
+  "ok": true,
+  "detail": "layer \"COMBAT LAYER\" (pill inside the map), ← = \"^D Kick\"; sent \"<4>j\"; asked \"In what direction?\"; then \"Dumb move! You strain a muscle.\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-combat-layer-then-direction.png",
+  "errors": []
+ },
+ {
+  "name": "inventory",
+  "ok": true,
+  "detail": "sent \"i\", inventory window open: \"Weapons a - a +1 dwarvish spear (weapon in right hand) b - a +0 dagger (alternat\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-inventory.png",
+  "errors": []
+ },
+ {
+  "name": "eat",
+  "ok": true,
+  "detail": "sent \"e\"; \"Dumb move! You strain a muscle.\" (a menu)",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-eat.png",
+  "errors": []
+ },
+ {
+  "name": "sacrifice-tap",
+  "ok": true,
+  "detail": "a 200 ms press sent [{\"key\":239}]; \"You are not on an altar.\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-sacrifice-tap.png",
+  "errors": []
+ },
+ {
+  "name": "sacrifice-hold-prays",
+  "ok": true,
+  "detail": "a 450 ms hold sent [{\"key\":240}]; \"Are you sure you want to pray? [yn] (n)\"; after n: \"Are you sure you want to pray? [yn] (n) \"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-sacrifice-hold-prays.png",
+  "errors": []
+ },
+ {
+  "name": "sacrifice-hold-380",
+  "ok": true,
+  "detail": "395 ms: \"Are you sure you want to pray? [yn] (n)\"; 330 ms: \"You are not on an altar.\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-sacrifice-hold-380.png",
+  "errors": []
+ },
+ {
+  "name": "pad-centre",
+  "ok": true,
+  "detail": "tap sent \"s\"; hold put HERE on the pad (its pill inside the map, over no key); slid to Look here sent \":\": \"You see no objects here.\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-pad-centre.png",
+  "errors": []
+ },
+ {
+  "name": "rest-counts-popup",
+  "ok": true,
+  "detail": "REST hold put counts \".\" on the pad: its pill inside the map, over no key",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-rest-counts-popup.png",
+  "errors": []
+ },
+ {
+  "name": "flick-up-kicks",
+  "ok": true,
+  "detail": "stroke up sent \"<4>\": \"In what direction?\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-flick-up-kicks.png",
+  "errors": []
+ },
+ {
+  "name": "flick-up-right",
+  "ok": true,
+  "detail": "stroke up-right (empty macro): editor opened, sent \"\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-flick-up-right.png",
+  "errors": []
+ },
+ {
+  "name": "flick-legend",
+  "ok": true,
+  "detail": "legend nodes 282,443 334,443 = layout popups; inside the map",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-flick-legend.png",
+  "errors": []
+ },
+ {
+  "name": "longrest-swipe-up",
+  "ok": true,
+  "detail": "sideways no, down no; up: \"SET ×N LONG REST ×200\" in REST's slot; tap sent \"200s\"; \"The kitten misses the jackal. You hear b\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-longrest-swipe-up.png",
+  "errors": []
+ },
+ {
+  "name": "drawer-world",
+  "ok": true,
+  "detail": "24 items in 3 columns, panel 12,186 420x300 = layout drawer, bottom-anchored; inside the map, over no key; \"_ Travel\" sent _, drawer closed",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-drawer-world.png",
+  "errors": []
+ },
+ {
+  "name": "drawer-game",
+  "ok": true,
+  "detail": "31 items in 3 columns, panel 12,186 420x300 = layout drawer, bottom-anchored; inside the map, over no key; \"\\ Discoveries\" sent \\, drawer closed",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-drawer-game.png",
+  "errors": []
+ },
+ {
+  "name": "menu-settings-layout",
+  "ok": true,
+  "detail": "{\"formOpen\":true,\"layout\":true,\"ghost\":true,\"opts\":[{\"t\":\"Twin banks\",\"amber\":true},{\"t\":\"Classic\",\"amber\":false}],\"classicOpt\":true,\"twinLit\":true}",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-menu-settings-layout.png",
+  "errors": []
+ },
+ {
+  "name": "empty-pin-tap-opens-picker",
+  "ok": true,
+  "detail": "tap on the empty PIN 1 opened the fight drawer, assigning true; picked Throw -> key shows \"t THROW\"; tap sent \"t\": \"Where do you want to travel to? (For ins\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-empty-pin-tap-opens-picker.png",
+  "errors": []
+ },
+ {
+  "name": "rotate-keeps-armed-fight",
+  "ok": true,
+  "detail": "after the turn to 896x443: armed F, lamp true, banner true (inside the map); → sent \"Fl\"",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-rotate-keeps-armed-fight.png",
+  "errors": []
+ },
+ {
+  "name": "rotate-keeps-open-drawer",
+  "ok": true,
+  "detail": "turned to 896: drawer world shown true, 24/24 items, 3 columns, at the layout drawer; inside the map; turned back: world",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-rotate-keeps-open-drawer.png",
+  "errors": []
+ },
+ {
+  "name": "map-tap-travels",
+  "ok": true,
+  "detail": "tap at 222,253 pushed click(54,5)",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-map-tap-travels.png",
+  "errors": []
+ },
+ {
+  "name": "map-drag-free-axis",
+  "ok": true,
+  "detail": "left -491.0 -> -443.0, top 4.0 -> 28.0; pushed nothing",
+  "shot": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/banks/shots/behave-1-443x939-map-drag-free-axis.png",
+  "errors": []
+ }
+]

@@ -1,0 +1,1338 @@
+[
+ {
+  "tag": "896x443@2.4375",
+  "name": "tier is phone",
+  "pass": true,
+  "detail": [
+   "twin",
+   "phone"
+  ]
+ },
+ {
+  "tag": "896x443@2.4375",
+  "name": "spec identical to HEAD (keys, bands, map area, glass)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "896x443@2.4375",
+  "name": "cell identical to HEAD",
+  "pass": true,
+  "detail": [
+   13.411764705882353,
+   13.411764705882353,
+   13.128205128205128,
+   13.128205128205128
+  ]
+ },
+ {
+  "tag": "896x443@2.4375",
+  "name": "every keycap DOM rect identical to HEAD",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "896x443@2.4375",
+  "name": "bands and canvas DOM rects identical to HEAD",
+  "pass": true,
+  "detail": {
+   "msg": [
+    [
+     219.9,
+     4.1,
+     456.2,
+     86.6
+    ],
+    [
+     219.9,
+     4.1,
+     456.2,
+     86.6
+    ]
+   ],
+   "stat": [
+    [
+     219.9,
+     92.7,
+     456.2,
+     61.9
+    ],
+    [
+     219.9,
+     92.7,
+     456.2,
+     61.9
+    ]
+   ],
+   "cv": [
+    [
+     220.3,
+     156.7,
+     455.4,
+     281.4
+    ],
+    [
+     220.3,
+     156.7,
+     455.4,
+     281.4
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "896x443@2.4375",
+  "name": "map view identical to HEAD",
+  "pass": true,
+  "detail": [
+   {
+    "T": 13.128205128205128,
+    "left": -594.8717948717949,
+    "top": 2.871794871794872
+   },
+   {
+    "T": 13.128205128205128,
+    "left": -594.8717948717949,
+    "top": 2.871794871794872
+   }
+  ]
+ },
+ {
+  "tag": "896x443@2.4375",
+  "name": "panels as layout() places them (none)",
+  "pass": true,
+  "detail": {
+   "want": [],
+   "shown": []
+  }
+ },
+ {
+  "tag": "896x443@2.4375",
+  "name": "phone panels clear of the map, the bands and the keys",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "896x443@2.4375",
+  "name": "pixels identical to HEAD outside the new panels",
+  "pass": true,
+  "detail": {
+   "n": 0,
+   "box": null
+  }
+ },
+ {
+  "tag": "896x443@2.4375",
+  "name": "no console errors (work)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "443x939@2.4375",
+  "name": "tier is phone",
+  "pass": true,
+  "detail": [
+   "twin",
+   "phone"
+  ]
+ },
+ {
+  "tag": "443x939@2.4375",
+  "name": "spec identical to HEAD (keys, bands, map area, glass)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "443x939@2.4375",
+  "name": "cell identical to HEAD",
+  "pass": true,
+  "detail": [
+   14.676470588235293,
+   14.676470588235293,
+   14.35897435897436,
+   14.35897435897436
+  ]
+ },
+ {
+  "tag": "443x939@2.4375",
+  "name": "every keycap DOM rect identical to HEAD",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "443x939@2.4375",
+  "name": "bands and canvas DOM rects identical to HEAD",
+  "pass": true,
+  "detail": {
+   "msg": [
+    [
+     4.1,
+     4.1,
+     434.9,
+     112.4
+    ],
+    [
+     4.1,
+     4.1,
+     434.9,
+     112.4
+    ]
+   ],
+   "stat": [
+    [
+     4.1,
+     118.5,
+     434.9,
+     61.9
+    ],
+    [
+     4.1,
+     118.5,
+     434.9,
+     61.9
+    ]
+   ],
+   "cv": [
+    [
+     4.1,
+     182.5,
+     434.9,
+     307.7
+    ],
+    [
+     4.1,
+     182.5,
+     434.9,
+     307.7
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "443x939@2.4375",
+  "name": "map view identical to HEAD",
+  "pass": true,
+  "detail": [
+   {
+    "T": 14.35897435897436,
+    "left": -713.8461538461538,
+    "top": 2.871794871794872
+   },
+   {
+    "T": 14.35897435897436,
+    "left": -713.8461538461538,
+    "top": 2.871794871794872
+   }
+  ]
+ },
+ {
+  "tag": "443x939@2.4375",
+  "name": "panels as layout() places them (message log)",
+  "pass": true,
+  "detail": {
+   "want": [
+    [
+     4,
+     494.6,
+     435,
+     64.4
+    ]
+   ],
+   "shown": [
+    [
+     "log",
+     [
+      4.1,
+      494.8,
+      434.9,
+      64
+     ]
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "443x939@2.4375",
+  "name": "phone panels clear of the map, the bands and the keys",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "443x939@2.4375",
+  "name": "phone log: no line also on the band",
+  "pass": true,
+  "detail": {
+   "log": [
+    "Restoring save file..."
+   ],
+   "band": "Hello Screens, the human Rogue, welcome back to NetHack!"
+  }
+ },
+ {
+  "tag": "443x939@2.4375",
+  "name": "pixels identical to HEAD outside the new panels",
+  "pass": true,
+  "detail": {
+   "n": 0,
+   "box": null
+  }
+ },
+ {
+  "tag": "443x939@2.4375",
+  "name": "no console errors (work)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "640x360@2.4375",
+  "name": "tier is phone",
+  "pass": true,
+  "detail": [
+   "twin",
+   "phone"
+  ]
+ },
+ {
+  "tag": "640x360@2.4375",
+  "name": "spec identical to HEAD (keys, bands, map area, glass)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "640x360@2.4375",
+  "name": "cell identical to HEAD",
+  "pass": true,
+  "detail": [
+   12,
+   12,
+   11.897435897435898,
+   11.897435897435898
+  ]
+ },
+ {
+  "tag": "640x360@2.4375",
+  "name": "every keycap DOM rect identical to HEAD",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "640x360@2.4375",
+  "name": "bands and canvas DOM rects identical to HEAD",
+  "pass": true,
+  "detail": {
+   "msg": [
+    [
+     200.2,
+     4.1,
+     279.8,
+     60.7
+    ],
+    [
+     200.2,
+     4.1,
+     279.8,
+     60.7
+    ]
+   ],
+   "stat": [
+    [
+     200.2,
+     66.9,
+     279.8,
+     48
+    ],
+    [
+     200.2,
+     66.9,
+     279.8,
+     48
+    ]
+   ],
+   "cv": [
+    [
+     200.2,
+     116.9,
+     279.8,
+     238.8
+    ],
+    [
+     200.2,
+     116.9,
+     279.8,
+     238.8
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "640x360@2.4375",
+  "name": "map view identical to HEAD",
+  "pass": true,
+  "detail": [
+   {
+    "T": 11.897435897435898,
+    "left": -672,
+    "top": -11.076923076923077
+   },
+   {
+    "T": 11.897435897435898,
+    "left": -672,
+    "top": -11.076923076923077
+   }
+  ]
+ },
+ {
+  "tag": "640x360@2.4375",
+  "name": "panels as layout() places them (none)",
+  "pass": true,
+  "detail": {
+   "want": [],
+   "shown": []
+  }
+ },
+ {
+  "tag": "640x360@2.4375",
+  "name": "phone panels clear of the map, the bands and the keys",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "640x360@2.4375",
+  "name": "pixels identical to HEAD outside the new panels",
+  "pass": true,
+  "detail": {
+   "n": 0,
+   "box": null
+  }
+ },
+ {
+  "tag": "640x360@2.4375",
+  "name": "no console errors (work)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "360x640@2.4375",
+  "name": "tier is phone",
+  "pass": true,
+  "detail": [
+   "twin",
+   "phone"
+  ]
+ },
+ {
+  "tag": "360x640@2.4375",
+  "name": "spec identical to HEAD (keys, bands, map area, glass)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "360x640@2.4375",
+  "name": "cell identical to HEAD",
+  "pass": true,
+  "detail": [
+   12,
+   12,
+   11.897435897435898,
+   11.897435897435898
+  ]
+ },
+ {
+  "tag": "360x640@2.4375",
+  "name": "every keycap DOM rect identical to HEAD",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "360x640@2.4375",
+  "name": "bands and canvas DOM rects identical to HEAD",
+  "pass": true,
+  "detail": {
+   "msg": [
+    [
+     4.1,
+     4.1,
+     352,
+     60.7
+    ],
+    [
+     4.1,
+     4.1,
+     352,
+     60.7
+    ]
+   ],
+   "stat": [
+    [
+     4.1,
+     66.9,
+     352,
+     48
+    ],
+    [
+     4.1,
+     66.9,
+     352,
+     48
+    ]
+   ],
+   "cv": [
+    [
+     4.1,
+     116.9,
+     351.6,
+     181.7
+    ],
+    [
+     4.1,
+     116.9,
+     351.6,
+     181.7
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "360x640@2.4375",
+  "name": "map view identical to HEAD",
+  "pass": true,
+  "detail": [
+   {
+    "T": 11.897435897435898,
+    "left": -600.2051282051282,
+    "top": -68.1025641025641
+   },
+   {
+    "T": 11.897435897435898,
+    "left": -600.2051282051282,
+    "top": -68.1025641025641
+   }
+  ]
+ },
+ {
+  "tag": "360x640@2.4375",
+  "name": "panels as layout() places them (none)",
+  "pass": true,
+  "detail": {
+   "want": [],
+   "shown": []
+  }
+ },
+ {
+  "tag": "360x640@2.4375",
+  "name": "phone panels clear of the map, the bands and the keys",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "360x640@2.4375",
+  "name": "pixels identical to HEAD outside the new panels",
+  "pass": true,
+  "detail": {
+   "n": 0,
+   "box": null
+  }
+ },
+ {
+  "tag": "360x640@2.4375",
+  "name": "no console errors (work)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "915x412@2.4375",
+  "name": "tier is phone",
+  "pass": true,
+  "detail": [
+   "twin",
+   "phone"
+  ]
+ },
+ {
+  "tag": "915x412@2.4375",
+  "name": "spec identical to HEAD (keys, bands, map area, glass)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "915x412@2.4375",
+  "name": "cell identical to HEAD",
+  "pass": true,
+  "detail": [
+   13.870775729646695,
+   13.870775729646695,
+   13.538461538461538,
+   13.538461538461538
+  ]
+ },
+ {
+  "tag": "915x412@2.4375",
+  "name": "every keycap DOM rect identical to HEAD",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "915x412@2.4375",
+  "name": "bands and canvas DOM rects identical to HEAD",
+  "pass": true,
+  "detail": {
+   "msg": [
+    [
+     210,
+     4.1,
+     503,
+     60.7
+    ],
+    [
+     210,
+     4.1,
+     503,
+     60.7
+    ]
+   ],
+   "stat": [
+    [
+     210,
+     66.9,
+     503,
+     48
+    ],
+    [
+     210,
+     66.9,
+     503,
+     48
+    ]
+   ],
+   "cv": [
+    [
+     210,
+     116.9,
+     502.6,
+     290.9
+    ],
+    [
+     210,
+     116.9,
+     502.6,
+     290.9
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "915x412@2.4375",
+  "name": "map view identical to HEAD",
+  "pass": true,
+  "detail": [
+   {
+    "T": 13.538461538461538,
+    "left": -580.5128205128206,
+    "top": 3.282051282051282
+   },
+   {
+    "T": 13.538461538461538,
+    "left": -580.5128205128206,
+    "top": 3.282051282051282
+   }
+  ]
+ },
+ {
+  "tag": "915x412@2.4375",
+  "name": "panels as layout() places them (none)",
+  "pass": true,
+  "detail": {
+   "want": [],
+   "shown": []
+  }
+ },
+ {
+  "tag": "915x412@2.4375",
+  "name": "phone panels clear of the map, the bands and the keys",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "915x412@2.4375",
+  "name": "pixels identical to HEAD outside the new panels",
+  "pass": true,
+  "detail": {
+   "n": 0,
+   "box": null
+  }
+ },
+ {
+  "tag": "915x412@2.4375",
+  "name": "no console errors (work)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "412x915@2.4375",
+  "name": "tier is phone",
+  "pass": true,
+  "detail": [
+   "twin",
+   "phone"
+  ]
+ },
+ {
+  "tag": "412x915@2.4375",
+  "name": "spec identical to HEAD (keys, bands, map area, glass)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "412x915@2.4375",
+  "name": "cell identical to HEAD",
+  "pass": true,
+  "detail": [
+   13.870775729646695,
+   13.870775729646695,
+   13.538461538461538,
+   13.538461538461538
+  ]
+ },
+ {
+  "tag": "412x915@2.4375",
+  "name": "every keycap DOM rect identical to HEAD",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "412x915@2.4375",
+  "name": "bands and canvas DOM rects identical to HEAD",
+  "pass": true,
+  "detail": {
+   "msg": [
+    [
+     4.1,
+     4.1,
+     404.1,
+     112.4
+    ],
+    [
+     4.1,
+     4.1,
+     404.1,
+     112.4
+    ]
+   ],
+   "stat": [
+    [
+     4.1,
+     118.5,
+     404.1,
+     61.9
+    ],
+    [
+     4.1,
+     118.5,
+     404.1,
+     61.9
+    ]
+   ],
+   "cv": [
+    [
+     4.1,
+     182.5,
+     403.7,
+     290.9
+    ],
+    [
+     4.1,
+     182.5,
+     403.7,
+     290.9
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "412x915@2.4375",
+  "name": "map view identical to HEAD",
+  "pass": true,
+  "detail": [
+   {
+    "T": 13.538461538461538,
+    "left": -679.3846153846154,
+    "top": 3.282051282051282
+   },
+   {
+    "T": 13.538461538461538,
+    "left": -679.3846153846154,
+    "top": 3.282051282051282
+   }
+  ]
+ },
+ {
+  "tag": "412x915@2.4375",
+  "name": "panels as layout() places them (message log)",
+  "pass": true,
+  "detail": {
+   "want": [
+    [
+     4,
+     477.7,
+     404,
+     83.3
+    ]
+   ],
+   "shown": [
+    [
+     "log",
+     [
+      4.1,
+      477.9,
+      403.7,
+      82.9
+     ]
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "412x915@2.4375",
+  "name": "phone panels clear of the map, the bands and the keys",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "412x915@2.4375",
+  "name": "phone log: no line also on the band",
+  "pass": true,
+  "detail": {
+   "log": [
+    "Restoring save file..."
+   ],
+   "band": "Hello Screens, the human Rogue, welcome back to NetHack!"
+  }
+ },
+ {
+  "tag": "412x915@2.4375",
+  "name": "pixels identical to HEAD outside the new panels",
+  "pass": true,
+  "detail": {
+   "n": 0,
+   "box": null
+  }
+ },
+ {
+  "tag": "412x915@2.4375",
+  "name": "no console errors (work)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "844x390@2.4375",
+  "name": "tier is phone",
+  "pass": true,
+  "detail": [
+   "twin",
+   "phone"
+  ]
+ },
+ {
+  "tag": "844x390@2.4375",
+  "name": "spec identical to HEAD (keys, bands, map area, glass)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "844x390@2.4375",
+  "name": "cell identical to HEAD",
+  "pass": true,
+  "detail": [
+   12.823156682027648,
+   12.823156682027648,
+   12.717948717948717,
+   12.717948717948717
+  ]
+ },
+ {
+  "tag": "844x390@2.4375",
+  "name": "every keycap DOM rect identical to HEAD",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "844x390@2.4375",
+  "name": "bands and canvas DOM rects identical to HEAD",
+  "pass": true,
+  "detail": {
+   "msg": [
+    [
+     201.8,
+     4.1,
+     454.1,
+     60.7
+    ],
+    [
+     201.8,
+     4.1,
+     454.1,
+     60.7
+    ]
+   ],
+   "stat": [
+    [
+     201.8,
+     66.9,
+     454.1,
+     48
+    ],
+    [
+     201.8,
+     66.9,
+     454.1,
+     48
+    ]
+   ],
+   "cv": [
+    [
+     202.3,
+     116.9,
+     453.7,
+     268.7
+    ],
+    [
+     202.3,
+     116.9,
+     453.7,
+     268.7
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "844x390@2.4375",
+  "name": "map view identical to HEAD",
+  "pass": true,
+  "detail": [
+   {
+    "T": 12.717948717948717,
+    "left": -563.6923076923077,
+    "top": 0.8205128205128205
+   },
+   {
+    "T": 12.717948717948717,
+    "left": -563.6923076923077,
+    "top": 0.8205128205128205
+   }
+  ]
+ },
+ {
+  "tag": "844x390@2.4375",
+  "name": "panels as layout() places them (none)",
+  "pass": true,
+  "detail": {
+   "want": [],
+   "shown": []
+  }
+ },
+ {
+  "tag": "844x390@2.4375",
+  "name": "phone panels clear of the map, the bands and the keys",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "844x390@2.4375",
+  "name": "pixels identical to HEAD outside the new panels",
+  "pass": true,
+  "detail": {
+   "n": 0,
+   "box": null
+  }
+ },
+ {
+  "tag": "844x390@2.4375",
+  "name": "no console errors (work)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "390x844@2.4375",
+  "name": "tier is phone",
+  "pass": true,
+  "detail": [
+   "twin",
+   "phone"
+  ]
+ },
+ {
+  "tag": "390x844@2.4375",
+  "name": "spec identical to HEAD (keys, bands, map area, glass)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "390x844@2.4375",
+  "name": "cell identical to HEAD",
+  "pass": true,
+  "detail": [
+   12.823156682027648,
+   12.823156682027648,
+   12.717948717948717,
+   12.717948717948717
+  ]
+ },
+ {
+  "tag": "390x844@2.4375",
+  "name": "every keycap DOM rect identical to HEAD",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "390x844@2.4375",
+  "name": "bands and canvas DOM rects identical to HEAD",
+  "pass": true,
+  "detail": {
+   "msg": [
+    [
+     4.1,
+     4.1,
+     381.9,
+     112.4
+    ],
+    [
+     4.1,
+     4.1,
+     381.9,
+     112.4
+    ]
+   ],
+   "stat": [
+    [
+     4.1,
+     118.5,
+     381.9,
+     61.9
+    ],
+    [
+     4.1,
+     118.5,
+     381.9,
+     61.9
+    ]
+   ],
+   "cv": [
+    [
+     4.1,
+     182.5,
+     381.5,
+     269.1
+    ],
+    [
+     4.1,
+     182.5,
+     381.5,
+     269.1
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "390x844@2.4375",
+  "name": "map view identical to HEAD",
+  "pass": true,
+  "detail": [
+   {
+    "T": 12.717948717948717,
+    "left": -635.8974358974359,
+    "top": 1.2307692307692308
+   },
+   {
+    "T": 12.717948717948717,
+    "left": -635.8974358974359,
+    "top": 1.2307692307692308
+   }
+  ]
+ },
+ {
+  "tag": "390x844@2.4375",
+  "name": "panels as layout() places them (none)",
+  "pass": true,
+  "detail": {
+   "want": [],
+   "shown": []
+  }
+ },
+ {
+  "tag": "390x844@2.4375",
+  "name": "phone panels clear of the map, the bands and the keys",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "390x844@2.4375",
+  "name": "pixels identical to HEAD outside the new panels",
+  "pass": true,
+  "detail": {
+   "n": 0,
+   "box": null
+  }
+ },
+ {
+  "tag": "390x844@2.4375",
+  "name": "no console errors (work)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "896x363@2.4375",
+  "name": "tier is phone",
+  "pass": true,
+  "detail": [
+   "twin",
+   "phone"
+  ]
+ },
+ {
+  "tag": "896x363@2.4375",
+  "name": "spec identical to HEAD (keys, bands, map area, glass)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "896x363@2.4375",
+  "name": "cell identical to HEAD",
+  "pass": true,
+  "detail": [
+   12,
+   12,
+   11.897435897435898,
+   11.897435897435898
+  ]
+ },
+ {
+  "tag": "896x363@2.4375",
+  "name": "every keycap DOM rect identical to HEAD",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "896x363@2.4375",
+  "name": "bands and canvas DOM rects identical to HEAD",
+  "pass": true,
+  "detail": {
+   "msg": [
+    [
+     219.9,
+     4.1,
+     456.2,
+     60.7
+    ],
+    [
+     219.9,
+     4.1,
+     456.2,
+     60.7
+    ]
+   ],
+   "stat": [
+    [
+     219.9,
+     66.9,
+     456.2,
+     48
+    ],
+    [
+     219.9,
+     66.9,
+     456.2,
+     48
+    ]
+   ],
+   "cv": [
+    [
+     220.3,
+     116.9,
+     455.4,
+     242
+    ],
+    [
+     220.3,
+     116.9,
+     455.4,
+     242
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "896x363@2.4375",
+  "name": "map view identical to HEAD",
+  "pass": true,
+  "detail": [
+   {
+    "T": 11.897435897435898,
+    "left": -496.4102564102564,
+    "top": -7.794871794871795
+   },
+   {
+    "T": 11.897435897435898,
+    "left": -496.4102564102564,
+    "top": -7.794871794871795
+   }
+  ]
+ },
+ {
+  "tag": "896x363@2.4375",
+  "name": "panels as layout() places them (none)",
+  "pass": true,
+  "detail": {
+   "want": [],
+   "shown": []
+  }
+ },
+ {
+  "tag": "896x363@2.4375",
+  "name": "phone panels clear of the map, the bands and the keys",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "896x363@2.4375",
+  "name": "pixels identical to HEAD outside the new panels",
+  "pass": true,
+  "detail": {
+   "n": 0,
+   "box": null
+  }
+ },
+ {
+  "tag": "896x363@2.4375",
+  "name": "no console errors (work)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "443x859@2.4375",
+  "name": "tier is phone",
+  "pass": true,
+  "detail": [
+   "twin",
+   "phone"
+  ]
+ },
+ {
+  "tag": "443x859@2.4375",
+  "name": "spec identical to HEAD (keys, bands, map area, glass)",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "443x859@2.4375",
+  "name": "cell identical to HEAD",
+  "pass": true,
+  "detail": [
+   12,
+   12,
+   11.897435897435898,
+   11.897435897435898
+  ]
+ },
+ {
+  "tag": "443x859@2.4375",
+  "name": "every keycap DOM rect identical to HEAD",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "443x859@2.4375",
+  "name": "bands and canvas DOM rects identical to HEAD",
+  "pass": true,
+  "detail": {
+   "msg": [
+    [
+     4.1,
+     4.1,
+     434.9,
+     112.4
+    ],
+    [
+     4.1,
+     4.1,
+     434.9,
+     112.4
+    ]
+   ],
+   "stat": [
+    [
+     4.1,
+     118.5,
+     434.9,
+     61.9
+    ],
+    [
+     4.1,
+     118.5,
+     434.9,
+     61.9
+    ]
+   ],
+   "cv": [
+    [
+     4.1,
+     182.5,
+     434.9,
+     251.5
+    ],
+    [
+     4.1,
+     182.5,
+     434.9,
+     251.5
+    ]
+   ]
+  }
+ },
+ {
+  "tag": "443x859@2.4375",
+  "name": "map view identical to HEAD",
+  "pass": true,
+  "detail": [
+   {
+    "T": 11.897435897435898,
+    "left": -516.9230769230769,
+    "top": 0.8205128205128205
+   },
+   {
+    "T": 11.897435897435898,
+    "left": -516.9230769230769,
+    "top": 0.8205128205128205
+   }
+  ]
+ },
+ {
+  "tag": "443x859@2.4375",
+  "name": "panels as layout() places them (none)",
+  "pass": true,
+  "detail": {
+   "want": [],
+   "shown": []
+  }
+ },
+ {
+  "tag": "443x859@2.4375",
+  "name": "phone panels clear of the map, the bands and the keys",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "443x859@2.4375",
+  "name": "pixels identical to HEAD outside the new panels",
+  "pass": true,
+  "detail": {
+   "n": 0,
+   "box": null
+  }
+ },
+ {
+  "tag": "443x859@2.4375",
+  "name": "no console errors (work)",
+  "pass": true,
+  "detail": []
+ }
+]

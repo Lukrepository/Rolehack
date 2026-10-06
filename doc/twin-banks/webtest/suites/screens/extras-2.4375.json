@@ -1,0 +1,839 @@
+[
+ {
+  "tag": "extras-1024x768@2.4375",
+  "name": "B. a tap on the first item opens the inventory, and only that",
+  "pass": true,
+  "detail": {
+   "modal": true,
+   "title": "",
+   "body": "Weapons a - a +0 short sword (weapon in right hand) b - 9 +0 daggers (alternate weapons; not wielded) Armor c - an uncursed +1 leather armor (being worn) Potion",
+   "ev": [
+    105
+   ]
+  }
+ },
+ {
+  "tag": "extras-1024x768@2.4375",
+  "name": "B. nothing more after the inventory closes",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "ev": [
+    105,
+    27
+   ],
+   "msg": "Hello Screens, the human Rogue, welcome back to NetHack!"
+  }
+ },
+ {
+  "tag": "extras-1024x768@2.4375",
+  "name": "A. 40 items drawn (one column)",
+  "pass": true,
+  "detail": {
+   "n": 40,
+   "want": 40
+  }
+ },
+ {
+  "tag": "extras-1024x768@2.4375",
+  "name": "A. the panel keeps its rect",
+  "pass": true,
+  "detail": {
+   "before": [
+    516.1,
+    400,
+    287.6,
+    349.9
+   ],
+   "after": [
+    516.1,
+    400,
+    287.6,
+    349.9
+   ]
+  }
+ },
+ {
+  "tag": "extras-1024x768@2.4375",
+  "name": "A. no item split between columns, each heading with its first item",
+  "pass": true,
+  "detail": {
+   "split": [],
+   "orphan": []
+  }
+ },
+ {
+  "tag": "extras-1024x768@2.4375",
+  "name": "A. nothing cut off sideways",
+  "pass": true,
+  "detail": {
+   "sw": 288,
+   "cw": 288
+  }
+ },
+ {
+  "tag": "extras-1024x768@2.4375",
+  "name": "A. the last item can be scrolled into the panel",
+  "pass": true,
+  "detail": {
+   "ok": true,
+   "last": [
+    526.09375,
+    704.125,
+    267.578125,
+    41.25
+   ],
+   "body": [
+    516.09375,
+    417,
+    287.578125,
+    332.9375
+   ]
+  }
+ },
+ {
+  "tag": "extras-1024x768@2.4375",
+  "name": "D. the inventory keeps its scroll through a re-layout",
+  "pass": true,
+  "detail": {
+   "scrolled": {
+    "t": 60,
+    "l": 0
+   },
+   "kept": {
+    "t": 60,
+    "l": 0,
+    "tier": "tablet"
+   }
+  }
+ },
+ {
+  "tag": "extras-1024x768@2.4375",
+  "name": "E. --More-- shown",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "extras-1024x768@2.4375",
+  "name": "E. a tap on the inventory panel at --More-- is Space (not i)",
+  "pass": true,
+  "detail": {
+   "more": false,
+   "modal": false,
+   "ev": [
+    32
+   ]
+  }
+ },
+ {
+  "tag": "extras-1024x768@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "extras-768x1024@2.4375",
+  "name": "B. a tap on the first item opens the inventory, and only that",
+  "pass": true,
+  "detail": {
+   "modal": true,
+   "title": "",
+   "body": "Weapons a - a +0 short sword (weapon in right hand) b - 9 +0 daggers (alternate weapons; not wielded) Armor c - an uncursed +1 leather armor (being worn) Potion",
+   "ev": [
+    105
+   ]
+  }
+ },
+ {
+  "tag": "extras-768x1024@2.4375",
+  "name": "B. nothing more after the inventory closes",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "ev": [
+    105,
+    27
+   ],
+   "msg": "Hello Screens, the human Rogue, welcome back to NetHack!"
+  }
+ },
+ {
+  "tag": "extras-768x1024@2.4375",
+  "name": "A. 40 items drawn (one column)",
+  "pass": true,
+  "detail": {
+   "n": 40,
+   "want": 40
+  }
+ },
+ {
+  "tag": "extras-768x1024@2.4375",
+  "name": "A. the panel keeps its rect",
+  "pass": true,
+  "detail": {
+   "before": [
+    220.3,
+    656,
+    327.4,
+    349.9
+   ],
+   "after": [
+    220.3,
+    656,
+    327.4,
+    349.9
+   ]
+  }
+ },
+ {
+  "tag": "extras-768x1024@2.4375",
+  "name": "A. no item split between columns, each heading with its first item",
+  "pass": true,
+  "detail": {
+   "split": [],
+   "orphan": []
+  }
+ },
+ {
+  "tag": "extras-768x1024@2.4375",
+  "name": "A. nothing cut off sideways",
+  "pass": true,
+  "detail": {
+   "sw": 327,
+   "cw": 327
+  }
+ },
+ {
+  "tag": "extras-768x1024@2.4375",
+  "name": "A. the last item can be scrolled into the panel",
+  "pass": true,
+  "detail": {
+   "ok": true,
+   "last": [
+    230.296875,
+    959.75,
+    307.375,
+    41.25
+   ],
+   "body": [
+    220.296875,
+    673,
+    327.375,
+    332.9375
+   ]
+  }
+ },
+ {
+  "tag": "extras-768x1024@2.4375",
+  "name": "D. the inventory keeps its scroll through a re-layout",
+  "pass": true,
+  "detail": {
+   "scrolled": {
+    "t": 60,
+    "l": 0
+   },
+   "kept": {
+    "t": 60,
+    "l": 0,
+    "tier": "tablet"
+   }
+  }
+ },
+ {
+  "tag": "extras-768x1024@2.4375",
+  "name": "E. --More-- shown",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "extras-768x1024@2.4375",
+  "name": "E. a tap on the inventory panel at --More-- is Space (not i)",
+  "pass": true,
+  "detail": {
+   "more": false,
+   "modal": false,
+   "ev": [
+    32
+   ]
+  }
+ },
+ {
+  "tag": "extras-768x1024@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "extras-1366x768@2.4375",
+  "name": "B. a tap on the first item opens the inventory, and only that",
+  "pass": true,
+  "detail": {
+   "modal": true,
+   "title": "",
+   "body": "Weapons a - a +0 short sword (weapon in right hand) b - 9 +0 daggers (alternate weapons; not wielded) Armor c - an uncursed +1 leather armor (being worn) Potion",
+   "ev": [
+    105
+   ]
+  }
+ },
+ {
+  "tag": "extras-1366x768@2.4375",
+  "name": "B. nothing more after the inventory closes",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "ev": [
+    105,
+    27
+   ],
+   "msg": "Hello Screens, the human Rogue, welcome back to NetHack!"
+  }
+ },
+ {
+  "tag": "extras-1366x768@2.4375",
+  "name": "A. 40 items drawn (one column)",
+  "pass": true,
+  "detail": {
+   "n": 40,
+   "want": 40
+  }
+ },
+ {
+  "tag": "extras-1366x768@2.4375",
+  "name": "A. the panel keeps its rect",
+  "pass": true,
+  "detail": {
+   "before": [
+    687.2,
+    400,
+    458.7,
+    349.9
+   ],
+   "after": [
+    687.2,
+    400,
+    458.7,
+    349.9
+   ]
+  }
+ },
+ {
+  "tag": "extras-1366x768@2.4375",
+  "name": "A. no item split between columns, each heading with its first item",
+  "pass": true,
+  "detail": {
+   "split": [],
+   "orphan": []
+  }
+ },
+ {
+  "tag": "extras-1366x768@2.4375",
+  "name": "A. nothing cut off sideways",
+  "pass": true,
+  "detail": {
+   "sw": 459,
+   "cw": 459
+  }
+ },
+ {
+  "tag": "extras-1366x768@2.4375",
+  "name": "A. the last item can be scrolled into the panel",
+  "pass": true,
+  "detail": {
+   "ok": true,
+   "last": [
+    697.171875,
+    703.75,
+    438.65625,
+    41.25
+   ],
+   "body": [
+    687.171875,
+    417,
+    458.65625,
+    332.9375
+   ]
+  }
+ },
+ {
+  "tag": "extras-1366x768@2.4375",
+  "name": "D. the inventory keeps its scroll through a re-layout",
+  "pass": true,
+  "detail": {
+   "scrolled": {
+    "t": 60,
+    "l": 0
+   },
+   "kept": {
+    "t": 60,
+    "l": 0,
+    "tier": "tablet"
+   }
+  }
+ },
+ {
+  "tag": "extras-1366x768@2.4375",
+  "name": "E. --More-- shown",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "extras-1366x768@2.4375",
+  "name": "E. a tap on the inventory panel at --More-- is Space (not i)",
+  "pass": true,
+  "detail": {
+   "more": false,
+   "modal": false,
+   "ev": [
+    32
+   ]
+  }
+ },
+ {
+  "tag": "extras-1366x768@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "extras-1920x1080-mouse@2.4375",
+  "name": "B. a tap on the first item opens the inventory, and only that",
+  "pass": true,
+  "detail": {
+   "modal": true,
+   "title": "",
+   "body": "Weapons a - a +0 short sword (weapon in right hand) b - 9 +0 daggers (alternate weapons; not wielded) Armor c - an uncursed +1 leather armor (being worn) Potion",
+   "ev": [
+    105
+   ]
+  }
+ },
+ {
+  "tag": "extras-1920x1080-mouse@2.4375",
+  "name": "B. nothing more after the inventory closes",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "ev": [
+    105,
+    27
+   ],
+   "msg": "Hello Screens, the human Rogue, welcome back to NetHack!"
+  }
+ },
+ {
+  "tag": "extras-1920x1080-mouse@2.4375",
+  "name": "A. 40 items drawn (6 columns)",
+  "pass": true,
+  "detail": {
+   "n": 40,
+   "want": 40
+  }
+ },
+ {
+  "tag": "extras-1920x1080-mouse@2.4375",
+  "name": "A. the panel keeps its rect",
+  "pass": true,
+  "detail": {
+   "before": [
+    220.3,
+    712.2,
+    1479.4,
+    349.5
+   ],
+   "after": [
+    220.3,
+    712.2,
+    1479.4,
+    349.5
+   ]
+  }
+ },
+ {
+  "tag": "extras-1920x1080-mouse@2.4375",
+  "name": "A. no item split between columns, each heading with its first item",
+  "pass": true,
+  "detail": {
+   "split": [],
+   "orphan": []
+  }
+ },
+ {
+  "tag": "extras-1920x1080-mouse@2.4375",
+  "name": "A. nothing cut off sideways",
+  "pass": true,
+  "detail": {
+   "sw": 2947,
+   "cw": 1479
+  }
+ },
+ {
+  "tag": "extras-1920x1080-mouse@2.4375",
+  "name": "A. the last item can be scrolled into the panel",
+  "pass": true,
+  "detail": {
+   "ok": true,
+   "last": [
+    1224.5625,
+    1004.328125,
+    474.453125,
+    41.25
+   ],
+   "body": [
+    220.296875,
+    729.203125,
+    1479.375,
+    332.53125
+   ]
+  }
+ },
+ {
+  "tag": "extras-1920x1080-mouse@2.4375",
+  "name": "C. the wheel over the panels never zooms the map",
+  "pass": true,
+  "detail": {
+   "z0": {
+    "z": 1,
+    "T": 23.384615384615383
+   },
+   "z1": {
+    "z": 1,
+    "T": 23.384615384615383
+   }
+  }
+ },
+ {
+  "tag": "extras-1920x1080-mouse@2.4375",
+  "name": "D. the inventory keeps its scroll through a re-layout",
+  "pass": true,
+  "detail": {
+   "scrolled": {
+    "t": 0,
+    "l": 120
+   },
+   "kept": {
+    "t": 0,
+    "l": 121,
+    "tier": "tablet"
+   }
+  }
+ },
+ {
+  "tag": "extras-1920x1080-mouse@2.4375",
+  "name": "E. --More-- shown",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "extras-1920x1080-mouse@2.4375",
+  "name": "E. a tap on the inventory panel at --More-- is Space (not i)",
+  "pass": true,
+  "detail": {
+   "more": false,
+   "modal": false,
+   "ev": [
+    32
+   ]
+  }
+ },
+ {
+  "tag": "extras-1920x1080-mouse@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "extras-2560x1440-mouse@2.4375",
+  "name": "B. a tap on the first item opens the inventory, and only that",
+  "pass": true,
+  "detail": {
+   "modal": true,
+   "title": "",
+   "body": "Weapons a - a +0 short sword (weapon in right hand) b - 9 +0 daggers (alternate weapons; not wielded) Armor c - an uncursed +1 leather armor (being worn) Potion",
+   "ev": [
+    105
+   ]
+  }
+ },
+ {
+  "tag": "extras-2560x1440-mouse@2.4375",
+  "name": "B. nothing more after the inventory closes",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "ev": [
+    105,
+    27
+   ],
+   "msg": "Hello Screens, the human Rogue, welcome back to NetHack!"
+  }
+ },
+ {
+  "tag": "extras-2560x1440-mouse@2.4375",
+  "name": "A. 40 items drawn (4 columns)",
+  "pass": true,
+  "detail": {
+   "n": 40,
+   "want": 40
+  }
+ },
+ {
+  "tag": "extras-2560x1440-mouse@2.4375",
+  "name": "A. the panel keeps its rect",
+  "pass": true,
+  "detail": {
+   "before": [
+    220.3,
+    1072,
+    2119.4,
+    349.9
+   ],
+   "after": [
+    220.3,
+    1072,
+    2119.4,
+    349.9
+   ]
+  }
+ },
+ {
+  "tag": "extras-2560x1440-mouse@2.4375",
+  "name": "A. no item split between columns, each heading with its first item",
+  "pass": true,
+  "detail": {
+   "split": [],
+   "orphan": []
+  }
+ },
+ {
+  "tag": "extras-2560x1440-mouse@2.4375",
+  "name": "A. nothing cut off sideways",
+  "pass": true,
+  "detail": {
+   "sw": 2119,
+   "cw": 2119
+  }
+ },
+ {
+  "tag": "extras-2560x1440-mouse@2.4375",
+  "name": "A. the last item can be scrolled into the panel",
+  "pass": true,
+  "detail": {
+   "ok": true,
+   "last": [
+    1818.328125,
+    1240.375,
+    511.34375,
+    20.625
+   ],
+   "body": [
+    220.296875,
+    1089,
+    2119.375,
+    332.9375
+   ]
+  }
+ },
+ {
+  "tag": "extras-2560x1440-mouse@2.4375",
+  "name": "C. the wheel over the panels never zooms the map",
+  "pass": true,
+  "detail": {
+   "z0": {
+    "z": 1,
+    "T": 31.17948717948718
+   },
+   "z1": {
+    "z": 1,
+    "T": 31.17948717948718
+   }
+  }
+ },
+ {
+  "tag": "extras-2560x1440-mouse@2.4375",
+  "name": "D. the inventory keeps its scroll through a re-layout",
+  "pass": true,
+  "detail": {
+   "scrolled": {
+    "t": 0,
+    "l": 0
+   },
+   "kept": {
+    "t": 0,
+    "l": 0,
+    "tier": "tablet"
+   }
+  }
+ },
+ {
+  "tag": "extras-2560x1440-mouse@2.4375",
+  "name": "E. --More-- shown",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "extras-2560x1440-mouse@2.4375",
+  "name": "E. a tap on the inventory panel at --More-- is Space (not i)",
+  "pass": true,
+  "detail": {
+   "more": false,
+   "modal": false,
+   "ev": [
+    32
+   ]
+  }
+ },
+ {
+  "tag": "extras-2560x1440-mouse@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ },
+ {
+  "tag": "extras-3440x1440-mouse@2.4375",
+  "name": "B. a tap on the first item opens the inventory, and only that",
+  "pass": true,
+  "detail": {
+   "modal": true,
+   "title": "",
+   "body": "Weapons a - a +0 short sword (weapon in right hand) b - 9 +0 daggers (alternate weapons; not wielded) Armor c - an uncursed +1 leather armor (being worn) Potion",
+   "ev": [
+    105
+   ]
+  }
+ },
+ {
+  "tag": "extras-3440x1440-mouse@2.4375",
+  "name": "B. nothing more after the inventory closes",
+  "pass": true,
+  "detail": {
+   "modal": false,
+   "ev": [
+    105,
+    27
+   ],
+   "msg": "Hello Screens, the human Rogue, welcome back to NetHack!"
+  }
+ },
+ {
+  "tag": "extras-3440x1440-mouse@2.4375",
+  "name": "A. 40 items drawn (6 columns)",
+  "pass": true,
+  "detail": {
+   "n": 40,
+   "want": 40
+  }
+ },
+ {
+  "tag": "extras-3440x1440-mouse@2.4375",
+  "name": "A. the panel keeps its rect",
+  "pass": true,
+  "detail": {
+   "before": [
+    1724.3,
+    1072,
+    1495.4,
+    349.9
+   ],
+   "after": [
+    1724.3,
+    1072,
+    1495.4,
+    349.9
+   ]
+  }
+ },
+ {
+  "tag": "extras-3440x1440-mouse@2.4375",
+  "name": "A. no item split between columns, each heading with its first item",
+  "pass": true,
+  "detail": {
+   "split": [],
+   "orphan": []
+  }
+ },
+ {
+  "tag": "extras-3440x1440-mouse@2.4375",
+  "name": "A. nothing cut off sideways",
+  "pass": true,
+  "detail": {
+   "sw": 2979,
+   "cw": 1495
+  }
+ },
+ {
+  "tag": "extras-3440x1440-mouse@2.4375",
+  "name": "A. the last item can be scrolled into the panel",
+  "pass": true,
+  "detail": {
+   "ok": true,
+   "last": [
+    2739.203125,
+    1219.75,
+    479.78125,
+    20.625
+   ],
+   "body": [
+    1724.296875,
+    1089,
+    1495.375,
+    332.9375
+   ]
+  }
+ },
+ {
+  "tag": "extras-3440x1440-mouse@2.4375",
+  "name": "C. the wheel over the panels never zooms the map",
+  "pass": true,
+  "detail": {
+   "z0": {
+    "z": 1,
+    "T": 42.256410256410255
+   },
+   "z1": {
+    "z": 1,
+    "T": 42.256410256410255
+   }
+  }
+ },
+ {
+  "tag": "extras-3440x1440-mouse@2.4375",
+  "name": "D. the inventory keeps its scroll through a re-layout",
+  "pass": true,
+  "detail": {
+   "scrolled": {
+    "t": 0,
+    "l": 120
+   },
+   "kept": {
+    "t": 0,
+    "l": 120,
+    "tier": "tablet"
+   }
+  }
+ },
+ {
+  "tag": "extras-3440x1440-mouse@2.4375",
+  "name": "E. --More-- shown",
+  "pass": true,
+  "detail": ""
+ },
+ {
+  "tag": "extras-3440x1440-mouse@2.4375",
+  "name": "E. a tap on the inventory panel at --More-- is Space (not i)",
+  "pass": true,
+  "detail": {
+   "more": false,
+   "modal": false,
+   "ev": [
+    32
+   ]
+  }
+ },
+ {
+  "tag": "extras-3440x1440-mouse@2.4375",
+  "name": "no console errors",
+  "pass": true,
+  "detail": []
+ }
+]

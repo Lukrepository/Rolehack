@@ -1,0 +1,1427 @@
+{
+ "checks": [
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap pad_b",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_b (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_b (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap pad_j",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_j (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_j (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap pad_n",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_n (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_n (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap pad_h",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_h (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_h (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap pad_centre",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_centre (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_centre (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap pad_l",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_l (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_l (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap pad_y",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_y (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_y (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap pad_k",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_k (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_k (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap pad_u",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_u (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pad_u (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap msgs",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold msgs (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold msgs (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap drop",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold drop (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold drop (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap pin1",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pin1 (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pin1 (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap game",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold game (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold game (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap m1",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold m1 (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold m1 (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap menu",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold menu (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold menu (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap rest",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold rest (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold rest (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap world",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold world (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold world (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap sacrifice",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold sacrifice (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold sacrifice (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap apply",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold apply (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold apply (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap search",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold search (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold search (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap inventory",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold inventory (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold inventory (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap eat",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eat (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eat (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap context",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold context (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold context (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap combat",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold combat (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold combat (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap look",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold look (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold look (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap flick",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold flick (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold flick (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap pin2",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pin2 (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold pin2 (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap eq_swap",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eq_swap (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eq_swap (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap eq_remove",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eq_remove (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eq_remove (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap eq_takeoff",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eq_takeoff (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eq_takeoff (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap eq_wield",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eq_wield (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eq_wield (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap eq_puton",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eq_puton (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eq_puton (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap eq_wear",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eq_wear (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold eq_wear (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap m3",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold m3 (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold m3 (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap keys",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold keys (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold keys (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: tap m2",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold m2 (held)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: hold m2 (lifted)",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: habit: HERE: SLIDE flash",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "habit: the pill says HERE: SLIDE after a centre hold with no slide",
+   "pass": true,
+   "detail": "HERE: SLIDE"
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "habit: a tap on an old radial spot within 1.5 s is swallowed",
+   "pass": true,
+   "detail": {
+    "log": [
+     "habit radial"
+    ],
+    "downs": []
+   }
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: habit: radial spot tapped",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "no pop-up over a key: habit: old SACRIFICE spot held",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "tag": "pops 2.4375-360x640",
+   "name": "console clean",
+   "pass": true,
+   "detail": []
+  }
+ ],
+ "seen": [
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap pad_b",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_b (held)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_b (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap pad_j",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_j (held)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_j (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap pad_n",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_n (held)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_n (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap pad_h",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_h (held)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_h (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap pad_centre",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_centre (held)",
+   "shown": [
+    "pill",
+    "flash",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_centre (lifted)",
+   "shown": [
+    "pill"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap pad_l",
+   "shown": [
+    "pill"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_l (held)",
+   "shown": [
+    "pill"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_l (lifted)",
+   "shown": [
+    "pill"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap pad_y",
+   "shown": [
+    "pill"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_y (held)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_y (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap pad_k",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_k (held)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_k (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap pad_u",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_u (held)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pad_u (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap msgs",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold msgs (held)",
+   "shown": [
+    "flash",
+    "ghost"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold msgs (lifted)",
+   "shown": [
+    "flash",
+    "ghost"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap drop",
+   "shown": [
+    "flash",
+    "ghost"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold drop (held)",
+   "shown": [
+    "pill",
+    "flash",
+    "ghost",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold drop (lifted)",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap pin1",
+   "shown": [
+    "drawer"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pin1 (held)",
+   "shown": [
+    "drawer"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pin1 (lifted)",
+   "shown": [
+    "drawer"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap game",
+   "shown": [
+    "drawer"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold game (held)",
+   "shown": [
+    "ghost"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold game (lifted)",
+   "shown": [
+    "ghost",
+    "drawer"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap m1",
+   "shown": [
+    "flash",
+    "ghost"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold m1 (held)",
+   "shown": [
+    "flash",
+    "ghost"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold m1 (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap menu",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold menu (held)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold menu (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap rest",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold rest (held)",
+   "shown": [
+    "pill",
+    "flash",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold rest (lifted)",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap world",
+   "shown": [
+    "drawer"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold world (held)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold world (lifted)",
+   "shown": [
+    "drawer"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap sacrifice",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold sacrifice (held)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold sacrifice (lifted)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap apply",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold apply (held)",
+   "shown": [
+    "pill",
+    "flash",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold apply (lifted)",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap search",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold search (held)",
+   "shown": [
+    "pill",
+    "flash",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold search (lifted)",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap inventory",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold inventory (held)",
+   "shown": [
+    "pill",
+    "flash",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold inventory (lifted)",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap eat",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eat (held)",
+   "shown": [
+    "pill",
+    "flash",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eat (lifted)",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap context",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold context (held)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold context (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap combat",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold combat (held)",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold combat (lifted)",
+   "shown": [
+    "pill",
+    "scrimhint"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap look",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold look (held)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold look (lifted)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap flick",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold flick (held)",
+   "shown": [
+    "flash",
+    "scrimhint",
+    "legend0",
+    "legend1",
+    "pop",
+    "pop"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold flick (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap pin2",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pin2 (held)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold pin2 (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap eq_swap",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eq_swap (held)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eq_swap (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap eq_remove",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eq_remove (held)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eq_remove (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap eq_takeoff",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eq_takeoff (held)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eq_takeoff (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap eq_wield",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eq_wield (held)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eq_wield (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap eq_puton",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eq_puton (held)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eq_puton (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap eq_wear",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eq_wear (held)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold eq_wear (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap m3",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold m3 (held)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold m3 (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap keys",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold keys (held)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold keys (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "tap m2",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold m2 (held)",
+   "shown": [
+    "flash"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "hold m2 (lifted)",
+   "shown": []
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "habit: HERE: SLIDE flash",
+   "shown": [
+    "pill"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "habit: radial spot tapped",
+   "shown": [
+    "pill"
+   ]
+  },
+  {
+   "tag": "2.4375-360x640",
+   "what": "habit: old SACRIFICE spot held",
+   "shown": [
+    "ghost"
+   ]
+  }
+ ]
+}

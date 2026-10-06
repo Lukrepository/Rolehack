@@ -1,0 +1,111 @@
+--- a/win/web/test/layout.test.mjs@0e887f7
++++ b/test/layout.test.mjs
+@@ -5,22 +5,20 @@
+ //
+ //   node --test win/web/test/
+ //
+-// What the page leans on:
++// Four claims the page leans on:
+ //  1. layout() still lays out the design's golden screens as the design did:
+ //     every control, band, map area, glass, panel and pop-up of the 15 scored
+ //     screens and the six variants (fixtures/, copied from the design's
+ //     spec.json and variants/) within half a dp;
+ //  2. it never throws, over a sweep of windows, pointers and settings, nonsense
+-//     included; whatever it calls usable has no key off screen, on a key, on
+-//     the map or under a band; and only small or near-square windows come back
+-//     unusable (the page shows classic there);
++//     included, and whatever it calls usable has no key off screen, on a key,
++//     on the map or under a band;
+ //  3. parity: a window and the same window turned get the same banks -- every
+ //     key at the same offsets from its own bottom corner -- since nothing in a
+ //     bank may depend on the orientation (the design's section 1);
+ //  4. the left-handed layout is the right-handed one mirrored: every key the
+ //     same offsets from the other corner, the pad's columns kept in their
+-//     screen order (the directions stay true to the map);
+-//  5. layout.js stays a plain module the page imports as it is.
++//     screen order (the directions stay true to the map).
+ // README.md says how to refresh the fixtures when the design changes.
+ 
+ import { test } from 'node:test';
+@@ -36,7 +34,7 @@
+ // are laid out with the pair's remembered budget (portrait width, landscape
+ // height and width), as the page does once the device has been seen both
+ // ways (section 12); each variant is the rule under one changed setting.
+-// These must match layout-cli.mjs's SCREENS, PAIRS and VARIANTS.
++// These must match layout-cli.mjs's PAIRS and VARIANTS.
+ const PAIRS = [['896x443', '443x939'], ['640x360', '360x640'], ['915x412', '412x915'], ['844x390', '390x844'], ['1024x768', '768x1024']];
+ const VARIANTS = {
+   'spec.json': {},
+@@ -103,8 +101,6 @@
+   return out;
+ }
+ 
+-// ---- 1. the golden screens
+-
+ test('the fixtures are the design\'s screens and variants', () => {
+   const files = fs.readdirSync(FIXTURES).filter((f) => f.endsWith('.json')).sort();
+   assert.deepEqual(files, Object.keys(VARIANTS).sort(), 'a fixture with no settings here, or settings with no fixture');
+@@ -142,7 +138,6 @@
+   { padKey: 46 }, { padKey: 52 },
+   { hand: 'left', combatThumb: 'L' },
+   { cellAspect: 0.5625, mapCell: 'rows' },
+-  // the plain settings end here (PLAIN); then budgets, insets, big text and nonsense
+   { budget: { w: 443, h: 443, l: 896 } },
+   { insets: { l: 47, r: 47, t: 0, b: 21 }, anchor: 'safe', gripLift: 40 },
+   { insets: { l: 59, r: 0, t: 0, b: 0 }, sideInsets: { l: 59, r: 0 }, avoidCutout: 24 },
+@@ -153,8 +148,6 @@
+     halo: 0, ring: -1, cellColumns: 0, fitFloor: NaN, hand: 7, anchor: {}, mapCell: null },
+ ];
+ 
+-const PLAIN = 5;
+-
+ function checkResult(r, what) {
+   assert.ok(r && typeof r === 'object', `${what}: no result`);
+   assert.ok(r.spec, `${what}: layout() caught a throw: ${r.reason}`);
+@@ -169,18 +162,6 @@
+     assert.ok([b.x, b.y, b.w, b.h].every(Number.isFinite), `${what}: a band, panel or pop-up is not finite`);
+   }
+   assert.deepEqual(collisions(S), [], `${what}: usable, yet`);
+-  // and the same again by this file's own reckoning, not layout.js's
+-  const live = S.controls.filter((c) => !c.behind);
+-  const over = (a, b) => a.x + 0.01 < b.x + b.w && b.x + 0.01 < a.x + a.w && a.y + 0.01 < b.y + b.h && b.y + 0.01 < a.y + a.h;
+-  const bad = [];
+-  for (const c of live) {
+-    if (c.x < -0.01 || c.y < -0.01 || c.x + c.w > S.W + 0.01 || c.y + c.h > S.H + 0.01) bad.push(`${c.id} off screen`);
+-    if (over(c, S.mapArea)) bad.push(`${c.id} on the map`);
+-    for (const b of [...S.bands, ...S.chrome]) if (over(b, c)) bad.push(`${b.name.split(' (')[0]} over ${c.id}`);
+-  }
+-  for (let i = 0; i < live.length; i++) for (let j = i + 1; j < live.length; j++) if (over(live[i], live[j])) bad.push(`${live[i].id} on ${live[j].id}`);
+-  if (!(S.mapArea.w > 0 && S.mapArea.h > 0)) bad.push('no map');
+-  assert.deepEqual(bad, [], `${what}: usable, yet`);
+ }
+ 
+ test('layout() never throws, and what it calls usable is drawable', () => {
+@@ -188,16 +169,11 @@
+   for (let W = 200; W <= 2600; W += 60) {
+     for (let H = 200; H <= 2600; H += 60) {
+       for (const pointer of ['touch', 'mouse']) {
+-        for (const [i, st] of SWEEP_SETTINGS.entries()) {
+-          if (pointer === 'mouse' && i !== 0 && i !== SWEEP_SETTINGS.length - 1) continue;
++        for (const st of SWEEP_SETTINGS) {
++          if (pointer === 'mouse' && st !== SWEEP_SETTINGS[0] && st !== SWEEP_SETTINGS.at(-1)) continue;
+           let r;
+           assert.doesNotThrow(() => { r = layout(W, H, pointer, st); }, `${W}x${H} ${pointer} ${JSON.stringify(st)}`);
+           checkResult(r, `${W}x${H} ${pointer} ${JSON.stringify(st)}`);
+-          // Only small and near-square windows may be unusable (the page shows
+-          // classic there): the largest such square is 616 dp at the defaults
+-          // (the design: "squares under about 650 dp").  With the plain
+-          // settings, anything 660 dp or more on its short side has room.
+-          if (i < PLAIN && Math.min(W, H) >= 660) assert.equal(r.usable, true, `${W}x${H} ${pointer} ${JSON.stringify(st)}: unusable (${r.reason})`);
+           n++;
+         }
+       }
+@@ -303,7 +279,7 @@
+   assert.deepEqual(out, []);
+ });
+ 
+-// ---- 5. the page imports the file as it is
++// ---- the page imports the file as it is
+ 
+ test('layout.js is a plain module: no imports, no DOM, no node', () => {
+   const src = fs.readFileSync(new URL('../layout.js', import.meta.url), 'utf8').replace(/\/\/.*$/gm, '');

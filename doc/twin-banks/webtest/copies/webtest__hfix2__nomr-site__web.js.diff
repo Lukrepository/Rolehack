@@ -1,0 +1,46 @@
+--- a/win/web/web.js@27d59a9
++++ b/web.js
+@@ -895,16 +895,15 @@
+ // Switching the Layout setting with a page up lays the band out again too,
+ // either way, so it re-finds its place the same; classic's own re-layouts
+ // keep its rows as they were.
+-let scrollMark = null;    // { key, twin, row, last, letters }: the band's metrics and scrollRow's place at the last render (last: the page's last rows, put there at rest)
++let scrollMark = null;    // { key, twin, row, letters }: the band's metrics and scrollRow's place at the last render
+ const lettersOf = (row) => row.t.replace(/\s+/g, '').length;
+ function keepScroll(m) {
+   const twin = !!(geom && geom.twin), mark = scrollMark;
+   const key = `${twin} ${m.width} ${m.rows} ${m.slot} ${m.cx.font}`;
+-  let all = null, last = !!(mark && mark.last && mark.row === scrollRow);
++  let all = null;
+   const rows = () => (all = all || pageRowsOf(page, m));
+   if (mark && mark.key !== key && mark.row === scrollRow && (twin || mark.twin)) {
+-    last = !moreShown;
+-    if (last) scrollRow = Math.max(0, rows().length - m.rows);
++    if (!moreShown) scrollRow = Math.max(0, rows().length - m.rows);
+     else if (scrollRow) {
+       // the row that now holds the first letter the band showed
+       let r = 0, n = 0;
+@@ -912,7 +911,7 @@
+       scrollRow = Math.floor(r / m.rows) * m.rows;
+     }
+   }
+-  scrollMark = { key, twin, row: scrollRow, last, letters: scrollRow ? rows().slice(0, scrollRow).reduce((a, q) => a + lettersOf(q), 0) : 0 };
++  scrollMark = { key, twin, row: scrollRow, letters: scrollRow ? rows().slice(0, scrollRow).reduce((a, q) => a + lettersOf(q), 0) : 0 };
+ }
+ 
+ function renderBands() {
+@@ -972,11 +971,11 @@
+ // their --More-- would stand over the end of the band's last row.  So when
+ // that row leaves no room, the band goes back to the start of its band's
+ // worth, and moreToEnd pages on from there: the page shows rows again, and
+-// skips none.  True when it went back.  Classic's own turns keep its rows as
+-// they were, and its --More-- where it stood.
++// skips none.  True when it went back.
+ function moreRoom() {
+   const m = bandMetrics(), off = scrollRow % m.rows;
+-  if (!off || m.width < 40 || !(scrollMark && scrollMark.last && scrollMark.row === scrollRow)) return false;
++  return false;
++  if (!off || m.width < 40) return false;
+   const rows = pageRowsOf(page, m).slice(scrollRow, scrollRow + m.rows);
+   if (rows.length < m.rows || m.cx.measureText(rows[m.rows - 1].t).width <= m.width - m.slot) return false;
+   scrollRow -= off;

@@ -1,0 +1,114 @@
+Web port: the twin banks on the page, the default layout; classic kept
+
+Lucas, 2026-10-02: a setting "Layout: twin banks / classic", twin by
+default, and classic working as it always has.  Twin banks are the
+design's guarded twin banks (layout.js): each thumb owns one 3x6 bank in
+its own bottom corner, every size and offset from the device's short and
+long sides, never the orientation, so both orientations get the same
+banks; the movement pad keeps the player's key size and is never scaled,
+and the map takes what the banks leave.  His decisions stand as he gave
+them: Long rest is swiped up out of REST, an empty pin's tap opens its
+picker, the map may still be dragged along an axis where the level fits
+(locked and centred only at rest), and Pray stays on the 380 ms hold of
+SACRIFICE.  A window with no room for twin banks shows classic, and the
+setting stays twin.
+
+A tester and two reviewers checked the first cut, and what they found is
+fixed here:
+- the remembered budget: a first visit in a window that is not the whole
+  device turned (Lucas's phone beside a wiki in split screen, 443x460)
+  estimated a landscape height of 1 dp and drew keys of 0.17 dp instead
+  of classic; an iPhone's Safari, whose portrait toolbar landscape does
+  not have, got a 35 dp pad; and every temporary window (a split half, a
+  short landscape window) was remembered, so the next full window got 46
+  dp keys.  viewer.js now decides which windows use and teach the budget;
+- the ghost deck counted sessions played in classic or in portrait, where
+  it can catch nothing, and retired before a player ever met it;
+- a pinch in twin wrote classic's zoom, and a classic zoom overrode
+  twin's map cell: twin now has its own zoomFactor (the design's
+  section 11);
+- twin's paranoid_confirmation line came after the player's own option
+  lines and overrode them;
+- at --More--, a tap on the status lines did nothing; a second tap on
+  COMBAT re-armed Fight instead of disarming it, and the pad did not tint;
+  PIN 1 and PIN 2 vanished while the COMBAT layer was open; hold hints
+  were clipped on 44.7 dp keys ("AP TO FIL").
+The tester's other suggestion, a budget cut-off inside layout.js (h under
+0.6 w), is not taken: the page no longer passes a guess that does worse
+than no budget, and a real landscape height that costs portrait a step
+of key size is the parity the rule is for.
+
+- viewer.js (new): budgetFor() and budgetedLayout().  Only a portrait
+  window across the screen's short side, or a landscape one across 85%
+  of its long side, uses the budget or teaches it; any other window lays
+  out alone.  The landscape height is estimated from the screen only when
+  the portrait bars it takes are a browser's (150 dp at most), and any
+  estimate is kept only when its layout is no worse than the window's own
+  (no smaller pad, not degraded).  It is learnt only from a usable,
+  undegraded layout, and the landscape height only grows.
+- overlay.js: rebuild() keeps classic as rebuildClassic(), unchanged, and
+  adds rebuildTwin(): the size from the svh root, the display mode, the
+  safe-area probe, touch or mouse, the text sizes and the budget, then
+  layout().  Every key is placed at its layout rect in CSS px with no
+  scale; the case paints the two wells; the lamps move onto the keys
+  (SEARCH, ARMED on COMBAT or the pin that armed, MORE at the message
+  band's end).  The count rows, the pad centre's list, the CONTEXT
+  candidates, the flick legend, the banner, the layer pill and the key
+  flash open inside the map; the drawers are 3 columns, bottom-anchored
+  in it.  A rebuild keeps an armed Fight, open layers, count rows,
+  drawers and an assignment, and waits for a finger to lift or a text
+  field to let go.  The ghost deck: in landscape a map tap on an old deck
+  key's spot previews, and a second tap on the same cell walks; it counts
+  only turns played where it could act, and retires after three such
+  sessions with nothing caught.  In twin a second tap on COMBAT disarms
+  Fight and the pad tints red while armed; the pins stay, dimmed, under
+  the COMBAT layer; a hold hint too wide for its key gives way to its
+  last word, then shrinks.  Settings: "Layout" (with the reason when this
+  window shows classic or squeezes the banks) and "Old key spots"; Reset
+  zoom resets twin's factor in twin.
+- web.js: layoutTwinGlass(): the glass, the stacked bands and a canvas
+  exactly the map area, on device pixels.  The map tap path holds the
+  ghost deck's preview.  tileSize() is the device cell times zoomFactor
+  in twin, and the pinch writes the factor on its lift; classic's zoom
+  code is as it was.  At --More--, a tap on twin's glass outside the map
+  and the band is Space.  start() adds paranoid_confirmation:+Remove for
+  twin only, before the player's own lines.
+- prefs.js: layout (twin), budgets ({ w, h, l, sl, sr, pw, lh } per
+  display mode), ghostDeck, zoomFactor (1).
+- rolehack.css: twin only: the svh root and the inset probe, the wells,
+  the MORE lamp, the ARMED lamp and the armed pad's tint, the layer pill,
+  the ghost flash, Long rest's upright strip, the windows lifted over the
+  system keyboard.
+- defaults.nh: a comment and a commented copy of the twin line; classic's
+  options are unchanged.
+- build.sh, sw.js: viewer.js is copied and cached.
+- test/viewer.test.mjs (new), test/README.md: the budget against the
+  rule: first visits in splits, touch PCs, iPhones and three-button bars
+  lay out as the window alone (443x460 unusable); Lucas's tab keeps its
+  first visit's banks after the turn; no temporary window changes a full
+  window's keys, cell or budget; a desktop window teaches nothing.
+
+Checked: "node --test win/web/test/" passes 140/140 (node 22.22); the
+viewer tests fail on the first cut's budget and on each guard removed.
+In the browser (Playwright, Chromium, real CDP touches, the device turned
+with its screen, densities 1 and 2.4375, no console errors anywhere):
+- the tester's suite (webtest/banks): every key within 0.014 px of
+  layout() at 10 windows starting either way, with the same corner
+  offsets after a turn; 24/24 and 22/22 behaviours in each orientation;
+  24/24 edge cases, the split-screen ones among them (443x460 classic,
+  443x640, 412x600 and 500x700 full twin at 58 dp); classic identical to
+  HEAD at all 10 windows in every rect and pixel, and after a run-time
+  switch;
+- the first cut's own suites (webtest/twin): rects, 43/43 behaviours,
+  18/18 edge cases, classic before/after identical;
+- the reviewers' scripts: 58 dp keys for iPhone, SE and three-button
+  portrait tabs; the player's paranoid_confirmation:none wins;
+- the fixes (webtest/fix3): ghost deck retiring only in twin landscape
+  (four real sessions each in classic, twin portrait, twin landscape); a
+  pinch writes zoomFactor, never zoom; no clipped hold hint at 360x640
+  and 640x360; --More--, COMBAT, the pad tint and the pins;
+- the earlier stages: taps reach the cell drawn at every density, in
+  both layouts (the ghost deck retired for the landscape tap sweep).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01Dgv3E1gUjAwvSmojZmYB4f

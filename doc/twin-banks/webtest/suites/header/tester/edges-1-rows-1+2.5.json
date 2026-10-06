@@ -1,0 +1,552 @@
+[
+ {
+  "name": "edges-1-rows-z1-896x443",
+  "w": 896,
+  "h": 443,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 1,
+  "steps": 218,
+  "reached": [
+   "1,1",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-896x443-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-896x443-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-896x443-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-896x443-at-1-20.png"
+  },
+  "cell0": 17
+ },
+ {
+  "name": "edges-1-rows-z1-443x939",
+  "w": 443,
+  "h": 939,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 1,
+  "steps": 221,
+  "reached": [
+   "1,9",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-443x939-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-443x939-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-443x939-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-443x939-at-1-20.png"
+  },
+  "cell0": 17
+ },
+ {
+  "name": "edges-1-rows-z1-640x360",
+  "w": 640,
+  "h": 360,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 1,
+  "steps": 253,
+  "reached": [
+   "1,17",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-640x360-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-640x360-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-640x360-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-640x360-at-1-20.png"
+  },
+  "cell0": 12
+ },
+ {
+  "name": "edges-1-rows-z1-360x640",
+  "w": 360,
+  "h": 640,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 1,
+  "steps": 269,
+  "reached": [
+   "1,12",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-360x640-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-360x640-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-360x640-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-360x640-at-1-20.png"
+  },
+  "cell0": 12
+ },
+ {
+  "name": "edges-1-rows-z1-915x412",
+  "w": 915,
+  "h": 412,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 1,
+  "steps": 261,
+  "reached": [
+   "1,15",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-915x412-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-915x412-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-915x412-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-915x412-at-1-20.png"
+  },
+  "cell0": 16
+ },
+ {
+  "name": "edges-1-rows-z1-412x915",
+  "w": 412,
+  "h": 915,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 1,
+  "steps": 231,
+  "reached": [
+   "1,6",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-412x915-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-412x915-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-412x915-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-412x915-at-1-20.png"
+  },
+  "cell0": 16
+ },
+ {
+  "name": "edges-1-rows-z1-844x390",
+  "w": 844,
+  "h": 390,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 1,
+  "steps": 249,
+  "reached": [
+   "1,15",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-844x390-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-844x390-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-844x390-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-844x390-at-1-20.png"
+  },
+  "cell0": 12
+ },
+ {
+  "name": "edges-1-rows-z1-390x844",
+  "w": 390,
+  "h": 844,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 1,
+  "steps": 259,
+  "reached": [
+   "1,19",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-390x844-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-390x844-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-390x844-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-390x844-at-1-20.png"
+  },
+  "cell0": 12
+ },
+ {
+  "name": "edges-1-rows-z1-1024x768",
+  "w": 1024,
+  "h": 768,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 1,
+  "steps": 203,
+  "reached": [
+   "1,6",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-1024x768-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-1024x768-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-1024x768-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-1024x768-at-1-20.png"
+  },
+  "cell0": 12
+ },
+ {
+  "name": "edges-1-rows-z1-768x1024",
+  "w": 768,
+  "h": 1024,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 1,
+  "steps": 269,
+  "reached": [
+   "1,18",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-768x1024-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-768x1024-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-768x1024-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-768x1024-at-1-20.png"
+  },
+  "cell0": 12
+ },
+ {
+  "name": "edges-1-rows-z1-1366x768",
+  "w": 1366,
+  "h": 768,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 1,
+  "steps": 244,
+  "reached": [
+   "1,2",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-1366x768-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-1366x768-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-1366x768-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z1-1366x768-at-1-20.png"
+  },
+  "cell0": 15
+ },
+ {
+  "name": "edges-1-rows-z2.5-896x443",
+  "w": 896,
+  "h": 443,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 2.5,
+  "steps": 270,
+  "reached": [
+   "1,6",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-896x443-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-896x443-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-896x443-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-896x443-at-1-20.png"
+  },
+  "cell0": 44
+ },
+ {
+  "name": "edges-1-rows-z2.5-443x939",
+  "w": 443,
+  "h": 939,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 2.5,
+  "steps": 224,
+  "reached": [
+   "1,4",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-443x939-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-443x939-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-443x939-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-443x939-at-1-20.png"
+  },
+  "cell0": 44
+ },
+ {
+  "name": "edges-1-rows-z2.5-640x360",
+  "w": 640,
+  "h": 360,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 2.5,
+  "steps": 204,
+  "reached": [
+   "1,16",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-640x360-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-640x360-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-640x360-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-640x360-at-1-20.png"
+  },
+  "cell0": 30
+ },
+ {
+  "name": "edges-1-rows-z2.5-360x640",
+  "w": 360,
+  "h": 640,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 2.5,
+  "steps": 214,
+  "reached": [
+   "1,20",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-360x640-at-1-20.png",
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-360x640-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-360x640-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-360x640-at-79-20.png"
+  },
+  "cell0": 30
+ },
+ {
+  "name": "edges-1-rows-z2.5-915x412",
+  "w": 915,
+  "h": 412,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 2.5,
+  "steps": 262,
+  "reached": [
+   "1,4",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-915x412-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-915x412-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-915x412-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-915x412-at-1-20.png"
+  },
+  "cell0": 40
+ },
+ {
+  "name": "edges-1-rows-z2.5-412x915",
+  "w": 412,
+  "h": 915,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 2.5,
+  "steps": 208,
+  "reached": [
+   "1,16",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-412x915-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-412x915-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-412x915-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-412x915-at-1-20.png"
+  },
+  "cell0": 40
+ },
+ {
+  "name": "edges-1-rows-z2.5-844x390",
+  "w": 844,
+  "h": 390,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 2.5,
+  "steps": 243,
+  "reached": [
+   "1,3",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-844x390-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-844x390-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-844x390-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-844x390-at-1-20.png"
+  },
+  "cell0": 32
+ },
+ {
+  "name": "edges-1-rows-z2.5-390x844",
+  "w": 390,
+  "h": 844,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 2.5,
+  "steps": 257,
+  "reached": [
+   "1,15",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-390x844-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-390x844-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-390x844-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-390x844-at-1-20.png"
+  },
+  "cell0": 32
+ },
+ {
+  "name": "edges-1-rows-z2.5-1024x768",
+  "w": 1024,
+  "h": 768,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 2.5,
+  "steps": 263,
+  "reached": [
+   "1,17",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-1024x768-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-1024x768-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-1024x768-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-1024x768-at-1-20.png"
+  },
+  "cell0": 31
+ },
+ {
+  "name": "edges-1-rows-z2.5-768x1024",
+  "w": 768,
+  "h": 1024,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 2.5,
+  "steps": 206,
+  "reached": [
+   "1,13",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-768x1024-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-768x1024-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-768x1024-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-768x1024-at-1-20.png"
+  },
+  "cell0": 31
+ },
+ {
+  "name": "edges-1-rows-z2.5-1366x768",
+  "w": 1366,
+  "h": 768,
+  "dpr": 1,
+  "cell": "rows",
+  "zoom": 2.5,
+  "steps": 223,
+  "reached": [
+   "1,12",
+   "1,0",
+   "79,0",
+   "79,20",
+   "1,20",
+   "1,10"
+  ],
+  "bad": [],
+  "shots": {
+   "1,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-1366x768-at-1-0.png",
+   "79,0": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-1366x768-at-79-0.png",
+   "79,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-1366x768-at-79-20.png",
+   "1,20": "/tmp/claude-0/-home-user/1f4c6304-ab2c-5e82-982d-3df83f263ee2/scratchpad/webtest/header/tester/shots/edges-1-rows-z2.5-1366x768-at-1-20.png"
+  },
+  "cell0": 37
+ }
+]
