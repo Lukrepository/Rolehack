@@ -3678,6 +3678,8 @@ export class Overlay {
     const nav = typeof navigator === 'undefined' ? {} : navigator;
     return {
       build: this.host.build ? this.host.build() : null,
+      channel: this.host.channel ? this.host.channel() : 'live',
+      address: `${location.host}${location.pathname}`,
       window: { w: box.width || window.innerWidth, h: box.height || window.innerHeight },
       screen: { w: Number(screen.width) || 0, h: Number(screen.height) || 0 },
       dpr: window.devicePixelRatio || 1,

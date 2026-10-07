@@ -8,6 +8,7 @@
 // follow; the message and status lines after RhScreen), menus, prompts and
 // forms.  The touch controls are overlay.js.
 import createNetHack from './nethack.js';
+import { CHANNEL, PREVIEW, SAVE_DB, LOCK, TITLE } from './channel.js';
 import { setPalette, dressHero, LOOK_LEN } from './doll.js';
 import { Overlay, STATUS_BAND, LINE, msgRows, msgBandPx, msgTextPx, MSG_LEADING, resetTextScale, creationCap,
   GHOST_CONFIRM_MS, RING_REACH } from './overlay.js';
@@ -2060,7 +2061,7 @@ function gameEnded(saved) {
     { note: saved ? 'Your game is kept. Give the same name at "Who are you?" to go on with it.'
                   : 'This game has ended.' },
     ...(refused ? [{ note: 'This window cannot close itself; close it as you would any other.' }] : []),
-    ...(build ? [{ html: `Rolehack build ${esc(build.short)} (${esc(build.date)}) · <a href="${esc(build.source)}" target="_blank" rel="noopener">source on GitHub</a>` }] : []),
+    ...(build ? [{ html: `Rolehack build ${esc(build.short)} (${esc(build.date)})${PREVIEW ? ' · preview channel' : ''} · <a href="${esc(build.source)}" target="_blank" rel="noopener">source on GitHub</a>` }] : []),
   ], [
     { label: saved ? 'Go on playing' : 'New game', run: () => location.reload() },
     { label: 'Close', primary: true, run: () => close() },
@@ -2511,6 +2512,7 @@ overlay = new Overlay({
   // --More--, under a menu, a text window or a form (getpos is the overlay's)
   // for the device report (overlay.js deviceFacts): the build this page is, and classic's tile
   build: () => build,
+  channel: () => CHANNEL,
   tileSize: () => tileSize(),
   guardsAside: () => moreShown || !$('modal').hidden || !$('formwrap').hidden,
   windowClosed,
@@ -2518,6 +2520,7 @@ overlay = new Overlay({
 // what the near-miss guard did, for the near-miss test on a device (the
 // design's section 18, test 2), from the browser's console
 globalThis.rolehackGuardLog = () => (overlay && overlay.guardLog) || [];
+if (PREVIEW) document.title = TITLE;
 // build.json, written by build.sh: the commit this page was built from and a
 // link to its source on GitHub.  Shown at the foot of the boot screen and at
 // the end of a game, so whoever plays it can find the source.
@@ -2525,7 +2528,7 @@ let build = null;
 async function loadBuild() {
   try { build = await (await fetch('build.json')).json(); } catch (e) { return; }
   const a = $('build');
-  a.textContent = `Rolehack · build ${build.short} (${build.date}) · source on GitHub`;
+  a.textContent = `Rolehack · build ${build.short} (${build.date})${PREVIEW ? ' · preview channel' : ''} · source on GitHub`;
   a.href = build.source;
 }
 
@@ -2578,8 +2581,12 @@ async function start() {
       // (the review, 2026-10-03).
       permInvent = P.get('layout') !== 'classic';
       mod.ENV.NETHACKOPTIONS = permInvent ? 'perm_invent,perminv_mode:full,time' : '!perm_invent,time';
-      mod.FS.mkdir('/save');
-      mod.FS.mount(mod.IDBFS, {}, '/save');
+      // the saves live in the IndexedDB database the mount names: the live
+      // page's is /save, the preview channel's /save-preview (channel.js), with
+      // /save a link to it, so the core's playground is /save either way
+      mod.FS.mkdir(SAVE_DB);
+      mod.FS.mount(mod.IDBFS, {}, SAVE_DB);
+      if (SAVE_DB !== '/save') mod.FS.symlink(SAVE_DB, '/save');
       mod.addRunDependency('syncfs');
       mod.FS.syncfs(true, (err) => {
         if (err) console.warn('save restore', err);
@@ -2605,7 +2612,7 @@ if (navigator.locks) {
   const waiting = setTimeout(() => {
     $('boot-text').textContent = 'Rolehack is open in another window. It starts here when that one closes.';
   }, 800);
-  navigator.locks.request('rolehack-game', () => {
+  navigator.locks.request(LOCK, () => {
     clearTimeout(waiting);
     $('boot-text').textContent = 'Loading Rolehack…';
     start();
