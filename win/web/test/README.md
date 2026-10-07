@@ -63,6 +63,16 @@ and it imports every `*.test.mjs` here. Naming the files also works:
   (the first cut jumped from 24 to 30 dp between 2406 and 2408 dp wide);
 - `layout.js` stays a plain module, with no imports, no DOM and nothing from node.
 
+`desk.test.mjs` checks the desk, the layout for a mouse and a keyboard (desktop
+mode, Lucas, 2026-10-06 and 2026-10-07): its cell is the largest whole
+device-pixel cell that fits (`dpr`), which the page draws exactly, and at dpr 1
+the cell it always was; a map that pans is never wider than the level and
+stays centred; dragged a pixel at a time with the arrangement it last drew
+(`prevDesk`), a cell step, the header at 826 dp and the panels' flip each come
+24 dp late on the way up and where the old one stops fitting on the way down,
+and nothing flips back within 24 dp; nonsense `dpr` and `prevDesk` never throw;
+and a touch or pen layout is the same with or without them.
+
 `viewer.test.mjs` checks the remembered budget (`viewer.js`) with the rule
 itself, as the page uses them:
 
