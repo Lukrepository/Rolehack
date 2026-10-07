@@ -1,11 +1,41 @@
-on: [push, pull_request]
+# Builds the Rolehack APK on GitHub's runners.  Inherited from
+# JodiJodington/NetHack-Android and changed for Rolehack (2026-10-07):
+#   - sys/android/settings.gradle includes ../../../RolehackFront, so the job
+#     checks out this repository and Lukrepository/RolehackFront side by side,
+#     as README.md describes for a local build;
+#   - one ABI, arm64-v8a: the only split app/build.gradle packages;
+#   - NDK 27.3.13750724 (r27d) for the Makefiles and for AGP (ANDROID_NDK_HOME,
+#     so the game library is stripped as in a local build);
+#   - the release APK is signed only when the KEYSTORE_* secrets are set;
+#   - the debug and release APKs are kept as run artifacts.
+name: Android APK
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+    defaults:
+      run:
+        working-directory: Rolehack
+    env:
+      ABI: arm64-v8a
+      NDK_VERSION: 27.3.13750724
+      KEYSTORE_FILE_BASE64: ${{ secrets.KEYSTORE_FILE_BASE64 }}
     steps:
-      - uses: actions/checkout@v6
+      - name: Check out Rolehack
+        uses: actions/checkout@v6
+        with:
+          path: Rolehack
+      - name: Check out RolehackFront beside it
+        uses: actions/checkout@v6
+        with:
+          repository: Lukrepository/RolehackFront
+          ref: rolehack-ui
+          path: RolehackFront
       - name: Install required packages
         run: sudo apt-get install -y gcc-multilib
       - name: Set up JDK 17
@@ -13,58 +43,59 @@ jobs:
         with:
            java-version: '17'
            distribution: 'temurin'
-      - name: Setup Android SDK           
-        uses: android-actions/setup-android@v3        
+      - name: Set up the Android SDK
+        uses: android-actions/setup-android@v3
         with:
           cmdline-tools-version: 9123335
-          packages: 'platforms;android-30 ndk;30.0.14904198 build-tools;37.0.0'
-      - name: Configure path to NDK
+          packages: 'platforms;android-36 build-tools;36.0.0 ndk;27.3.13750724'
+      - name: Point the Makefiles at the NDK and the ABI
         run: |
-          sed -i -e 's,NDK = .*,NDK = /usr/local/lib/android/sdk/ndk/30.0.14904198,g' sys/android/Makefile.src sys/android/Makefile.top
-      - name: fetch lua
+          sed -i -e "s,^NDK = .*,NDK = $ANDROID_HOME/ndk/$NDK_VERSION,g" \
+                 -e "s,^ABI = .*,ABI = $ABI,g" \
+                 sys/android/Makefile.src sys/android/Makefile.top
+          grep -H -E '^(NDK|ABI|API) =' sys/android/Makefile.src
+      - name: Fetch Lua
         run: |
-          cd sys/android && sh ./setup.sh && cd ../..
+          (cd sys/android && sh ./setup.sh)
           make fetch-lua
-      - name: Build native Android application
+      - name: Build the game library
         run: |
-          for ABI in arm64-v8a armeabi armeabi-v7a x86 x86_64
-          do
-            echo "building for $ABI..."
-            sed -i -e "s,ABI = .*,ABI = $ABI,g" sys/android/Makefile.src sys/android/Makefile.top
-            cd sys/android && sh ./setup.sh && cd ../..
-            make install
-            make spotless
-          done
-      - name: Build NetHack
-        run: cd sys/android && sh gradlew build
-      - name: sign release apk
+          make install
+          ls -la sys/android/app/libs/$ABI/
+      - name: Build the APKs
+        run: |
+          export ANDROID_NDK_HOME="$ANDROID_HOME/ndk/$NDK_VERSION"
+          cd sys/android && sh gradlew build
+          ls -la app/build/outputs/apk/debug/ app/build/outputs/apk/release/
+      - name: Sign the release APK
+        if: env.KEYSTORE_FILE_BASE64 != ''
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEYSTORE_FILE_BASE64: ${{ secrets.KEYSTORE_FILE_BASE64 }}
         run: |
-          echo $KEYSTORE_FILE_BASE64 | base64 -d > keystore.jks
-          for ABI in arm64-v8a armeabi armeabi-v7a x86 x86_64
-          do
-            /usr/local/lib/android/sdk/build-tools/37.0.0/apksigner sign --ks keystore.jks \
-              --ks-pass env:KEYSTORE_PASSWORD \
-              --in sys/android/app/build/outputs/apk/release/app-$ABI-release-unsigned.apk \
-              --out sys/android/app/build/outputs/apk/release/app-$ABI-release.apk
-          done
-
-      - uses: actions/upload-artifact@v5
+          echo "$KEYSTORE_FILE_BASE64" | base64 -d > keystore.jks
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" sign --ks keystore.jks \
+            --ks-pass env:KEYSTORE_PASSWORD \
+            --in sys/android/app/build/outputs/apk/release/app-$ABI-release-unsigned.apk \
+            --out sys/android/app/build/outputs/apk/release/app-$ABI-release.apk
+          rm -f keystore.jks
+      - name: Keep the debug APK
+        uses: actions/upload-artifact@v5
         with:
-          name: nethack-release-unsigned
-          path: sys/android/app/build/outputs/apk/release/app-*-release.apk
-      - uses: actions/upload-artifact@v5
+          name: rolehack-arm64-v8a-debug
+          path: Rolehack/sys/android/app/build/outputs/apk/debug/app-*-debug.apk
+          if-no-files-found: error
+      - name: Keep the release APK (signed when the secrets are set, otherwise unsigned)
+        uses: actions/upload-artifact@v5
         with:
-          name: nethack-debug
-          path: sys/android/app/build/outputs/apk/debug/app-*-debug.apk
+          name: rolehack-arm64-v8a-release
+          path: Rolehack/sys/android/app/build/outputs/apk/release/app-*-release*.apk
+          if-no-files-found: error
       - name: Make a release
         uses: softprops/action-gh-release@v3
         if: github.ref_type == 'tag'
         with:
           generate_release_notes: true
-          body_path: CHANGELOG.txt
+          body_path: Rolehack/CHANGELOG.txt
           preserve_order: true
           files: |
-            sys/android/app/build/outputs/apk/release/app-*-release.apk
+            Rolehack/sys/android/app/build/outputs/apk/release/app-*-release.apk
