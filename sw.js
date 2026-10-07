@@ -7,11 +7,15 @@
 // new one is active.  It never reloads a page: a game in progress keeps
 // running on the files it started with.
 
-const VERSION = '8cdd05749895';
-const CACHE = `rolehack-${VERSION}`;
+const VERSION = '3fca8b1a79c9';
+// the cache is named for the channel the worker serves (channel.js: the
+// preview channel lives under /preview/), so the live page's worker and the
+// preview's share the origin's cache storage without touching each other
+const CHANNEL = /\/preview\/sw\.js$/.test(self.location.pathname) ? 'rhpreview' : 'rolehack';
+const CACHE = `${CHANNEL}-${VERSION}`;
 const FILES = [
   './', 'index.html', 'rolehack.css', 'manifest.json',
-  'web.js', 'overlay.js', 'commands.js', 'prefs.js', 'doll.js', 'feedback.js', 'layout.js', 'viewer.js', 'defaults.nh', 'build.json',
+  'web.js', 'overlay.js', 'commands.js', 'prefs.js', 'doll.js', 'feedback.js', 'layout.js', 'viewer.js', 'channel.js', 'defaults.nh', 'build.json',
   'sounds/key-tactile.ogg',
   'nethack.js', 'nethack.wasm', 'tiles.png', 'tiles.json',
   'fonts/VT323-Regular.ttf', 'fonts/IBMPlexSansCondensed-SemiBold.ttf', 'fonts/AtkinsonHyperlegibleNext-Variable.ttf',
@@ -26,7 +30,7 @@ self.addEventListener('install', (e) => {
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys()
-    .then((keys) => Promise.all(keys.filter((k) => k.startsWith('rolehack-') && k !== CACHE)
+    .then((keys) => Promise.all(keys.filter((k) => k.startsWith(`${CHANNEL}-`) && k !== CACHE)
       .map((k) => caches.delete(k))))
     .then(() => self.clients.claim()));
 });
