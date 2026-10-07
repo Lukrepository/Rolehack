@@ -9,6 +9,36 @@ Everything comes from one function, `layout(W, H, pointer, settings)`, in `win/w
 
 ## CHANGES (v2, 2 October 2026)
 
+### Desktop mode is built (Lucas, 2026-10-06 and 2026-10-07)
+
+Lucas lifted the deferral of 3 October on 6 October ("I want it now"). It is for him, on a Windows touchscreen laptop with a mouse, a touchpad and a keyboard (Edge in a tab and installed), and for his uncle, who plays Firefox on a Mac and Safari on an iPhone. The decisions of record stand: twin banks stay the default with classic one setting away; a mouse or keyboard switches to the desk arrangement as §12 says; Ctrl+; is tested on each OS (test 7); nothing moves for a touch player. It is built on `room/desktop-mode` in three steps: (1) the input switch and the desk on the page, (2) the keyboard, (3) the rest of the rule. Steps 1 and 2 go into `web` together, so no player gets a desk without its key letters.
+
+**Lucas's answers (2026-10-07) to the plan's questions:**
+1. **His laptop** (its device report): the installed app is 1280x640, an Edge tab 1272x588, on a 1280x720 screen at density 1.5 with 10 touch points. Chromium reports `pointer: coarse` and no hover there although a mouse and a touchpad are in use, which is why §12 decides nothing from those queries. The device has no folded tablet posture, and its keyboard is always live. He plays with mouse clicks to travel and the keyboard's Esc.
+2. **His uncle plays Firefox on a Mac.** Lucas keeps a list of things to ask him: `tester-requests-uncle-2026-10-07.md` in the workspace.
+3. **The switch on a device that can touch** (§12 changes):
+   - (a) typed keys alone only turn on the key letters; the mouse, the touchpad or the wheel is the automatic way to the desk. A device that cannot touch starts at the desk. ("Three game keys" ask for the desk only where no touch is possible.)
+   - (b) a touch or a pen while the desk shows only brings the thumb banks back: it is consumed (no key, no travel, no panel), and the switch comes at its lift, never held back by the 3 s rule. (§12 had "the touch itself acts in the current layout".)
+4. **A mouse window too short for the dock** gets the thumb banks, then classic (§12 sent an unusable desk to classic), with a 24 dp band at that edge so the board does not flip at a pixel. §14's bent rule 4 gains this case: the board moves between the dock and the corners when a mouse window's height crosses about 440 to 490 dp, past the band.
+5. **Right-click.**
+   - (a) On the map it looks at the square: the core's own second mouse button, `clicklook`, which uses no turn.
+   - (b) On a key it does the key's hold where a hold opens something (a hub's layer, a macro's editor, the FLICK legend), and nothing on the pins, the equipment keys and SACRIFICE, whose holds empty the key or pray.
+   - Built on `button === 2` with a mouse, never on `contextmenu`, which a long touch also fires. On a Mac, Ctrl+click is a right-click too.
+6. **Drawer keys** (§9 changes): typing an item's own game key runs it and closes the drawer, keeping the muscle memory; only items with no game key of their own get numbers.
+7. **The desk's keys keep their words**, with the keyboard key in the corner, whatever "Key labels" says. Rolehack's own keys are written `^;4`, NetHack's `^` for Ctrl as MSGS shows `^P`, not `⌃;4`.
+8. **Typed keys while something opened by touch or the mouse is up:** with Fight armed, a typed direction fights; any other typed key closes the layer or drawer, or disarms, before it goes to the game; vi-keys pick a layer's places only when Ctrl+; opened it.
+9. **"Docked" and "hide the dock" are postponed.** Lucas: keyboard-only players likely play NetHack's own terminal, which now runs natively on Windows, and it is "not a design space I want to intrude on unnecessarily". Until then the Controls setting has three values: automatic / thumb banks / mouse and keyboard.
+
+**Decided in the plan, which Lucas let stand:**
+- KEYS (the soft keyboard) has no Ctrl+; letter: a desk player has a real keyboard. `k` stays flick ↑, as §12's table has it (`layout.js`'s LEGEND gave it to KEYS too).
+- The key after the prefix counts with Ctrl held or released, and is read as typed, so `f` (FLICK's tap) differs from `F` (COMBAT's layer). WORLD moves from `w` to `o` and the count layer from `n` to `x`: a browser tab cannot stop Ctrl+W (close the tab) or Ctrl+N (a new window). The prefix is a setting, Ctrl+; by default, matched by `code`, with AltGr excluded.
+- The legends say what each key sends: REST `20.` (LEGEND's `20s` would search), SACRIFICE Alt+o (its hold, Pray, Alt+p), the pad centre `s` or `,`, a pin the key it holds.
+- The near-miss guard is for thumbs. At the desk, with a mouse, there are no halos, seams, ghost deck or habit guards (the ring was already off for a mouse); the 200 ms after a window closes and the armed-Fight rule stay.
+- The desk keeps its own wheel zoom for the page's visit: it opens on the whole level and never changes the thumb banks' `zoomFactor`.
+- The remembered budget is the thumb banks' alone: a desk window neither uses nor teaches it (`deskLayout` never read it).
+- Keyboard fixes in step 2: on a Mac the Cmd shortcuts are the browser's (Cmd+R reached the game as `r`, read) and Option+letter types the M- command; AltGr characters are characters, not M- commands.
+- The rule's shortfalls at the desk are fixed in `layout.js`, for the desk only (every touch and pen layout stays identical, and a check holds it so): the cell in whole device pixels (a `dpr` input, 1 by default); a panning map never wider than the level; a 24 dp band for the desk's arrangement; later, the 21:9 ramp and the safe insets.
+
 ### The preview channel (Lucas, 2026-10-06; the release plan's D34)
 
 The same site under `/preview/`, where a build is tried on a phone before it goes live. One origin, so everything a page keeps is named by its channel (`win/web/channel.js`, read from the page's own path): the saves' IndexedDB database (`/save-preview`, the IDBFS mount that names it, with `/save` a link to it so the core's playground is unchanged), the settings prefix (`rhp.`), the one-page lock, and the service worker's cache prefix (`rhpreview-`). A preview build can never touch the live page's games or settings, and the two can be open side by side. `build.sh` writes `targets/web-preview/` beside `targets/web/` (the manifest's name and the title say "preview"); `win/web/deploy.sh` publishes either channel to its own place on `gh-pages` without touching the other. The device report now starts with the channel and the page's address. `doc/RELEASING.md` has the steps.
