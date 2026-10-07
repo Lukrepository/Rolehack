@@ -6,8 +6,10 @@
 // the defaults stand in.
 
 import * as C from './commands.js';
+import { PREFS_PREFIX } from './channel.js';
 
-const PREFIX = 'rh.';
+// rh. on the live page, rhp. on the preview channel (channel.js), so the two keep their own settings
+const PREFIX = PREFS_PREFIX;
 const DEFAULTS = {
   style: 'terminal',          // terminal | light | gamecube
   case: true,

@@ -19,7 +19,7 @@ python3 win/web/icons.py targets/web
 cp targets/wasm/nethack.js targets/wasm/nethack.wasm win/web/index.html \
    win/web/rolehack.css win/web/web.js win/web/overlay.js win/web/commands.js \
    win/web/prefs.js win/web/doll.js win/web/feedback.js win/web/layout.js \
-   win/web/viewer.js win/web/manifest.json win/web/defaults.nh targets/web/
+   win/web/viewer.js win/web/channel.js win/web/manifest.json win/web/defaults.nh targets/web/
 cp win/web/fonts/* targets/web/fonts/
 cp win/web/sounds/* targets/web/sounds/
 # what the page was built from, for the page's own "source" link (the NGPL
@@ -40,3 +40,15 @@ version=$(cd targets/web && find . -type f ! -name sw.js | sort | xargs cat | md
 sed "s/__VERSION__/$version/" win/web/sw.js > targets/web/sw.js
 echo "App version $version"
 echo "Built $top/targets/web/"
+# The preview channel (doc/RELEASING.md): the same build, served under /preview/
+# with its own storage (win/web/channel.js), so a build can be tried on a phone
+# before it goes live.  Only the name and the title differ, so an installed
+# preview app says what it is; it gets its own cache version for the same reason.
+rm -rf targets/web-preview
+cp -r targets/web targets/web-preview
+sed -i 's/"name": "Rolehack"/"name": "Rolehack preview"/; s/"short_name": "Rolehack"/"short_name": "Preview"/' targets/web-preview/manifest.json
+sed -i 's#<title>Rolehack</title>#<title>Rolehack preview</title>#' targets/web-preview/index.html
+pversion=$(cd targets/web-preview && find . -type f ! -name sw.js | sort | xargs cat | md5sum | cut -c1-12)
+sed "s/__VERSION__/$pversion/" win/web/sw.js > targets/web-preview/sw.js
+echo "Preview version $pversion"
+echo "Built $top/targets/web-preview/"
