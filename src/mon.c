@@ -1,5 +1,5 @@
 /* NetHack 5.0	mon.c	$NHDT-Date: 1781062909 2026/06/09 19:41:49 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.634 $ */
-/* Changed for Rolehack by Lucas Ruiz, 2026-08-21 to 2026-09-23.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-08-21 to 2026-10-07.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Derek S. Ray, 2015. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -887,6 +887,10 @@ make_corpse(struct monst *mtmp, unsigned int corpseflags)
     case PM_PAGE: case PM_ABBOT: case PM_ACOLYTE: case PM_HUNTER:
     case PM_THUG: case PM_NINJA: case PM_ROSHI: case PM_GUIDE:
     case PM_WARRIOR: case PM_APPRENTICE:
+    /* Rolehack's own monsters leave corpses like any other human (the
+       release-status list above has no default: unlisted, they left none) */
+    case PM_APOTHECARY: case PM_SIR_ISAAC_NEWTON: case PM_WILLIAM_CHALONER:
+    case PM_ASSAYER: case PM_BRIBED_CONSTABLE:
 #else
     default:
 #endif
