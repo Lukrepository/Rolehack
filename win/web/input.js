@@ -178,7 +178,9 @@ export function keyCodeOf(e, mac = false) {
     default: break;
   }
   const typed = e.key.length === 1;
-  if (altGraph(e) || (!mac && e.ctrlKey && e.altKey && typed && !/^[a-z]$/i.test(e.key))) {
+  // AltGr: Windows' and Linux's.  Firefox on a Mac reports AltGraph whenever
+  // Option is down, and Option is the Mac's Alt: the branch below takes it.
+  if (!mac && (altGraph(e) || (e.ctrlKey && e.altKey && typed && !/^[a-z]$/i.test(e.key)))) {
     return typed ? e.key.charCodeAt(0) : null;
   }
   if (e.altKey) {
@@ -193,6 +195,10 @@ export function keyCodeOf(e, mac = false) {
   }
   if (!typed) return null;
   if (e.ctrlKey && /^[a-z]$/i.test(e.key)) return e.key.toUpperCase().charCodeAt(0) & 0x1f;
+  // Ctrl with anything else is the browser's: Ctrl+- and Ctrl+= zoom the
+  // page, Ctrl+0 resets it (they reached the game as - = 0); the prefix,
+  // Ctrl+;, was taken before this
+  if (e.ctrlKey && !e.altKey) return null;
   return e.key.charCodeAt(0);
 }
 

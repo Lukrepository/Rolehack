@@ -143,6 +143,11 @@ const MAC = macPlatform(navigator.platform, navigator.userAgent);
 // the key's place, and let AltGr type its characters).
 const keyCode = (e) => keyCodeOf(e, MAC);
 
+// Desktop mode, twin banks only: a mouse's right button (a Mac's Ctrl+click)
+// and its others are no tap on the bands, the glass or a prompt's chips; the
+// right-click has its own work on the map and the keys.
+const otherMouse = (e) => !!(geom && geom.twin) && e.pointerType === 'mouse' && (e.button !== 0 || (MAC && e.ctrlKey));
+
 let formOpen = null;
 
 window.addEventListener('keydown', (e) => {
@@ -167,6 +172,18 @@ window.addEventListener('keydown', (e) => {
   // answer 8)
   if ($('modal').hidden && overlay && overlay.typedKey(k)) return;
   push({ key: k });
+});
+
+// Desktop mode: a mouse's back and forward buttons (3 and 4) would leave the
+// page in the middle of a game; in twin banks they do nothing.  Chromium
+// navigates on their mouseup, Firefox on their mousedown or auxclick.
+for (const type of ['mousedown', 'mouseup', 'auxclick']) {
+  window.addEventListener(type, (e) => { if ((e.button === 3 || e.button === 4) && geom && geom.twin) e.preventDefault(); }, true);
+}
+// and the browser's own menu never opens over the board in twin banks: a
+// right-click has its own work there (a field keeps its menu, to paste)
+window.addEventListener('contextmenu', (e) => {
+  if (geom && geom.twin && e.target && e.target.closest && !e.target.closest('input, textarea') && $('app').contains(e.target)) e.preventDefault();
 });
 
 // the overlay's commands, in gurrhack's notation, go in as keys; "#name" and
@@ -634,7 +651,7 @@ function renderPanels() {
   const log = panels.get('log'), inv = panels.get('inventory'), leg = panels.get('legend');
   // where the desk has no room for its key legend, the log shows it while it
   // is wanted: the prefix waiting, Ctrl held, a layer the keyboard opened
-  const borrow = !panelShown(leg) && !!(overlay && overlay.legendWanted && overlay.legendWanted());
+  const borrow = !!geom.desk && !panelShown(leg) && !!(overlay && overlay.legendWanted && overlay.legendWanted());
   if (panelShown(log)) { if (borrow) renderLegend(log); else renderLog(log); }
   if (panelShown(inv)) renderInventory(inv);
   if (panelShown(leg)) renderLegend(leg);
@@ -649,8 +666,14 @@ function renderLegend(p) {
   const sig = JSON.stringify(L);
   if (sig === p.sig) return;
   p.sig = sig;
-  // the log lends its place (renderPanels): its title and look are the legend's till it is given back
-  if (p.kind !== 'legend') { p.legend = true; p.el.dataset.kind2 = 'legend'; p.first = null; }
+  // the log lends its place (renderPanels): its title and look are the
+  // legend's till it is given back, its own place kept to be put back
+  if (p.kind !== 'legend' && !p.legend) {
+    p.legend = true;
+    p.saved = { follow: p.follow, top: p.top, fx: p.fx, first: p.first };
+    p.el.dataset.kind2 = 'legend';
+    p.body.scrollTop = 0;
+  }
   p.title.hidden = false;
   p.title.textContent = `Keys: ${L.title}`;
   if (L.armed) p.el.dataset.armed = ''; else delete p.el.dataset.armed;
@@ -676,9 +699,13 @@ function fillPanel(p, html, toEnd, gone = 0) {
 }
 
 function renderLog(p) {
-  // the key legend it lent its place to goes (renderPanels): its own title, as layoutPanels shows it
+  // the key legend it lent its place to goes (renderPanels): its own title,
+  // as layoutPanels shows it, and its place, as the player left it
+  let back = null;
   if (p.legend) {
-    p.legend = false; p.sig = ''; p.first = null;
+    p.legend = false; p.sig = '';
+    back = p.saved || null; p.saved = null;
+    p.first = null;
     p.title.textContent = 'Messages';
     p.title.hidden = (parseFloat(p.el.style.height) || 0) < 120;
     delete p.el.dataset.armed; delete p.el.dataset.kind2;
@@ -694,7 +721,9 @@ function renderLog(p) {
   p.sig = sig;
   const gone = p.first === null ? 0 : Math.max(0, first - p.first);
   p.first = first;
+  if (back) { p.follow = back.follow; p.top = back.top; p.fx = back.fx; }
   fillPanel(p, history.slice(0, n).map((t, i) => `<div class="pl${first + i >= fresh ? ' new' : ''}">${esc(t)}</div>`).join(''), true, gone);
+  if (back) { p.follow = back.follow; p.top = back.top; p.fx = back.fx; putPlace(p); }
 }
 
 function renderInventory(p) {
@@ -753,6 +782,8 @@ function panelTaps(p, kind) {
     const d = down;
     down = null;
     if (!d || d.id !== e.pointerId || !(geom && geom.twin)) return;
+    // the log lending its place to the key legend is a list to read; a mouse's other buttons tap nothing
+    if (p.legend || otherMouse(e)) return;
     if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10 || Math.abs(p.body.scrollTop - d.top) > 2 || Math.abs(p.body.scrollLeft - d.left) > 2) return;
     if (moreShown) { push({ key: 32 }); return; }
     if (page.some((q) => q.ask) || (overlay && overlay.answering)) return;
@@ -1034,13 +1065,15 @@ function guardTap(e, x, y, inLevel, down) {
   }
   if (overlay.layerUp()) { overlay.dismissPopups(); return true; }
   if (down - closedAt < AFTER_CLOSE_MS) { overlay.noteGuard('closing', e); return true; }
-  const d = overlay.keyDistance(e.clientX, e.clientY);
+  // the ring and the ghost deck are for a thumb's near miss, never a mouse's click
+  const mouse = e.pointerType === 'mouse';
+  const d = mouse ? null : overlay.keyDistance(e.clientX, e.clientY);
   const ring = d !== null && d <= RING_REACH;
   if (ring && down - overlay.keyUpAt < RING_AFTER_KEY_MS) { overlay.noteGuard('bounce', e); return true; }
   if (!inLevel) { clearGhostPreview(false); return true; }
   // a preview's second tap on its cell walks; any other tap clears it (ghostTap)
   if (ghostPreview && ghostPreview.x === x && ghostPreview.y === y) { clearGhostPreview(true); return false; }
-  if (ghostTap(e, x, y)) return true;
+  if (!mouse && ghostTap(e, x, y)) return true;
   if (!ring) return false;
   ghostPreview = { x, y, ring: true, timer: setTimeout(() => clearGhostPreview(false), GHOST_CONFIRM_MS) };
   overlay.noteGuard('ring', e);
@@ -1079,9 +1112,10 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
   // button does nothing.  Only a mouse's: a long touch's contextmenu is
   // nothing here.
   let right = null;
-  cv.addEventListener('contextmenu', (e) => e.preventDefault());
+  cv.addEventListener('contextmenu', (e) => { if (geom && geom.twin) e.preventDefault(); });
   cv.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'mouse' && (e.button !== 0 || (MAC && e.ctrlKey))) {
+    // twin banks only: classic's map is as it was
+    if (geom && geom.twin && e.pointerType === 'mouse' && (e.button !== 0 || (MAC && e.ctrlKey))) {
       e.preventDefault();
       right = e.button === 2 || e.button === 0 ? { id: e.pointerId, x: e.clientX, y: e.clientY } : null;
       return;
@@ -1184,6 +1218,9 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
   cv.addEventListener('pointercancel', (e) => { if (right && right.id === e.pointerId) right = null; pts.delete(e.pointerId); if (pts.size < 2 && (pinch || two)) endTwo(); endOverview(); });
   cv.addEventListener('wheel', (e) => {
     e.preventDefault();
+    // the wheel that asked for the desk (input.js) never zooms the thumb
+    // banks: their zoom is theirs, and the desk opens on the whole level
+    if (geom && geom.twin && !geom.desk && overlay && overlay.deskPending()) return;
     // Each notch scales the cell asked for (tileSize()), not the drawn one: the
     // drawn cell is that floored to device pixels, so a trackpad's small steps
     // scaled from it would each be floored away and the map never grow.
@@ -1194,7 +1231,8 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
   // only sometimes teaches that it never does (the message band research,
   // step 4).  At --More-- the tap is Space.  Not while a question waits on the
   // band or the pad, where a key would be taken as the answer.
-  $('msgband').addEventListener('pointerup', () => {
+  $('msgband').addEventListener('pointerup', (e) => {
+    if (otherMouse(e)) return;
     if (moreShown) push({ key: 32 });
     else if (!page.some((e) => e.ask) && !(overlay && overlay.answering)) send('^P');
   });
@@ -1214,12 +1252,14 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
   gl.addEventListener('pointerup', (e) => {
     const down = glassDown;
     glassDown = null;
+    if (otherMouse(e)) return;
     if (down === e.pointerId && own(e) && geom && geom.twin && moreShown) push({ key: 32 });
   });
   sb.addEventListener('pointerdown', (e) => { statDown = e.pointerId; });
   sb.addEventListener('pointerup', (e) => {
     const down = statDown;
     statDown = null;
+    if (otherMouse(e)) return;
     if (down === e.pointerId && geom && geom.twin && moreShown) push({ key: 32 });
   });
 }());
@@ -1646,7 +1686,7 @@ function showChips(choices) {
     b.textContent = ch;
     b.addEventListener('pointerdown', () => { b.classList.add('pressed'); FB.press(); });
     b.addEventListener('pointerleave', () => b.classList.remove('pressed'));
-    b.addEventListener('pointerup', (e) => { e.preventDefault(); b.classList.remove('pressed'); FB.up(); windowClosed(); push({ key: ch.charCodeAt(0) }); });
+    b.addEventListener('pointerup', (e) => { e.preventDefault(); b.classList.remove('pressed'); if (otherMouse(e)) return; FB.up(); windowClosed(); push({ key: ch.charCodeAt(0) }); });
     c.appendChild(b);
   }
   const x = document.createElement('button');
@@ -1654,7 +1694,7 @@ function showChips(choices) {
   x.textContent = 'Esc';
   x.addEventListener('pointerdown', () => { x.classList.add('pressed'); FB.press(); });
   x.addEventListener('pointerleave', () => x.classList.remove('pressed'));
-  x.addEventListener('pointerup', (e) => { e.preventDefault(); x.classList.remove('pressed'); FB.up(); windowClosed(); push({ key: 27 }); });
+  x.addEventListener('pointerup', (e) => { e.preventDefault(); x.classList.remove('pressed'); if (otherMouse(e)) return; FB.up(); windowClosed(); push({ key: 27 }); });
   c.appendChild(x);
   sizeChips();
   placeChips();

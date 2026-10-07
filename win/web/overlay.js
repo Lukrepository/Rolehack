@@ -41,7 +41,7 @@ import * as FB from './feedback.js';
 import { textMetrics, layout } from './layout.js';
 import { budgetedLayout, withClasses, classesOf, deviceReport, browserFamily } from './viewer.js';
 import { startMode, freshInput, inputStep, inputSwitched, controlsOf,
-  isPrefix, prefixChar, prefixEntry, PREFIX, PREFIX_CODES, placeOfKey, macPlatform } from './input.js';
+  isPrefix, prefixChar, prefixEntry, PREFIX, PREFIX_CODES, placeOfKey, macPlatform, ARROWS } from './input.js';
 
 // a Mac: Ctrl+click is its right-click (input.js macPlatform)
 const MAC = typeof navigator !== 'undefined' && macPlatform(navigator.platform, navigator.userAgent);
@@ -637,8 +637,7 @@ export class Overlay {
     this.input = freshInput(startMode({ setting: P.get('controls'), remembered: P.get('inputMode'), canTouch: this.canTouch }));
     this.inputPending = false;   // a switch to the desk waiting for a quiet moment
     this.touchSwitch = null;     // the touch whose lift brings the thumb banks
-    this.consumed = new Set();   // touches the desk took for the switch alone
-    this.consumedUpAt = -1e9;
+    this.consumed = new Map();   // touches the desk took for the switch alone: pointerId -> lift time (0: still down)
     this.deskFellBack = false;   // the window had no room for the dock: the thumb banks showed
     this.deskMemory = null;      // the desk's arrangement last drawn, for its band (layout.js section 10)
     // the browser's own events only; rolehackInputTest = true in the console
@@ -647,22 +646,29 @@ export class Overlay {
     const real = (e) => e.isTrusted || globalThis.rolehackInputTest === true;
     window.addEventListener('pointerdown', (e) => {
       if (!real(e)) return;
+      // a mouse's press is no request to see the key letters: a Mac's
+      // Ctrl+click is its right-click
+      if (e.pointerType === 'mouse') { clearTimeout(this.ctrlTimer); this.setCtrlHeld(false); }
+      const finger = e.pointerType === 'touch' || e.pointerType === 'pen';
       const r = this.feedInput({ kind: 'pointer', type: e.pointerType, t: performance.now() });
-      if (r.ask !== 'thumb') return;
       // A touch while the desk shows does nothing but bring the thumb banks back
       // (Lucas's answer 3b): a thumb reaching where a thumb key was would land
-      // on a small desk key, the map (a travel) or a panel.  A touch on a window
-      // over the board -- a menu, a form -- does what it does there.
-      if (r.consume && this.onBoard(e.target)) {
+      // on a small desk key, the map (a travel) or a panel.  By what is drawn:
+      // a second touch before the thumb banks are built is taken the same way.
+      // A touch on a window over the board -- a menu, a form -- does what it
+      // does there.
+      const consume = finger && this.deskShown() && controlsOf(P.get('controls')) === 'auto';
+      if (r.ask !== 'thumb' && !consume) return;
+      if (consume && this.onBoard(e.target)) {
         e.preventDefault();
         e.stopImmediatePropagation();
-        this.consumed.add(e.pointerId);
+        this.consumed.set(e.pointerId, 0);
       }
       this.touchSwitch = e.pointerId;
     }, true);
     const lift = (e) => {
-      if (this.consumed.delete(e.pointerId)) {
-        this.consumedUpAt = performance.now();
+      if (this.consumed.has(e.pointerId)) {
+        this.consumed.set(e.pointerId, performance.now());
         e.preventDefault();
         e.stopImmediatePropagation();
       }
@@ -671,12 +677,23 @@ export class Overlay {
     window.addEventListener('pointerup', lift, true);
     window.addEventListener('pointercancel', lift, true);
     window.addEventListener('pointermove', (e) => {
-      if (this.consumed.has(e.pointerId)) { e.preventDefault(); e.stopImmediatePropagation(); }
+      if (this.consumed.has(e.pointerId) && !this.consumed.get(e.pointerId)) { e.preventDefault(); e.stopImmediatePropagation(); }
     }, true);
-    // the click the browser gives a consumed touch, on whatever lies under it
+    // The click the browser gives a consumed touch, on whatever lies under
+    // it: that touch's own, by its pointerId (Chrome, Edge, Firefox), or the
+    // first click after its lift on the board where the click names no
+    // pointer.  Never another touch's: a chip or a menu row tapped again
+    // keeps its click.
     window.addEventListener('click', (e) => {
-      if (!e.detail || performance.now() - this.consumedUpAt > CONSUMED_CLICK_MS) return;
-      if (e.pointerType && e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+      if (!e.detail || !this.consumed.size) return;
+      const now = performance.now();
+      for (const [id, up] of this.consumed) if (up && now - up > CONSUMED_CLICK_MS) this.consumed.delete(id);
+      const named = typeof e.pointerId === 'number' && e.pointerId >= 0 && e.pointerType;
+      let id = null;
+      if (named) id = this.consumed.has(e.pointerId) ? e.pointerId : null;
+      else if (this.onBoard(e.target)) id = [...this.consumed.keys()].find((k) => this.consumed.get(k)) ?? null;
+      if (id === null) return;
+      this.consumed.delete(id);
       e.preventDefault();
       e.stopImmediatePropagation();
     }, true);
@@ -687,9 +704,13 @@ export class Overlay {
     // a chord (^D, the prefix) is quicker and lights nothing
     this.ctrlHeld = false;
     window.addEventListener('keydown', (e) => {
+      // Ctrl's own repeats (Windows repeats a held modifier) leave its timer be
+      if (e.key === 'Control') {
+        if (!e.repeat) { clearTimeout(this.ctrlTimer); this.ctrlTimer = setTimeout(() => this.setCtrlHeld(true), CTRL_SHOW_MS); }
+        return;
+      }
       clearTimeout(this.ctrlTimer);
-      if (e.key === 'Control' && !e.repeat) this.ctrlTimer = setTimeout(() => this.setCtrlHeld(true), CTRL_SHOW_MS);
-      else if (e.key !== 'Control' && this.ctrlHeld) this.setCtrlHeld(false);
+      if (this.ctrlHeld) this.setCtrlHeld(false);
     }, true);
     window.addEventListener('keyup', (e) => { if (e.key === 'Control') { clearTimeout(this.ctrlTimer); this.setCtrlHeld(false); } }, true);
     window.addEventListener('blur', () => { clearTimeout(this.ctrlTimer); this.setCtrlHeld(false); this.prefixDone(); });
@@ -718,6 +739,10 @@ export class Overlay {
   }
 
   inputMode() { const s = controlsOf(P.get('controls')); return s === 'auto' ? this.input.mode : s; }
+  // the desk asked for and not yet drawn (web.js: the wheel that asked zooms nothing)
+  deskPending() {
+    return !!(this.twin && (this.inputPending || (this.inputMode() === 'desk' && !this.deskShown() && !this.deskFellBack)));
+  }
   deskShown() { return !!(this.twin && this.twin.spec.pointer === 'mouse'); }
   onBoard(t) { return !!t && [this.keysEl, this.caseEl, $('bands'), $('glass'), $('panes')].some((q) => q && q.contains(t)); }
 
@@ -829,22 +854,37 @@ export class Overlay {
   // key was taken here.  Twin banks only: classic's keys are as they were.
   keyFirst(e) {
     if (!this.twin || e.isComposing) return false;
+    // the key that finished a prefix, held: its repeats are spent too, not the game's
+    if (this.prefixHeld) {
+      if (e.repeat && e.code === this.prefixHeld) return true;
+      this.prefixHeld = null;
+    }
     if (this.host.guardsAside && this.host.guardsAside()) { this.prefixDone(); return false; }
-    if (isPrefix(e, this.prefixCode())) { if (!e.repeat) this.prefixArm(); return true; }
     if (this.prefixAt) {
       // a modifier alone (Shift for F, Ctrl let go and pressed again) keeps it waiting
       if (/^(Control|Shift|Alt|AltGraph|Meta|CapsLock|OS)$/.test(e.key)) return true;
+      // the browser's own keys go to the browser: Cmd's (Cmd+R reloads), F5, F11
+      if (e.metaKey || /^F\d+$/.test(e.key)) { this.prefixDone(); return false; }
       const late = performance.now() - this.prefixAt > PREFIX_MS;
+      // the prefix's own key again, Ctrl still held, is its character: on a
+      // French keyboard the key right of L prints m, MENU's letter
+      const p = prefixEntry(prefixChar(e));
+      if (!late && !p && isPrefix(e, this.prefixCode())) { if (!e.repeat) this.prefixArm(); return true; }
       this.prefixDone();
       if (late) return false;
       if (e.key === 'Escape') return true;
-      const p = prefixEntry(prefixChar(e));
+      this.prefixHeld = e.code || null;
       if (p) this.prefixAct(p);
       else this.pillFlash(`${this.prefixText()} ${String(e.key).slice(0, 6)}: NO SUCH KEY`);
       return true;
     }
+    if (isPrefix(e, this.prefixCode())) { if (!e.repeat) this.prefixArm(); return true; }
+    // a layer the keyboard opened takes its places by the vi-keys, the arrows
+    // and Home, End, PageUp, PageDown (as everywhere on the page), and . or
+    // the centre's 5 (num lock off: Clear)
     if (this.kbdLayer && (this.fanOpen || this.padLayer) && !e.ctrlKey && !e.altKey && !e.metaKey) {
-      const place = placeOfKey(e.key);
+      const ch = ARROWS[e.key] && !e.shiftKey ? ARROWS[e.key] : e.key === 'Clear' ? '.' : e.key;
+      const place = placeOfKey(ch);
       if (place !== null) { this.padPlace(place); return true; }
     }
     return false;
@@ -920,7 +960,9 @@ export class Overlay {
       return false;
     }
     if (this.drawerOpen) {
-      const item = /^[1-9]$/.test(ch) && this.drawerKeyless ? this.drawerKeyless[Number(ch) - 1] : null;
+      // a number runs an item only where the numbers were shown: a digit typed
+      // in a drawer a touch opened is a count for the game
+      const item = this.drawerNumbers && /^[1-9]$/.test(ch) && this.drawerKeyless ? this.drawerKeyless[Number(ch) - 1] : null;
       if (item) {
         if (this.assigning) this.onDrawerPin(item);
         else { this.closeDrawer(); this.execute(item, null); }
@@ -1233,17 +1275,19 @@ export class Overlay {
     this.resetState();
     this.buildTwinCase();
     // the halos first, under every key; the cells over them; the seams last.
-    // The near-miss guard is for thumbs: with the mouse or the keyboard in use
-    // there are no halos, seams, ghost deck or habit guards, on the desk or on
-    // the thumb banks a window too small for the dock falls back to (the
-    // confirm ring goes with them: keyDistance)
-    if (!deskInput) this.buildHalos(this.keysEl);
+    // The near-miss guard is for thumbs: the desk's dock has no halos, seams,
+    // ghost deck or habit guards (nor the confirm ring: keyDistance), and on
+    // the thumb banks they never act on a mouse's click (each judges the
+    // pointer), so a thumb on the banks a short mouse window falls back to is
+    // guarded as ever
+    const dock = pointer === 'mouse';
+    if (!dock) this.buildHalos(this.keysEl);
     this.buildKeys();
     this.applyCells();
-    if (!deskInput) this.buildSeams(this.keysEl);
+    if (!dock) this.buildSeams(this.keysEl);
     if (snap) this.restoreState(snap);
-    this.ghostSpots = this.portrait || deskInput ? [] : this.classicDeck(W, H);
-    this.habitSpots = deskInput ? null : this.classicHabits(W, H);
+    this.ghostSpots = this.portrait || dock ? [] : this.classicDeck(W, H);
+    this.habitSpots = dock ? null : this.classicHabits(W, H);
 
     // The bands are the layout's, messages first: the message band's rows and
     // width are what web.js pages the game's messages by (bandMetrics), so
@@ -1304,6 +1348,8 @@ export class Overlay {
       padLayer: this.padLayer ? { kind: this.padLayer.kind, act: this.padLayer.act, fromId: this.padLayer.fromId,
         from: this.padLayer.from === 'context' ? 'context' : null, sticky: !!this.padLayer.sticky,
         lit: this.padLayer.lit ?? null } : null,
+      // a layer the keyboard opened keeps taking its keys
+      kbdLayer: !!this.kbdLayer,
     };
   }
 
@@ -1353,6 +1399,7 @@ export class Overlay {
       this.fitBanner();
     }
     if (s.restRevealed) this.scrollWell(true);
+    this.kbdLayer = !!s.kbdLayer && !!(this.fanOpen || this.padLayer);
     this.refreshAllSlots();
     this.updateHubSubLines();
     this.refreshContextStrip();
@@ -1603,6 +1650,7 @@ export class Overlay {
 
   resetState() {
     P.macros();   // first run with the flick key moves the retired third point's command first
+    this.kbdLayer = false;
     this.atkSlotKeys = (this.twin ? twinPins() : P.get('atkSlots') || C.ATK_SLOT_DEFAULT).slice(0, C.ATK_SLOT_DEFAULT.length);
     this.equipSlotKeys = (P.get('equipSlots') || C.EQUIP_SLOT_DEFAULT).slice();
     this.fanKeys = new Map();
@@ -1839,6 +1887,8 @@ export class Overlay {
       h.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         e.stopPropagation();
+        // a mouse's click is meant where it lands: the halo is for a thumb's near miss
+        if (e.pointerType === 'mouse') { this.passDown(e, h); return; }
         const g = this.guardAt(e.clientX, e.clientY), live = !!g && this.keyLive(g.id);
         if (live && g.snap) { this.noteGuard('snap', e, g.id); this.forwardDown(e, this.keyTarget(g.id)); return; }
         if (live && g.d <= HALO && !this.guardsAside()) { this.guardSwallow(h, 'halo', e, g.id); return; }
@@ -1854,6 +1904,7 @@ export class Overlay {
       s.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         e.stopPropagation();
+        if (e.pointerType === 'mouse') { this.passDown(e, s); return; }
         const g = this.guardAt(e.clientX, e.clientY);
         if (!this.guardsAside() && (!g || this.keyLive(g.id))) { this.guardSwallow(s, 'seam', e, null); return; }
         this.passDown(e, s);
@@ -1968,13 +2019,15 @@ export class Overlay {
       else onKey.delete(e.pointerId);
       if (this.idleTimer) this.armIdle();
       // the ghost deck's habit guards take the touch before anything under it
-      if (this.habitSwallows(e)) {
+      // (a thumb's habit: never a mouse's click)
+      const thumb = e.pointerType !== 'mouse';
+      if (thumb && this.habitSwallows(e)) {
         swallowed.add(e.pointerId);
         e.preventDefault();
         e.stopImmediatePropagation();
         return;
       }
-      this.prayHabit(e);
+      if (thumb) this.prayHabit(e);
     }, true);
     window.addEventListener('pointerup', (e) => {
       if (onKey.delete(e.pointerId)) this.keyUpAt = performance.now();
@@ -2052,12 +2105,11 @@ export class Overlay {
   }
 
   // The nearest keycap's distance from a point on the map, for web.js's ring;
-  // null in classic, which has no guard, and with the mouse or the keyboard
-  // in use -- at the desk, or on the thumb banks a window too small for the
-  // dock falls back to -- where a click on the map is meant where it lands
-  // (the ring is for a thumb's near miss).
+  // null in classic, which has no guard, and at the desk, where a click on
+  // the map is meant where it lands (the ring is for a thumb's near miss;
+  // web.js asks for no ring for a mouse's click on the thumb banks either).
   keyDistance(x, y) {
-    if (this.twin && (this.twin.spec.pointer === 'mouse' || this.twin.deskInput)) return null;
+    if (this.twin && this.twin.spec.pointer === 'mouse') return null;
     const g = this.guardAt(x, y);
     return g ? g.d : null;
   }
@@ -4058,7 +4110,7 @@ export class Overlay {
     // their own (the page's settings, a command by name) take 1 to 9, shown
     // in their corners while the key letters are
     this.drawerKeyless = [];
-    const numbers = this.legendsShown();
+    const numbers = this.drawerNumbers = this.legendsShown();
     for (const item of items) {
       // a heading spans the grid, so the keys after it start a fresh row
       if (item.heading) { el('div', 'dhead', this.drawerGrid).textContent = item.word; continue; }
@@ -4362,7 +4414,7 @@ export class Overlay {
     e.addEventListener('pointerdown', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
-      if (otherButton(ev)) { rightClick(key, ev); return; }
+      if (this.twin && otherButton(ev)) { rightClick(key, ev); return; }
       try { e.setPointerCapture(ev.pointerId); } catch (x) { /* synthetic */ }
       key.press(true);
       FB.press();
@@ -4405,7 +4457,7 @@ export class Overlay {
     e.addEventListener('pointerdown', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
-      other = otherButton(ev);
+      other = !!this.twin && otherButton(ev);
       if (other) { rightClick(key, ev); return; }
       try { e.setPointerCapture(ev.pointerId); } catch (x) { /* synthetic */ }
       clearTimeout(pressTimer);
@@ -4514,7 +4566,7 @@ export class Overlay {
     e.addEventListener('pointerdown', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
-      other = otherButton(ev);
+      other = !!this.twin && otherButton(ev);
       if (other) { rightClick(key, ev); return; }
       try { e.setPointerCapture(ev.pointerId); } catch (x) { /* synthetic */ }
       key.press(true);
@@ -4684,8 +4736,9 @@ function keyless(item) {
   return !k || C.isIntercepted(item) || !!item.tag || k.startsWith('#') || /\\[enb]/.test(k) || k.length > 4;
 }
 
-// Desktop mode: a mouse's other buttons press no key (a right-click acted as a
-// tap); a Mac's Ctrl+click is its right-click.  rightClick does a key's
+// Desktop mode, in twin banks (classic's keys are as they were): a mouse's
+// other buttons press no key (a right-click acted as a tap); a Mac's
+// Ctrl+click is its right-click.  rightClick does a key's
 // right-click, where it has one (bindHold, bindFlick): the hold's work.
 function otherButton(ev) {
   return ev.pointerType === 'mouse' && (ev.button !== 0 || (MAC && ev.ctrlKey));

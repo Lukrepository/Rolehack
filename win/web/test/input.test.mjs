@@ -174,7 +174,16 @@ test('keys to the game: as before, and the Mac and AltGr fixed', () => {
   assert.equal(keyCodeOf(kd('Escape')), 27);
   assert.equal(keyCodeOf(kd('d', { ctrl: true, code: 'KeyD' })), 4);          // ^D, kick
   assert.equal(keyCodeOf(kd('o', { alt: true, code: 'KeyO' })), 0xef);        // M-o, offer
-  assert.equal(keyCodeOf(kd(';', { ctrl: true, code: 'Semicolon' })), 59);    // Ctrl+; with no prefix taken: ;
+  // Ctrl with anything but a letter is the browser's (page zoom); the prefix is taken before
+  assert.equal(keyCodeOf(kd(';', { ctrl: true, code: 'Semicolon' })), null);
+  assert.equal(keyCodeOf(kd('-', { ctrl: true, code: 'Minus' })), null);
+  assert.equal(keyCodeOf(kd('=', { ctrl: true, code: 'Equal' })), null);
+  assert.equal(keyCodeOf(kd('0', { ctrl: true, code: 'Digit0' })), null);
+  // Firefox on a Mac reports AltGraph while Option is down: still the M- command
+  assert.equal(keyCodeOf(kd('ø', { alt: true, altGraph: true, code: 'KeyO' }), true), 0xef);
+  assert.equal(keyCodeOf(kd('å', { alt: true, altGraph: true, code: 'KeyA' }), true), 0xe1);
+  assert.equal(keyCodeOf(kd('Dead', { alt: true, altGraph: true, code: 'KeyE' }), true), 0xe5);
+  assert.equal(keyCodeOf(kd('[', { alt: true, altGraph: true, code: 'Digit5' }), true), 91);
   assert.equal(keyCodeOf(kd('F5')), null);
   assert.equal(keyCodeOf(kd('Control')), null);
   assert.equal(keyCodeOf(kd('Dead')), null);
