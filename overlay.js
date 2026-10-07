@@ -99,6 +99,11 @@ export function msgTextPx() {
 export const msgBandPx = (portrait, s) => (5 + 4) * s + msgRows(portrait) * msgTextPx() * MSG_LEADING;
 const HUB_HOLD_MS = 380, CENTRE_HOLD_MS = 420, SLOT_CLEAR_MS = 420, CHIP_HOLD_MS = 360;
 const FLICK_SLOP = 10, FLICK_MIN = 26, FLICK_ARC_SLACK = 15, FLICK_REVEAL_MS = 200;
+// A drawer scrolls once a drag moves this far (Android's touch slop, 8 dp); a
+// flick keeps going, losing this share of its speed every 16 ms, from at least
+// DRAWER_FLING_MIN px/ms (Android's minimum fling velocity, 50 dp/s) and at most
+// DRAWER_FLING_MAX (8000 dp/s), until it is under the minimum again.
+const DRAWER_SLOP = 8, DRAWER_FRICTION = 0.94, DRAWER_FLING_MIN = 0.05, DRAWER_FLING_MAX = 8;
 const FAN_SIZE = [54, 50, 46, 44, 44, 44], FAN_ROTATE = [0, 0, -11, 9, 0, 0];
 const CTX_RADIAL_STEP = 26, CTX_RADIAL_A0 = -90, CTX_RADIAL_SIZE = 46, CTX_RADIAL_AIR = 11;
 const CHIP_SIZE = 44, CHIP_GAP = 4, CHIP_GAP_ABOVE = 7, CHIP_ROW_W = 5 * CHIP_SIZE + 4 * CHIP_GAP;
@@ -3457,7 +3462,113 @@ export class Overlay {
     this.defaultsKey = defaults;
     this.drawerGrid = el('div', 'grid', panel);
     this.drawerGrid.style.gridTemplateColumns = `repeat(${this.twin || this.portrait ? 3 : 4}, minmax(0, 1fr))`;
+    this.bindDrawerScroll(this.drawerGrid);
     this.drawerEl = d;
+  }
+
+  // ---- the drawer scrolls under a finger that lands on a key (Lucas, 2026-10-06)
+  // Android's drawer is a scroll view: a drag that starts on an item scrolls
+  // once it moves past the touch slop, and the item never fires.  Here a key
+  // is touch-action: none, and the browser decides panning by the elements
+  // between the touched one and its scroll container (Pointer Events 3, 8.2),
+  // so a touch that began on a key could never pan the grid; only a touch in
+  // a gap saw the grid's own pan-y.  The grid now owns the drag.  Listening in
+  // the capture phase, before the key's own handlers, it follows the pointer;
+  // past DRAWER_SLOP it cancels the key's press and hold timer
+  // (key.cancelGesture) and scrolls the grid itself, by each move's delta in
+  // the layer's own px (classic scales the layer by this.s), from rest under
+  // the finger (the slop comes off the first delta, as ScrollView does), with
+  // a fling on release read over the last 100 ms of moves (VelocityTracker's
+  // horizon; a 40 ms pause means the finger stopped).  A touch that lands on a
+  // moving list only stops it; a finger that leaves the key sideways drops
+  // the tap and the pin; the lift is heard at the window, so a key removed
+  // under the finger (a hold that pinned it empties the grid) cannot leave the
+  // drag armed, and open/close reset it besides.  The grid's touch-action is
+  // none, so script and browser never both scroll it; the wheel still scrolls
+  // it, and stops a fling.  A system gesture or the long-press menu still
+  // sends pointercancel: the drag ends with no fling.
+  bindDrawerScroll(grid) {
+    let id = null, key = null, y0 = 0, lastY = 0, scrolling = false, fling = 0, samples = [];
+    const scale = () => 1 / (this.s || 1);     // viewport px -> the layer's own px
+    const stopFling = () => { if (fling) cancelAnimationFrame(fling); fling = 0; };
+    const end = () => { id = null; key = null; scrolling = false; samples = []; };
+    const dropKey = () => { if (key && key.cancelGesture) key.cancelGesture(); key = null; };
+    this.drawerScrollReset = () => { stopFling(); end(); };
+    grid.addEventListener('contextmenu', (ev) => ev.preventDefault());
+    grid.addEventListener('wheel', stopFling, { passive: true });
+    grid.addEventListener('pointerdown', (ev) => {
+      if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+      // a pointer still down (the other thumb) keeps its drag; a stale one, whose lift never reached us, does not
+      if (id !== null && ev.pointerId !== id && this.pointersDown && this.pointersDown.has(id)) return;
+      const r = grid.getBoundingClientRect();
+      if (ev.pointerType === 'mouse' && grid.offsetWidth && ev.clientX - r.left > grid.clientWidth * (r.width / grid.offsetWidth)) return;   // the scrollbar's own drag
+      const wasFlinging = fling !== 0;
+      stopFling();
+      id = ev.pointerId;
+      y0 = lastY = ev.clientY;
+      scrolling = false;
+      samples = [{ t: performance.now(), y: ev.clientY }];
+      const k = ev.target && ev.target.closest ? ev.target.closest('.k') : null;
+      key = k && k._rhKey ? k._rhKey : null;
+      // a drag that starts in a gap or on a heading has no key to capture it: the grid does
+      if (!key) { try { grid.setPointerCapture(id); } catch (x) { /* synthetic */ } }
+      // a touch that lands on a moving list only stops it (ScrollView): the key
+      // under it is told once its own handler, later in this dispatch, has armed it
+      if (wasFlinging) { scrolling = true; const k0 = key; key = null; setTimeout(() => { if (k0 && k0.cancelGesture) k0.cancelGesture(); }, 0); }
+    }, true);
+    grid.addEventListener('pointermove', (ev) => {
+      if (ev.pointerId !== id) return;
+      if (ev.pointerType === 'mouse' && !(ev.buttons & 1)) { end(); return; }   // no button down: a lift we never heard
+      const t = performance.now();
+      samples.push({ t, y: ev.clientY });
+      while (samples.length > 20 || t - samples[0].t > 100) samples.shift();
+      if (!scrolling) {
+        if (key) {
+          // off the key by more than the slop: no tap and no pin (View.pointInView)
+          const r = key.el.getBoundingClientRect();
+          if (ev.clientX < r.left - DRAWER_SLOP || ev.clientX > r.right + DRAWER_SLOP
+              || ev.clientY < r.top - DRAWER_SLOP || ev.clientY > r.bottom + DRAWER_SLOP) dropKey();
+        }
+        const dy = ev.clientY - y0;
+        if (Math.abs(dy) < DRAWER_SLOP) { lastY = ev.clientY; return; }
+        scrolling = true;
+        dropKey();
+        lastY = y0 + Math.sign(dy) * DRAWER_SLOP;   // the content starts from rest under the finger
+      }
+      grid.scrollTop -= (ev.clientY - lastY) * scale();
+      lastY = ev.clientY;
+    }, true);
+    const up = (ev) => {
+      if (ev.pointerId !== id) return;
+      const was = scrolling, pts = samples, now = performance.now();
+      end();
+      if (!was || ev.type !== 'pointerup') return;
+      const a = pts[0], b = pts[pts.length - 1];
+      let speed = pts.length >= 2 && b.t > a.t && now - b.t <= 40
+        ? clamp((b.y - a.y) / (b.t - a.t), -DRAWER_FLING_MAX, DRAWER_FLING_MAX) * scale() : 0;
+      if (Math.abs(speed) < DRAWER_FLING_MIN) return;
+      let pos = grid.scrollTop, last = now;
+      const step = () => {
+        if (!grid.isConnected || !this.drawerOpen) { fling = 0; return; }
+        const t = performance.now(), dt = Math.min(50, t - last);
+        last = t;
+        const max = Math.max(0, grid.scrollHeight - grid.clientHeight), before = pos;
+        pos = clamp(pos - speed * dt, 0, max);
+        grid.scrollTop = pos;
+        speed *= Math.pow(DRAWER_FRICTION, dt / 16);
+        fling = (pos === before || Math.abs(speed) < DRAWER_FLING_MIN) ? 0 : requestAnimationFrame(step);
+      };
+      fling = requestAnimationFrame(step);
+    };
+    // heard at the window, so the lift arrives even when the key that held the
+    // pointer was removed under the finger; one pair of listeners per build
+    if (this.drawerUp) {
+      window.removeEventListener('pointerup', this.drawerUp, true);
+      window.removeEventListener('pointercancel', this.drawerUp, true);
+    }
+    this.drawerUp = up;
+    window.addEventListener('pointerup', up, true);
+    window.addEventListener('pointercancel', up, true);
   }
 
   setAssigning(on, prompt) {
@@ -3502,17 +3613,19 @@ export class Overlay {
     this.drawerCountText = `${items.filter((it) => !it.heading).length} commands`;
     this.setAssigning(false);
     this.drawerGrid.innerHTML = '';
+    if (this.drawerScrollReset) this.drawerScrollReset();
     for (const item of items) {
       // a heading spans the grid, so the keys after it start a fresh row
       if (item.heading) { el('div', 'dhead', this.drawerGrid).textContent = item.word; continue; }
       const f = new Key(this.drawerGrid).place(0, 0, 138, 46).face(item.face || C.G90).label(item.word, 11, true);
+      f.el._rhKey = f;   // the grid's scroll handler cancels this key's press when a drag begins
       // a tag ("BETA") takes the corner the raw key would have
       if (item.tag) f.sub('', true).tag(item.tag); else f.sub(item.key, true);
       Object.assign(f.el.style, { position: 'relative', left: '0', top: '0', width: '100%' });
       this.bindHold(f, 500, () => this.onDrawerPin(item), () => {
         if (this.assigning) this.onDrawerPin(item);
         else { this.closeDrawer(); this.execute(item, null); }
-      });
+      }, { pressDelay: 100 });   // the press waits, as a View's does inside a ScrollView, so a scroll never flashes or clicks it
     }
     this.drawerEl.classList.add('on');
     this.updateDrawerButtons();
@@ -3538,6 +3651,7 @@ export class Overlay {
     this.fill = null;
     this.drawerEl.classList.remove('on');
     this.drawerGrid.innerHTML = '';
+    if (this.drawerScrollReset) this.drawerScrollReset();
     this.assigning = false;
     this.updateDrawerButtons();
     // a bounce or a second tap on an item must not fall through to the map
@@ -3788,13 +3902,17 @@ export class Overlay {
   // onto a place of the pad picks it -- or cancel() if the system takes it.
   bindHold(key, holdMs, onHold, onTap, opts = null) {
     const e = key.el;
-    let pending = 0, justOpened = false, downAt = 0;
+    let pending = 0, justOpened = false, downAt = 0, pressTimer = 0;
+    // opts.pressDelay: the press shows after this many ms (a drawer key, whose
+    // touch may be a scroll), so a scroll never flashes or clicks the key
+    const pressDelay = opts && opts.pressDelay ? opts.pressDelay : 0;
+    const showPress = () => { pressTimer = 0; key.press(true); FB.press(); };
     e.addEventListener('pointerdown', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
       try { e.setPointerCapture(ev.pointerId); } catch (x) { /* synthetic */ }
-      key.press(true);
-      FB.press();
+      clearTimeout(pressTimer);
+      if (pressDelay) pressTimer = setTimeout(showPress, pressDelay); else showPress();
       justOpened = false;
       downAt = performance.now();
       clearTimeout(pending);
@@ -3818,8 +3936,17 @@ export class Overlay {
     if (opts && opts.move) e.addEventListener('pointermove', (ev) => { if (justOpened) opts.move(ev); });
     e.addEventListener('pointerup', (ev) => {
       ev.stopPropagation();
-      key.press(false);
-      FB.up();
+      if (pressTimer) {
+        // a tap quicker than the press delay: the press shows on the lift
+        clearTimeout(pressTimer); pressTimer = 0;
+        key.press(true); FB.press();
+        setTimeout(() => key.press(false), 80);
+      } else {
+        // a gesture the drawer cancelled (a scroll) was never a press: no release
+        const wasPressed = key.pressed;
+        key.press(false);
+        if (wasPressed || justOpened) FB.up();
+      }
       if (justOpened) {
         justOpened = false;
         if (opts && opts.release) opts.release(ev, performance.now() - downAt);
@@ -3831,11 +3958,12 @@ export class Overlay {
       onTap();
     });
     e.addEventListener('pointercancel', () => {
+      clearTimeout(pressTimer); pressTimer = 0;
       key.press(false); clearTimeout(pending); pending = 0;
       if (justOpened && opts && opts.cancel) opts.cancel();
       justOpened = false;
     });
-    key.cancelGesture = () => { key.press(false); clearTimeout(pending); pending = 0; justOpened = false; };
+    key.cancelGesture = () => { clearTimeout(pressTimer); pressTimer = 0; key.press(false); clearTimeout(pending); pending = 0; justOpened = false; };
   }
 
   // Tap / hold / flick on the flick key: a marking menu.  Press and slide toward a

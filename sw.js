@@ -7,7 +7,7 @@
 // new one is active.  It never reloads a page: a game in progress keeps
 // running on the files it started with.
 
-const VERSION = '1b57d959f962';
+const VERSION = '8cdd05749895';
 const CACHE = `rolehack-${VERSION}`;
 const FILES = [
   './', 'index.html', 'rolehack.css', 'manifest.json',
