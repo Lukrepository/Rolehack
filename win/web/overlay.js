@@ -38,8 +38,9 @@
 import * as C from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
-import { textMetrics } from './layout.js';
+import { textMetrics, layout } from './layout.js';
 import { budgetedLayout, withClasses, classesOf, deviceReport, browserFamily } from './viewer.js';
+import { startMode, freshInput, inputStep, inputSwitched, controlsOf } from './input.js';
 
 // ---- geometry, design dp (RhCase, RhOverlay, RhScreen)
 const MARGIN = 8, WELL_PAD = 10, DECK_H = 66, DECK_KEY = 52, HOOD_TOP = 14, HOOD_SIDE = 16,
@@ -139,6 +140,12 @@ export const RING_REACH = HALO + 20;   // a map tap this near a keycap is in the
 const STICKY_IDLE_MS = 4000, COUNT_STICKY_MS = 600, STAIRS_MS = 2000;
 // the ghost deck's habit guards stand for 1.5 s (classicHabits)
 const HABIT_MS = 1500;
+// Desktop mode (Lucas, 2026-10-07): a mouse window that fell back to the
+// thumb banks for want of room for the dock gets the desk again only when a
+// window this much smaller would hold it too; a switch to the desk waiting for
+// a quiet moment looks again this often; a click this soon after a touch the
+// desk consumed is that touch's.
+const DESK_BAND = 24, DESK_RETRY_MS = 300, CONSUMED_CLICK_MS = 700;
 // The count layer's places: ↖ ×1, ↑ ×5, ↗ ×10, → ×20 (or a Long rest's
 // ×100 to ×400); the centre types any count.
 const COUNT_PLACES = [0, 1, 2, 5];
@@ -505,8 +512,12 @@ export class Overlay {
       if (name === 'msgFont' || name === 'msgSize') this.rebuild();
       // twin banks' map cell is decided with the banks (layout.js deviceCell)
       if (name === 'mapCell' && this.wantsTwin()) this.rebuild();
+      if (name === 'controls') this.controlsChanged();
     });
     if (document.fonts) document.fonts.ready.then(() => this.rebuild());
+    // the input switch first: a touch the desk takes for the switch alone
+    // reaches nothing else, the page's own bookkeeping of fingers included
+    this.watchInput();
     this.guardClicks();
     this.watchTwin();
     this.watchGuard();
@@ -588,11 +599,134 @@ export class Overlay {
     this.setViewportFit(false);
     document.documentElement.dataset.ui = 'classic';
     delete document.documentElement.dataset.tier;
+    delete document.documentElement.dataset.input;
     this.twinSig = '';
     this.rebuildClassic(window.innerWidth, window.innerHeight);
   }
 
   wantsTwin() { return P.get('layout') !== 'classic'; }
+
+  // ---- the input switch (input.js; the design's section 12, with Lucas's
+  // answers of 2026-10-07).  Which board twin banks show -- the thumb banks in
+  // the corners or the desk's dock under the map -- follows the input in use:
+  // a touch or a pen asks for the thumb banks, the mouse, a touchpad or the
+  // wheel for the desk, and where touch is possible typed keys only bring the
+  // key letters.  Fed from the window's capture phase, before anything else on
+  // the page sees an event, and only with the browser's own events (the guard
+  // re-dispatches a touch to the key it snaps to).  Classic is classic: the
+  // switch keeps count there, and the board never changes.
+  watchInput() {
+    const mm = (q) => { try { return !!(window.matchMedia && matchMedia(q).matches); } catch (e) { return false; } };
+    this.canTouch = (navigator.maxTouchPoints || 0) > 0 || mm('(any-pointer: coarse)');
+    this.input = freshInput(startMode({ setting: P.get('controls'), remembered: P.get('inputMode'), canTouch: this.canTouch }));
+    this.inputPending = false;   // a switch to the desk waiting for a quiet moment
+    this.touchSwitch = null;     // the touch whose lift brings the thumb banks
+    this.consumed = new Set();   // touches the desk took for the switch alone
+    this.consumedUpAt = -1e9;
+    this.deskFellBack = false;   // the window had no room for the dock: the thumb banks showed
+    this.deskMemory = null;      // the desk's arrangement last drawn, for its band (layout.js section 10)
+    // the browser's own events only; rolehackInputTest = true in the console
+    // lets a test's synthetic touches stand in for a finger (no tool here can
+    // make a real one)
+    const real = (e) => e.isTrusted || globalThis.rolehackInputTest === true;
+    window.addEventListener('pointerdown', (e) => {
+      if (!real(e)) return;
+      const r = this.feedInput({ kind: 'pointer', type: e.pointerType, t: performance.now() });
+      if (r.ask !== 'thumb') return;
+      // A touch while the desk shows does nothing but bring the thumb banks back
+      // (Lucas's answer 3b): a thumb reaching where a thumb key was would land
+      // on a small desk key, the map (a travel) or a panel.  A touch on a window
+      // over the board -- a menu, a form -- does what it does there.
+      if (r.consume && this.onBoard(e.target)) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        this.consumed.add(e.pointerId);
+      }
+      this.touchSwitch = e.pointerId;
+    }, true);
+    const lift = (e) => {
+      if (this.consumed.delete(e.pointerId)) {
+        this.consumedUpAt = performance.now();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+      if (this.touchSwitch === e.pointerId) { this.touchSwitch = null; this.switchInput('thumb'); }
+    };
+    window.addEventListener('pointerup', lift, true);
+    window.addEventListener('pointercancel', lift, true);
+    window.addEventListener('pointermove', (e) => {
+      if (this.consumed.has(e.pointerId)) { e.preventDefault(); e.stopImmediatePropagation(); }
+    }, true);
+    // the click the browser gives a consumed touch, on whatever lies under it
+    window.addEventListener('click', (e) => {
+      if (!e.detail || performance.now() - this.consumedUpAt > CONSUMED_CLICK_MS) return;
+      if (e.pointerType && e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }, true);
+    // the wheel only says it was used (its deltas are the map's to read)
+    window.addEventListener('wheel', (e) => { if (real(e)) this.feedInput({ kind: 'wheel', t: performance.now() }); },
+      { capture: true, passive: true });
+  }
+
+  // a game key typed on a keyboard (web.js, as it goes to the game)
+  noteKey(e) {
+    if (e && e.isTrusted) this.feedInput({ kind: 'key', t: performance.now() });
+  }
+
+  feedInput(ev) {
+    const r = inputStep(this.input, ev, { setting: P.get('controls'), canTouch: this.canTouch, deskShown: this.deskShown() });
+    this.input = r.state;
+    if (ev.kind === 'pointer' && (ev.type === 'touch' || ev.type === 'pen')) this.inputPending = false;
+    if (r.legends) this.legendsOn();
+    if (r.ask === 'desk') { this.inputPending = true; this.tryDesk(); }
+    return r;
+  }
+
+  inputMode() { const s = controlsOf(P.get('controls')); return s === 'auto' ? this.input.mode : s; }
+  deskShown() { return !!(this.twin && this.twin.spec.pointer === 'mouse'); }
+  onBoard(t) { return !!t && [this.keysEl, this.caseEl, $('bands'), $('glass'), $('panes')].some((q) => q && q.contains(t)); }
+
+  // The desk waits for a quiet moment (the design's section 12): no finger or
+  // button down, no text field in use, nothing open -- a layer, a drawer, a
+  // command in hand, a question on the pad, a spot being picked, --More--, a
+  // menu, a text window or a form.  Armed Fight is kept across it.
+  switchQuiet() {
+    if (this.pointersDown && this.pointersDown.size) return false;
+    const a = document.activeElement;
+    if (a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') && a.offsetParent !== null) return false;
+    if (this.layerUp() || this.drawerOpen || this.assign || this.assigning || this.answering || this.picking) return false;
+    return !(this.host.guardsAside && this.host.guardsAside());
+  }
+
+  tryDesk() {
+    clearTimeout(this.deskTimer);
+    if (!this.inputPending) return;
+    if (this.input.mode === 'desk') { this.inputPending = false; return; }
+    if (!this.switchQuiet()) { this.deskTimer = setTimeout(() => this.tryDesk(), DESK_RETRY_MS); return; }
+    this.inputPending = false;
+    this.switchInput('desk');
+  }
+
+  // The switch made: the mode remembered in this browser (prefs are per
+  // channel), and twin banks laid out again for it.  Control ids are the same
+  // on both boards, so armed Fight and whatever is open come through.
+  switchInput(mode) {
+    this.input = inputSwitched(this.input, mode, performance.now());
+    if (controlsOf(P.get('controls')) === 'auto' && P.get('inputMode') !== mode) P.set('inputMode', mode);
+    if (this.wantsTwin()) this.requestRebuild();
+  }
+
+  controlsChanged() {
+    const s = controlsOf(P.get('controls'));
+    this.inputPending = false;
+    if (s !== 'auto') this.input = inputSwitched(this.input, s, performance.now());
+    if (this.wantsTwin()) this.rebuild();
+  }
+
+  // the key letters, where touch is possible and keys are typed (input.js);
+  // the thumb banks draw them from step 2 of desktop mode
+  legendsOn() { document.documentElement.dataset.legends = ''; }
 
   // The classic board: the case and its scale, everything rebuilt from nothing.
   rebuildClassic(W, H) {
@@ -746,6 +880,30 @@ export class Overlay {
     return out;
   }
 
+  // The desk for this window (layout.js section 10), or null when it has no
+  // room for the dock -- the thumb banks then, and classic after them (Lucas's
+  // answer 4).  Its map cell is whole device pixels (dpr), and its
+  // arrangement keeps a band from the one last drawn (prevDesk).  At the edge
+  // of room, a band too: once a window has fallen back, the desk comes back
+  // only when a window DESK_BAND smaller would hold it as well, so a window
+  // resting there does not swap the board at a pixel.
+  deskResult(W, H, base) {
+    const st = { ...base, dpr: window.devicePixelRatio || 1, prevDesk: this.deskMemory };
+    const run = (w, h) => { try { return layout(w, h, 'mouse', st); } catch (e) { return null; } };
+    const ok = (x) => !!(x && x.spec && x.usable);
+    const r = run(W, H);
+    if (ok(r) && (!this.deskFellBack || ok(run(W - DESK_BAND, H - DESK_BAND)))) {
+      this.deskFellBack = false;
+      this.deskFallback = null;
+      return r;
+    }
+    this.deskFellBack = true;
+    const rs = (r && r.spec && r.spec.fit.reasons) || [];
+    this.deskFallback = ok(r) ? 'the window is at the edge of room for the dock'
+      : (rs.find((x) => /^unusable/.test(x)) || rs[0] || 'the layout gave no result').replace(/^unusable, the page shows classic: /, '');
+    return null;
+  }
+
   rebuildTwin() {
     // the first build cannot wait; any later one waits for the finger or the field
     if (this.geom && this.twinBusy()) { this.requestRebuild(); return; }
@@ -753,12 +911,13 @@ export class Overlay {
     const root = document.documentElement.dataset;
     const box = $('app').getBoundingClientRect();
     const W = box.width || window.innerWidth, H = box.height || window.innerHeight;
-    // Every window is laid out as for touch, a mouse's or a keyboard's
-    // included: desktop mode is deferred (Lucas, 2026-10-03), so a large window
-    // with a mouse gets the tablet tier's phone-size banks at its corners, not
-    // the desk's 40 dp dock (layout.js section 10, kept for later); a
-    // physical keyboard drives the game as it always has (web.js keyCode).
-    const pointer = 'touch', mode = this.displayMode(), insets = this.safeInsets();
+    // The board follows the input in use (watchInput): the thumb banks for a
+    // touch, the desk's dock (layout.js section 10) for the mouse and the
+    // keyboard -- desktop mode, built at Lucas's word of 2026-10-06, deferred
+    // since 2026-10-03.  A window with no room for the dock gets the thumb
+    // banks, and classic after them (his answer 4).
+    const deskInput = this.inputMode() === 'desk';
+    const mode = this.displayMode(), insets = this.safeInsets();
     const padKey = clamp(Number(P.get('padCell')) || 58, 40, 72);
     // the message rows as the page sets them (msgTextPx) and the status band
     // as web.js draws it: inputs to the rule, so it never puts text over a key.
@@ -780,8 +939,15 @@ export class Overlay {
       padKey, insets, msgRowH: text.msgRowH, statusH,
       mapCell: P.get('mapCell') === 'rows' ? 'rows' : 'columns',
     };
-    const { r, budget, sideInsets, used } = this.twinLayout(W, H, pointer, base, insets, mode);
-    const settings = { ...base, budget, sideInsets };
+    // The desk first when the mouse or the keyboard is in use; the thumb banks,
+    // with the budget this display mode remembers, otherwise and when the desk
+    // has no room.  The budget is the thumb banks' alone: the desk neither
+    // reads it nor teaches it.
+    let r = deskInput ? this.deskResult(W, H, base) : null, budget = null, sideInsets = null, used = 'none';
+    if (!deskInput) this.deskFallback = null;
+    if (!r) ({ r, budget, sideInsets, used } = this.twinLayout(W, H, 'touch', base, insets, mode));
+    const pointer = r && r.spec && r.spec.pointer === 'mouse' ? 'mouse' : 'touch';
+    const settings = pointer === 'mouse' ? { ...base, dpr: window.devicePixelRatio || 1 } : { ...base, budget, sideInsets };
     if (!r || !r.spec || !r.usable) {
       // No room for twin banks and a map (a near-square split screen): classic
       // for this window, the setting kept; twin banks come back with the room.
@@ -790,6 +956,7 @@ export class Overlay {
         .replace(/^unusable, the page shows classic: /, '');
       root.ui = 'classic';
       delete root.tier;
+      delete root.input;
       this.twinSig = '';
       this.rebuildClassic(W, H);
       return;
@@ -798,16 +965,21 @@ export class Overlay {
     root.ui = 'twin';
     skirtFit = true;
     const S = r.spec;
-    // Control ids are stable: a rebuild with the same controls keeps what is
-    // armed, open or being assigned; only a control gone resets it
+    // Control ids are stable, and the same on the desk and the thumb banks: a
+    // rebuild with the same controls keeps what is armed, open or being
+    // assigned, a switch of board included; only a control gone resets it
     const sig = S.controls.map((c) => c.id).sort().join(' ');
     const snap = this.twin && sig === this.twinSig ? this.snapshot() : null;
-    this.twin = { spec: S, info: r.info, W, H, pointer, mode, settings, budget: used, reason: r.reason,
+    this.twin = { spec: S, info: r.info, W, H, pointer, mode, settings, budget: used, reason: r.reason, deskInput,
       ctl: new Map(S.controls.map((c) => [c.id, c])), keys: new Map(), guard: guardGeometry(S) };
     this.twinSig = sig;
-    // the tiers drawn, the next layout's hysteresis (viewer.js, its size classes)
-    this.twinClasses = classesOf(r, this.twinClasses);
+    // what was drawn, for the next layout's bands: the thumb banks' tiers and
+    // glasses (viewer.js, its size classes), or the desk's arrangement, each
+    // kept apart so a turn at the desk never costs the thumb banks theirs
+    if (pointer === 'mouse') this.deskMemory = (r.info && r.info.desk) || null;
+    else this.twinClasses = classesOf(r, this.twinClasses);
     root.tier = r.info.tier;
+    root.input = deskInput ? 'desk' : 'thumb';
 
     this.padCell = padKey;
     this.padBox = 3 * this.padCell + 2 * PAD_GAP;
@@ -830,14 +1002,18 @@ export class Overlay {
     this.keysEl.innerHTML = '';
     this.resetState();
     this.buildTwinCase();
-    // the halos first, under every key; the cells over them; the seams last
-    this.buildHalos(this.keysEl);
+    // the halos first, under every key; the cells over them; the seams last.
+    // The near-miss guard is for thumbs: with the mouse or the keyboard in use
+    // there are no halos, seams, ghost deck or habit guards, on the desk or on
+    // the thumb banks a window too small for the dock falls back to (the
+    // confirm ring goes with them: keyDistance)
+    if (!deskInput) this.buildHalos(this.keysEl);
     this.buildKeys();
     this.applyCells();
-    this.buildSeams(this.keysEl);
+    if (!deskInput) this.buildSeams(this.keysEl);
     if (snap) this.restoreState(snap);
-    this.ghostSpots = this.portrait ? [] : this.classicDeck(W, H);
-    this.habitSpots = this.classicHabits(W, H);
+    this.ghostSpots = this.portrait || deskInput ? [] : this.classicDeck(W, H);
+    this.habitSpots = deskInput ? null : this.classicHabits(W, H);
 
     // The bands are the layout's, messages first: the message band's rows and
     // width are what web.js pages the game's messages by (bandMetrics), so
@@ -845,7 +1021,7 @@ export class Overlay {
     // bands stand over the banks, outside the glass, each its own pane.
     const [msgBand, statusBand] = S.bands;
     this.geom = {
-      s: 1, W, H, twin: true, caseless: this.caseless, portrait: this.portrait,
+      s: 1, W, H, twin: true, desk: pointer === 'mouse', caseless: this.caseless, portrait: this.portrait,
       glass: { ...S.glass, r: this.caseless ? 0 : 10 },
       map: S.mapArea, msgBand, statusBand, msgRows: r.info.fill.rows_msg, cell: r.info.T,
       headerOver: !!r.info.G.over, textScale, statusLinesH: statusH,
@@ -1643,13 +1819,12 @@ export class Overlay {
   }
 
   // The nearest keycap's distance from a point on the map, for web.js's ring;
-  // null in classic, which has no guard, and at the desk, where a mouse's
-  // click on the map is meant where it lands (the ring is for a thumb's
-  // near miss).  The desk is deferred (Lucas, 2026-10-03): the page lays out
-  // as for touch (rebuildTwin), so a mouse player has the ring too, as the
-  // banks it plays with are the thumbs'.
+  // null in classic, which has no guard, and with the mouse or the keyboard
+  // in use -- at the desk, or on the thumb banks a window too small for the
+  // dock falls back to -- where a click on the map is meant where it lands
+  // (the ring is for a thumb's near miss).
   keyDistance(x, y) {
-    if (this.twin && this.twin.spec.pointer === 'mouse') return null;
+    if (this.twin && (this.twin.spec.pointer === 'mouse' || this.twin.deskInput)) return null;
     const g = this.guardAt(x, y);
     return g ? g.d : null;
   }
@@ -3693,8 +3868,13 @@ export class Overlay {
       layout: P.get('layout') === 'classic' ? 'classic' : 'twin',
       shown: t ? 'twin' : 'classic',
       fallback: this.twinFallback || null,
+      // the input switch (input.js): the board's mode, the setting, the key
+      // letters, and why a mouse window shows the thumb banks
+      input: this.input ? this.inputMode() : null, controls: controlsOf(P.get('controls')),
+      legends: !!(this.input && this.input.legends) && this.inputMode() === 'thumb', deskFallback: t && this.inputMode() === 'desk' && S.pointer !== 'mouse' ? this.deskFallback : null,
       tier: I ? I.tier : null,
-      padSetting: Number(P.get('padCell')) || 58,
+      // the desk's keys are its own size (layout.js deskKey), not the movement key size
+      padSetting: S && S.pointer === 'mouse' ? fit.padSetting : Number(P.get('padCell')) || 58,
       pad: fit ? fit.pad : (this.padCell || 58) * (this.s || 1),
       rightColumns: fit ? fit.rightColumns : null,
       fitLevel: fit ? fit.level : null, degraded: fit ? !!fit.degraded : false,
@@ -3705,7 +3885,9 @@ export class Overlay {
       glass: I && I.G ? I.G.kind : null, headerOver: !!(I && I.G && I.G.over),
       budgetUsed: t ? t.budget : null, budget: (t && t.settings && t.settings.budget) || null,
       mapCell: P.get('mapCell') === 'rows' ? 'rows' : 'columns',
-      zoomFactor: Number(P.get('zoomFactor')) || 1, zoom: Number(P.get('zoom')) || 0,
+      // the desk's zoom is its own, for the visit (web.js)
+      zoomFactor: S && S.pointer === 'mouse' && this.host.deskZoom ? this.host.deskZoom() : Number(P.get('zoomFactor')) || 1,
+      zoom: Number(P.get('zoom')) || 0,
       style: P.get('style'), caseOn: !!P.get('case'),
     };
   }
@@ -3763,6 +3945,14 @@ export class Overlay {
         + `classic is the case as it was${this.twinFallback ? `. This window shows classic: ${firstReason(this.twinFallback)}`
           : this.twin && this.twin.spec.fit.degraded ? `. Twin banks here are squeezed: ${firstReason(this.twin.reason)}` : ''}`,
         [['twin', 'Twin banks'], ['classic', 'Classic']]),
+      // Desktop mode (Lucas, 2026-10-07; the design's section 12): which board
+      // twin banks show.  Automatic follows the input in use; "docked" waits
+      // (his answer 9).
+      seg('controls', 'Controls (twin banks): automatic shows the thumb banks while you touch the screen and the desk, '
+        + 'the keys gathered under the map, once you use the mouse, the touchpad or the wheel; typing alone on a touch '
+        + `screen only adds the key letters${this.twin && this.deskFallback && this.inputMode() === 'desk'
+          ? `. This window shows the thumb banks: ${firstReason(this.deskFallback)}` : ''}`,
+        [['auto', 'Automatic'], ['thumb', 'Thumb banks'], ['desk', 'Mouse and keyboard']]),
       // the design's section 11 and its test 5: today's columns by default,
       // the bigger glyphs of the earlier rule a choice; a pinch zooms either
       seg('mapCell', "Map cell (twin banks): Columns shows at least today's 34 of the level's 80 columns in landscape, "
@@ -3795,8 +3985,13 @@ export class Overlay {
     ], [
       { label: this.canShareReport() ? 'Share report' : 'Copy report', stay: true,
         run: (v, el, hint) => this.sendReport(String(v.deviceReport || ''), hint) },
-      // twin banks keep their own zoom, a factor of the map cell (web.js tileSize)
-      { label: 'Reset zoom', run: () => { P.set(this.twin ? 'zoomFactor' : 'zoom', this.twin ? 1 : 0); this.host.glassChanged(this.geom); } },
+      // twin banks keep their own zoom, a factor of the map cell (web.js
+      // tileSize), and the desk its own for the visit
+      { label: 'Reset zoom', run: () => {
+        if (this.deskShown() && this.host.resetDeskZoom) this.host.resetDeskZoom();
+        else P.set(this.twin ? 'zoomFactor' : 'zoom', this.twin ? 1 : 0);
+        this.host.glassChanged(this.geom);
+      } },
       { label: 'Done', primary: true, run: (v) => {
         const put = (k, val) => { if (P.get(k) !== val) P.set(k, val); };
         put('style', v.style);
@@ -3812,6 +4007,7 @@ export class Overlay {
         put('padCell', parseInt(v.padCell, 10));
         if ((v.ghostDeck === 'on') !== this.ghostOn()) this.setGhostOn(v.ghostDeck === 'on');
         put('layout', v.layout === 'classic' ? 'classic' : 'twin');
+        put('controls', controlsOf(v.controls));
         put('mapCell', v.mapCell === 'rows' ? 'rows' : 'columns');
         put('labelMode', v.labelMode);
         put('keyFlash', v.keyFlash === 'on');

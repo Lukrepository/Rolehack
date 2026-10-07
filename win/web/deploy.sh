@@ -42,7 +42,7 @@ fi
 rm -rf targets/web targets/web-preview
 bash win/web/build.sh
 OUT=targets/web; [ "$CHANNEL" = preview ] && OUT=targets/web-preview
-for f in index.html layout.js viewer.js channel.js build.json; do
+for f in index.html layout.js viewer.js input.js channel.js build.json; do
   test -e "$OUT/$f" || { echo "STOP: $OUT/$f is missing"; exit 1; }
 done
 grep -q "\"commit\": \"$HEAD\"" "$OUT/build.json" || { echo "STOP: $OUT was built from another commit"; exit 1; }

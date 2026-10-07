@@ -88,6 +88,31 @@ itself, as the page uses them:
   is deferred) is a tablet, with phone-size keys, the whole level, the log and
   the inventory, never the desk.
 
+`input.test.mjs` checks the input switch (`../input.js`, desktop mode, Lucas's
+answers of 2026-10-07), which picks the thumb banks or the desk from the input
+in use:
+
+- a page starts in the mode this browser remembers, else the thumb banks where
+  touch is possible, else the desk; the Controls setting overrides it;
+- a touch or a pen asks for the thumb banks at once, and is consumed while the
+  desk shows (never on the thumb banks a mouse window fell back to); the 3 s
+  lockout never holds a touch back;
+- two mouse presses or the wheel, within 10 s and with no touch for 5 s, ask
+  for the desk, not within 3 s of a switch;
+- where touch is possible, typed keys only turn on the key letters; where it
+  is not, three in 10 s ask for the desk;
+- the keys the game is sent: as before, with a Mac's Cmd left to the browser,
+  its Option typing the M- command by the key's place (a German Mac's Option+5
+  still types `[`), and AltGr characters typed as themselves;
+- the Ctrl+; prefix by the key's place, never with Alt, AltGr or Cmd; the key
+  after it read as typed (`f` and `F` differ), with no `w` or `n` (a tab
+  cannot stop Ctrl+W or Ctrl+N);
+- it never throws, and stays a plain module with no DOM and no clock.
+
+`report.test.mjs` also holds the device report's input field: the board in use,
+whether the Controls setting fixed it, the key letters, and why a mouse window
+shows the thumb banks.
+
 ## Where the fixtures come from
 
 `fixtures/` holds verbatim copies of the twin banks design's golden specs

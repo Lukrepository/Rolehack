@@ -33,6 +33,13 @@ const DEFAULTS = {
   // were, kept as they were.  A window with no room for twin banks shows
   // classic without changing this.
   layout: 'twin',             // twin | classic
+  // Desktop mode (Lucas, 2026-10-07; input.js): which board twin banks show.
+  // 'auto' follows the input in use -- the thumb banks for a touch, the desk's
+  // dock under the map for the mouse, a touchpad or the wheel -- and the other
+  // two fix it.  inputMode is the board the switch last chose, remembered in
+  // this browser (null: none yet), which a page starts with under 'auto'.
+  controls: 'auto',           // auto | thumb | desk
+  inputMode: null,            // thumb | desk
   // Twin banks remember the window each display mode has shown in each
   // orientation of the whole device, so a phone's two orientations get the
   // same banks (the design's section 12; viewer.js says which windows teach

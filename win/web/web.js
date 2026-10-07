@@ -166,6 +166,8 @@ window.addEventListener('keydown', (e) => {
   const k = keyCode(e);
   if (k === null) return;
   e.preventDefault();
+  // a key typed to the game is input in use: the switch (input.js) counts it
+  if (overlay) overlay.noteKey(e);
   // Esc closes the interface's own popups first, as Back did on the phone
   if (k === 27 && $('modal').hidden && overlay && overlay.onBack()) return;
   push({ key: k });
@@ -747,6 +749,8 @@ function panelTaps(p, kind) {
     if (mq.removeEventListener) mq.removeEventListener('change', changed);
     else mq.removeListener(changed);
     if (geom) layoutGlass(geom);
+    // the desk's map cell is whole device pixels, decided by the layout itself
+    if (geom && geom.desk && overlay) overlay.requestRebuild();
     watchDensity();
   };
   if (mq.addEventListener) mq.addEventListener('change', changed);
@@ -780,14 +784,19 @@ function toDevicePx(v) {
 
 // the factor a twin banks pinch under way has reached (setZoom), 0 between pinches
 let pinchFactor = 0;
+// The desk's own zoom (desktop mode, 2026-10-07), a factor of its cell kept
+// for the visit only: the desk opens on the whole level, and its wheel never
+// changes the thumb banks' zoomFactor.
+let deskZoom = 1;
 
 function tileSize() {
   // Twin banks: the device's one map cell (layout.js), the same in both
   // orientations, times twin's own zoom factor -- the pinch's while fingers
   // are down -- in classic's 8 to 96 px (the design's section 11).  Classic's
   // zoom is not read here: it is classic's, and a pinch in twin never writes it.
+  // At the desk the factor is the desk's own (deskZoom).
   if (geom && geom.twin && geom.cell > 0) {
-    const f = pinchFactor || Number(P.get('zoomFactor')) || 1;
+    const f = pinchFactor || (geom.desk ? deskZoom : Number(P.get('zoomFactor')) || 1);
     return clamp(geom.cell * f, 8, 96);
   }
   const z = Number(P.get('zoom')) || 0;
@@ -803,12 +812,12 @@ function tileSize() {
 function setZoom(px, live) {
   if (!(geom && geom.twin && geom.cell > 0)) { P.set('zoom', clamp(px, 8, 96)); return; }
   const f = clamp(px, 8, 96) / geom.cell;
-  if (live) { pinchFactor = f; render(); } else { pinchFactor = 0; P.set('zoomFactor', f); }
+  if (live) { pinchFactor = f; render(); } else if (geom.desk) { pinchFactor = 0; deskZoom = f; render(); } else { pinchFactor = 0; P.set('zoomFactor', f); }
 }
 function endPinch() {
   const f = pinchFactor;
   pinchFactor = 0;
-  if (f && geom && geom.twin) P.set('zoomFactor', f);
+  if (f && geom && geom.twin) { if (geom.desk) { deskZoom = f; render(); } else P.set('zoomFactor', f); }
 }
 
 // Twin banks' overview (the design's section 11): while two fingers rest on
@@ -2516,6 +2525,9 @@ overlay = new Overlay({
   tileSize: () => tileSize(),
   guardsAside: () => moreShown || !$('modal').hidden || !$('formwrap').hidden,
   windowClosed,
+  // the desk's own zoom, for the device report and Settings' Reset zoom
+  deskZoom: () => deskZoom,
+  resetDeskZoom: () => { deskZoom = 1; render(); },
 });
 // what the near-miss guard did, for the near-miss test on a device (the
 // design's section 18, test 2), from the browser's console
