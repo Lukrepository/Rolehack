@@ -108,11 +108,10 @@ const span = (a, b) => { const o = []; for (let v = a; a <= b ? v <= b : v >= b;
 const firstChange = (steps, rs, pick) => { const i = rs.findIndex((r) => pick(r) !== pick(rs[0])); return i < 0 ? null : steps[i]; };
 
 // A step dragged across both ways.  On the way up the old part is kept for 24 dp past the
-// rule's own step; where the step also depends on the other side of the window (the panels,
-// through a cell that grows with the height), one of the windows 24 dp away still picks the
-// old part for longer, so it is kept at least that far.  On the way down it goes where it
-// stops fitting, which is where the rule's own pick changes.
-function band(name, along, from, to, other, pick, st = {}, { exact = true } = {}) {
+// rule's own step: the windows around are asked with the parts already decided here held, so
+// a cell that grows with the other side does not stretch the panels' band.  On the way down
+// it goes where it stops fitting, which is where the rule's own pick changes.
+function band(name, along, from, to, other, pick, st = {}) {
   const at = (v) => (along === 'W' ? [v, other] : [other, v]);
   const up = span(from, to).map(at), down = span(to, from).map(at);
   const plainUp = firstChange(up, up.map(([W, H]) => desk(W, H, st)), pick);
@@ -121,8 +120,7 @@ function band(name, along, from, to, other, pick, st = {}, { exact = true } = {}
   const i = along === 'W' ? 0 : 1;
   const dragUp = firstChange(up, drag(up, st), pick);
   assert.ok(dragUp, `${name}: never changes on the way up`);
-  if (exact) assert.equal(dragUp[i], plainUp[i] + 24, `${name}: on the way up`);
-  else assert.ok(dragUp[i] >= plainUp[i] + 24, `${name}: on the way up, at ${dragUp[i]}`);
+  assert.equal(dragUp[i], plainUp[i] + 24, `${name}: on the way up`);
   assert.deepEqual(firstChange(down, drag(down, st), pick), plainDown, `${name}: on the way down`);
   return { up: plainUp[i], down: plainDown[i], dragged: dragUp[i] };
 }
@@ -137,9 +135,40 @@ test("the band: a cell step, the header at 826 dp and the panels' flip each chan
   assert.deepEqual(band('the header', 'W', 800, 860, 800, (r) => r.info.desk.sideBySide), { up: 826, down: 825, dragged: 850 });
   // 1440 tall, the level at its 32 dp cap: the log and the inventory go beside it at 2912 wide
   assert.deepEqual(band('the panels', 'W', 2880, 2950, 1440, (r) => r.info.desk.beside), { up: 2912, down: 2911, dragged: 2936 });
-  // text cells at 768 tall: beside the 900 dp map from 1252 wide; 24 dp taller the cell is
-  // 21 dp and the map 945 wide, so a window grown wider keeps the row to 1321
-  assert.deepEqual(band('the panels, text cells', 'W', 1220, 1340, 768, (r) => r.info.desk.beside, { cellAspect: 0.5625 }, { exact: false }), { up: 1252, down: 1251, dragged: 1321 });
+  // text cells at 768 tall: beside the 900 dp map from 1252 wide.  24 dp taller the cell is
+  // 21 dp and the map 945 wide; asked on its own, that window kept the row to 1321
+  assert.deepEqual(band('the panels, text cells', 'W', 1220, 1340, 768, (r) => r.info.desk.beside, { cellAspect: 0.5625 }), { up: 1252, down: 1251, dragged: 1276 });
+  // tiles at 780 tall, the 20 dp cell: beside from 1952 wide (it was kept to 2136)
+  assert.deepEqual(band('the panels at 780 tall', 'W', 1900, 2150, 780, (r) => r.info.desk.beside), { up: 1952, down: 1951, dragged: 1976 });
+  // and at 600 tall, the level at 12 dp (kept to 1416), at dpr 1 and 1.5
+  for (const dpr of [1, 1.5]) assert.deepEqual(band(`the panels at 600 tall, dpr ${dpr}`, 'W', 1250, 1450, 600, (r) => r.info.desk.beside, { dpr }), { up: 1312, down: 1311, dragged: 1336 });
+});
+
+test("a window dragged taller meets every cell, each 24 dp after the rule's own step", () => {
+  // The cell steps every 21 / dpr dp of height, closer than the band.  Taking the rule's own
+  // cell when the kept one went skipped a cell or two (12 -> 14 -> 16 dp at 1450 wide) and
+  // landed 3 dp past where the new cell fits, so a hand that overshot and came back 4 dp
+  // changed it again (14 -> 13), and the panels with it (1760 wide).
+  for (const [W, from, to, dpr, a] of [[1450, 600, 760, 1, 1], [1600, 640, 800, 2.4375, 1], [1280, 600, 800, 1.5, 1], [1040, 600, 760, 1, 0.5625]]) {
+    const st = { dpr, cellAspect: a };
+    const steps = span(from, to).map((H) => [W, H]);
+    const own = steps.map(([w, h]) => desk(w, h, st).info.desk.Td);
+    const rs = drag(steps, st);
+    let changes = 0;
+    for (let i = 1; i < rs.length; i++) {
+      const was = rs[i - 1].info.desk.Td, now = rs[i].info.desk.Td;
+      if (was === now) continue;
+      changes++;
+      const at = `${W}x${steps[i][1]} at dpr ${dpr}`;
+      assert.equal(now, was + 1, `${at}: ${was} -> ${now} device px`);
+      assert.equal(own[i - 24], now, `${at}: the rule's own cell 24 dp back is ${own[i - 24]}`);
+      assert.notEqual(own[i - 25], now, `${at}: changed later than 24 dp`);
+    }
+    assert.ok(changes >= 2, `${W} wide at dpr ${dpr}: ${changes} changes`);
+    // the legend at 1040 wide, text cells, has room in the dock row at the 15 dp cell only;
+    // shown there for that cell's 21 dp, it came and went (none -> row -> none)
+    assert.deepEqual(flips(steps, rs), [], `${W} wide at dpr ${dpr}`);
+  }
 });
 
 // every part of the arrangement that changes and then goes back (the cell: turns the other

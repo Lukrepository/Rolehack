@@ -1,9 +1,11 @@
 // Nothing moves for a touch player (Lucas, 2026-10-06 and 2026-10-07): desktop mode changed
 // the desk alone (layout.js section 10), so every layout for pointer 'touch' or 'pen' must be
-// what the rule gave before it, to the last digit.  This lays out the sweep's windows and
-// variants, a grid of windows, and a seeded random set with nonsense settings, with and
-// without the desk's new
-// settings (dpr, prevDesk), and compares JSON.stringify(layout(...)) with the unchanged rule's.
+// what the rule gave before it, to the last digit, and so must a layout for any pointer but
+// 'mouse' (all take the touch path).  This lays out the sweep's windows and variants, a grid
+// of windows, every window a pixel apart across each step of the touch rule the grid meets
+// (a step that moved by a pixel showed in 1 of 29,456 layouts before), and a seeded random
+// set with nonsense settings, with and without the desk's new settings (dpr, prevDesk), and
+// compares JSON.stringify(layout(...)) with the unchanged rule's.
 //
 //   RH_BASE=<the unchanged layout.js> node doc/twin-banks/checks/same.mjs
 //
@@ -65,6 +67,22 @@ for (let W = 320; W <= 2600; W += 40) for (let H = 300; H <= 1600; H += 40) for 
   same(W, H, p, {}, 'grid');
   same(W, H, p, { dpr: 1.25, prevDesk: deskArr }, 'grid');
 }
+// every pointer but 'mouse' takes the touch path: a few others, as 'touch' and 'pen' above
+const others = [undefined, null, '', 'x', 'Mouse', 'keyboard', 0];
+for (const p of others) for (const ex of extras) for (const [W, H] of windows) same(W, H, p, { ...ex }, 'pointer');
+// a pixel at a time across the touch rule's own steps: wherever the unchanged rule's
+// arrangement (tier, glass, header, panels; the source's words) differs between two windows
+// of the grid, every window between them (a step of a pixel slipped through the 40 dp grid)
+const shape = (r) => (r && r.spec ? [r.usable, r.info && r.info.tier, r.info && r.info.G && r.info.G.kind, r.info && r.info.G && r.info.G.over,
+  new Set(r.spec.bands.map((b) => b.y)).size, r.spec.bands.length, r.spec.chrome.map((c) => c.name).join(), r.spec.source.replace(/[0-9.]+/g, '#')].join('|') : 'none');
+let fine = 0;
+for (const p of ['touch', 'pen']) {
+  const at = new Map();
+  const shapeAt = (W, H) => { const k = `${W}x${H}`; if (!at.has(k)) { let r = null; try { r = base.layout(W, H, p, {}); } catch { r = null; } at.set(k, shape(r)); } return at.get(k); };
+  const between = (a, b) => { for (let i = 1; i < 40; i++) { const [W, H] = [a[0] + (b[0] - a[0]) * i / 40, a[1] + (b[1] - a[1]) * i / 40]; fine++; same(W, H, p, {}, 'step'); same(W, H, p, { dpr: 1.5, prevDesk: deskArr }, 'step'); } };
+  for (let H = 300; H <= 1600; H += 40) for (let W = 320; W + 40 <= 2600; W += 40) if (shapeAt(W, H) !== shapeAt(W + 40, H)) between([W, H], [W + 40, H]);
+  for (let W = 320; W <= 2600; W += 40) for (let H = 300; H + 40 <= 1600; H += 40) if (shapeAt(W, H) !== shapeAt(W, H + 40)) between([W, H], [W, H + 40]);
+}
 // a seeded random set, nonsense included (sweep.mjs section 10's settings, and the desk's)
 let s = 7;
 const r = () => { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
@@ -79,6 +97,6 @@ for (let i = 0; i < 4000; i++) {
     dpr: pick([undefined, 1, 1.25, 1.5, 2, 2.4375, NaN, 0, -2, 1e9, '2']), prevDesk: pick([undefined, null, deskArr, { ...deskArr, Td: 1e9 }, 'x', 5, {}]) };
   same(W, H, pick(['touch', 'pen']), st, 'random');
 }
-console.log(`same: ${n - differ.length} touch and pen layouts identical, ${differ.length} differ (${((Date.now() - t0) / 1000).toFixed(0)} s)`);
+console.log(`same: ${n - differ.length} touch and pen layouts identical, ${differ.length} differ (${((Date.now() - t0) / 1000).toFixed(0)} s; other pointers but 'mouse' included, and ${fine} windows a pixel apart across the touch rule's steps)`);
 for (const d of differ.slice(0, 40)) console.log('  ' + d);
 process.exit(differ.length ? 1 : 0);

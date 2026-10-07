@@ -70,7 +70,8 @@ the cell it always was; a map that pans is never wider than the level and
 stays centred; dragged a pixel at a time with the arrangement it last drew
 (`prevDesk`), a cell step, the header at 826 dp and the panels' flip each come
 24 dp late on the way up and where the old one stops fitting on the way down,
-and nothing flips back within 24 dp; nonsense `dpr` and `prevDesk` never throw;
+a window dragged taller meets every cell, each 24 dp late, and nothing flips
+back within 24 dp; nonsense `dpr` and `prevDesk` never throw;
 and a touch or pen layout is the same with or without them.
 
 `viewer.test.mjs` checks the remembered budget (`viewer.js`) with the rule

@@ -1113,15 +1113,26 @@ function popupsFor(P, fill, st) {
 // glass does on touch (section 7; Lucas, 2026-10-04).  The page keeps the arrangement it last
 // drew (info.desk, given back as settings.prevDesk), and each part of it stays while it still
 // fits this window and the rule's own pick at one of the eight windows GLASS_BAND dp away
-// chose it (the cell: while it lies between their cells, which grow with the window);
-// otherwise the rule's own pick, given the parts decided before it, is taken.  So a part
-// changes GLASS_BAND dp late on the way up -- later where it also turns on the window's other
-// side: with text cells at 1252x768 the panels go beside the map, but 24 dp taller the cell
-// is a step bigger and they do not, so a window grown wider keeps them in the row to 1321 --
-// and on the way down where it stops fitting.  The parts are decided in order -- header, cell, panels, legend -- and every one is placed by
-// the rule's own geometry, so no key goes anywhere the rule would not put one, and a kept
-// arrangement that leaves the desk unusable yields to the rule (layout(), section 9).  A
-// prevDesk made at another dpr, cell aspect or key size is ignored, and a first layout keeps
+// chose it, those windows asked with the parts decided before it held at this window's
+// (DESK_HELD, where they fit there); otherwise the rule's own pick, given those parts, is
+// taken.  The cell is kept while it lies between their cells, and else goes to the nearest
+// of them.  Its steps along the height are 21 / dpr dp apart, closer than the band, so a
+// window grown taller meets every cell, each GLASS_BAND dp late; taking the rule's own cell
+// instead skipped a step or two (12 -> 14 -> 16 dp at 1450 wide) and landed 3 dp past where
+// the new cell fits, so a hand that overshot and came back 4 dp changed it again, and the
+// panels with it (1760 wide).  While the cell is on its way to the rule's own, a later part
+// that is already what the rule's own arrangement here has also stays: with text cells at
+// 1040 wide the legend has room in the dock row at the 15 dp cell only, and it came and went
+// within that cell's 21 dp.  So a part changes GLASS_BAND dp late on the way up, and on the
+// way down where it stops fitting.  A window that also sits within GLASS_BAND dp of the same
+// part's step on its other side keeps it while it is dragged along, as the glass does: at
+// 1295x720 shrinking, the legend's 'under' waits for the 14 dp cell, because 24 dp shorter
+// the 15 dp cell leaves it no room.  Before the windows around were asked with the cell held,
+// the panels' band ran 104 to 184 dp wide (1952x780: beside the map at 2136; review of
+// 2026-10-07).  The parts are decided in order -- header, cell, panels, legend -- and every
+// one is placed by the rule's own geometry, so no key goes anywhere the rule would not put
+// one, and a kept arrangement that leaves the desk unusable yields to the rule (layout(),
+// section 9).  A prevDesk made at another dpr, cell aspect or key size is ignored, and a first layout keeps
 // nothing.
 //
 // info.desk, which the page keeps and passes back as settings.prevDesk:
@@ -1133,6 +1144,9 @@ function popupsFor(P, fill, st) {
 //     legend,           the key legend: 'row' (the dock row's left; beside only), 'under' or 'none'
 //     whole }           the whole level shows (derived from the rest; never kept)
 const DESK_LEGENDS = ['row', 'under', 'none'];
+// the parts each part's band holds at the windows around: those deskPlan decides before it
+// and that its fit depends on (the log, the inventory and the legend do not depend on each other)
+const DESK_HELD = { sideBySide: [], Td: ['sideBySide'], beside: ['sideBySide', 'Td'], log: ['sideBySide', 'Td', 'beside'], inv: ['sideBySide', 'Td', 'beside'], legend: ['sideBySide', 'Td', 'beside'] };
 function deskOf(d, st) {
   if (!d || typeof d !== 'object' || d.dpr !== st.dpr || d.a !== st.cellAspect || d.k !== st.deskKey) return null;
   const b = (v) => (typeof v === 'boolean' ? v : undefined);
@@ -1204,19 +1218,41 @@ function deskPlan(W, H, M0, st, choose = (part, own) => own) {
 
 function deskLayout(W, H, M0, st, table, reasons) {
   const a = st.cellAspect;
-  // the band: the rule's own arrangement at the eight windows GLASS_BAND dp away, made once
-  // and only when a part of the last one differs from the rule's own pick here
+  // the band: the rule's own arrangement at the eight windows GLASS_BAND dp away, made only
+  // when a part of the last one differs from the rule's own pick here, once for each set of
+  // parts held
   const prev = deskOf(st.prevDesk, st);
-  let near = null;
-  const around = () => near || (near = NEAR.map(([dx, dy]) => deskPlan(Math.max(1, W + dx * GLASS_BAND), Math.max(1, H + dy * GLASS_BAND), M0, st).desk));
+  // The windows around are asked with the parts already decided here held (DESK_HELD), where
+  // they fit there: asked on their own, a window 24 dp taller picks a bigger cell, its map is
+  // 80 dp wider, and it kept the panels in the dock row 104 to 184 dp past their step, not 24.
+  // A window with no room for the cell held takes its own (a smaller one), or a legend with
+  // room at one cell only came and went on the way down (text cells, 1040 wide, dpr 1.25:
+  // the 18 device px cell, 659 to 643 tall).
+  const here = {}, near = new Map();
+  let plain = null;                // the rule's own arrangement here, when it is asked for
+  const around = (part) => {
+    const held = {};
+    for (const p of DESK_HELD[part]) held[p] = here[p];
+    const key = JSON.stringify(held);
+    if (!near.has(key)) near.set(key, NEAR.map(([dx, dy]) => deskPlan(Math.max(1, W + dx * GLASS_BAND), Math.max(1, H + dy * GLASS_BAND), M0, st, (p, own, fits) => (p in held && fits(held[p]) ? held[p] : own)).desk));
+    return near.get(key);
+  };
   const keep = (part, own, fits) => {
     const v = prev[part];
-    if (v === undefined || v === own || !fits(v)) return own;
-    if (part === 'Td') {
-      const ds = around().map((d) => d.Td);
-      return v >= Math.min(...ds) && v <= Math.max(...ds) ? v : own;
+    let out = own;
+    if (v !== undefined && v !== own && fits(v)) {
+      if (part === 'Td') {
+        // the kept cell, else the nearest of the cells around (never past the rule's own)
+        const ds = around(part).map((d) => d.Td);
+        const c = clamp(v, Math.min(...ds), Math.max(...ds));
+        if (c >= Math.min(v, own) && c <= Math.max(v, own) && fits(c)) out = c;
+      } else if (around(part).some((d) => d[part] === v)) out = v;
+      // while the cell is on its way to the rule's own, a part that is already what the
+      // rule's own arrangement here has stays so, rather than change and change back
+      else if (here.Td !== undefined && here.Td !== (plain || (plain = deskPlan(W, H, M0, st).desk)).Td && plain[part] === v) out = v;
     }
-    return around().some((d) => d[part] === v) ? v : own;
+    here[part] = out;
+    return out;
   };
   const D = prev ? deskPlan(W, H, M0, st, keep) : deskPlan(W, H, M0, st);
   reasons.push(...D.reasons);
