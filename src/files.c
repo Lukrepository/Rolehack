@@ -1,4 +1,4 @@
-/* NetHack 5.0	files.c	$NHDT-Date: 1740532826 2025/02/25 17:20:26 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.417 $ */
+/* NetHack 5.0	files.c	$NHDT-Date: 1781973049 2026/06/20 16:30:49 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.448 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Derek S. Ray, 2015. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -38,7 +38,7 @@
 #include "wintty.h" /* more() */
 #endif
 
-#if (!defined(MACOS9) && !defined(O_WRONLY) && !defined(AZTEC_C)) \
+#if (!defined(MAC68K) && !defined(O_WRONLY) && !defined(AZTEC_C)) \
     || defined(USE_FCNTL)
 #include <fcntl.h>
 #endif
@@ -67,7 +67,7 @@ const
 #endif
 #endif
 
-#if defined(UNIX) && defined(SELECTSAVED)
+#if defined(UNIX) && defined(SELECTSAVED) || defined(ANDROID)
 #include <sys/types.h>
 #include <dirent.h>
 #endif
@@ -110,10 +110,6 @@ static char fqn_filename_buffer[FQN_NUMBUF][FQN_MAX_FILENAME];
 
 #ifdef AMIGA
 extern char PATH[]; /* see sys/amiga/amidos.c */
-extern char bbs_id[];
-#ifdef __SASC_60
-#include <proto/dos.h>
-#endif
 
 #include <libraries/dos.h>
 extern void amii_set_text_font(char *, int);
@@ -137,7 +133,7 @@ extern boolean get_user_home_folder(char *, size_t);
 #endif
 #endif
 
-#ifdef MACOS9
+#ifdef MAC68K
 #undef unlink
 #define unlink macunlink
 #endif
@@ -647,7 +643,7 @@ create_levelfile(int lev, char errbuf[])
         nhfp->fd = open(fq_lock, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
                         FCMASK);
 #else
-#ifdef MACOS9
+#ifdef MAC68K
         nhfp->fd = maccreat(fq_lock, LEVL_TYPE);
 #else
         nhfp->fd = creat(fq_lock, FCMASK);
@@ -693,7 +689,7 @@ open_levelfile(int lev, char errbuf[])
         nhfp->fpdef = (FILE *) 0;
     }
     if (nhfp && nhfp->structlevel) {
-#ifdef MACOS9
+#ifdef MAC68K
         nhfp->fd = macopen(fq_lock, O_RDONLY | O_BINARY, LEVL_TYPE);
 #else
         nhfp->fd = open(fq_lock, O_RDONLY | O_BINARY, 0);
@@ -739,10 +735,12 @@ clearlocks(void)
         return;
 #endif
 #ifndef NO_SIGNAL
-    (void) signal(SIGINT, SIG_IGN);
+        (void) signal(SIGINT, SIG_IGN);
+#ifndef ANDROID
 #if defined(UNIX) || defined(VMS)
     sethanguphandler((void (*)(int)) SIG_IGN);
 #endif
+#endif /* !ANDROID */
 #endif /* NO_SIGNAL */
     /* can't access maxledgerno() before dungeons are created -dlc */
     for (x = (svn.n_dgns ? maxledgerno() : 0); x >= 0; x--)
@@ -876,12 +874,12 @@ create_bonesfile(d_level *lev, char **bonesid, char errbuf[])
                            O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
                            _SH_DENYRW, _S_IREAD | _S_IWRITE);
 #else /* ?MICRO || WIN32 */
-/* implies UNIX or MACOS9 (MACOS9 is for OS9 or earlier) */
-#ifdef MACOS9
+/* implies UNIX or MAC68K (MAC68K is for OS9 or earlier) */
+#ifdef MAC68K
             nhfp->fd = maccreat(file, BONE_TYPE);
 #else
             nhfp->fd = creat(file, FCMASK);
-#endif  /* ?MACOS9 */
+#endif  /* ?MAC68K */
 #endif  /* ?MICRO || WIN32 */
             if (nhfp->fd < 0)
                 failed = errno;
@@ -922,7 +920,7 @@ commit_bonesfile(d_level *lev)
     tempname = set_bonestemp_name();
     tempname = fqname(tempname, BONESPREFIX, 1);
 
-#if (defined(SYSV) && !defined(SVR4)) || defined(GENIX)
+#if (defined(SYSV) && !defined(SVR4) && !defined(ANDROID)) || defined(GENIX)
     /* old SYSVs don't have rename.  Some SVR3's may, but since they
      * also have link/unlink, it doesn't matter. :-)
      */
@@ -971,7 +969,7 @@ open_bonesfile(d_level *lev, char **bonesid)
 #endif
         }
         if (nhfp->structlevel) {
-#if defined(MACOS9)
+#if defined(MAC68K)
             nhfp->fd = macopen(fq_bones, O_RDONLY | O_BINARY, BONE_TYPE);
 #elif defined(WIN32)
             err = _sopen_s(&nhfp->fd, fq_bones, _O_RDONLY | _O_BINARY,
@@ -1065,11 +1063,6 @@ set_savefile_name(boolean regularize_it)
 #if defined(MICRO) && !defined(WIN32) && !defined(MSDOS)
     if (strlen(gs.SAVEP) < (SAVESIZE - 1))
         Strcpy(gs.SAVEF, gs.SAVEP);
-    else
-#ifdef AMIGA
-        if (strlen(gs.SAVEP) + strlen(bbs_id) < (SAVESIZE - 1))
-            strncat(gs.SAVEF, bbs_id, PATHLEN);
-#endif
     {
         int i = strlen(gs.SAVEP);
 #ifdef AMIGA
@@ -1145,7 +1138,7 @@ set_error_savefile(void)
     }
     Strcat(gs.SAVEF, ".e;1");
 #else
-#ifdef MACOS9
+#ifdef MAC68K
     Strcat(gs.SAVEF, "-e");
 #else
     Strcat(gs.SAVEF, ".e");
@@ -1184,8 +1177,8 @@ create_savefile(void)
             nhfp->fd = open(fq_save, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC,
                             FCMASK);
 #else /* !MICRO && !WIN32 */
-/* UNIX || MACOS9 implied (MACOS9 is OS9 or earlier only) */
-#ifdef MACOS9
+/* UNIX || MAC68K implied (MAC68K is OS9 or earlier only) */
+#ifdef MAC68K
             nhfp->fd = maccreat(fq_save, SAVE_TYPE);
 #else
             nhfp->fd = creat(fq_save, FCMASK);
@@ -1240,7 +1233,7 @@ open_savefile(void)
             nhfp->fplog = fopen("open-savefile.log", "w");
 #endif
         }
-#ifdef MACOS9
+#ifdef MAC68K
         nhfp->fd = macopen(fq_save, O_RDONLY | O_BINARY, SAVE_TYPE);
 #else
         nhfp->fd = open(fq_save, O_RDONLY | O_BINARY, 0);
@@ -1278,7 +1271,7 @@ restore_saved_game(void)
 
     nh_uncompress(fq_save);
     if ((nhfp = open_savefile()) != 0) {
-        if ((sfstatus = validate(nhfp, fq_save, FALSE)) != SF_UPTODATE) {
+        if ((sfstatus = validate(nhfp, fq_save, FALSE, 0)) != SF_UPTODATE) {
             close_nhfile(nhfp);
             nhfp = problematic_savefile(sfstatus, fq_save);
         }
@@ -1356,7 +1349,7 @@ check_panic_save(void)
 char *
 plname_from_file(
     const char *filename,
-    boolean without_wait_synch_per_file)
+    boolean without_wait_synch_per_file, int additional_utd_flags)
 {
     NHFILE *nhfp;
     unsigned ln;
@@ -1377,7 +1370,8 @@ plname_from_file(
     nh_uncompress(gs.SAVEF);
     if ((nhfp = open_savefile()) != 0) {
         if ((sfstatus = validate(nhfp, filename,
-                                without_wait_synch_per_file)) == SF_UPTODATE) {
+                                without_wait_synch_per_file,
+                                additional_utd_flags)) == SF_UPTODATE) {
             /* room for "name+role+race+gend+algn X" where the space before
                X is actually NUL and X is playmode: one of '-', 'X', or 'D' */
             ln = (unsigned) PL_NSIZ_PLUS;
@@ -1389,6 +1383,45 @@ plname_from_file(
     nh_compress(gs.SAVEF);
     return result; /* file's plname[]+playmode value */
 }
+#ifdef ANDROID
+int filter_running(const struct dirent* entry)
+{
+    return *entry->d_name && entry->d_name[strlen(entry->d_name)-1] == '0';
+}
+char *
+plname_from_running(const char *filename)
+{
+    int fd;
+    char *result = 0;
+    int savelev, hpid, pltmpsiz;
+    struct version_info version_data;
+    char savename[SAVESIZE];
+    char tmpplbuf[PL_NSIZ];
+
+    /* level 0 file contains:
+     *  pid of creating process (ignored here)
+     *  level number for current level of save file
+     *  name of save file nethack would have created
+     *  savefile info
+     *  player name
+     *  and game state
+     */
+    if((fd = open(filename, O_RDONLY | O_BINARY, 0)) >= 0) {
+        if (read(fd, (genericptr_t) &hpid, sizeof hpid) == sizeof hpid
+         && read(fd, (genericptr_t) &savelev, sizeof(savelev)) == sizeof savelev
+         && read(fd, (genericptr_t) savename, sizeof savename) == sizeof savename
+         && read(fd, (genericptr_t) &version_data, sizeof version_data) == sizeof version_data
+         && read(fd, (genericptr_t) &pltmpsiz, sizeof pltmpsiz) == sizeof pltmpsiz
+         && pltmpsiz > 0 && pltmpsiz <= PL_NSIZ
+         && read(fd, (genericptr_t) &tmpplbuf, pltmpsiz) == pltmpsiz ) {
+            result = dupstr(tmpplbuf);
+        }
+        close(fd);
+    }
+
+    return result;
+}
+#endif
 #endif /* defined(SELECTSAVED) */
 
 #define SUPPRESS_WAITSYNCH_PERFILE TRUE
@@ -1414,7 +1447,7 @@ get_saved_games(void)
         const char *fq_old_save;
 #endif
         char **files = 0;
-        int i, count_failures = 0;
+        int i, count_failures = 0, utd_flags_to_pass_downstream = 0;
 
         Strcpy(svp.plname, "*");
         set_savefile_name(FALSE);
@@ -1447,7 +1480,11 @@ get_saved_games(void)
             (void) memset((genericptr_t) result, 0, (n + 1) * sizeof (char *));
             for(i = 0; i < n; i++) {
                 char *r;
-                r = plname_from_file(files[i], SUPPRESS_WAITSYNCH_PERFILE);
+                if (!wizard)
+                    utd_flags_to_pass_downstream = UTD_QUIETLY;
+                r = plname_from_file(files[i],
+                                     SUPPRESS_WAITSYNCH_PERFILE,
+                                     utd_flags_to_pass_downstream);
 
                 if (r) {
                     /* this renaming of the savefile is not compatible
@@ -1474,11 +1511,11 @@ get_saved_games(void)
         }
 
         free_saved_games(files);
-        if (count_failures)
+        if (count_failures && !(utd_flags_to_pass_downstream & UTD_QUIETLY))
             wait_synch();
     }
 #endif /* WIN32 */
-#ifdef UNIX
+#if defined(UNIX) && !defined(ANDROID)
     /* posixly correct version */
     int myuid = getuid();
     DIR *dir;
@@ -1508,7 +1545,7 @@ get_saved_games(void)
 
                         Sprintf(filename, "save/%d%s", uid, name);
                         r = plname_from_file(filename,
-                                             ALLOW_WAITSYNCH_PERFILE);
+                                             ALLOW_WAITSYNCH_PERFILE, 0);
                         if (r)
                             result[j++] = r;
                     }
@@ -1517,7 +1554,44 @@ get_saved_games(void)
             closedir(dir);
         }
     }
-#endif /* UNIX */
+#endif /* UNIX && !ANDROID */
+#ifdef ANDROID
+    int myuid=getuid();
+    struct dirent **namelist;
+    struct dirent **namelist2;
+    int n1 = scandir("save", &namelist, 0, 0);
+    int n2 = scandir(".", &namelist2, filter_running, 0);
+    if(n1 < 0) n1 = 0;
+    if(n2 < 0) n2 = 0;
+    int i,uid;
+    char name[64]; /* more than PL_NSIZ */
+    if(n1 > 0 || n2 > 0) {
+        result = (char**)alloc((n1+n2+1)*sizeof(char*)); /* at most */
+        (void) memset((genericptr_t) result, 0, (n1+n2+1) * sizeof(char *));
+    }
+    for (i=0; i<n1; i++) {
+        if ( sscanf( namelist[i]->d_name, "%d%63s", &uid, name ) == 2 ) {
+            if ( uid == myuid ) {
+                char filename[BUFSZ];
+                char* r;
+                Sprintf(filename,"save/%d%s", uid, name);
+                r = plname_from_file(filename, ALLOW_WAITSYNCH_PERFILE, 0);
+                if ( r )
+                    result[j++] = r;
+            }
+        }
+    }
+    for (i=0; i<n2; i++) {
+        if ( sscanf( namelist2[i]->d_name, "%d%63[^.].0", &uid, name ) == 2 ) {
+            if ( uid==myuid ) {
+                char* r;
+                r = plname_from_running(namelist2[i]->d_name);
+                if ( r )
+                    result[j++] = r;
+            }
+        }
+    }
+#endif
 #ifdef VMS
     Strcpy(svp.plname, "*");
     set_savefile_name(FALSE);
@@ -2050,7 +2124,7 @@ problematic_savefile(int sfstatus, const char *savefilenm)
 
 /* ----------  BEGIN EXTERNAL CONVERSION HANDLING ----------- */
 
-static boolean cvtinit = FALSE;
+/* static boolean cvtinit = FALSE; */
 
 #ifndef SFCTOOL
 static char *unconverted_filename = 0, *converted_filename = 0;
@@ -2171,7 +2245,7 @@ free_convert_filenames(void)
         free((genericptr_t) converted_filename), converted_filename = 0;
     if (unconverted_filename)
         free((genericptr_t) unconverted_filename), unconverted_filename = 0;
-    cvtinit = FALSE;
+/*    cvtinit = FALSE; */
 }
 
 /* return TRUE if s contains a directory, not just a filespec */
@@ -2500,7 +2574,7 @@ fopen_wizkit_file(void)
 #endif
     }
 
-#if defined(MICRO) || defined(MACOS9) || defined(__BEOS__) || defined(WIN32)
+#if defined(MICRO) || defined(MAC68K) || defined(__BEOS__) || defined(WIN32) || defined(ANDROID)
     if ((fp = fopen(fqname(gw.wizkit, CONFIGPREFIX, 0), "r")) != (FILE *) 0)
         return fp;
 #else
@@ -2779,13 +2853,13 @@ check_recordfile(const char *dir UNUSED_if_not_OS2_CODEVIEW)
     }
 #else /* MICRO || WIN32*/
 
-#ifdef MACOS9
+#ifdef MAC68K
     /* Create the "record" file, if necessary */
     fq_record = fqname(RECORD, SCOREPREFIX, 0);
     fd = macopen(fq_record, O_RDWR | O_CREAT, TEXT_TYPE);
     if (fd != -1)
         macclose(fd);
-#endif /* MACOS9 */
+#endif /* MAC68K */
 
 #endif /* MICRO || WIN32*/
 }
@@ -3064,6 +3138,14 @@ recover_savefile(void)
             (void) unlink(fq_lock);
         }
     }
+
+#ifdef ANDROID
+	/* if the new savefile isn't compressed
+	 * it will be overwritten when the old
+	 * savefile is restored in restore_saved_game()
+	 */
+	nh_compress(fqname(gs.SAVEF, SAVEPREFIX, 0));
+#endif
  cleanup:
     if (savewrite_failure) {
         raw_printf("\nError writing %s; recovery failed (%s).\n",

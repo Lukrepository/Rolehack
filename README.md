@@ -109,4 +109,17 @@ Design notes, verification logs, and the analysis this was built on live outside
 - Not submitted upstream, and not written with upstreaming in mind. NetHack's DevTeam has been conservative about the roster for over a quarter century, and that is their prerogative.
 - Licensed under the **NetHack General Public License**, like everything it is derived from. See [`dat/license`](dat/license).
 
+## The Android app
+
+Since 2026-10-07 this branch also holds the Android app's game core: JodiJodington's NetHack 5.0 port (`sys/android/`), with Rolehack's changes, merged in from [RolehackDroid](https://github.com/Lukrepository/RolehackDroid) so that the browser and the phone play the same game. The phone build itself (JDK 17, Android SDK 36, NDK r27d, with [RolehackFront](https://github.com/Lukrepository/RolehackFront) checked out beside the repository) is described in [RolehackDroid's README](https://github.com/Lukrepository/RolehackDroid/blob/rolehack/README.md). The files Rolehack changed in that port, and when, are listed in [`ROLEHACK-CHANGES.md`](ROLEHACK-CHANGES.md).
+
+Credits and licences on the Android side:
+
+- **NetHack 5.0:** the NetHack DevTeam, under the NetHack General Public License (`dat/license`).
+- **NetHack for Android:** gurrhack, with the NetHack 5.0 port by JodiJodington. The upstream README is kept here as [UPSTREAM-README.md](UPSTREAM-README.md).
+- **The ForkFront user interface:** gurrhack and JodiJodington, with the Rolehack interface in [RolehackFront](https://github.com/Lukrepository/RolehackFront). ForkFront has no licence file in its upstream repositories; its copyright remains with its authors.
+- **Rolehack:** Lucas Ruiz, co-authored with Claude, Anthropic's AI model.
+
+---
+
 *NetHack is copyright its authors and the NetHack DevTeam. Rolehack is an unaffiliated fork.*

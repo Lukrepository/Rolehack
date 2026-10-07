@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Changed for Rolehack by Lucas Ruiz, 2026-09-25.  See ROLEHACK-CHANGES.md. -->
+<resources>
+    <string-array name="tileNames">
+    	<item>Ascii (no tiles)</item>
+        <item>Default</item>
+    </string-array>
+    <string-array name="tileValues">
+        <item>TTY</item>
+        <item>default_16x16</item>
+    </string-array>
+
+</resources>

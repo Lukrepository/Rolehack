@@ -1,5 +1,5 @@
 /* NetHack 5.0	rhrules.c */
-/* Written for Rolehack by Lucas Ruiz, 2026-09-28. */
+/* Written for Rolehack by Lucas Ruiz, 2026-09-28.  See ROLEHACK-CHANGES.md. */
 /* NetHack may be freely redistributed.  See license for details. */
 
 /*

@@ -1,4 +1,5 @@
 # monsters.txt - tile definitions for monsters
+# Changed for Rolehack by Lucas Ruiz, 2026-08-04 to 2026-09-26.  See ROLEHACK-CHANGES.md.
 #  Note: lines beginning with '# tile ' are not comments; other
 #  lines beginning with '#' are.
 . = (71, 108, 108)

@@ -278,6 +278,9 @@ scores        the parts of the score list you wish    [!own/3 top/2 around]
               to see when the game ends.  You choose a combination of
               top scores, scores around the top scores, and all of your
               own scores.
+skintone      your hero's skin tone on the Rolehack paper doll,  [random]
+              1 (fairest) to 8 (deepest).  Unset, each character gets
+              one at random, and keeps it; set it here to choose.
 sortdiscoveries preferred order when viewing list of discovered objects [o]
               o -- in order of discovery within each class
               s -- sortloot's "loot" order

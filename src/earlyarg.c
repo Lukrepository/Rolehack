@@ -1,4 +1,4 @@
-/* NetHack 5.0	earlyarg.c	$NHDT-Date: 1771213100 2026/02/15 19:38:20 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.286 $ */
+/* NetHack 5.0	earlyarg.c	$NHDT-Date: 1782016695 2026/06/20 23:38:15 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.11 $ */
 /* Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -40,7 +40,7 @@ static const struct early_opt earlyopts[] = {
 #ifndef NODUMPENUMS
     { ARG_DUMPENUMS, "dumpenums", 9, FALSE },
 #endif
-    { ARG_DUMPGLYPHIDS, "dumpglyphids", 12, FALSE },
+    { ARG_DUMPGLYPHIDS, "dumpglyphnames", 12, FALSE },
     { ARG_DUMPMONGEN, "dumpmongen", 10, FALSE },
     { ARG_DUMPWEIGHTS, "dumpweights", 11, FALSE },
 #ifdef WIN32
@@ -498,11 +498,7 @@ argcheck(int argc, char *argv[], enum earlyarg e_arg)
 
             if (extended_opt) {
                 extended_opt++;
-                    /* Deprecated in favor of "copy" - remove no later
-                       than  next major version */
-                if (match_optname(extended_opt, "paste", 5, FALSE)) {
-                    insert_into_pastebuf = TRUE;
-                } else if (match_optname(extended_opt, "copy", 4, FALSE)) {
+                if (match_optname(extended_opt, "copy", 4, FALSE)) {
                     insert_into_pastebuf = TRUE;
                 } else if (match_optname(extended_opt, "dump", 4, FALSE)) {
                     /* version number plus enabled features and sanity
@@ -530,7 +526,7 @@ argcheck(int argc, char *argv[], enum earlyarg e_arg)
             return 2;
 #endif
         case ARG_DUMPGLYPHIDS:
-            dump_glyphids();
+            dump_glyphnames();
             return 2;
         case ARG_DUMPMONGEN:
             dump_mongen();
@@ -709,6 +705,7 @@ dump_enums(void)
         monsters_enum,
         objects_enum,
         objects_misc_enum,
+        glyph_offsets_enum,
         defsym_cmap_enum,
         defsym_mon_syms_enum,
         defsym_mon_defchars_enum,
@@ -719,6 +716,59 @@ dump_enums(void)
         mcastu_enum,
         NUM_ENUM_DUMPS
     };
+
+#define dump_go(go) { GLYPH_##go, #go }
+static const struct enum_dump glyph_offsets_dump[] = {
+        dump_go(MON_OFF),
+        dump_go(MON_MALE_OFF),
+        dump_go(MON_FEM_OFF),
+        dump_go(PET_OFF),
+        dump_go(PET_MALE_OFF),
+        dump_go(PET_FEM_OFF),
+        dump_go(INVIS_OFF),
+        dump_go(DETECT_OFF),
+        dump_go(DETECT_MALE_OFF),
+        dump_go(DETECT_FEM_OFF),
+        dump_go(BODY_OFF),
+        dump_go(RIDDEN_OFF),
+        dump_go(RIDDEN_MALE_OFF),
+        dump_go(RIDDEN_FEM_OFF),
+        dump_go(OBJ_OFF),
+        dump_go(CMAP_OFF),
+        dump_go(CMAP_STONE_OFF),
+        dump_go(CMAP_MAIN_OFF),
+        dump_go(CMAP_MINES_OFF),
+        dump_go(CMAP_GEH_OFF),
+        dump_go(CMAP_KNOX_OFF),
+        dump_go(CMAP_SOKO_OFF),
+        dump_go(CMAP_A_OFF),
+        dump_go(ALTAR_OFF),
+        dump_go(CMAP_B_OFF),
+        dump_go(ZAP_OFF),
+        dump_go(CMAP_C_OFF),
+        dump_go(SWALLOW_OFF),
+        dump_go(EXPLODE_OFF),
+        dump_go(EXPLODE_DARK_OFF),
+        dump_go(EXPLODE_NOXIOUS_OFF),
+        dump_go(EXPLODE_MUDDY_OFF),
+        dump_go(EXPLODE_WET_OFF),
+        dump_go(EXPLODE_MAGICAL_OFF),
+        dump_go(EXPLODE_FIERY_OFF),
+        dump_go(EXPLODE_FROSTY_OFF),
+        dump_go(WARNING_OFF),
+        dump_go(STATUE_OFF),
+        dump_go(STATUE_MALE_OFF),
+        dump_go(STATUE_FEM_OFF),
+        dump_go(PILETOP_OFF),
+        dump_go(OBJ_PILETOP_OFF),
+        dump_go(BODY_PILETOP_OFF),
+        dump_go(STATUE_MALE_PILETOP_OFF),
+        dump_go(STATUE_FEM_PILETOP_OFF),
+        dump_go(UNEXPLORED_OFF),
+        dump_go(NOTHING_OFF),
+        { MAX_GLYPH, "MAX_GLYPH" }
+    };
+#undef dump_go
 
 #define dump_om(om) { om, #om }
     static const struct enum_dump omdump[] = {
@@ -736,12 +786,14 @@ dump_enums(void)
         dump_om(LAST_GLASS_GEM),
         dump_om(NUM_REAL_GEMS),
         dump_om(NUM_GLASS_GEMS),
-        dump_om(MAX_GLYPH),
+        dump_om(MAXEXPCHARS),
+        dump_om(MAXTCHARS),
+        dump_om(WARNCOUNT),
     };
 #undef dump_om
 
     static const struct enum_dump *const ed[NUM_ENUM_DUMPS] = {
-        monsdump, objdump, omdump,
+        monsdump, objdump, omdump, glyph_offsets_dump,
         defsym_cmap_dump, defsym_mon_syms_dump,
         defsym_mon_defchars_dump,
         objclass_defchars_dump,
@@ -761,6 +813,7 @@ dump_enums(void)
         { "monnums", "PM_", UNPREFIXED_COUNT, 0, SIZE(monsdump) },
         { "objects_nums", "", 1, 0, SIZE(objdump) },
         { "misc_object_nums", "", 1, 0, SIZE(omdump) },
+        { "glyph_offsets", "GLYPH_", 1, 0, SIZE(glyph_offsets_dump) },
         { "cmap_symbols", "", 1, 0, SIZE(defsym_cmap_dump) },
         { "mon_syms", "", 1, 0, SIZE(defsym_mon_syms_dump) },
         { "mon_defchars", "", 1, 1, SIZE(defsym_mon_defchars_dump) },
@@ -803,9 +856,9 @@ dump_enums(void)
 #endif /* NODUMPENUMS */
 
 void
-dump_glyphids(void)
+dump_glyphnames(void)
 {
-    dump_all_glyphids(stdout);
+    dump_all_glyphnames(stdout);
 }
 #endif /* !NODUMPENUMS */
 

@@ -1,4 +1,5 @@
 -- NetHack Apothecary Apo-goal.lua
+-- Written for Rolehack by Lucas Ruiz, 2026-07-31 to 2026-09-23.  See ROLEHACK-CHANGES.md.
 --      Rolehack: the Apothecary quest -- the Royal Mint.
 --      See role-spec-apothecary-2026-07-30.md.
 -- NetHack may be freely redistributed.  See license for details.

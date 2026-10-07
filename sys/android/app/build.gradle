@@ -1,0 +1,99 @@
+// Changed for Rolehack by Lucas Ruiz, 2026-09-24 to 2026-09-25.  See ROLEHACK-CHANGES.md.
+plugins {
+  id 'com.android.application'
+}
+
+// Release signing (release checklist, 2026-09-25): the key and its passwords
+// live outside the repository, in keystore.properties beside settings.gradle,
+// which git ignores.  Without that file a release build comes out unsigned.
+def keystoreFile = rootProject.file('keystore.properties')
+def keystoreProps = new Properties()
+if (keystoreFile.exists())
+  keystoreFile.withInputStream { keystoreProps.load(it) }
+
+android {
+
+  namespace = "com.tbd.NetHack5"
+
+  // The NDK, so the APK carries the game library without its debug symbols
+  // (12.9 MB -> 5.0 MB).  Ours lives outside the SDK, so its path comes from
+  // ANDROID_NDK_HOME; without it the library ships unstripped, as before.  The
+  // unstripped copy stays in libs/ for reading crash traces
+  // (ndk-stack -sym libs/arm64-v8a).
+  // The version must match what is there -- AGP otherwise assumes its own
+  // default (28.2) and refuses the r27d the Makefiles build with.
+  ndkVersion = "27.3.13750724"
+  if (System.getenv('ANDROID_NDK_HOME'))
+    ndkPath = System.getenv('ANDROID_NDK_HOME')
+  compileSdk { 
+    version = release(36)
+  }
+  buildToolsVersion = "36.0.0"
+
+  defaultConfig {
+    // Rolehack's own identity, so it installs beside JodiJodington's NetHack 5.
+    // The namespace above stays: R and ForkFront's resource lookups use it.
+    applicationId = "io.github.lukrepository.rolehack"
+    // Android 11: the game library is built at API 30 (Makefile.src).
+    minSdkVersion = 30
+    targetSdkVersion = 34
+    // Rolehack's own number; the NetHack it is built on shows in #version.
+    versionName = '0.1.0'
+    // Counts up from 5000, where the inherited builds left it, so every
+    // playtest copy updates in place.
+    versionCode = 5010
+  }
+
+  compileOptions {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+  }
+
+  signingConfigs {
+    release {
+      if (keystoreFile.exists()) {
+        storeFile = file(keystoreProps['storeFile'])
+        storePassword = keystoreProps['storePassword']
+        keyAlias = keystoreProps['keyAlias']
+        keyPassword = keystoreProps['keyPassword']
+      }
+    }
+  }
+
+  buildTypes {
+    release {
+      if (keystoreFile.exists())
+        signingConfig = signingConfigs.release
+      // No shrinking: the game library finds Java methods by name.
+      minifyEnabled = false
+    }
+  }
+
+  lintOptions {
+    disable = ['MissingClass', 'ExpiredTargetSdkVersion']
+  }
+
+  sourceSets {
+    main {
+      manifest.srcFile('AndroidManifest.xml')
+      res.srcDirs(['res'])
+      assets.srcDirs(['assets'])
+      jniLibs.srcDirs(['libs'])
+    }
+  }
+
+  splits {
+    abi {
+        enable = true
+        reset()
+        // Only the ABI the game library is built for; the others would
+        // install and then fail to find libnethack.so.
+        include "arm64-v8a"
+        universalApk = false
+    }
+  }
+}
+
+dependencies {
+    implementation 'com.tbd.forkfront:lib:2.8'
+}

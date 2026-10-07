@@ -1,4 +1,5 @@
-/* NetHack 5.0	pline.c	$NHDT-Date: 1719819280 2024/07/01 07:34:40 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.130 $ */
+/* NetHack 5.0	pline.c	$NHDT-Date: 1781973061 2026/06/20 16:31:01 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.150 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-25.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2018. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -613,7 +614,7 @@ impossible(const char *s, ...)
     if (program_state.something_worth_saving)
         Strcat(pbuf2, "  (Saving and reloading may fix this problem.)");
     pline("%s", pbuf2);
-    pline("Please report these messages to %s.", DEVTEAM_EMAIL);
+    pline("Please report these messages to %s.", ROLEHACK_BUGS_URL); /* ROLEHACK */
     if (sysopt.support) {
         pline("Alternatively, contact local support: %s", sysopt.support);
     }
