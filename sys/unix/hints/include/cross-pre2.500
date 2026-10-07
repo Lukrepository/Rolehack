@@ -1,5 +1,6 @@
 #===============-=================================================
 # NetHack 5.0  include/cross-pre2 $NHDT-Date: 1597332785 2020/08/13 15:33:05 $  $NHDT-Branch: NetHack-5.0 $
+# Changed for Rolehack by Lucas Ruiz, 2026-07-15 to 2026-10-07.  See ROLEHACK-CHANGES.md.
 #
 # Cross-compiling -PRE section 2
 #
@@ -134,6 +135,8 @@ override TARGET_CC = $(TOOLTOP1)/i586-pc-msdosdjgpp-gcc
 override TARGET_CXX = $(TOOLTOP1)/i586-pc-msdosdjgpp-g++
 override TARGET_AR = $(TOOLTOP1)/i586-pc-msdosdjgpp-gcc-ar
 override TARGET_STUBEDIT = ../lib/djgpp/i586-pc-msdosdjgpp/bin/stubedit
+override GENTILEOFILE = $(TARGETPFX)tile.o
+override UUIDOBJ =
 ifdef MAKEFILE_SRC
 FLDR=../
 endif
@@ -146,7 +149,7 @@ ifdef DOSBOX
 dosbox=$(DOSBOX)
 endif
 ifdef dosbox
-dosboxgameid=NH370
+dosboxgameid=NH$(NHV)
 dosboxtop=$(dosbox)
 dosboxnhfolder=$(dosboxtop)/$(dosboxgameid)
 dosboxnhsrc=$(dosboxnhfolder)/NHSRC
@@ -225,11 +228,12 @@ override SYSOBJ= $(TARGETPFX)pcmain.o $(TARGETPFX)msdos.o \
 		$(TARGETPFX)vidvga.o $(TARGETPFX)vidvesa.o \
 		$(TARGETPFX)font.o \
 		$(TARGETPFX)bmptiles.o $(TARGETPFX)giftiles.o \
-		$(TARGETPFX)tileset.o $(TARGETPFX)tile.o
+		$(TARGETPFX)tileset.o
 override WINLIB=
 override LUALIB=
 override LUALIBS=
-override TOPLUALIB=
+override LUATOPLIB=
+override WINX11OBJ=
 override GAMEBIN = $(TARGETPFX)nethack.exe
 override RECOVERBIN = $(TARGETPFX)recover.exe
 override SFCTOOLBIN = $(TARGETPFX)sfctool.exe
@@ -258,6 +262,11 @@ endif  # WANT_WIN_CURSES
 # Rule for files in sys/msdos
 $(TARGETPFX)%.o : ../sys/msdos/%.c
 	$(TARGET_CC) $(TARGET_CFLAGS) -o$@ $<
+#
+# Rule for files in util
+$(TARGETPFX)%.o : ../util/%.c
+	$(TARGET_CC) $(TARGET_CFLAGS) -o$@ $<
+
 endif  # CROSS_TO_MSDOS
 #=================================================================
 
@@ -267,6 +276,7 @@ ifdef CROSS_TO_WASM
 # WASM
 # originally from https://github.com/NetHack/NetHack/pull/385
 #===============-=================================================
+#also set a make variable flagging this as a crosscompile
 #
 #WASM_DEBUG = 1
 WASM_DATA_DIR = $(TARGETPFX)wasm-data
@@ -332,9 +342,9 @@ WASM_CFLAGS += -Wshadow
 # WASM_CFLAGS += -Werror
 # Nethack C flags
 WASM_CFLAGS += $(WINCFLAGS)   #WINCFLAGS set from multiw-2.500
-WASM_CFLAGS += -DSYSCF -DSYSCF_FILE=\"/sysconf\" -DSECURE
-#WASM_CFLAGS += -g -I../include -DNOTPARMDECL
-WASM_CFLAGS += -I../include -DNOTPARMDECL
+WASM_CFLAGS += -DSYSCF -DSYSCF_FILE=\"/sysconf\" -DSECURE -DNHUUID
+#WASM_CFLAGS += -g -I../include
+WASM_CFLAGS += -I../include
 # NetHack sources control
 WASM_CFLAGS += -DDLB
 WASM_CFLAGS += -DHACKDIR=\"$(HACKDIR)\"
@@ -344,6 +354,10 @@ WASM_CFLAGS += -DNOMAIL
 WASM_CFLAGS += $(LUAINCL)
 WASM_CFLAGS += -DNOTTYGRAPHICS -DSHIM_GRAPHICS -DLIBNH
 WASM_CFLAGS += -DTILES_IN_GLYPHMAP
+# Rolehack web: DUMPLOG as the Android build has it -- config.h now defines
+# it only under ANDROID; inert here until the sysconf names a DUMPLOGFILE
+# (Lucas, 2026-10-06: inherit it)
+WASM_CFLAGS += -DDUMPLOG
 # Rolehack web: the variable files (levels, saves, bones, scores) live in
 # /save, which the page keeps in IndexedDB; a game whose window was closed
 # is rebuilt from its checkpoint (libnhmain.c, winshim.c)
@@ -370,9 +384,10 @@ override SYSOBJ= $(TARGETPFX)libnhmain.o \
 		$(TARGETPFX)rhhere.o $(TARGETPFX)rhcreate.o $(TARGETPFX)rhrules.o $(TARGETPFX)tile.o
 override WINLIB = emranlib
 override LUALIB=
-override TOPLUALIB=
+override LUATOPLIB=
 override REGEXOBJ = $(TARGETPFX)posixregex.o
 override WINOBJ=
+override UUIDOBJ=
 # don't bother Making regular NetHack executable
 override GAME=
 # the real VARDAT hasn't been defined yet for use in ALLDEP override
@@ -455,7 +470,7 @@ override SYSOBJ = $(TARGETPFX)ioctl.o $(TARGETPFX)unixmain.o $(TARGETPFX)unixtty
 override WINLIB = $(NCURSESLIB)
 override LUALIB=
 override LUALIBS=
-override TOPLUALIB=
+override LUATOPLIB=
 override GAMEBIN=$(MIPS_TARGET)
 override RECOVERBIN = $(TARGETPFX)recover
 override PACKAGE = mipspkg
@@ -515,7 +530,7 @@ LUA_TARGET_CFLAGS = $(TARGET_CFLAGS)
 override WINLIB =
 override LUALIB=
 override LUALIBS=
-override TOPLUALIB=
+override LUATOPLIB=
 override GAMEBIN=$(ANDROID_TARGET)
 override PACKAGE = androidpkg
 override PREGAME += mkdir -p $(TARGETDIR) ;
@@ -564,6 +579,7 @@ override TARGET_CFLAGS = -c -O2 -noixemul $(TOOLARCH) \
 	-DCROSSCOMPILE -DCROSSCOMPILE_TARGET -DCROSS_TO_AMIGA \
 	-DAMIGA_VERSION_STRING=\""VER: NetHack 5.0.0"\"
 override TARGET_CXXFLAGS = $(TARGET_CFLAGS)
+override GENTILEOFILE = $(TARGETPFX)tile.o
 LUA_TARGET_CFLAGS = $(TARGET_CFLAGS)
 ifeq "$(REGEXOBJ)" "$(TARGETPFX)cppregex.o"
 override TARGET_LINK = $(TARGET_CXX)
@@ -573,9 +589,9 @@ endif
 override TARGET_LFLAGS= $(TOOLARCH) -noixemul -Wl,--allow-multiple-definition
 override TARGET_LIBS += $(LIBLM)
 VARDATND += nhtiles.bmp
-override SYSSRC = ../sys/amiga/amidos.c ../sys/amiga/amigst.c \
+override SYSSRC = ../sys/amiga/amidos.c \
 		../sys/amiga/amimenu.c ../sys/amiga/amirip.c \
-		../sys/amiga/amistack.c ../sys/amiga/amitty.c \
+		../sys/amiga/amistack.c \
 		../sys/amiga/amiwind.c ../sys/amiga/clipwin.c \
 		../sys/amiga/colorwin.c \
 		../sys/amiga/winami.c ../sys/amiga/winchar.c \
@@ -584,9 +600,9 @@ override SYSSRC = ../sys/amiga/amidos.c ../sys/amiga/amigst.c \
 		../sys/amiga/winstr.c ../sys/share/pcmain.c \
 		../win/share/bmptiles.c ../win/share/giftiles.c \
 		../win/share/tileset.c
-override SYSOBJ = $(TARGETPFX)amidos.o $(TARGETPFX)amigst.o \
+override SYSOBJ = $(TARGETPFX)amidos.o \
 		$(TARGETPFX)amirip.o $(TARGETPFX)amistack.o \
-		$(TARGETPFX)amitty.o $(TARGETPFX)amiwind.o \
+		$(TARGETPFX)amiwind.o \
 		$(TARGETPFX)winami.o $(TARGETPFX)winchar.o \
 		$(TARGETPFX)winfuncs.o $(TARGETPFX)winkey.o \
 		$(TARGETPFX)winamenu.o $(TARGETPFX)winreq.o \
@@ -597,7 +613,7 @@ override SYSOBJ = $(TARGETPFX)amidos.o $(TARGETPFX)amigst.o \
 override WINLIB=
 override LUALIB=
 override LUALIBS=
-override TOPLUALIB=
+override LUATOPLIB=
 override DLLIB=
 override WINOBJ=
 override GAMEBIN = $(TARGETPFX)nethack

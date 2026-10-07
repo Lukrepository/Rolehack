@@ -1,4 +1,5 @@
 /* NetHack 5.0	config.h	$NHDT-Date: 1710344316 2024/03/13 15:38:36 $  $NHDT-Branch: keni-staticfn $:$NHDT-Revision: 1.188 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-10-07.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2016. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -36,7 +37,7 @@
 /* Hint: if you're not developing code, don't define
    ULTRIX_PROTO. */
 
-#include "config1.h" /* should auto-detect MSDOS, MACOS9, AMIGA, and WIN32 */
+#include "config1.h" /* should auto-detect MSDOS, MAC68K, AMIGA, and WIN32 */
 
 /*
  * Consolidated version, patchlevel, development status.
@@ -52,6 +53,9 @@
  * Define all of those you want supported in your binary.
  * Some combinations make no sense.  See the installation document.
  */
+#ifdef ANDROID
+#define NOTTYGRAPHICS /* the Android port has no tty interface */
+#endif
 #if !defined(NOTTYGRAPHICS)
 #define TTY_GRAPHICS /* good old tty-based graphics */
 #endif
@@ -59,6 +63,9 @@
 /* #define X11_GRAPHICS */   /* X11 interface */
 /* #define QT_GRAPHICS */    /* Qt interface */
 /* #define MSWIN_GRAPHICS */ /* Windows NT, CE, Graphics */
+#ifdef ANDROID
+#define ANDROID_GRAPHICS /* Android interface; see the ANDROID block below */
+#endif
 
 /*
  * Define the default window system.  This should be one that is compiled
@@ -67,8 +74,8 @@
  *      tty, X11, mac, amii, BeOS, Qt, Gem, Gnome, shim
  */
 
-/* MACOS9 also means MAC windows */
-#ifdef MACOS9
+/* MAC68K also means MAC windows */
+#ifdef MAC68K
 #ifndef AUX
 #define DEFAULT_WINDOW_SYS "mac"
 #endif
@@ -127,6 +134,17 @@
 #define DEFAULT_WINDOW_SYS "mswin"
 #endif
 #define HACKDIR "\\nethack"
+#endif
+
+#ifdef ANDROID
+#define ANDROID_GRAPHICS
+#ifdef TTY_GRAPHICS
+#undef TTY_GRAPHICS
+#endif
+#ifdef DEFAULT_WINDOW_SYS
+#undef DEFAULT_WINDOW_SYS
+#endif
+#define DEFAULT_WINDOW_SYS "and"
 #endif
 
 #ifdef TTY_GRAPHICS
@@ -230,8 +248,12 @@
 #endif
 
 #ifndef SYSCF
+#ifdef ANDROID
+/* no system-wide configuration file on Android */
+#else
 #define SYSCF                /* use a global configuration */
 #define SYSCF_FILE "sysconf" /* global configuration is in a file */
+#endif
 #endif
 
 #ifndef GDBPATH
@@ -330,7 +352,11 @@
  *      maximum number of scores to keep, for example) if SYSCF is enabled.
  */
 #ifndef PERSMAX
+#ifdef ANDROID
+#define PERSMAX 30 /* entries per name/uid per char. allowed */
+#else
 #define PERSMAX 3 /* entries per name/uid per char. allowed */
+#endif
 #endif
 #ifndef POINTSMIN
 #define POINTSMIN 1 /* must be > 0 */
@@ -339,7 +365,7 @@
 #define ENTRYMAX 100 /* must be >= 10 */
 #endif
 #ifndef PERS_IS_UID
-#if !defined(MICRO) && !defined(MACOS9) && !defined(WIN32)
+#if !defined(MICRO) && !defined(MAC68K) && !defined(WIN32) && !defined(ANDROID)
 #define PERS_IS_UID 1 /* delete for PERSMAX per name; now per uid */
 #else
 #define PERS_IS_UID 0
@@ -385,7 +411,7 @@
  *
  */
 
-#if defined(UNIX) && !defined(ZLIB_COMP) && !defined(COMPRESS)
+#if defined(UNIX) && !defined(ZLIB_COMP) && !defined(COMPRESS) && !defined(ANDROID)
 /* path and file name extension for compression program */
 #define COMPRESS "/usr/bin/compress" /* Lempel-Ziv compression */
 #define COMPRESS_EXTENSION ".Z"      /* compress's extension */
@@ -434,7 +460,7 @@
  */
 #define INSURANCE /* allow crashed game recovery */
 
-#if !defined(MACOS9) && !defined(SHIM_GRAPHICS)
+#if !defined(MAC68K) && !defined(SHIM_GRAPHICS)
 #define CHDIR /* delete if no chdir() available */
 #endif
 
@@ -533,7 +559,7 @@ typedef unsigned char uchar;
 #define MACRO_CPATH /* use clear_path macros instead of functions */
 #endif
 
-#if !defined(MACOS9)
+#if !defined(MAC68K)
 #if !defined(NOCLIPPING)
 #define CLIPPING /* allow smaller screens -- ERS */
 #endif
@@ -654,6 +680,9 @@ typedef unsigned char uchar;
    whole thing, then type a new end for the text. */
 /* #define EDIT_GETLIN */
 
+#ifdef ANDROID
+#define DUMPLOG  /* End-of-game dump logs */
+#endif
 #ifndef NO_CHRONICLE
 /* CHRONICLE - enable #chronicle command, a log of major game events.
    The logged messages will also appear in DUMPLOG. */
@@ -677,7 +706,9 @@ typedef unsigned char uchar;
 #ifdef NHL_SANDBOX
 #ifdef CHRONICLE
     /* LIVELOG (and therefore CHRONICLE)  is needed for --loglua */
+#ifndef LIVELOG
 #define LIVELOG
+#endif
 #endif
 #endif
 
@@ -688,6 +719,7 @@ typedef unsigned char uchar;
  * Currently has support in:
  *     WIN32CON
  *     Qt
+ *     curses
  */
 
 /* #define IDLECHECKPOINT */

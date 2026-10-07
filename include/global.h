@@ -174,6 +174,10 @@ typedef uchar nhsym;
 
 #include "warnings.h"
 
+#ifdef ANDROID
+#include "androidconf.h"
+#endif
+
 /* amiconf.h needs to be the last nested #include of config.h because
    'make depend' will turn it into a comment, hiding anything after it */
 #ifdef AMIGA
@@ -185,7 +189,7 @@ typedef uchar nhsym;
 #ifdef AMIGA
 #define PORT_ID "Amiga"
 #endif
-#ifdef MACOS9
+#ifdef MAC68K
 #define PORT_ID "Mac"
 #endif
 #ifdef __APPLE__
@@ -259,7 +263,7 @@ typedef uchar nhsym;
 #endif
 
 #if defined(X11_GRAPHICS) || defined(QT_GRAPHICS) || defined(GNOME_GRAPHICS) \
-    || defined(MSWIN_GRAPHICS)
+    || defined(MSWIN_GRAPHICS) || defined(ANDROID_GRAPHICS)
 #ifndef NO_TILE_C
 #ifndef TILES_IN_GLYPHMAP
 #define TILES_IN_GLYPHMAP

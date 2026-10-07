@@ -1,4 +1,5 @@
-/* NetHack 5.0  mdlib.c  $NHDT-Date: 1701499945 2023/12/02 06:52:25 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.51 $ */
+/* NetHack 5.0  mdlib.c  $NHDT-Date: 1781973053 2026/06/20 16:30:53 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.74 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-25.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Kenneth Lorber, Kensington, Maryland, 2015. */
 /* Copyright (c) M. Stephenson, 1990, 1991.                       */
@@ -142,16 +143,19 @@ static struct win_information window_opts[] = {
 #ifdef SHIM_GRAPHICS
     { "shim", "NetHack Library Windowing Shim", TRUE },
 #endif
-
+#ifdef AMIGA_INTUITION
+    { "amii", "Amiga Intuition (text)", TRUE },
+    { "amiv", "Amiga Intuition (tiles)", TRUE },
+#endif
+#ifdef ANDROID_GRAPHICS
+    { "and", "Android", TRUE },
+#endif
 #if 0  /* remainder have been retired */
 #ifdef GNOME_GRAPHICS /* unmaintained/defunct */
     { "Gnome", "Gnome", TRUE },
 #endif
-#ifdef MACOS9 /* defunct OS 9 interface */
+#ifdef MAC68K /* defunct OS 9 interface */
     { "mac", "Mac", TRUE },
-#endif
-#ifdef AMIGA_INTUITION /* unmaintained/defunct */
-    { "amii", "Amiga Intuition", TRUE },
 #endif
 #ifdef GEM_GRAPHICS /* defunct Atari interface */
     { "Gem", "Gem", TRUE },
@@ -337,8 +341,11 @@ version_id_string(char *outbuf, size_t bufsz, const char *build_date)
     Strcpy(&subbuf[1], PORT_SUB_ID);
 #endif
 
-    Snprintf(outbuf, bufsz, "%s NetHack%s Version %s%s - last %s %s.",
-             PORT_ID, subbuf, mdlib_version_string(versbuf, "."), statusbuf,
+    /* ROLEHACK: say which game this is, then which NetHack it is built on. */
+    Snprintf(outbuf, bufsz,
+             "%s Rolehack%s Version %s, based on NetHack %s%s - last %s %s.",
+             PORT_ID, subbuf, ROLEHACK_VERSION,
+             mdlib_version_string(versbuf, "."), statusbuf,
              date_via_env ? "revision" : "build", build_date);
     return outbuf;
 }
@@ -355,14 +362,16 @@ bannerc_string(char *outbuf, size_t bufsz, const char *build_date)
     subbuf[0] = ' ';
     Strcpy(&subbuf[1], PORT_SUB_ID);
 #endif
+
 #if (NH_DEVEL_STATUS != NH_STATUS_RELEASED)
 #if (NH_DEVEL_STATUS == NH_STATUS_BETA)
-    Strcat(subbuf, " Beta");
-#else
-    Strcat(subbuf, " Work-in-progress");
+    Strcpy(subbuf, " Beta");
+#elif (NH_DEVEL_STATUS == NH_STATUS_WIP)
+    Strcpy(subbuf, " Work-in-progress");
+#elif (NH_DEVEL_STATUS == NH_STATUS_POSTRELEASE)
+    Strcpy(subbuf, " post-release");
 #endif
-#endif
-
+#endif  /* !NH_STATUS_RELEASED */
     Snprintf(outbuf, bufsz, "         Version %s %s%s, %s %s.",
             mdlib_version_string(versbuf, "."), PORT_ID, subbuf,
             date_via_env ? "revised" : "built", build_date);
@@ -533,7 +542,7 @@ static const char *const build_opts[] = {
     "screen clipping",
 #endif
 #ifdef NO_TERMS
-#ifdef MACOS9
+#ifdef MAC68K
     "screen control via mactty",
 #endif
 #ifdef SCREEN_BIOS

@@ -1,4 +1,5 @@
-/* NetHack 5.0	hack.h	$NHDT-Date: 1736530208 2025/01/10 09:30:08 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.266 $ */
+/* NetHack 5.0	hack.h	$NHDT-Date: 1781973080 2026/06/20 16:31:20 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.299 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-07-31 to 2026-09-25.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Pasi Kallinen, 2017. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -38,7 +39,6 @@
 #include "sys.h"
 #include "timeout.h"
 #include "winprocs.h"
-#include "wintype.h"
 #include "vision.h"
 #include "you.h"
 
@@ -64,6 +64,7 @@
 #define CXN_PFX_THE 4   /* prefix with "the " (unless pname) */
 #define CXN_ARTICLE 8   /* include a/an/the prefix */
 #define CXN_NOCORPSE 16 /* suppress " corpse" suffix */
+#define CXN_ADDGNDR 32  /* include a gender */
 
 /* number of turns it takes for vault guard to show up */
 #define VAULT_GUARD_TIME 30
@@ -821,6 +822,14 @@ struct sinfo {
 #endif
 };
 
+/* structure for current 'level_status'; not saved and restored */
+struct levelstatus {
+    int making;                 /* makelevel has begun */
+    int loading;                /* level loading has begun */
+    int shkready;               /* shops ready */
+    int ready;                  /* level is ready */
+};
+
 /* value of program_state.input_state, significant during readchar();
    get_count() expects digits then a command so sets it to commandInp */
 enum InputState {
@@ -1555,6 +1564,11 @@ typedef uint32_t mmflags_nht;     /* makemon MM_ flags */
 
 #define DEVTEAM_EMAIL "devteam@nethack.org"
 #define DEVTEAM_URL "https://www.nethack.org/"
+/* ROLEHACK: where Rolehack's bugs go.  The messages that ask a player to
+ * report a problem send them here, never to the DevTeam, whose game this is
+ * not (release checklist, 2026-09-25).  DEVTEAM_EMAIL and DEVTEAM_URL are
+ * kept for the text that is about NetHack itself. */
+#define ROLEHACK_BUGS_URL "https://github.com/Lukrepository/RolehackDroid/issues"
 
 #if !defined(CROSSCOMPILE) || defined(CROSSCOMPILE_TARGET)
 #include "nhlua.h"

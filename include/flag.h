@@ -1,4 +1,5 @@
-/* NetHack 5.0	flag.h	$NHDT-Date: 1744860497 2025/04/16 19:28:17 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.251 $ */
+/* NetHack 5.0	flag.h	$NHDT-Date: 1781973080 2026/06/20 16:31:20 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.265 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-25.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2006. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -248,7 +249,14 @@ enum debug_fuzzer_states {
  * to control the internal behavior of various NetHack functions
  * and probably warrant a structure of their own elsewhere some day.
  */
+/* ROLEHACK: skin tones the paper doll offers; RhDoll.TONES has this many. */
+#define RH_SKINTONES 8
+
 struct instance_flags {
+    int rh_skintone;       /* ROLEHACK: hero's skin tone on the paper doll:
+                            * 0 = random, fixed per character (from
+                            * ubirthday); 1..RH_SKINTONES = set in the
+                            * options file.  Never a choice at creation. */
     boolean defer_plname;  /* X11 hack: askname() might not set svp.plname */
     boolean fuzzerpending; /* fuzzing requested on command line but not active
                             * yet (to allow interactive initialization prior
@@ -487,6 +495,9 @@ struct instance_flags {
     Bitfield(save_uswallow, 1);
     Bitfield(save_uinwater, 1);
     Bitfield(save_uburied, 1);
+#ifdef ANDROID
+	boolean dumplog; /* enable/disable dump logs */
+#endif
     struct debug_flags debug;
     boolean windowtype_locked;   /* windowtype can't change from configfile */
     boolean windowtype_deferred; /* pick a windowport and store it in
@@ -510,7 +521,7 @@ struct instance_flags {
 #ifdef MAC_GRAPHICS_ENV
 #define large_font obsolete
 #endif
-#ifdef MACOS9
+#ifdef MAC68K
 #define popup_dialog wc_popup_dialog
 #endif
 #define preload_tiles wc_preload_tiles

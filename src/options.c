@@ -1,4 +1,5 @@
-/* NetHack 5.0	options.c	$NHDT-Date: 1737556914 2025/01/22 06:41:54 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.753 $ */
+/* NetHack 5.0	options.c	$NHDT-Date: 1778886716 2026/05/15 15:11:56 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.782 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-25.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2008. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -558,6 +559,7 @@ parseoptions(
         got_match = FALSE;
 
         if (allopt[i].pfx) {
+            assert(allopt[i].name != NULL);
             if (str_start_is(opts, allopt[i].name, TRUE)) {
                 matchidx = i;
                 got_match = pfx_match = TRUE;
@@ -2730,7 +2732,7 @@ optfn_palette(
 }
 
 #if 0
-/* old MACOS9 OS9 code */
+/* old MAC68K OS9 code */
 staticfn int
 optfn_palette(
     int optidx UNUSED, int req, boolean negated UNUSED,
@@ -3032,8 +3034,8 @@ optfn_paranoid_confirmation(
                          " %s", paranoia[i].argname);
         }
         /* note: always leaves enough room for caller to tack on '\n' */
-        opts[0] = '\0';
-        (void) strncat(opts, tmpbuf[0] ? &tmpbuf[1] : "none", BUFSZ - 1);
+        Snprintf(opts, BUFSZ - 1, "%s",
+                 tmpbuf[0] ? &tmpbuf[1] : "none");
         return optn_ok;
     }
     if (req == do_handler) {
@@ -3859,6 +3861,51 @@ optfn_soundlib(
     return optn_ok;
 }
 
+/*
+ * ROLEHACK: the hero's skin tone on the paper doll (Lucas, 2026-09-25).
+ * Unset, every character gets one at random, fixed for that character, and it
+ * is never a choice at creation -- like much of real life.  Players who want
+ * their hero to look a particular way can fix it here, in the options file:
+ * OPTIONS=skintone:4.  Config-file only, and kept in iflags, so it is not saved.
+ */
+staticfn int
+optfn_skintone(
+    int optidx, int req, boolean negated,
+    char *opts, char *op)
+{
+    if (req == do_init) {
+        return optn_ok;
+    }
+    if (req == do_set) {
+        if (negated) {
+            bad_negation(allopt[optidx].name, FALSE);
+            return optn_err;
+        }
+        op = string_for_opt(opts, FALSE);
+        if (op == empty_optstr || !strcmpi(op, "random")) {
+            iflags.rh_skintone = 0;
+        } else {
+            int n = atoi(op);
+
+            if (n < 1 || n > RH_SKINTONES) {
+                config_error_add("Illegal %s value '%s': 1 to %d, or random",
+                                 allopt[optidx].name, op, RH_SKINTONES);
+                return optn_err;
+            }
+            iflags.rh_skintone = n;
+        }
+        return optn_ok;
+    }
+    if (req == get_val || req == get_cnf_val) {
+        if (iflags.rh_skintone)
+            Sprintf(opts, "%d", iflags.rh_skintone);
+        else
+            Strcpy(opts, "random");
+        return optn_ok;
+    }
+    return optn_ok;
+}
+
 staticfn int
 optfn_sortdiscoveries(
     int optidx, int req, boolean negated,
@@ -4223,11 +4270,11 @@ optfn_symset(
     if (req == do_handler) {
         int reslt;
 
-        if (!glyphid_cache_status())
-            fill_glyphid_cache();
+        if (!glyphname_hash_indices_loaded())
+            populate_glyphname_hash_indices();
         reslt = handler_symset(optidx);
-        if (glyphid_cache_status())
-            free_glyphid_cache();
+        if (glyphname_hash_indices_loaded())
+            empty_glyphname_hash_indices();
         /* apply_customizations(gc.currentgraphics,
                         (do_custom_colors | do_custom_symbols)); */
         return reslt;
@@ -5107,7 +5154,7 @@ pfxfn_font(int optidx, int req, boolean negated, char *opts, char *op)
         if (opttype > 0
             && (op = string_for_opt(opts, FALSE)) != empty_optstr) {
             wc_set_font_name(opttype, op);
-#ifdef MACOS9
+#ifdef MAC68K
             set_font_name(opttype, op);
 #endif
             return optn_ok;
@@ -5313,7 +5360,7 @@ optfn_boolean(
 #ifndef IDLECHECKPOINT
         case opt_idlecheckpoint:
             pline("There is no underlying support for 'idlecheckpoint'"
-                  " compiled in."); 
+                  " compiled in.");
             iflags.idlecheckpoint = FALSE;
             give_opt_msg = FALSE;
             break;
@@ -6791,12 +6838,12 @@ complain_about_duplicate(int optidx)
 {
     char buf[BUFSZ];
 
-#ifdef MACOS9
+#ifdef MAC68K
     /* the Mac has trouble dealing with the output of messages while
      * processing the config file.  That should get fixed one day.
      * For now just return.
      */
-#else /* !MACOS9 */
+#else /* !MAC68K */
     buf[0] = '\0';
     if (using_alias)
         Sprintf(buf, " (via alias: %s)", allopt[optidx].alias);
@@ -6804,7 +6851,7 @@ complain_about_duplicate(int optidx)
                      (allopt[optidx].opttyp == CompOpt) ? "compound"
                                                         : "boolean",
                      allopt[optidx].name, buf);
-#endif /* ?MACOS9 */
+#endif /* ?MAC68K */
     return;
 }
 
@@ -7150,9 +7197,10 @@ initoptions_init(void)
             gc.cmdline_windowsys = NULL;
     }
 
-    /* make any symbol parsing quicker */
-    if (!glyphid_cache_status())
-        fill_glyphid_cache();
+    /* make any symbol parsing quicker, but only if
+     * gd.disable_glyphname_hash_indices_prefill is not set to TRUE */
+    if (!glyphname_hash_indices_loaded() && !gd.disable_glyphname_hash_indices_prefill)
+        populate_glyphname_hash_indices();
 
     /* set up the command parsing */
     reset_commands(TRUE); /* init */
@@ -7324,6 +7372,7 @@ void
 initoptions_finish(void)
 {   nhsym sym = 0;
 
+    disregard_this_option(opt_mention_decor);  /* defer this */
     rcfile();
 
     (void) fruitadd(svp.pl_fruit, (struct fruit *) 0);
@@ -7374,8 +7423,8 @@ initoptions_finish(void)
         iflags.wc_ascii_map = FALSE, iflags.wc_tiled_map = TRUE;
 
 #ifdef ENHANCED_SYMBOLS
-    if (glyphid_cache_status())
-        free_glyphid_cache();
+    if (glyphname_hash_indices_loaded())
+        empty_glyphname_hash_indices();
     apply_customizations(gc.currentgraphics,
                          do_custom_symbols | do_custom_colors);
 #endif
@@ -7411,8 +7460,24 @@ allopt_array_init(void)
         memcpy(allopt, allopt_init, sizeof(allopt));
         determine_ambiguities();
         for (i = 0; allopt[i].name; i++) {
-            if (allopt[i].addr)
+            if (allopt[i].addr) {
+#if (NH_DEVEL_STATUS != NH_STATUS_RELEASED \
+     && NH_DEVEL_STATUS != NH_STATUS_POSTRELEASE)
+                if (allopt[i].opttyp == BoolOpt
+                    && allopt[i].initval != allopt[i].opt_in_out)
+                    if (wizard)
+                        impossible("conflicting option init for %s: %s is %s, %s is %s",
+                                   allopt[i].name,
+                                   "opt_in_out",
+                                   allopt[i].opt_in_out ? "on" : "off", "initval",
+                                   allopt[i].initval ? "on" : "off");
+#endif
+#if 0
+                if (allopt[i].opttyp == BoolOpt && i != opt_ascii_map)
+                    allopt[i].initval = allopt[i].opt_in_out;
+#endif
                 *(allopt[i].addr) = allopt[i].initval;
+            }
         }
         heed_all_options();
         /*
@@ -8946,9 +9011,10 @@ doset(void) /* changing options via menu by Per Liboriussen */
                     getlin(buf, abuf);
                     if (abuf[0] == '\033')
                         continue;
-                    Sprintf(buf, "%s:", allopt[opt_indx].name);
-                    (void) strncat(eos(buf), abuf,
-                                   (sizeof buf - 1 - strlen(buf)));
+                    Snprintf(buf, sizeof buf,
+                             "%s:%s",
+                             allopt[opt_indx].name,
+                             abuf);
                     /* pass the buck */
                     (void) parseoptions(buf, FALSE, FALSE);
                 }
@@ -9431,7 +9497,7 @@ static const char *opt_intro[] = {
     "                 NetHack Options Help:", "",
 #define CONFIG_SLOT 3 /* fill in next value at run-time */
     (char *) 0,
-#if !defined(MICRO) && !defined(MACOS9)
+#if !defined(MICRO) && !defined(MAC68K)
     "or use `NETHACKOPTIONS=\"<options>\"' in your environment",
 #endif
     "(<options> is a list of options separated by commas)",
@@ -10133,6 +10199,7 @@ options_free_window_colors(void)
 void
 set_playmode(void)
 {
+#ifndef ANDROID
     if (wizard) {
         if (authorize_wizard_mode())
             gp.plnamelen = (int) strlen(strcpy(svp.plname, "wizard"));
@@ -10149,6 +10216,7 @@ set_playmode(void)
         discover = iflags.deferred_X = FALSE;
     }
     /* don't need to do anything special for normal play */
+#endif
 }
 
 staticfn void
@@ -10184,6 +10252,9 @@ heed_all_options(void)
 {
     int i;
 
+    /* ensure OPTIONS= lines are enabled */
+    heed_this_config_statement(0); /* index 0 == OPTIONS */
+
     for (i = 0; i < OPTCOUNT; i++)
         allopt[i].disregarded = FALSE;
 }
@@ -10200,6 +10271,9 @@ disregard_all_options(void)
 void
 heed_this_option(enum opt optidx)
 {
+    /* ensure OPTIONS= lines are enabled */
+    heed_this_config_statement(0);  /* index 0 == OPTIONS */
+
     if (optidx >= 0 && optidx < (enum opt) OPTCOUNT)
          allopt[optidx].disregarded = FALSE;
 }

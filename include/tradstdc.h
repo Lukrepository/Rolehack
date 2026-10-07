@@ -1,4 +1,4 @@
-/* NetHack 5.0	tradstdc.h	$NHDT-Date: 1744938651 2025/04/17 17:10:51 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.67 $ */
+/* NetHack 5.0	tradstdc.h	$NHDT-Date: 1781973090 2026/06/20 16:31:30 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.71 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2006. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -417,9 +417,10 @@ typedef genericptr genericptr_t; /* (void *) or (char *) */
  * -Wformat; append this to a prototype declaration (see pline() in extern.h).
  */
 #ifdef __GNUC__
-#if (__GNUC__ >= 2) && !defined(USE_OLDARGS)
+#ifdef ANDROID
+#define PRINTF_F(f,v) __attribute__ ((format (__printf__, f, v)))
+#elif (__GNUC__ >= 2) && !defined(USE_OLDARGS)
 #define PRINTF_F(f, v) __attribute__((format(printf, f, v)))
-#endif
 #if (__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
 #define PRINTF_F_PTR(f, v) PRINTF_F(f, v)
 #endif
@@ -508,6 +509,7 @@ typedef genericptr genericptr_t; /* (void *) or (char *) */
 
 #if !defined(UNUSED) && defined(ATTRUNUSED)
 #define UNUSED ATTRUNUSED
+#endif
 #endif
 
 /* Fallback implementations */

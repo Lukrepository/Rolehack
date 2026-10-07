@@ -1,4 +1,5 @@
-/* NetHack 5.0	getpos.c	$NHDT-Date: 1763708572 2025/11/20 23:02:52 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.6 $ */
+/* NetHack 5.0	getpos.c	$NHDT-Date: 1781973050 2026/06/20 16:30:50 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.11 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-28 to 2026-10-07.  See ROLEHACK-CHANGES.md. */
 /*-Copyright (c) Pasi Kallinen, 2023. */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -852,12 +853,12 @@ getpos(coord *ccp, boolean force, const char *goal)
     }
     cx = gg.getposx = ccp->x;
     cy = gg.getposy = ccp->y;
-#ifdef CLIPPING
+#if defined(CLIPPING) && !defined(ANDROID)
     cliparound(cx, cy);
 #endif
     curs(WIN_MAP, cx, cy);
     flush_screen(0);
-#if defined(MACOS9) || defined(SHIM_GRAPHICS)
+#if defined(MAC68K) || defined(ANDROID) || defined(SHIM_GRAPHICS)
     /* Rolehack: the web's window port hears it too (winshim.c), so its
        pad's centre picks the spot (Lucas, 2026-09-28) */
     lock_mouse_cursor(TRUE);
@@ -1156,7 +1157,7 @@ getpos(coord *ccp, boolean force, const char *goal)
         flush_screen(0);
     }
  exitgetpos:
-#if defined(MACOS9) || defined(SHIM_GRAPHICS)
+#if defined(MAC68K) || defined(ANDROID) || defined(SHIM_GRAPHICS)
     lock_mouse_cursor(FALSE);
 #endif
     lock_mouse_buttons(FALSE);

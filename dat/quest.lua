@@ -1,4 +1,5 @@
--- NetHack quest.lua	$NHDT-Date: 1726894904 2024/09/21 05:01:44 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.10 $
+-- NetHack quest.lua	$NHDT-Date: 1781994887 2026/06/20 22:34:47 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.11 $
+-- Changed for Rolehack by Lucas Ruiz, 2026-07-31 to 2026-09-23.  See ROLEHACK-CHANGES.md.
 -- Copyright (c) 2021 by Pasi Kallinen
 -- NetHack may be freely redistributed.  See license for details.
 -- TODO:

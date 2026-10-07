@@ -1,4 +1,4 @@
-/* NetHack 5.0	sounds.c	$NHDT-Date: 1736530208 2025/01/10 09:30:08 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.165 $ */
+/* NetHack 5.0	sounds.c	$NHDT-Date: 1781973067 2026/06/20 16:31:07 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.172 $ */
 /*      Copyright (c) 1989 Janet Walz, Mike Threepoint */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -814,8 +814,10 @@ domonnoise(struct monst *mtmp)
                                                flags.female ? FEMALE : MALE))
                                    : an(racenoun));
                     verbl_msg = verbuf;
-                } else
-                    verbl_msg = vampmsg[vampindex];
+                } else if (vampindex > 1) {
+                    if (vampindex >= 0 && vampindex < SIZE(vampmsg))
+                        verbl_msg = vampmsg[vampindex];
+                }
             }
         }
         break;
@@ -1537,6 +1539,10 @@ tiphat(void)
 }
 
 #ifdef USER_SOUNDS
+#ifdef ANDROID
+extern void load_usersound(const char *);
+#endif
+
 
 typedef struct audio_mapping_rec {
     struct nhregex *regex;
@@ -1611,6 +1617,9 @@ add_sound_mapping(const char *mapping)
                     (void) msgtype_parse_add(tmpbuf);
                 }
                 soundmap = new_map;
+#ifdef ANDROID
+                load_usersound(soundmap->filename);
+#endif
             }
         } else {
             Sprintf(text, "cannot read %.243s", filespec);
@@ -1722,6 +1731,9 @@ extern struct sound_procs macsound_procs;
 #ifdef SND_LIB_QTSOUND
 extern struct sound_procs qtsound_procs;
 #endif
+#ifdef SND_LIB_ANDROIDSOUND
+extern struct sound_procs androidsound_procs;
+#endif
 
 static struct sound_procs nosound_procs = {
     SOUNDID(nosound),
@@ -1772,6 +1784,9 @@ static struct sound_choices {
 #endif
 #ifdef SND_LIB_QTSOUND
     { &qtsound_procs },
+#endif
+#ifdef SND_LIB_ANDROIDSOUND
+    { &androidsound_procs },
 #endif
 };
 
