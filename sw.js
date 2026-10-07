@@ -7,7 +7,7 @@
 // new one is active.  It never reloads a page: a game in progress keeps
 // running on the files it started with.
 
-const VERSION = '3fca8b1a79c9';
+const VERSION = '69eed7542515';
 // the cache is named for the channel the worker serves (channel.js: the
 // preview channel lives under /preview/), so the live page's worker and the
 // preview's share the origin's cache storage without touching each other

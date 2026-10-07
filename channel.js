@@ -19,3 +19,25 @@ export const PREFS_PREFIX = PREVIEW ? 'rhp.' : 'rh.';
 export const SAVE_DB = PREVIEW ? '/save-preview' : '/save';     // the IDBFS mount point, which names the database
 export const LOCK = PREVIEW ? 'rolehack-preview' : 'rolehack-game';
 export const TITLE = PREVIEW ? 'Rolehack preview' : 'Rolehack';
+
+// The save era (the release plan's B2, first piece; Lucas, 2026-10-06).  A
+// build's saves live in a store named for its save signature (winshim.c
+// web_save_signature: what check_version() compares in a save, plus the
+// struct-size bytes), except the first era's, which keep the stores above.
+// So a build whose format differs never opens, recovers or re-stamps an older
+// game; the older game stays where it was, for the build that wrote it
+// (web.js mountSaves).  FIRST_ERA is the signature of the builds up to the
+// first new-core one; empty, every signature counts as the first era.
+// the 5.0.0 web build (measured 2026-10-07 on the build of web c694b4c07 plus this change):
+// version 5.0.0.0, feature bits 00060040, entity count 221e1184, then the 80 struct-size bytes
+export const FIRST_ERA = '05000000.00060040.221e1184.000204040804010102020408010401020408040402020104081818b040041410725c041c2c800824240020c828100c0c1801040404207c84045030100808081020180c080c0700000000000000000000';
+export function eraTag(sig) {
+  // eight hex digits of a 32-bit FNV-1a of the signature: a stable, short store name
+  let h = 0x811c9dc5;
+  for (const c of String(sig || '')) { h ^= c.charCodeAt(0); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(16).padStart(8, '0');
+}
+export function saveDbFor(sig) {
+  const base = PREVIEW ? '/save-preview' : '/save';
+  return !FIRST_ERA || !sig || sig === FIRST_ERA ? base : `${base}-${eraTag(sig)}`;
+}
