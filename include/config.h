@@ -1,4 +1,5 @@
 /* NetHack 5.0	config.h	$NHDT-Date: 1710344316 2024/03/13 15:38:36 $  $NHDT-Branch: keni-staticfn $:$NHDT-Revision: 1.188 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-10-07.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2016. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -52,7 +53,9 @@
  * Define all of those you want supported in your binary.
  * Some combinations make no sense.  See the installation document.
  */
-#define NOTTYGRAPHICS
+#ifdef ANDROID
+#define NOTTYGRAPHICS /* the Android port has no tty interface */
+#endif
 #if !defined(NOTTYGRAPHICS)
 #define TTY_GRAPHICS /* good old tty-based graphics */
 #endif
@@ -60,7 +63,9 @@
 /* #define X11_GRAPHICS */   /* X11 interface */
 /* #define QT_GRAPHICS */    /* Qt interface */
 /* #define MSWIN_GRAPHICS */ /* Windows NT, CE, Graphics */
-#define ANDROID_GRAPHICS
+#ifdef ANDROID
+#define ANDROID_GRAPHICS /* Android interface; see the ANDROID block below */
+#endif
 
 /*
  * Define the default window system.  This should be one that is compiled
@@ -171,7 +176,7 @@
  *  xpmtoppm <x11tiles.xpm | pnmscale 1.25 | ppmquant 90 | \
  *      ppmtoxpm >x11tiles_big.xpm
  */
-#define USE_XPM /* Disable if you do not have the XPM library */
+/* # define USE_XPM */ /* Disable if you do not have the XPM library */
 #ifdef USE_XPM
 #ifndef GRAPHIC_TOMBSTONE
 #define GRAPHIC_TOMBSTONE /* Use graphical tombstone (rip.xpm) */
@@ -243,8 +248,12 @@
 #endif
 
 #ifndef SYSCF
-//#define SYSCF                /* use a global configuration */
-//#define SYSCF_FILE "sysconf" /* global configuration is in a file */
+#ifdef ANDROID
+/* no system-wide configuration file on Android */
+#else
+#define SYSCF                /* use a global configuration */
+#define SYSCF_FILE "sysconf" /* global configuration is in a file */
+#endif
 #endif
 
 #ifndef GDBPATH
@@ -343,7 +352,11 @@
  *      maximum number of scores to keep, for example) if SYSCF is enabled.
  */
 #ifndef PERSMAX
+#ifdef ANDROID
 #define PERSMAX 30 /* entries per name/uid per char. allowed */
+#else
+#define PERSMAX 3 /* entries per name/uid per char. allowed */
+#endif
 #endif
 #ifndef POINTSMIN
 #define POINTSMIN 1 /* must be > 0 */
@@ -667,7 +680,9 @@ typedef unsigned char uchar;
    whole thing, then type a new end for the text. */
 /* #define EDIT_GETLIN */
 
+#ifdef ANDROID
 #define DUMPLOG  /* End-of-game dump logs */
+#endif
 #ifndef NO_CHRONICLE
 /* CHRONICLE - enable #chronicle command, a log of major game events.
    The logged messages will also appear in DUMPLOG. */
@@ -679,6 +694,8 @@ typedef unsigned char uchar;
 #else
 #undef LIVELOG
 #endif /* NO_CHRONICLE */
+
+/* #define DUMPLOG */  /* End-of-game dump logs */
 
 #define USE_ISAAC64 /* Use cross-platform, bundled RNG */
 

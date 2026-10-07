@@ -21,6 +21,7 @@ notices before each release.
 | `dat/quest.lua` | changed | 2026-07-31 to 2026-09-23 | notice in file |
 | `include/artifact.h` | changed | 2026-08-21 | notice in file |
 | `include/artilist.h` | changed | 2026-07-31 to 2026-09-23 | notice in file |
+| `include/config.h` | changed | 2026-10-07 | notice in file |
 | `include/extern.h` | changed | 2026-08-16 to 2026-08-21 | notice in file |
 | `include/flag.h` | changed | 2026-09-25 | notice in file |
 | `include/hack.h` | changed | 2026-07-31 to 2026-09-25 | notice in file |
