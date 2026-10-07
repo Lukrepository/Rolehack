@@ -6,7 +6,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 // against another build of it.
 // file URLs, not paths: import() refuses a plain C:\ path on Windows
 const mod = await import(pathToFileURL(process.env.RH_LAYOUT ? path.resolve(process.env.RH_LAYOUT) : path.join(HERE, '../../../win/web/layout.js')).href);
-export const { deviceCell, bankMetrics, textMetrics } = mod;
+export const { deviceCell, bankMetrics, textMetrics, collisions } = mod;
 // layout() never throws; an older rule might, and the checks report that as an issue
 export function layout(W, H, pointer, settings) {
   try { return mod.layout(W, H, pointer, settings); } catch (e) { return { spec: null, info: null, degraded: true, reason: `THROWS: ${e.message}` }; }

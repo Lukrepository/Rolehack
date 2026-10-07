@@ -20,8 +20,10 @@ From the top of the checkout, with node 20.19 or later in the 20 line, or 22.7 o
     node --test win/web/test/              # the rule against its golden screens, the budget, the size classes, the glass's band
     node doc/twin-banks/checks/sweep.mjs   # the design's gate: 73,470 layouts in ten sections, 0 issues
     node doc/twin-banks/checks/drag.mjs    # windows dragged as the page lays them out: the glass's band
+    node doc/twin-banks/checks/desk.mjs    # the desk (a mouse) dragged as the page lays it out: whole device pixels, the 80 columns, the desk's band
+    node doc/twin-banks/checks/same.mjs    # every touch and pen layout identical to the rule before desktop mode
 
-All three run `win/web/layout.js`. `RH_LAYOUT=<path>` runs the two checks on another build of the rule.
+All of them run `win/web/layout.js`. `RH_LAYOUT=<path>` runs the checks on another build of the rule. `same.mjs` compares it with the unchanged rule (`web` at c694b4c07), from `RH_BASE=<path>`, or `/root/desk/baseline/layout.js` where that exists; without one it prints how to make it.
 
 ## Decisions
 
