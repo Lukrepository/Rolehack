@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" data-skin="terminal" data-case="on" data-phosphor="color">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Rolehack preview</title>
+<meta name="theme-color" content="#221d19">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="rolehack.css">
+</head>
+<body>
+<div id="app">
+  <div id="case" class="layer"></div>
+  <div id="glass">
+    <canvas id="map"></canvas>
+    <div id="bands">
+      <div id="msgband"></div>
+      <div id="chips"></div>
+      <div id="statband"></div>
+    </div>
+    <div id="tube"></div>
+  </div>
+  <div id="keys" class="layer"></div>
+</div>
+<div id="modal" hidden><div class="box">
+  <div class="screen">
+    <div class="title" id="modal-title"></div>
+    <div class="body" id="modal-body"></div>
+  </div>
+  <div class="deck"><span class="hint" id="modal-hint"></span><span class="caps" id="modal-caps"></span></div>
+</div></div>
+<div id="formwrap" hidden><div class="box panel" id="form">
+  <div class="plate"><b class="title"></b></div>
+  <div class="body"></div>
+  <div class="deck"><span class="hint"></span><span class="caps"></span></div>
+</div></div>
+<div id="kbd"></div>
+<div id="boot"><span id="boot-text">Loading Rolehack…</span><a id="build" href="https://github.com/Lukrepository/Rolehack" target="_blank" rel="noopener"></a></div>
+<script type="module" src="web.js"></script>
+</body>
+</html>
