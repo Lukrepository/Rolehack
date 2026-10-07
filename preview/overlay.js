@@ -40,6 +40,7 @@ import * as P from './prefs.js';
 import * as FB from './feedback.js';
 import { textMetrics } from './layout.js';
 import { budgetedLayout, withClasses, classesOf, deviceReport, browserFamily } from './viewer.js';
+import { eraTag } from './channel.js';
 
 // ---- geometry, design dp (RhCase, RhOverlay, RhScreen)
 const MARGIN = 8, WELL_PAD = 10, DECK_H = 66, DECK_KEY = 52, HOOD_TOP = 14, HOOD_SIDE = 16,
@@ -3679,6 +3680,7 @@ export class Overlay {
     return {
       build: this.host.build ? this.host.build() : null,
       channel: this.host.channel ? this.host.channel() : 'live',
+      core: this.host.saveSig && this.host.saveSig() ? eraTag(this.host.saveSig()) : null,
       address: `${location.host}${location.pathname}`,
       window: { w: box.width || window.innerWidth, h: box.height || window.innerHeight },
       screen: { w: Number(screen.width) || 0, h: Number(screen.height) || 0 },
