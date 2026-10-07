@@ -671,6 +671,16 @@ get_critical_size_count(void)
     return SIZE(critical_sizes);
 }
 
+/* Changed for Rolehack (2026-10-06): the byte of critical_sizes[] at index
+   i, -1 past the end, for the save signature the web page keeps beside its
+   copy of the saves (win/shim/winshim.c web_save_signature). */
+int
+get_critical_size_byte(int i)
+{
+    return (i >= 0 && i < SIZE(critical_sizes)) ? (int) critical_sizes[i].ucsize
+                                                : -1;
+}
+
 #ifndef MINIMAL_FOR_RECOVER
 void
 store_critical_bytes(NHFILE *nhfp)

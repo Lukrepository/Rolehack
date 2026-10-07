@@ -525,6 +525,35 @@ DECLCB(win_request_info *, shim_ctrl_nhwindow,
     A2P window, A2P request, P2V wri)
 #endif
 
+/* The save signature (Lucas, 2026-10-06; the release plan's B2, first piece):
+   what check_version() compares in a save file -- the version number, with
+   EDITLEVEL, the feature bits less the ignored ones, and the entity count --
+   followed by the struct-size bytes store_critical_bytes() writes, as one
+   string.  The page reads it before main() and keeps a store per signature
+   (web.js mountSaves), so a build with another format never opens, recovers
+   or re-stamps an older game: recover_savefile() checks no version, and
+   store_version() would stamp the rebuilt save with the running build's. */
+EMSCRIPTEN_KEEPALIVE const char *
+web_save_signature(void)
+{
+    static char buf[32 + 2 * 128];
+    int i, n = get_critical_size_count();
+    size_t at;
+
+    /* the version as make_version() builds it (mdlib.c), once; the game's own
+       start (allmain.c early_init) calls the same and finds it done */
+    runtime_info_init();
+    at = (size_t) snprintf(buf, sizeof buf, "%08lx.%08lx.%08lx.",
+                           nomakedefs.version_number,
+                           nomakedefs.version_features
+                               & ~nomakedefs.ignored_features,
+                           nomakedefs.version_sanity1);
+    for (i = 0; i < n && at + 3 < sizeof buf; i++)
+        at += (size_t) snprintf(buf + at, sizeof buf - at, "%02x",
+                                get_critical_size_byte(i));
+    return buf;
+}
+
 /* the procedures that wait for the player; web_checkpoint() comes first */
 #ifndef WAITS
 #define WAITS(fn) shim_##fn

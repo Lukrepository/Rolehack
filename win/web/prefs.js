@@ -45,6 +45,10 @@ const DEFAULTS = {
   // on one of the old landscape deck keys' spots previews instead of
   // travelling.  It retires itself after three sessions in a row in which no
   // preview went unconfirmed; MENU -> Settings brings it back.
+  // the save signature of the build that last wrote this channel's saves
+  // (web.js mountSaves, syncSaves): a build of another era finding games here
+  // says so once and keeps them aside
+  saveEra: '',
   ghostDeck: { on: true, clean: 0, session: null },
   padCell: 58,                // 46 | 52 | 58 (Parhi's 9.2 mm)
   labelMode: 'words',         // words | keys | both
