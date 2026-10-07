@@ -21,7 +21,7 @@ import { deviceReport, browserFamily } from '../viewer.js';
 
 // Lucas's phone in landscape, installed, twin banks as the design gives them
 const PHONE = {
-  build: { short: '885b4be', date: '2026-10-06' }, channel: 'live', address: 'lukrepository.github.io/Rolehack/',
+  build: { short: '885b4be', date: '2026-10-06' }, channel: 'live', core: 'c0ffee42', address: 'lukrepository.github.io/Rolehack/',
   window: { w: 896, h: 443 }, screen: { w: 443, h: 939 }, dpr: 2.4375,
   browser: { name: 'Chrome', version: '141', os: 'Android' }, mode: 'standalone',
   touchPoints: 5, pointer: 'coarse', anyPointer: 'coarse', hover: false,
@@ -37,7 +37,7 @@ test('one line, the fields in one order', () => {
   const line = deviceReport(PHONE);
   assert.equal(line.includes('\n'), false);
   assert.equal(line,
-    'Rolehack 885b4be (2026-10-06) · at lukrepository.github.io/Rolehack/ · window 896×443 landscape · screen 443×939 · dpr 2.44 · Chrome 141 Android'
+    'Rolehack 885b4be (2026-10-06) core c0ffee42 · at lukrepository.github.io/Rolehack/ · window 896×443 landscape · screen 443×939 · dpr 2.44 · Chrome 141 Android'
     + ' · installed · touch 5 · pointer coarse/coarse · hover no · text ×1 atkinson ×1 · insets 0/0/0/0'
     + ' · layout twin · tier phone · keys 58 dp · cell 13.4 dp · map 34×21 pans · glass between'
     + ' · budget seen w443 h443 l896 · fit full · map cell columns · zoom ×1 · terminal, case');
@@ -71,7 +71,7 @@ test('missing facts read as ? and never throw', () => {
     assert.match(deviceReport({ mode: 'browser' }), / · browser · in a tab · /);
     assert.match(deviceReport({ mode: 'fullscreen' }), / · browser · fullscreen · /);
     // the preview channel says so, right after the build
-    assert.match(deviceReport({ ...PHONE, channel: 'preview', address: 'lukrepository.github.io/Rolehack/preview/' }), /^Rolehack 885b4be \(2026-10-06\) preview · at lukrepository.github.io\/Rolehack\/preview\/ · /);
+    assert.match(deviceReport({ ...PHONE, channel: 'preview', address: 'lukrepository.github.io/Rolehack/preview/' }), /^Rolehack 885b4be \(2026-10-06\) preview core c0ffee42 · at lukrepository.github.io\/Rolehack\/preview\/ · /);
     assert.doesNotMatch(line, /undefined|NaN|null/);
     assert.equal(line.includes('\n'), false);
   }
