@@ -209,10 +209,16 @@ test('the prefix: Ctrl and the key right of L by its place, then a key read as t
   assert.equal(isPrefix(kd("'", { ctrl: true, code: 'Quote' }), 'Quote'), true);
   assert.equal(isPrefix(kd(';', { ctrl: true, code: 'Semicolon' }), 'Quote'), false);
   assert.equal(isPrefix(kd(';', { ctrl: true, code: 'Semicolon' }), 'Nonsense'), true);
+  // a key with no place (an on-screen or remote keyboard): by the US character
+  assert.equal(isPrefix(kd(';', { ctrl: true })), true);
+  assert.equal(isPrefix(kd('ö', { ctrl: true })), false);
+  assert.equal(isPrefix(kd("'", { ctrl: true }), 'Quote'), true);
   // the key after it: as typed, Ctrl held or not; by its place in another script
   assert.equal(prefixChar(kd('f', { ctrl: true, code: 'KeyF' })), 'f');
   assert.equal(prefixChar(kd('F', { shift: true, code: 'KeyF' })), 'F');
   assert.equal(prefixChar(kd('а', { code: 'KeyF' })), 'f');                       // Cyrillic а on the F key
+  assert.equal(prefixChar(kd('f', { shift: true, code: 'KeyF' })), 'F');          // a driver that reports Shift+f small
+  assert.equal(prefixChar({ ...kd('f', { shift: true, code: 'KeyF' }), getModifierState: (m) => m === 'CapsLock' }), 'f');   // Caps Lock and Shift
   assert.equal(prefixChar(kd('1', { ctrl: true, code: 'Digit1' })), '1');
   assert.equal(prefixChar(kd('Shift', { shift: true, code: 'ShiftLeft' })), null);
   assert.equal(prefixEntry('o').act, 'world');

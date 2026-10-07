@@ -130,6 +130,12 @@ export const pointerFor = (mode) => (mode === 'desk' ? 'mouse' : 'touch');
 // own keys behind a prefix (the design's section 12).
 // ---------------------------------------------------------------------------
 
+// A Mac (an iPad with a keyboard too): its Cmd shortcuts are the browser's,
+// its Option types the M- commands, and Ctrl+click is its right-click.
+export function macPlatform(platform, ua) {
+  return /Mac|iPhone|iPad|iPod/.test(String(platform || '')) || (!platform && /Mac OS X|Macintosh/.test(String(ua || '')));
+}
+
 // The arrows and the keys beside them walk, as vi-keys; Shift runs.
 export const ARROWS = { ArrowLeft: 'h', ArrowRight: 'l', ArrowUp: 'k', ArrowDown: 'j',
   Home: 'y', PageUp: 'u', End: 'b', PageDown: 'n' };
@@ -195,8 +201,13 @@ export function keyCodeOf(e, mac = false) {
 // a French one), never with Alt, AltGr or Cmd.  A setting may name another
 // key's place (PREFIX_CODES).
 export const PREFIX_CODES = { Semicolon: 'Ctrl+;', Quote: "Ctrl+'", Backslash: 'Ctrl+\\' };
+const PREFIX_CHARS = { Semicolon: ';', Quote: "'", Backslash: '\\' };
+// A key that reports no place (an on-screen or remote keyboard, a test
+// driver) is matched by the character a US keyboard prints there.
 export function isPrefix(e, code = 'Semicolon') {
-  return !!(e && e.ctrlKey && !e.altKey && !e.metaKey && !altGraph(e) && e.code === (PREFIX_CODES[code] ? code : 'Semicolon'));
+  const want = PREFIX_CODES[code] ? code : 'Semicolon';
+  if (!(e && e.ctrlKey && !e.altKey && !e.metaKey && !altGraph(e))) return false;
+  return e.code ? e.code === want : e.key === PREFIX_CHARS[want];
 }
 
 // The key after the prefix, with Ctrl still held or let go: its character
@@ -204,7 +215,12 @@ export function isPrefix(e, code = 'Semicolon') {
 // digit by its place where the layout types another script.
 export function prefixChar(e) {
   if (!e || typeof e.key !== 'string') return null;
-  if (e.key.length === 1 && /^[A-Za-z0-9]$/.test(e.key)) return e.key;
+  if (e.key.length === 1 && /^[A-Za-z0-9]$/.test(e.key)) {
+    // Shift and a letter that reports itself small (some on-screen keyboards
+    // and drivers) is the capital, unless Caps Lock made it small
+    const caps = typeof e.getModifierState === 'function' && e.getModifierState('CapsLock');
+    return e.shiftKey && !caps && /^[a-z]$/.test(e.key) ? e.key.toUpperCase() : e.key;
+  }
   return placeChar(e);
 }
 

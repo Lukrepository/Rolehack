@@ -13,6 +13,7 @@ import { setPalette, dressHero, LOOK_LEN } from './doll.js';
 import { Overlay, STATUS_BAND, LINE, msgRows, msgBandPx, msgTextPx, MSG_LEADING, resetTextScale, creationCap,
   GHOST_CONFIRM_MS, RING_REACH } from './overlay.js';
 import { keyEvents } from './commands.js';
+import { keyCodeOf, macPlatform } from './input.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
 
@@ -132,27 +133,15 @@ async function nextKey() {
   }
 }
 
-const ARROWS = { ArrowLeft: 'h', ArrowRight: 'l', ArrowUp: 'k', ArrowDown: 'j',
-                 Home: 'y', PageUp: 'u', End: 'b', PageDown: 'n' };
+// A Mac (or an iPad with a keyboard): its Cmd shortcuts are the browser's, its
+// Option types the M- commands, Ctrl+click is its right-click (input.js).
+const MAC = macPlatform(navigator.platform, navigator.userAgent);
 
-function keyCode(e) {
-  if (ARROWS[e.key]) {
-    const c = ARROWS[e.key];
-    return (e.shiftKey ? c.toUpperCase() : c).charCodeAt(0);
-  }
-  switch (e.key) {
-  case 'Enter': return 13;
-  case 'Escape': return 27;
-  case 'Backspace': return 8;
-  case 'Tab': return 9;
-  case 'Delete': return 0x7f;
-  }
-  if (e.key.length !== 1) return null;
-  const c = e.key.charCodeAt(0);
-  if (e.ctrlKey && /^[a-z]$/i.test(e.key)) return e.key.toUpperCase().charCodeAt(0) & 0x1f;
-  if (e.altKey && c < 128) return c | 0x80;   // M- commands
-  return c;
-}
+// What a keydown is to the game (input.js keyCodeOf: the arrows walk as
+// vi-keys, Ctrl and a letter is the control character, Alt the M- command;
+// desktop mode's step 2 left a Mac's Cmd to the browser, read its Option by
+// the key's place, and let AltGr type its characters).
+const keyCode = (e) => keyCodeOf(e, MAC);
 
 let formOpen = null;
 
@@ -163,6 +152,9 @@ window.addEventListener('keydown', (e) => {
     return;
   }
   if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+  // Rolehack's own keys first (desktop mode's step 2): the prefix, Ctrl+;
+  // by default, and the key after it; a layer it opened takes its places
+  if (overlay && overlay.keyFirst(e)) { e.preventDefault(); return; }
   const k = keyCode(e);
   if (k === null) return;
   e.preventDefault();
@@ -170,6 +162,10 @@ window.addEventListener('keydown', (e) => {
   if (overlay) overlay.noteKey(e);
   // Esc closes the interface's own popups first, as Back did on the phone
   if (k === 27 && $('modal').hidden && overlay && overlay.onBack()) return;
+  // a key meets what a touch or the mouse left open: armed Fight takes a
+  // direction, a drawer its numbers; anything else closes first (Lucas's
+  // answer 8)
+  if ($('modal').hidden && overlay && overlay.typedKey(k)) return;
   push({ key: k });
 });
 
@@ -506,7 +502,7 @@ function panelOf(kind) {
   el.dataset.kind = kind;
   const title = document.createElement('div');
   title.className = 'ptitle';
-  title.textContent = kind === 'log' ? 'Messages' : 'Inventory';
+  title.textContent = { log: 'Messages', inventory: 'Inventory', legend: 'Keys' }[kind] || kind;
   const body = document.createElement('div');
   body.className = 'pbody';
   el.append(title, body);
@@ -635,9 +631,30 @@ function hidePanels() { for (const p of panels.values()) hidePanel(p); }
 const panelShown = (p) => !!p && p.el.style.display !== 'none' && !!p.el.parentNode;
 function renderPanels() {
   if (!(geom && geom.twin)) return;
-  const log = panels.get('log'), inv = panels.get('inventory');
-  if (panelShown(log)) renderLog(log);
+  const log = panels.get('log'), inv = panels.get('inventory'), leg = panels.get('legend');
+  // where the desk has no room for its key legend, the log shows it while it
+  // is wanted: the prefix waiting, Ctrl held, a layer the keyboard opened
+  const borrow = !panelShown(leg) && !!(overlay && overlay.legendWanted && overlay.legendWanted());
+  if (panelShown(log)) { if (borrow) renderLegend(log); else renderLog(log); }
   if (panelShown(inv)) renderInventory(inv);
+  if (panelShown(leg)) renderLegend(leg);
+}
+
+// The desk's key legend (desktop mode's step 2): the keys behind the prefix,
+// Ctrl+; by default, or the places of the layer open on the pad by their
+// vi-keys (overlay.js legendLines).  Lit while the prefix waits for its key.
+function renderLegend(p) {
+  const L = overlay && overlay.legendLines ? overlay.legendLines() : null;
+  if (!L) return;
+  const sig = JSON.stringify(L);
+  if (sig === p.sig) return;
+  p.sig = sig;
+  // the log lends its place (renderPanels): its title and look are the legend's till it is given back
+  if (p.kind !== 'legend') { p.legend = true; p.el.dataset.kind2 = 'legend'; p.first = null; }
+  p.title.hidden = false;
+  p.title.textContent = `Keys: ${L.title}`;
+  if (L.armed) p.el.dataset.armed = ''; else delete p.el.dataset.armed;
+  fillPanel(p, `<div class="pcols">${L.lines.map(([k, w]) => `<div class="pi"><span class="let">${esc(k)}</span><span>${esc(w)}</span></div>`).join('')}</div>`, false);
 }
 
 // a panel's body redrawn; the log keeps to its end while it follows it, and
@@ -659,6 +676,13 @@ function fillPanel(p, html, toEnd, gone = 0) {
 }
 
 function renderLog(p) {
+  // the key legend it lent its place to goes (renderPanels): its own title, as layoutPanels shows it
+  if (p.legend) {
+    p.legend = false; p.sig = ''; p.first = null;
+    p.title.textContent = 'Messages';
+    p.title.hidden = (parseFloat(p.el.style.height) || 0) < 120;
+    delete p.el.dataset.armed; delete p.el.dataset.kind2;
+  }
   const first = histSeq - history.length;
   const upto = p.beyond ? Math.min(bandFrom, histSeq) : histSeq;
   const n = Math.max(0, Math.min(history.length, upto - first));
@@ -733,6 +757,7 @@ function panelTaps(p, kind) {
     if (moreShown) { push({ key: 32 }); return; }
     if (page.some((q) => q.ask) || (overlay && overlay.answering)) return;
     if (kind === 'log') send('^P');
+    else if (kind === 'legend') return;   // a list to read: a tap there does nothing
     else if (commandWait && !(overlay && (overlay.layerUp() || overlay.armed))) send('i');
   });
 }
@@ -1047,7 +1072,20 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
     if (two) { clearTimeout(two.timer); two = null; }
   };
   const endOverview = () => { if (overview && !pts.size) { overview = false; renderMap(); } };
+  // Desktop mode (Lucas's answer 5a): a right-click looks at the square it
+  // lands on -- the core's own second mouse button, clicklook (cmd.c), which
+  // takes no turn -- where it walked the hero there and opened the browser's
+  // menu over the map.  A Mac's Ctrl+click is its right-click.  The middle
+  // button does nothing.  Only a mouse's: a long touch's contextmenu is
+  // nothing here.
+  let right = null;
+  cv.addEventListener('contextmenu', (e) => e.preventDefault());
   cv.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse' && (e.button !== 0 || (MAC && e.ctrlKey))) {
+      e.preventDefault();
+      right = e.button === 2 || e.button === 0 ? { id: e.pointerId, x: e.clientX, y: e.clientY } : null;
+      return;
+    }
     e.preventDefault();
     try { cv.setPointerCapture(e.pointerId); } catch (x) { /* synthetic */ }
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -1108,6 +1146,12 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
     }
   });
   const up = (e) => {
+    if (right && right.id === e.pointerId && !pts.has(e.pointerId)) {
+      const r0 = right;
+      right = null;
+      if (Math.hypot(e.clientX - r0.x, e.clientY - r0.y) < 10) lookAt(e);
+      return;
+    }
     if (!pts.has(e.pointerId)) return;
     pts.delete(e.pointerId);
     if (pts.size < 2 && (pinch || two)) endTwo();
@@ -1126,8 +1170,18 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
     if (geom && geom.twin ? guardTap(e, x, y, inLevel, downAt) || !inLevel : !inLevel || ghostTap(e, x, y)) return;
     push({ click: { x, y, mod: 1 } });
   };
+  // a right-click's look: at --More-- it is Space, as any tap; with a layer
+  // up it only closes it, as a tap does; else the core describes the square
+  const lookAt = (e) => {
+    if (moreShown) { push({ key: 32 }); return; }
+    if (overlay && overlay.layerUp()) { overlay.dismissPopups(); return; }
+    const r = cv.getBoundingClientRect();
+    const x = Math.floor((e.clientX - r.left - view.left) / view.T);
+    const y = Math.floor((e.clientY - r.top - view.top) / view.T);
+    if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO) push({ click: { x, y, mod: 2 } });
+  };
   cv.addEventListener('pointerup', up);
-  cv.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); if (pts.size < 2 && (pinch || two)) endTwo(); endOverview(); });
+  cv.addEventListener('pointercancel', (e) => { if (right && right.id === e.pointerId) right = null; pts.delete(e.pointerId); if (pts.size < 2 && (pinch || two)) endTwo(); endOverview(); });
   cv.addEventListener('wheel', (e) => {
     e.preventDefault();
     // Each notch scales the cell asked for (tileSize()), not the drawn one: the
@@ -2527,6 +2581,8 @@ overlay = new Overlay({
   windowClosed,
   // the desk's own zoom, for the device report and Settings' Reset zoom
   deskZoom: () => deskZoom,
+  // the key legend's content changed: the prefix waits, a layer opened or closed
+  legendChanged: () => renderPanels(),
   resetDeskZoom: () => { deskZoom = 1; render(); },
 });
 // what the near-miss guard did, for the near-miss test on a device (the

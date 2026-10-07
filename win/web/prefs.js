@@ -40,6 +40,9 @@ const DEFAULTS = {
   // this browser (null: none yet), which a page starts with under 'auto'.
   controls: 'auto',           // auto | thumb | desk
   inputMode: null,            // thumb | desk
+  // the prefix for Rolehack's own keys, by the place of its key (input.js
+  // PREFIX_CODES): Ctrl and the key right of L, unless the system takes it
+  prefixKey: 'Semicolon',     // Semicolon | Quote | Backslash
   // Twin banks remember the window each display mode has shown in each
   // orientation of the whole device, so a phone's two orientations get the
   // same banks (the design's section 12; viewer.js says which windows teach

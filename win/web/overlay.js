@@ -40,7 +40,11 @@ import * as P from './prefs.js';
 import * as FB from './feedback.js';
 import { textMetrics, layout } from './layout.js';
 import { budgetedLayout, withClasses, classesOf, deviceReport, browserFamily } from './viewer.js';
-import { startMode, freshInput, inputStep, inputSwitched, controlsOf } from './input.js';
+import { startMode, freshInput, inputStep, inputSwitched, controlsOf,
+  isPrefix, prefixChar, prefixEntry, PREFIX, PREFIX_CODES, placeOfKey, macPlatform } from './input.js';
+
+// a Mac: Ctrl+click is its right-click (input.js macPlatform)
+const MAC = typeof navigator !== 'undefined' && macPlatform(navigator.platform, navigator.userAgent);
 
 // ---- geometry, design dp (RhCase, RhOverlay, RhScreen)
 const MARGIN = 8, WELL_PAD = 10, DECK_H = 66, DECK_KEY = 52, HOOD_TOP = 14, HOOD_SIDE = 16,
@@ -146,6 +150,10 @@ const HABIT_MS = 1500;
 // a quiet moment looks again this often; a click this soon after a touch the
 // desk consumed is that touch's.
 const DESK_BAND = 24, DESK_RETRY_MS = 300, CONSUMED_CLICK_MS = 700;
+// The keyboard (desktop mode's step 2): the prefix waits this long for its
+// key; Ctrl held this long alone lights every key letter (a chord such as ^D
+// is quicker, and shows nothing).
+const PREFIX_MS = 4000, CTRL_SHOW_MS = 400;
 // The count layer's places: ↖ ×1, ↑ ×5, ↗ ×10, → ×20 (or a Long rest's
 // ×100 to ×400); the centre types any count.
 const COUNT_PLACES = [0, 1, 2, 5];
@@ -429,7 +437,14 @@ class Key {
 
   tag(t) { this.tagText = t; this.updateCorner(); return this; }
 
+  // Desktop mode: the keyboard key that does what this key does (its legend,
+  // the design's section 12), in the corner over whatever it held; null
+  // gives the corner back.
+  legend(t) { this.legendText = t || null; this.updateCorner(); return this; }
+
   updateCorner() {
+    this.rk.classList.toggle('leg', !!this.legendText);
+    if (this.legendText) { this.rk.textContent = this.legendText; return; }
     let corner = this.subRaw && this.subText ? this.subText.trim() : this.tagText;
     if (this.subRaw && corner && corner.length > 4) corner = null;
     this.rk.textContent = corner || '';
@@ -513,6 +528,7 @@ export class Overlay {
       // twin banks' map cell is decided with the banks (layout.js deviceCell)
       if (name === 'mapCell' && this.wantsTwin()) this.rebuild();
       if (name === 'controls') this.controlsChanged();
+      if (name === 'prefixKey') { this.applyLegends(); if (this.host.legendChanged) this.host.legendChanged(); }
     });
     if (document.fonts) document.fonts.ready.then(() => this.rebuild());
     // the input switch first: a touch the desk takes for the switch alone
@@ -667,6 +683,24 @@ export class Overlay {
     // the wheel only says it was used (its deltas are the map's to read)
     window.addEventListener('wheel', (e) => { if (real(e)) this.feedInput({ kind: 'wheel', t: performance.now() }); },
       { capture: true, passive: true });
+    // Holding Ctrl alone lights every key letter (the design's section 12);
+    // a chord (^D, the prefix) is quicker and lights nothing
+    this.ctrlHeld = false;
+    window.addEventListener('keydown', (e) => {
+      clearTimeout(this.ctrlTimer);
+      if (e.key === 'Control' && !e.repeat) this.ctrlTimer = setTimeout(() => this.setCtrlHeld(true), CTRL_SHOW_MS);
+      else if (e.key !== 'Control' && this.ctrlHeld) this.setCtrlHeld(false);
+    }, true);
+    window.addEventListener('keyup', (e) => { if (e.key === 'Control') { clearTimeout(this.ctrlTimer); this.setCtrlHeld(false); } }, true);
+    window.addEventListener('blur', () => { clearTimeout(this.ctrlTimer); this.setCtrlHeld(false); this.prefixDone(); });
+  }
+
+  setCtrlHeld(on) {
+    if (this.ctrlHeld === on) return;
+    this.ctrlHeld = on;
+    if (on) document.documentElement.dataset.ctrl = ''; else delete document.documentElement.dataset.ctrl;
+    this.applyLegends();
+    if (this.host.legendChanged) this.host.legendChanged();
   }
 
   // a game key typed on a keyboard (web.js, as it goes to the game)
@@ -724,9 +758,205 @@ export class Overlay {
     if (this.wantsTwin()) this.rebuild();
   }
 
-  // the key letters, where touch is possible and keys are typed (input.js);
-  // the thumb banks draw them from step 2 of desktop mode
-  legendsOn() { document.documentElement.dataset.legends = ''; }
+  // the key letters, where touch is possible and keys are typed (input.js)
+  legendsOn() { document.documentElement.dataset.legends = ''; this.applyLegends(); }
+
+  // ---- key letters (desktop mode's step 2; the design's section 12, with
+  // Lucas's answers of 2026-10-07): each key keeps its word and shows, in its
+  // corner, the keyboard key that does what it does -- the game's own key
+  // where there is one (F for COMBAT, M-o for SACRIFICE, a pin's own key),
+  // else Rolehack's, the prefix and a letter, written ^; as NetHack writes
+  // Ctrl (MSGS shows ^P).  Always at the desk; on the thumb banks once keys
+  // are typed where touch is possible, or while Ctrl is held.
+  legendsShown() {
+    if (!this.twin) return false;
+    if (this.deskShown()) return true;
+    return !!(this.ctrlHeld || (this.input && this.input.legends));
+  }
+  prefixCode() { const c = P.get('prefixKey'); return PREFIX_CODES[c] ? c : 'Semicolon'; }
+  prefixText() { return `^${{ Semicolon: ';', Quote: "'", Backslash: '\\' }[this.prefixCode()]}`; }
+
+  legendFor(id) {
+    const pre = this.prefixText();
+    const pin = (n) => { const it = this.slotItem(true, n); return it ? it.key : `${pre}${n + 4}`; };
+    switch (id) {
+      case 'combat': return 'F';
+      case 'drop': return 'd';
+      case 'apply': return 'a';
+      case 'eat': return 'e';
+      case 'inventory': return 'i';
+      case 'look': return ':';
+      case 'context': return `${pre}c`;
+      case 'search': return C.keyWithCount(C.CTX_SEARCH, this.countFor(C.CTX_SEARCH));
+      case 'rest': return C.keyWithCount(C.CTX_REST, this.countFor(C.CTX_REST));
+      case 'longrest': return `${pre}z`;
+      case 'menu': return `${pre}m`;
+      case 'world': return `${pre}o`;
+      case 'game': return `${pre}g`;
+      case 'msgs': return '^P';
+      case 'sacrifice': return 'M-o';
+      case 'm1': case 'm2': case 'm3': return `${pre}${id[1]}`;
+      case 'pin1': return pin(0);
+      case 'pin2': return pin(1);
+      case 'pad_centre': return this.picking || this.directionPending() ? '.' : this.padCentreCommand().key;
+      default: return null;   // the pad's and the equipment's own keys are in their corners already; KEYS has none
+    }
+  }
+
+  applyLegends() {
+    if (!this.twin || !this.twin.keys) return;
+    const on = this.legendsShown(), desk = this.deskShown();
+    const faces = [...this.twin.keys].filter(([, k]) => k instanceof Key);
+    if (this.restFace) faces.push(['rest', this.restFace]);
+    for (const [id, k] of faces) {
+      // a layer or a question paints the pad: its places keep their own letters
+      const painted = id.startsWith('pad_') && (this.fanOpen || this.padLayer || this.answering);
+      const t = on && !painted ? this.legendFor(id) : null;
+      k.legend(t);
+      // at the desk, a mouse resting on a key names it: its word, its key, its hold
+      if (desk) {
+        const word = (k.text || '').replace(/\n/g, ' ').trim();
+        const hold = k.holdText ? `${k.rightClick ? 'hold or right-click' : 'hold'}: ${k.holdText}` : '';
+        k.el.title = [word, t && `key ${t}`, hold].filter(Boolean).join(' · ');
+      } else k.el.removeAttribute('title');
+    }
+  }
+
+  // ---- the keyboard's own keys (desktop mode's step 2; the design's section
+  // 12): the prefix, Ctrl and the key right of L, then a letter (input.js
+  // PREFIX); a layer the prefix opened takes the vi-keys and . as its places.
+  // web.js asks first (keyFirst), before a key is the game's; true when the
+  // key was taken here.  Twin banks only: classic's keys are as they were.
+  keyFirst(e) {
+    if (!this.twin || e.isComposing) return false;
+    if (this.host.guardsAside && this.host.guardsAside()) { this.prefixDone(); return false; }
+    if (isPrefix(e, this.prefixCode())) { if (!e.repeat) this.prefixArm(); return true; }
+    if (this.prefixAt) {
+      // a modifier alone (Shift for F, Ctrl let go and pressed again) keeps it waiting
+      if (/^(Control|Shift|Alt|AltGraph|Meta|CapsLock|OS)$/.test(e.key)) return true;
+      const late = performance.now() - this.prefixAt > PREFIX_MS;
+      this.prefixDone();
+      if (late) return false;
+      if (e.key === 'Escape') return true;
+      const p = prefixEntry(prefixChar(e));
+      if (p) this.prefixAct(p);
+      else this.pillFlash(`${this.prefixText()} ${String(e.key).slice(0, 6)}: NO SUCH KEY`);
+      return true;
+    }
+    if (this.kbdLayer && (this.fanOpen || this.padLayer) && !e.ctrlKey && !e.altKey && !e.metaKey) {
+      const place = placeOfKey(e.key);
+      if (place !== null) { this.padPlace(place); return true; }
+    }
+    return false;
+  }
+
+  prefixArm() {
+    this.prefixAt = performance.now();
+    this.pillFlash(`${this.prefixText()} …`, PREFIX_MS);
+    clearTimeout(this.prefixTimer);
+    this.prefixTimer = setTimeout(() => this.prefixDone(), PREFIX_MS);
+    if (this.host.legendChanged) this.host.legendChanged();
+  }
+  prefixDone() {
+    if (!this.prefixAt) return;
+    this.prefixAt = 0;
+    clearTimeout(this.prefixTimer);
+    if (this.layerPill && !this.padLayer && !this.fanOpen) this.layerPill.classList.remove('on');
+    if (this.host.legendChanged) this.host.legendChanged();
+  }
+
+  // what each key after the prefix does: what the key's own tap does, or its
+  // hold (a hub's layer; the count layer for the last counted key)
+  prefixAct(p) {
+    switch (p.act) {
+      case 'm1': case 'm2': case 'm3': this.macroTap(Number(p.act[1]) - 1); break;
+      case 'pin1': case 'pin2': { const hv = this.hubView(C.HUB_ATTACK.id); if (hv) this.slotTap(hv, true, Number(p.act[3]) - 1); break; }
+      case 'flick': this.closeRadial(); this.runOrEditMacro(P.FLICK_TAP, this.twinEl('flick')); break;
+      case 'flick1': case 'flick2': this.closeRadial(); this.runOrEditMacro(P.FLICK_TAP + Number(p.act[5]), this.twinEl('flick')); break;
+      case 'menu': this.openSettings(); break;
+      case 'world': this.toggleDrawer('world'); break;
+      case 'game': this.toggleDrawer('game'); break;
+      case 'context': {
+        // CONTEXT's tap; with nothing to do here, the HERE layer, whose ALL
+        // holds what did not fit (Chat, Drop unknown)
+        const act = this.ctxActions[1];
+        if (act) this.contextTapped(act, this.ctxStrip[1].el); else this.openHere('context');
+        this.kbdLayer = !!this.padLayer;
+        break;
+      }
+      case 'longrest': this.closeChips(); this.runAction(C.CTX_LONG_REST, this.restWell ? this.restWell.slot : null); break;
+      case 'count': {
+        const c = this.lastCounted || { act: C.CTX_SEARCH, id: 'search' };
+        const from = c.id === 'rest' ? this.restWell.slot : this.twinEl(c.id);
+        if (from && this.openCountLayer(c.act, from, c.id)) { this.padLayer.sticky = true; this.kbdLayer = true; this.armIdle(); }
+        break;
+      }
+      case 'layer': { const hv = this.hubView(p.hub); if (hv) { this.openFan(hv); this.kbdLayer = !!this.fanOpen; } break; }
+      default: break;
+    }
+    if (this.host.legendChanged) this.host.legendChanged();
+  }
+
+  // a place of the pad picked from the keyboard, as its tap picks it
+  padPlace(place) {
+    const from = this.twinEl(TWIN_PAD[place]);
+    if (this.padLayer) this.padLayerTapped(place, from);
+    else if (this.fanOpen) this.layerPlaceTapped(place, from);
+  }
+
+  // A key typed to the game while something opened by a touch or the mouse
+  // is up (Lucas's answer 8): with Fight armed a direction fights; any other
+  // key first closes the layer or the drawer, or disarms, then goes to the
+  // game; in a drawer, a number runs the item that has no key of its own
+  // (his answer 6: an item's own key closes the drawer and goes to the game,
+  // which runs it).  web.js calls it for each key the game would get; true
+  // when the key was taken here.
+  typedKey(k) {
+    if (!this.twin) return false;
+    const ch = k > 0 && k < 128 ? String.fromCharCode(k) : '';
+    if (this.armed) {
+      if (ch && 'hjklyubn'.includes(ch)) { this.pressDirection(ch); return true; }
+      this.disarm();
+      return false;
+    }
+    if (this.drawerOpen) {
+      const item = /^[1-9]$/.test(ch) && this.drawerKeyless ? this.drawerKeyless[Number(ch) - 1] : null;
+      if (item) {
+        if (this.assigning) this.onDrawerPin(item);
+        else { this.closeDrawer(); this.execute(item, null); }
+        return true;
+      }
+      this.closeDrawer();
+      return false;
+    }
+    if (this.layerUp()) this.dismissPopups();
+    return false;
+  }
+
+  // the key-legend panel's lines (web.js renderLegend): the prefix's table,
+  // or the open layer's places by their vi-keys
+  legendLines() {
+    const pre = this.prefixText();
+    if (this.twin && (this.fanOpen || this.padLayer)) {
+      // the layer on the pad, place by place, as its keys are painted now
+      const lines = TWIN_PAD.map((id, n) => {
+        const k = this.twin.keys.get(id), word = k && k.text ? k.text.replace(/\n/g, ' ') : '';
+        return [n === 4 ? '.' : C.PAD_KEYS[n], word];
+      }).filter(([, w]) => w && w !== '+');
+      const title = this.layerPill && this.layerPill.textContent ? this.layerPill.textContent.toLowerCase() : 'layer';
+      return { title, armed: false, lines };
+    }
+    return { title: `${pre} then`, armed: !!this.prefixAt,
+      lines: PREFIX.map((p) => [p.ch, p.word]) };
+  }
+
+  // The key legend is wanted where the desk has no room for its panel (a
+  // laptop's 1280x640 window): while the prefix waits, Ctrl is held, or a
+  // layer the keyboard opened is up, the message log panel shows it instead
+  // (web.js renderPanels)
+  legendWanted() {
+    return !!(this.twin && (this.prefixAt || this.ctrlHeld || (this.kbdLayer && (this.fanOpen || this.padLayer))));
+  }
 
   // The classic board: the case and its scale, everything rebuilt from nothing.
   rebuildClassic(W, H) {
@@ -1030,8 +1260,10 @@ export class Overlay {
       // (layoutPanels).  'beyond': a log under the band's rows (a phone's, in
       // the glass under the map), which shows the history the band no longer
       // shows; a tablet's shows all of it.
-      panels: S.chrome.filter((c) => /^panel: (message log|inventory)\b/.test(c.name)).map((c) => ({
-        kind: c.name.startsWith('panel: inventory') ? 'inventory' : 'log',
+      // At the desk a third, the key legend: the prefix's table, or the
+      // open layer's places by their keys (desktop mode's step 2).
+      panels: S.chrome.filter((c) => /^panel: (message log|inventory|key legend)\b/.test(c.name)).map((c) => ({
+        kind: c.name.startsWith('panel: inventory') ? 'inventory' : c.name.startsWith('panel: key legend') ? 'legend' : 'log',
         beyond: /under the band/.test(c.name), x: c.x, y: c.y, w: c.w, h: c.h })),
     };
     this.host.glassChanged(this.geom);
@@ -1332,15 +1564,16 @@ export class Overlay {
     this.pillFlash('HERE: SLIDE');
   }
 
-  // a word on the layer pill with no layer up, for the habit guards
-  pillFlash(text) {
+  // a word on the layer pill with no layer up, for the habit guards and the
+  // keyboard's prefix
+  pillFlash(text, ms = HABIT_MS) {
     const pill = this.layerPill;
     if (!pill || this.padLayer || this.fanOpen) return;
     pill.style.setProperty('--acc', '#c2b6ff');
     pill.textContent = text;
     pill.classList.add('on');
     clearTimeout(this.pillTimer);
-    this.pillTimer = setTimeout(() => { if (!this.padLayer && !this.fanOpen) pill.classList.remove('on'); }, HABIT_MS);
+    this.pillTimer = setTimeout(() => { if (!this.padLayer && !this.fanOpen) pill.classList.remove('on'); }, ms);
   }
 
   // the old deck spot under a map tap, while the deck is on
@@ -1875,6 +2108,7 @@ export class Overlay {
     this.closeDrawer();
     this.closePadLayer();
     this.disarm();
+    this.kbdLayer = false;   // the keyboard's prefix says so after it opens one
   }
 
   openCountLayer(act, from, fromId) {
@@ -1912,6 +2146,8 @@ export class Overlay {
     const L = this.padLayer;
     if (!L) return;
     this.padLayer = null;
+    this.kbdLayer = false;
+    if (this.host.legendChanged) this.host.legendChanged();
     clearTimeout(L.timer);
     if (!this.fanOpen) this.stopIdle();
     if (L.kind === 'count') this.chipsOpen = null;
@@ -2182,6 +2418,7 @@ export class Overlay {
     this.recomputeContext();
     if (this.answering) this.paintAnswers();
     if (this.twin) this.twinLamps();
+    this.applyLegends();
   }
 
   // Rest (with Long rest in its scroll well), Msgs and macro 1: the left bank's top rows.
@@ -2315,16 +2552,20 @@ export class Overlay {
     const k = new Key(K).face(C.JADE);
     this.macroKeys[slot] = k;
     // while a command is in hand a tap places it here, and a hold does nothing
-    this.bindHold(k, HUB_HOLD_MS, () => { if (!this.assign) this.editMacro(slot); }, () => {
-      if (this.assign) { this.placeMacro(slot); return; }
-      const m = P.macros()[slot];
-      if (!m.keys) { this.editMacro(slot); return; }
-      this.closeChips();
-      this.flashRaw(m.name || m.keys, k.el);
-      this.host.send(m.keys);
-    });
+    this.bindHold(k, HUB_HOLD_MS, () => { if (!this.assign) this.editMacro(slot); }, () => this.macroTap(slot));
     this.refreshMacroKey(slot);
     return k;
+  }
+
+  // a macro key's tap, from the key or the keyboard (^;1 to ^;3)
+  macroTap(slot) {
+    if (this.assign) { this.placeMacro(slot); return; }
+    const m = P.macros()[slot];
+    if (!m.keys) { this.editMacro(slot); return; }
+    this.closeChips();
+    const k = this.macroKeys[slot];
+    this.flashRaw(m.name || m.keys, k && k.el);
+    this.host.send(m.keys);
   }
 
   refreshMacroKey(slot) {
@@ -2541,7 +2782,16 @@ export class Overlay {
     const pill = this.twin && this.twin.spec.popups.find((p) => p.owner === 'pad_centre');
     if (pill) {
       this.layerPill = el('div', 'layerpill', K);
-      Object.assign(this.layerPill.style, { left: `${pill.x}px`, top: `${pill.y}px`, maxWidth: `${pill.w}px`, height: `${pill.h}px` });
+      // At the desk the layout's place, the map's corner on the pad's thumb
+      // side, is the far end of the screen from the dock: the pill goes on the
+      // map's bottom edge right over the dock's pad instead (still inside the
+      // map, over no key)
+      let { x } = pill;
+      if (this.deskShown()) {
+        const m = this.twin.spec.mapArea;
+        x = clamp(box.x + box.w / 2 - pill.w / 2, m.x + POP_PAD, m.x + m.w - POP_PAD - pill.w);
+      }
+      Object.assign(this.layerPill.style, { left: `${x}px`, top: `${pill.y}px`, maxWidth: `${pill.w}px`, height: `${pill.h}px` });
     }
   }
 
@@ -2565,6 +2815,7 @@ export class Overlay {
     else if (this.directionPending()) k.label('HERE', 8).sub('.', true);
     else if (this.hereHas(HERE_OBJECT)) k.label('PICK UP', 8).sub(',', true);
     else k.label('REST', 9).sub('hold · context');
+    this.applyLegends();
   }
 
   pressDirection(dir) {
@@ -2734,20 +2985,24 @@ export class Overlay {
   }
 
   bindSlot(hv, slot, attack, n) {
+    // a right-click never empties a pin (Lucas's answer 5b): only its hold does
     this.bindHold(slot, SLOT_CLEAR_MS, () => {
       if (this.assign) return;
       if (!this.slotItem(attack, n)) this.fillSlot(hv, attack, n);
       else this.clearSlot(hv, attack, n);
-    }, () => {
-      if (this.assignAccepts(attack)) { this.placeAssignment(attack, n); return; }
-      const item = this.slotItem(attack, n);
-      // Empty: in classic a tap does nothing and the hold fills it; in twin
-      // banks the tap opens the picker too (Lucas, 2026-10-02: the design's
-      // choice stands, an empty pin is a picker)
-      if (!item) { if (this.twin) this.fillSlot(hv, attack, n); return; }
-      if (attack) this.fireFromHub(C.HUB_ATTACK, item, slot.el);
-      else this.execute(item, slot.el);
-    });
+    }, () => this.slotTap(hv, attack, n), { noRight: true });
+  }
+
+  // a pin's or an equipment cell's tap, from the key or the keyboard (^;4, ^;5)
+  slotTap(hv, attack, n) {
+    if (this.assignAccepts(attack)) { this.placeAssignment(attack, n); return; }
+    const item = this.slotItem(attack, n), slot = hv.slotFaces[n];
+    // Empty: in classic a tap does nothing and the hold fills it; in twin
+    // banks the tap opens the picker too (Lucas, 2026-10-02: the design's
+    // choice stands, an empty pin is a picker)
+    if (!item) { if (this.twin) this.fillSlot(hv, attack, n); return; }
+    if (attack) this.fireFromHub(C.HUB_ATTACK, item, slot && slot.el);
+    else this.execute(item, slot && slot.el);
   }
 
   slotItem(attack, n) { return C.pinnable((attack ? this.atkSlotKeys : this.equipSlotKeys)[n]); }
@@ -2875,6 +3130,7 @@ export class Overlay {
     }
     for (let n = 0; n < this.macroKeys.length; n++) this.refreshMacroKey(n);
     this.refreshFlick();
+    this.applyLegends();
   }
 
   updateHubSubLines() {
@@ -3056,6 +3312,7 @@ export class Overlay {
     this.closeRadial();
     this.closeContextRadial();
     this.disarm();
+    this.kbdLayer = false;   // the keyboard's prefix says so after it opens one
     this.fanOpen = hv.hub.id;
     this.paintLayer(hv.hub);
     hv.face.lit(true).sub('tap = all');
@@ -3063,12 +3320,16 @@ export class Overlay {
     this.syncModal();
     // twin banks: a layer left up drops back to arrows after 4 s with no input
     if (this.twin) this.armIdle();
+    this.applyLegends();
+    if (this.host.legendChanged) this.host.legendChanged();
   }
 
   closeFan() {
     if (!this.fanOpen) return;
     const was = this.hubView(this.fanOpen);
     this.fanOpen = null;
+    this.kbdLayer = false;
+    if (this.host.legendChanged) this.host.legendChanged();
     if (!this.padLayer) this.stopIdle();
     this.restorePad();
     this.hideFrame();
@@ -3077,6 +3338,7 @@ export class Overlay {
       if (was.hub === C.HUB_ATTACK) this.refreshSlots(was, true);
     }
     this.syncModal();
+    this.applyLegends();
   }
 
   // ---- the flick key (RhOverlay.buildFlickKey): the deck's third COMBAT point,
@@ -3545,6 +3807,7 @@ export class Overlay {
     this.refreshChipRows();
     this.refreshRestFaces();
     this.syncModal();
+    this.applyLegends();
   }
 
   refreshChipRows() {
@@ -3581,7 +3844,8 @@ export class Overlay {
                              : this.tl(T_KEY, T_KEY, this.termInner(), this.termRow2Top());
     const f = this.twinKey('sacrifice', new Key(K).box(at).face(C.A90).label('SACRIFICE', 7.5).sub('hold · pray'));
     this.row2.push(f);
-    this.bindHold(f, HUB_HOLD_MS, () => this.execute(C.PRAY, f.el), () => this.execute(C.SACRIFICE, f.el));
+    // a right-click never prays (Lucas's answer 5b): Pray stays the 380 ms hold
+    this.bindHold(f, HUB_HOLD_MS, () => this.execute(C.PRAY, f.el), () => this.execute(C.SACRIFICE, f.el), { noRight: true });
   }
 
   // ---- MENU WORLD GAME KEYS
@@ -3789,6 +4053,12 @@ export class Overlay {
     this.setAssigning(false);
     this.drawerGrid.innerHTML = '';
     if (this.drawerScrollReset) this.drawerScrollReset();
+    // Desktop mode (Lucas's answer 6): an item's own key, typed, closes the
+    // drawer and goes to the game, which runs it; the items with no key of
+    // their own (the page's settings, a command by name) take 1 to 9, shown
+    // in their corners while the key letters are
+    this.drawerKeyless = [];
+    const numbers = this.legendsShown();
     for (const item of items) {
       // a heading spans the grid, so the keys after it start a fresh row
       if (item.heading) { el('div', 'dhead', this.drawerGrid).textContent = item.word; continue; }
@@ -3796,11 +4066,15 @@ export class Overlay {
       f.el._rhKey = f;   // the grid's scroll handler cancels this key's press when a drag begins
       // a tag ("BETA") takes the corner the raw key would have
       if (item.tag) f.sub('', true).tag(item.tag); else f.sub(item.key, true);
+      if (keyless(item) && this.drawerKeyless.length < 9) {
+        this.drawerKeyless.push(item);
+        if (numbers) f.legend(String(this.drawerKeyless.length));
+      }
       Object.assign(f.el.style, { position: 'relative', left: '0', top: '0', width: '100%' });
       this.bindHold(f, 500, () => this.onDrawerPin(item), () => {
         if (this.assigning) this.onDrawerPin(item);
         else { this.closeDrawer(); this.execute(item, null); }
-      }, { pressDelay: 100 });   // the press waits, as a View's does inside a ScrollView, so a scroll never flashes or clicks it
+      }, { pressDelay: 100, noRight: true });   // the press waits, as a View's does inside a ScrollView, so a scroll never flashes or clicks it
     }
     this.drawerEl.classList.add('on');
     this.updateDrawerButtons();
@@ -3953,6 +4227,12 @@ export class Overlay {
         + `screen only adds the key letters${this.twin && this.deskFallback && this.inputMode() === 'desk'
           ? `. This window shows the thumb banks: ${firstReason(this.deskFallback)}` : ''}`,
         [['auto', 'Automatic'], ['thumb', 'Thumb banks'], ['desk', 'Mouse and keyboard']]),
+      // the prefix for Rolehack's own keys (the design's section 12: it is
+      // configurable), for a system that takes Ctrl+; for itself
+      seg('prefixKey', "Prefix for Rolehack's own keys (twin banks): press it, then a letter -- 1 2 3 the macros, 4 5 the "
+        + 'pins, f k u FLICK and its flicks, m MENU, o WORLD, g GAME, c CONTEXT, z Long rest, x counts, F i e a d a '
+        + "layer (then y k u h l b j n or . to pick). Holding Ctrl lights every key's letter",
+        Object.entries(PREFIX_CODES)),
       // the design's section 11 and its test 5: today's columns by default,
       // the bigger glyphs of the earlier rule a choice; a pinch zooms either
       seg('mapCell', "Map cell (twin banks): Columns shows at least today's 34 of the level's 80 columns in landscape, "
@@ -4008,6 +4288,7 @@ export class Overlay {
         if ((v.ghostDeck === 'on') !== this.ghostOn()) this.setGhostOn(v.ghostDeck === 'on');
         put('layout', v.layout === 'classic' ? 'classic' : 'twin');
         put('controls', controlsOf(v.controls));
+        put('prefixKey', PREFIX_CODES[v.prefixKey] ? v.prefixKey : 'Semicolon');
         put('mapCell', v.mapCell === 'rows' ? 'rows' : 'columns');
         put('labelMode', v.labelMode);
         put('keyFlash', v.keyFlash === 'on');
@@ -4036,6 +4317,8 @@ export class Overlay {
   }
 
   runAction(act, from) {
+    // the last counted key, whose counts the keyboard's ^;x opens
+    if (C.isCounted(act)) this.lastCounted = { act, id: act === C.CTX_REST || act === C.CTX_LONG_REST ? 'rest' : 'search' };
     const keys = C.isCounted(act) ? C.keyWithCount(act, this.countFor(act)) : act.key;
     this.flashRaw(keys, from);
     this.host.send(keys);
@@ -4079,6 +4362,7 @@ export class Overlay {
     e.addEventListener('pointerdown', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
+      if (otherButton(ev)) { rightClick(key, ev); return; }
       try { e.setPointerCapture(ev.pointerId); } catch (x) { /* synthetic */ }
       key.press(true);
       FB.press();
@@ -4105,9 +4389,24 @@ export class Overlay {
     // touch may be a scroll), so a scroll never flashes or clicks the key
     const pressDelay = opts && opts.pressDelay ? opts.pressDelay : 0;
     const showPress = () => { pressTimer = 0; key.press(true); FB.press(); };
+    // Desktop mode: a right-click does the hold where the hold opens something
+    // (a hub's layer, a macro's editor, the counts, farlook) -- Lucas's answer
+    // 5b -- and nothing where it would empty a key or pray (opts.noRight); a
+    // layer it opens stays up to be clicked, as a layer held 600 ms does
+    if (!(opts && opts.noRight)) {
+      key.rightClick = () => {
+        if (this.assign) return;
+        onHold();
+        const L = this.padLayer;
+        if (L && !L.sticky) { L.sticky = true; this.armIdle(); }
+      };
+    }
+    let other = false;
     e.addEventListener('pointerdown', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
+      other = otherButton(ev);
+      if (other) { rightClick(key, ev); return; }
       try { e.setPointerCapture(ev.pointerId); } catch (x) { /* synthetic */ }
       clearTimeout(pressTimer);
       if (pressDelay) pressTimer = setTimeout(showPress, pressDelay); else showPress();
@@ -4134,6 +4433,7 @@ export class Overlay {
     if (opts && opts.move) e.addEventListener('pointermove', (ev) => { if (justOpened) opts.move(ev); });
     e.addEventListener('pointerup', (ev) => {
       ev.stopPropagation();
+      if (other) { other = false; return; }
       if (pressTimer) {
         // a tap quicker than the press delay: the press shows on the lift
         clearTimeout(pressTimer); pressTimer = 0;
@@ -4208,9 +4508,14 @@ export class Overlay {
     const reset = () => { clearTimers(); highlight(-1); dragging = false; revealed = false; justOpened = false; };
     const dist = (ev) => Math.hypot((ev.clientX - x0) / this.s, (ev.clientY - y0) / this.s);
 
+    // a right-click opens the legend, as the hold does, and leaves it up to be clicked
+    key.rightClick = () => { if (!this.assign) onHold(); };
+    let other = false;
     e.addEventListener('pointerdown', (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
+      other = otherButton(ev);
+      if (other) { rightClick(key, ev); return; }
       try { e.setPointerCapture(ev.pointerId); } catch (x) { /* synthetic */ }
       key.press(true);
       FB.press();
@@ -4240,6 +4545,7 @@ export class Overlay {
     });
     e.addEventListener('pointerup', (ev) => {
       ev.stopPropagation();
+      if (other) { other = false; return; }
       key.press(false);
       FB.up();
       clearTimers();
@@ -4368,6 +4674,26 @@ function spendTouch(id) {
     if (ev.type !== 'pointermove') for (const t of types) window.removeEventListener(t, stop, true);
   };
   for (const t of types) window.addEventListener(t, stop, true);
+}
+
+// A drawer item with no key a player can type for it: the page's own
+// settings (Search mode, Case, Status lines...), a command by name (#sit),
+// a key sequence with a newline or Esc in it (Drop unknown).
+function keyless(item) {
+  const k = item && item.key;
+  return !k || C.isIntercepted(item) || !!item.tag || k.startsWith('#') || /\\[enb]/.test(k) || k.length > 4;
+}
+
+// Desktop mode: a mouse's other buttons press no key (a right-click acted as a
+// tap); a Mac's Ctrl+click is its right-click.  rightClick does a key's
+// right-click, where it has one (bindHold, bindFlick): the hold's work.
+function otherButton(ev) {
+  return ev.pointerType === 'mouse' && (ev.button !== 0 || (MAC && ev.ctrlKey));
+}
+function rightClick(key, ev) {
+  if (!(ev.button === 2 || (MAC && ev.ctrlKey && ev.button === 0)) || !key.rightClick) return;
+  FB.held();
+  key.rightClick();
 }
 
 // the smallest rect holding them all
