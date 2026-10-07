@@ -3,8 +3,10 @@
 # (force_invmenu), the command menu (extmenu), scores in a window (toptenwin),
 # pile_limit:2, the highlights and menu colours.  DECgraphics is left out:
 # its line-drawing characters suit a terminal font, not the page.  Nor is
-# dumplog: this build has no DUMPLOG, and the option was an error at every
-# start ("Unknown option 'dumplog'", 2026-09-27).
+# dumplog: the page writes no dump log (its sysconf names no DUMPLOGFILE),
+# so the option would do nothing; on the 5.0.0 core it was an error at every
+# start ("Unknown option 'dumplog'", 2026-09-27), and since the Android core
+# merge (2026-10-07) DUMPLOG is compiled in and the option merely unused.
 # web.js writes this to ~/.nethackrc.  Its NETHACKOPTIONS adds perm_invent
 # (with perminv_mode:full, gold included) for a game started in twin banks,
 # whose inventory panel takes the core's permanent inventory without a window,
