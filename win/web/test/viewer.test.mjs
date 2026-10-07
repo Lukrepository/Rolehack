@@ -342,10 +342,11 @@ test('a turn of the device keeps no glass: each orientation is laid out as the r
   }
 });
 
-// Desktop mode is deferred (Lucas, 2026-10-03): the page lays out a window
-// with a mouse as for touch, so a large one gets the tablet tier -- phone-size
-// banks at its corners, the whole level, the log and the inventory -- and
-// never the desk's dock.
+// A window laid out as for touch -- touched, or with Controls set to thumb
+// banks; with a mouse while desktop mode was deferred (3 to 7 October 2026) --
+// gets the tablet tier when it is large: phone-size banks at its corners, the
+// whole level, the log and the inventory, never the desk's dock, which only
+// the mouse or the keyboard asks for (input.js).
 test('a large window laid out as the page lays it out (touch) is a tablet, never the desk', () => {
   for (const [W, H] of [[1280, 800], [1920, 1080], [2560, 1440], [3440, 1440], [1366, 768]]) {
     const r = budgetedLayout(W, H, 'touch', withClasses(BASE, null), { w: W, h: H }, { l: 0, r: 0 }, {}).r;

@@ -34,6 +34,6 @@ These are Lucas's decisions. `DESIGN.md` records each one where it applies.
 - **Empty pins.** An empty pin's tap opens its picker.
 - **The map.** It drags freely, and locks and centres only at rest.
 - **Pray.** It stays on the 380 ms hold.
-- **Desktop mode is deferred** (2026-10-03). A mouse window is laid out by its size as a phone or a tablet. The desk is kept in `layout.js` and its checks for when it is built: the 40 dp dock, key legends, the Ctrl+; prefix and switching by input mode.
+- **Desktop mode** was deferred (2026-10-03) and is built since 2026-10-07: the 40 dp dock under the map with the mouse or the keyboard in use, key legends, the Ctrl+; prefix and switching by the input in use (`win/web/input.js`). Lucas's answers of 2026-10-07 are in DESIGN's CHANGES, "Desktop mode is built"; "docked" and "hide the dock" are postponed.
 - **3440x1440 stays as it is** (2026-10-04): the level spans the window, and the panels sit under it.
 - **The glass gets a band** (2026-10-04): 24 dp, as the size classes have.

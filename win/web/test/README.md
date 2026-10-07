@@ -47,8 +47,8 @@ and it imports every `*.test.mjs` here. Naming the files also works:
   messages over the status, no band stands beside another or over the banks,
   and a window whose header is stacked in the glass anyway lays out as it does
   by default;
-- a monitor's window, which the page lays out as a tablet while desktop mode
-  is deferred, shows the whole level with its panels clear of every key and of
+- a monitor's window, laid out as a tablet while it is touched (and with a
+  mouse too while desktop mode was deferred, 3 to 7 October 2026), shows the whole level with its panels clear of every key and of
   the map. Where a 24 dp cell would leave strips wider than a panel beside the
   level, the cell grows up to 48 dp (2560x1440: 31.5 dp, 3440x1440: 42.5 dp).
   Where the level is still narrower than the column between the banks by a
@@ -95,8 +95,8 @@ itself, as the page uses them:
   level and the panels once each way, at the band's edges, and jittered about a
   boundary it never changes. No key moves for a tier. A fallback to classic
   keeps the tiers last drawn;
-- a large window laid out as the page lays it out (as for touch: desktop mode
-  is deferred) is a tablet, with phone-size keys, the whole level, the log and
+- a large window laid out as for touch (touched, or with Controls set to
+  thumb banks) is a tablet, with phone-size keys, the whole level, the log and
   the inventory, never the desk.
 
 `input.test.mjs` checks the input switch (`../input.js`, desktop mode, Lucas's
