@@ -139,6 +139,13 @@ design's `layout.js`, which is `win/web/layout.js` with a different header
 comment. The `*.report.json` files next to them are the harness's scores, not
 layout results, so they are not copied.
 
+**One exception, at Lucas's word (2026-10-08).** The desk's screens (1280x800,
+1920x1080 and 2560x1440 in each file, and `edge.json`'s "700x450 mouse") were
+rewritten from `win/web/layout.js` when the desk's banks moved to the dock
+row's outer edges. `layout-cli.mjs` is not in the repo. Every touch screen and
+every other field stayed byte for byte as the design wrote it (DESIGN.md's
+CHANGES, "Lucas's first test on his laptop").
+
 `edge.json` is not in the design folder. `edge-cli.mjs`, here, writes it from
 the design's `layout.js` for the windows in its `EDGE` table: the Z Fold's
 cover screen (344x882, both ways), 336, 330 and 320 dp short sides, 640x336

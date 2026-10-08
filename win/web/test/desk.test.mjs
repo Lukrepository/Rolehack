@@ -13,7 +13,9 @@
 //  2. a map that pans is never wider than the level's 80 columns, and stays centred;
 //  3. the arrangement keeps a 24 dp band (settings.prevDesk, from info.desk): a window
 //     dragged a pixel at a time across a step keeps the old cell, header or panels for 24 dp
-//     on the way up, and drops them where they stop fitting on the way down.
+//     on the way up, and drops them where they stop fitting on the way down;
+//  4. the banks stand at the dock row's outer edges, the log and the inventory between them
+//     (Lucas, 2026-10-08).
 // Also: nonsense dpr and prevDesk never throw, and a touch or pen layout is the same with
 // or without them.  doc/twin-banks/checks/desk.mjs and same.mjs run the same rules over many
 // more windows.
@@ -91,6 +93,35 @@ test('a map that pans is never wider than the level, and stays centred', () => {
   const wide = desk(1366, 585);
   assert.equal(wide.info.desk.beside, true);
   assert.deepEqual(wide.spec.chrome.map((p) => p.name.split(' (')[0]), ['panel: message log', 'panel: inventory', 'panel: key legend']);
+});
+
+test('the banks stand at the dock row\'s edges, the log and the inventory between them', () => {
+  // Lucas, 2026-10-08: on a touchscreen laptop the edges are where hands reach ("messages
+  // and inventory between them, yes ... edges always")
+  const cases = [...WINDOWS.map(([W, H]) => [W, H, {}]), [1366, 585, {}], [2560, 1440, { dpr: 1.5 }],
+    [3440, 1440, {}], [1280, 800, { hand: 'left' }], [800, 600, { cellAspect: 0.5625 }], [1280, 800, { deskKey: 58 }]];
+  for (const [W, H, st] of cases) {
+    const r = desk(W, H, st), at = `${W}x${H} ${JSON.stringify(st)}`;
+    assert.equal(r.usable, true, `${at}: ${r.reason}`);
+    const { L, R } = r.info.banks, m = r.info.M.m;
+    assert.ok(Math.abs(L.x0 - m) < 0.01, `${at}: the left bank starts at ${L.x0}`);
+    assert.ok(Math.abs(R.x1 - (W - m)) < 0.01, `${at}: the right bank ends at ${R.x1}`);
+    for (const c of r.spec.controls) {
+      const B = r.info.banks[c.thumb];
+      assert.ok(c.x >= B.x0 - 0.01 && c.x + c.w <= B.x1 + 0.01, `${at}: ${c.id} out of its bank`);
+    }
+    // in the dock row the log and the inventory keep clear of the banks' wells
+    if (!r.info.desk.beside) {
+      for (const p of r.spec.chrome.filter((q) => /^panel: (message log|inventory)/.test(q.name))) {
+        assert.ok(p.x >= L.x1 + 12 - 0.01 && p.x + p.w <= R.x0 - 12 + 0.01, `${at}: ${p.name} is not between the banks`);
+      }
+    }
+    assert.deepEqual(collisions(r.spec), [], at);
+  }
+  // Lucas's Edge tab: the log and the inventory share the middle, 468 dp each
+  const tab = desk(1272, 588);
+  assert.deepEqual(tab.spec.chrome.filter((p) => p.name.startsWith('panel:')).map((p) => [p.name.split(' (')[0], p.x, p.w]),
+    [['panel: message log', 162, 468], ['panel: inventory', 642, 468]]);
 });
 
 // A window dragged 1 dp at a time, laid out as the page lays it out: each layout gets the

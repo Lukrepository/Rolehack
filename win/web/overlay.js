@@ -154,6 +154,9 @@ const DESK_BAND = 24, DESK_RETRY_MS = 300, CONSUMED_CLICK_MS = 700;
 // key; Ctrl held this long alone lights every key letter (a chord such as ^D
 // is quicker, and shows nothing).
 const PREFIX_MS = 4000, CTRL_SHOW_MS = 400;
+// A board that changed by itself says so at the top of the map for this long
+// (Lucas, 2026-10-08), if it is drawn this soon after the switch asked for it.
+const SWITCH_NOTE_MS = 3000, SWITCH_NOTE_WAIT_MS = 5000;
 // The count layer's places: ↖ ×1, ↑ ×5, ↗ ×10, → ×20 (or a Long rest's
 // ×100 to ×400); the centre types any count.
 const COUNT_PLACES = [0, 1, 2, 5];
@@ -818,10 +821,28 @@ export class Overlay {
   // The switch made: the mode remembered in this browser (prefs are per
   // channel), and twin banks laid out again for it.  Control ids are the same
   // on both boards, so armed Fight and whatever is open come through.
+  // Every switch here is the automatic one (Settings' Controls goes through
+  // controlsChanged), so the board it draws names itself (switchNote).
   switchInput(mode) {
     this.input = inputSwitched(this.input, mode, performance.now());
     if (controlsOf(P.get('controls')) === 'auto' && P.get('inputMode') !== mode) P.set('inputMode', mode);
+    this.switchAsked = performance.now();
     if (this.wantsTwin()) this.requestRebuild();
+  }
+
+  // The note for a board that changed by itself (Lucas, 2026-10-08): its
+  // name first, as the Controls setting names it, then where that setting
+  // is -- "front-loaded", his pick of the short form.  At the top of the map
+  // for 3 s; it takes no click and goes with the next rebuild.
+  switchNote(pointer) {
+    const map = this.twin && this.twin.spec.mapArea;
+    if (!map) return;
+    const n = el('div', 'switchnote', this.keysEl);
+    n.setAttribute('role', 'status');
+    n.innerHTML = `<b>${pointer === 'mouse' ? 'Mouse and keyboard' : 'Thumb banks'}</b> · Settings › Controls`;
+    Object.assign(n.style, { left: `${map.x + map.w / 2}px`, top: `${map.y + 8}px` });
+    setTimeout(() => n.classList.add('gone'), SWITCH_NOTE_MS);
+    setTimeout(() => n.remove(), SWITCH_NOTE_MS + 600);
   }
 
   controlsChanged() {
@@ -1290,6 +1311,7 @@ export class Overlay {
     // assigned, a switch of board included; only a control gone resets it
     const sig = S.controls.map((c) => c.id).sort().join(' ');
     const snap = this.twin && sig === this.twinSig ? this.snapshot() : null;
+    const wasPointer = this.twin ? this.twin.pointer : null;
     this.twin = { spec: S, info: r.info, W, H, pointer, mode, settings, budget: used, reason: r.reason, deskInput,
       ctl: new Map(S.controls.map((c) => [c.id, c])), keys: new Map(), guard: guardGeometry(S) };
     this.twinSig = sig;
@@ -1336,6 +1358,11 @@ export class Overlay {
     if (snap) this.restoreState(snap);
     this.ghostSpots = this.portrait || dock ? [] : this.classicDeck(W, H);
     this.habitSpots = dock ? null : this.classicHabits(W, H);
+    // the board an automatic switch changed names itself; a switch that drew
+    // nothing new (a window too short for the desk keeps the thumb banks)
+    // says nothing
+    if (this.switchAsked && performance.now() - this.switchAsked < SWITCH_NOTE_WAIT_MS && wasPointer && wasPointer !== pointer) this.switchNote(pointer);
+    this.switchAsked = 0;
 
     // The bands are the layout's, messages first: the message band's rows and
     // width are what web.js pages the game's messages by (bandMetrics), so

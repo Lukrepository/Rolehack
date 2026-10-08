@@ -1139,9 +1139,11 @@ function popupsFor(P, fill, st) {
 //   { dpr, a, k,        the settings it was made at: dpr, cellAspect, deskKey
 //     Td, T,            the cell in whole device pixels, and in dp (Td / dpr)
 //     sideBySide,       the header's messages and status side by side (else stacked)
-//     beside,           the log and the inventory beside the map (else in the dock row)
+//     beside,           the log and the inventory beside the map (else in the dock row,
+//                       between the banks, which stand at its edges)
 //     log, inv,         each shown in the dock row (both true when beside)
-//     legend,           the key legend: 'row' (the dock row's left; beside only), 'under' or 'none'
+//     legend,           the key legend: 'row' (the dock row's middle; beside only), 'under'
+//                       (under the left bank) or 'none'
 //     whole }           the whole level shows (derived from the rest; never kept)
 const DESK_LEGENDS = ['row', 'under', 'none'];
 // the parts each part's band holds at the windows around: those deskPlan decides before it
@@ -1166,8 +1168,9 @@ function deskPlan(W, H, M0, st, choose = (part, own) => own) {
   const mapTop = top + hd.h + 4;
   let M = M0, degraded = false;
   // a window too small for the dock: the dock scales (degraded) rather than leave the screen
+  // (the banks at its edges, M.m in, and M.c at least between them)
   {
-    const dockW = 2 * bankWidth(M, M.k) + M.c, f = Math.min(1, (W - 8) / dockW, Math.max(0.3, (H - mapTop - 12 - 12 - 4 - 60) / M.B));
+    const need = 2 * bankWidth(M, M.k) + 2 * M.m + M.c, f = Math.min(1, W / need, Math.max(0.3, (H - mapTop - 12 - 12 - 4 - 60) / M.B));
     if (f < 1) {
       M = { ...M }; for (const key of ['k', 'kR', 'm', 'mb', 'g', 'c', 'u', 'gr', 's']) M[key] *= f; M.B = bankHeight(M);
       degraded = true; reasons.push(`the window is too small for the ${st.deskKey} dp dock; it is scaled to ${r2(f * 100)}%`);
@@ -1193,26 +1196,36 @@ function deskPlan(W, H, M0, st, choose = (part, own) => own) {
   const mw = Math.max(0, Math.min(W - 16, 80 * a * T)), mh = Math.min(21 * T, availH);
   if (mh < 60) { degraded = true; reasons.push('the map is under 60 dp tall'); }
   const map = { x: (W - mw) / 2, y: mapTop, w: mw, h: mh };
-  const dx0 = Math.round((W - dockW) / 2), dy0 = map.y + mh + 12;
+  // The banks stand at the dock row's outer edges, M.m in from the screen's sides, and the
+  // log and the inventory between them (Lucas, 2026-10-08: on a touchscreen laptop the edges
+  // are where hands reach; "messages and inventory between them, yes ... edges always").
+  // The middle starts past the left bank's well (6 dp) and a 12 dp gap.
+  const bw = bankWidth(M, M.k), xL = M.m, xR = W - M.m - bw;
+  const dy0 = map.y + mh + 12;
   const rowY = dy0, rowH = Math.max(0, H - 4 - rowY);
-  const under = rowH - dockH - 12, underFits = under >= 60;
-  const side = map.x - 12 - 4, innerW = dx0 - 12 - map.x;
-  const lw = dx0 - 12 - 4, rx = dx0 + dockW + 12, rw = W - 4 - rx;
-  const besideFits = side >= 160 && H - 4 - mapTop >= 60;
+  const mx0 = xL + bw + 6 + 12, midW = Math.max(0, xR - 6 - 12 - mx0);
+  // under the left bank: from the screen's margin to the middle's gap
+  const underW = mx0 - 12 - 4, underH = rowH - dockH - 12;
+  const underFits = underH >= 60 && underW >= 100;
+  const side = map.x - 12 - 4;
+  // beside the map, the panels stop over the banks' wells
+  const besideH = mh - 6;
+  const besideFits = side >= 160 && besideH >= 60;
   const beside = choose('beside', besideFits, (v) => !v || besideFits);
   let log = true, inv = true, legend;
   if (beside) {
-    const rowFits = innerW >= 160 && rowH >= 60;
+    const rowFits = midW >= 160 && rowH >= 60;
     legend = choose('legend', rowFits ? 'row' : underFits ? 'under' : 'none', (v) => v === 'none' || (v === 'row' ? rowFits : underFits));
   } else {
-    const logFits = lw >= 160 && rowH >= 60, invFits = rw >= 160 && rowH >= 60;
+    // the log alone wants 160 dp of the middle; with the inventory, 160 dp each
+    const logFits = midW >= 160 && rowH >= 60, invFits = midW >= 2 * 160 + 12 && rowH >= 60;
     log = choose('log', logFits, (v) => !v || logFits);
     inv = choose('inv', invFits, (v) => !v || invFits);
     legend = choose('legend', underFits ? 'under' : 'none', (v) => v === 'none' || (v === 'under' && underFits));
   }
   return {
     desk: { dpr, a, k: st.deskKey, Td, T, sideBySide, beside, log, inv, legend, whole },
-    hd, M, degraded, reasons, rows, mapTop, dockW, dockH, T, Td, whole, map, mw, mh, dx0, dy0, rowY, rowH, side, innerW, lw, rx, rw,
+    hd, M, degraded, reasons, rows, mapTop, dockW, dockH, T, Td, whole, map, mw, mh, bw, xL, xR, dy0, rowY, rowH, side, besideH, mx0, midW, underW, underH,
   };
 }
 
@@ -1256,7 +1269,7 @@ function deskLayout(W, H, M0, st, table, reasons) {
   };
   const D = prev ? deskPlan(W, H, M0, st, keep) : deskPlan(W, H, M0, st);
   reasons.push(...D.reasons);
-  const { hd, M, map, mw, mh, dx0, dy0, dockW, dockH, rowY, rowH, T, Td, whole, rows, mapTop } = D;
+  const { hd, M, map, mw, mh, bw, xL, xR, dy0, dockH, rowY, rowH, T, Td, whole, rows, mapTop } = D;
   const degraded = D.degraded;
   const spans = rowSpans(M);
   const controls = [];
@@ -1264,8 +1277,7 @@ function deskLayout(W, H, M0, st, table, reasons) {
   const mirror = st.hand === 'left';
   for (const corner of ['L', 'R']) {
     const content = mirror ? (corner === 'L' ? 'R' : 'L') : corner;
-    const bw = bankWidth(M, M.k);
-    const x0 = corner === 'L' ? dx0 : dx0 + bw + M.c;
+    const x0 = corner === 'L' ? xL : xR;
     banks[corner] = { x0, x1: x0 + bw, y0: dy0, y1: dy0 + dockH, bw, bh: dockH, content };
     table[content].forEach((row, r) => row.forEach((id, c) => {
       const cc = id.startsWith('pad_') && corner === 'R' ? 2 - c : c;
@@ -1282,27 +1294,32 @@ function deskLayout(W, H, M0, st, table, reasons) {
   const LOG = 'panel: message log (history, newest last)', INV = 'panel: inventory (a copy of the INVENTORY list; the key stays in the dock)';
   const LEG = 'panel: key legend (the Ctrl+; prefix routes to layers, drawers, macros, flicks)';
   const { legend } = D.desk;
+  const under = { name: LEG, x: 4, y: dy0 + dockH + 12, w: D.underW, h: D.underH };
   if (D.desk.beside) {
     // A level narrower than the screen (text cells on 16:9, any cell on 32:9, a short wide
-    // window): the log and the inventory stand beside the map, from its top to the bottom of
-    // the screen, and the key legend takes the dock row's left or the space under the dock.
-    panels.push({ name: LOG, x: 4, y: mapTop, w: D.side, h: H - 4 - mapTop });
-    panels.push({ name: INV, x: map.x + mw + 12, y: mapTop, w: D.side, h: H - 4 - mapTop });
-    if (legend === 'row') panels.push({ name: LEG, x: map.x, y: rowY, w: D.innerW, h: rowH });
-    else if (legend === 'under') panels.push({ name: LEG, x: dx0, y: dy0 + dockH + 12, w: dockW, h: D.rowH - dockH - 12 });
+    // window): the log and the inventory stand beside the map, from its top to the banks'
+    // wells under it, and the key legend takes the dock row's middle or the space under the
+    // left bank.
+    panels.push({ name: LOG, x: 4, y: mapTop, w: D.side, h: D.besideH });
+    panels.push({ name: INV, x: map.x + mw + 12, y: mapTop, w: D.side, h: D.besideH });
+    if (legend === 'row') panels.push({ name: LEG, x: D.mx0, y: rowY, w: D.midW, h: rowH });
+    else if (legend === 'under') panels.push(under);
   } else {
-    if (D.desk.log) panels.push({ name: LOG, x: 4, y: rowY, w: D.lw, h: rowH });
-    if (D.desk.inv) panels.push({ name: INV, x: D.rx, y: rowY, w: D.rw, h: rowH });
-    if (legend === 'under') panels.push({ name: LEG, x: dx0, y: dy0 + dockH + 12, w: dockW, h: D.rowH - dockH - 12 });
+    // the log and the inventory share the middle, the log alone when only it fits
+    const shown = [D.desk.log && LOG, D.desk.inv && INV].filter(Boolean);
+    const pw = shown.length ? (D.midW - 12 * (shown.length - 1)) / shown.length : 0;
+    shown.forEach((name, n) => panels.push({ name, x: D.mx0 + n * (pw + 12), y: rowY, w: pw, h: rowH }));
+    if (legend === 'under') panels.push(under);
   }
   const fill = { map, bands: hd.bands, panels, glass: bbox([...hd.bands, map], 2), whole, cols: Math.min(80, mw / (a * T)), rows: Math.min(21, mh / T), rows_msg: rows };
   const P = { banks, controls, bankTop: dy0 };
   const popups = popupsFor(P, fill, st);
-  const decor = [{ name: 'dock well', ...rnd({ x: dx0 - 6, y: dy0 - 6, w: dockW + 12, h: dockH + 12 }) }];
+  // a well round each bank, as twin banks has
+  const decor = ['L', 'R'].map((c) => ({ name: `dock well ${c === 'L' ? 'left' : 'right'}`, ...rnd({ x: banks[c].x0 - 6, y: dy0 - 6, w: bw + 12, h: dockH + 12 }) }));
   const fit = { level: degraded ? 'degraded' : 'full', pad: r2(M.k), padSetting: st.deskKey, rightColumns: r2(M.k), degraded, reasons };
   const spec = {
     W, H, pointer: 'mouse',
-    source: `v2 layout(): tier desk, dock ${r2(dockW)}x${r2(dockH)} centred under the map, keys ${r2(M.k)} dp with keyboard legends, map cell ${r2(T)} dp${st.dpr !== 1 ? ` (${Td} device px at dpr ${st.dpr})` : ''} (${whole ? 'whole level' : 'pans'}; ${r2(fill.cols)}x${r2(fill.rows)} cells)`,
+    source: `v2 layout(): tier desk, banks ${r2(bw)}x${r2(dockH)} at the dock row's edges, keys ${r2(M.k)} dp with keyboard legends, map cell ${r2(T)} dp${st.dpr !== 1 ? ` (${Td} device px at dpr ${st.dpr})` : ''} (${whole ? 'whole level' : 'pans'}; ${r2(fill.cols)}x${r2(fill.rows)} cells)`,
     controls, glass: rnd(fill.glass), mapArea: rnd(map),
     bands: hd.bands.map((b) => ({ name: b.name, ...rnd(b) })),
     popups, chrome: panels.map((p) => ({ name: p.name, ...rnd(p) })), decor, fit,
