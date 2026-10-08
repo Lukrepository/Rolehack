@@ -95,10 +95,15 @@ export function budgetFor(W, H, screen, insets, entry) {
 }
 
 // A guess is worse than none when it costs the pad a step, or degrades a
-// window that alone is not degraded, or loses twin banks the window has room for.
+// window that alone is not degraded, or loses twin banks the window has room
+// for -- or finds twin banks where the window alone has no room for them: a
+// first visit lays out as the window alone does (the design's section 12), so
+// a window the rule cannot lay out shows classic until the device has been
+// seen turned (an iPhone SE's Safari in portrait, 375x553, since the status
+// lines grew on 2026-10-08).
 const fit = (r) => (r && r.spec ? r.spec.fit : null);
 export function worse(a, b) {
-  if (!b || !b.usable) return false;
+  if (!b || !b.usable) return !!(a && a.usable);
   if (!a || !a.usable) return true;
   const fa = fit(a), fb = fit(b);
   return fa.pad < fb.pad - 1e-6 || (fa.degraded && !fb.degraded);
@@ -178,7 +183,8 @@ export function classesOf(r, prev = null) {
   const G = r.info.G, D = r.info.DC;
   return {
     tier: r.info.tier, cellTier: (D && D.tier) || null,
-    glass: G && G.kind ? { kind: G.kind, over: !!G.over } : null,
+    // the map's glass with its orientation: a turn of the device keeps no glass (section 7)
+    glass: G && G.kind ? { kind: G.kind, over: !!G.over, portrait: !!r.info.portrait } : null,
     cellGlass: D && D.kind ? { kind: D.kind, over: !!D.over, whole: !!D.whole } : null,
   };
 }

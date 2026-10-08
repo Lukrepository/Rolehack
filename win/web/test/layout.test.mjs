@@ -40,30 +40,10 @@ const FIXTURES = new URL('./fixtures/', import.meta.url);
 const TOL = 0.5;          // dp: the fixtures are rounded to 0.01, the rule may drift less than this
 const SAME = 0.02;        // dp: parity is exact, up to the 0.01 rounding of two rects
 
-// How the design's layout-cli.mjs makes each fixture: the screens of a pair
-// are laid out with the pair's remembered budget (portrait width, landscape
-// height and width), as the page does once the device has been seen both
-// ways (section 12); each variant is the rule under one changed setting.
-// These must match layout-cli.mjs's SCREENS, PAIRS and VARIANTS.
-const PAIRS = [['896x443', '443x939'], ['640x360', '360x640'], ['915x412', '412x915'], ['844x390', '390x844'], ['1024x768', '768x1024']];
-const VARIANTS = {
-  'spec.json': {},
-  'spec-combat-left.json': { combatThumb: 'L' },
-  'spec-left-handed.json': { hand: 'left' },
-  'spec-text-cells.json': { cellAspect: 0.5625 },
-  'spec-pad46.json': { padKey: 46 },
-  'spec-pad52.json': { padKey: 52 },
-  'spec-cell-rows.json': { mapCell: 'rows' },
-};
-const SCREENS = ['896x443', '443x939', '640x360', '360x640', '915x412', '412x915', '844x390', '390x844',
-  '1024x768', '768x1024', '1180x820', '1366x768', '1280x800', '1920x1080', '2560x1440'];
-
-function screenSettings(W, H, settings) {
-  const key = `${W}x${H}`, pr = PAIRS.find(([l, p]) => l === key || p === key);
-  if (!pr) return settings;
-  const [lw, lh] = pr[0].split('x').map(Number), [pw] = pr[1].split('x').map(Number);
-  return { ...settings, budget: { w: pw, h: lh, l: lw } };
-}
+// How each fixture is made (the screens, the pairs' remembered budgets and
+// the variants' settings): spec-cli.mjs, which also rewrites the fixtures when
+// the design changes the rule on purpose.
+import { VARIANTS, SCREENS, screenSettings } from './spec-cli.mjs';
 
 // every way two rects differ by more than TOL, as text
 function rectDiff(what, a, b) {
@@ -373,13 +353,12 @@ test("header 'stacked' keeps the bands stacked in the glass", () => {
 // ---- the status lines hidden
 
 // With the status lines hidden (Settings, Status lines: Hidden) the page asks
-// for no status band (statusH 0) and draws none, so the rule keeps no room for
-// HP and Pw bars under lines that are not there: 14 dp kept for them stood
-// empty between the messages and the map (the review, 2026-10-02).  With the
-// lines shown the bars come as before.
-test('no room for bars under hidden status lines', () => {
+// for no status band (statusH 0) and draws none, so the rule keeps no empty
+// band there: 14 dp once kept for HP and Pw bars under lines that were not
+// there stood empty between the messages and the map (the review, 2026-10-02;
+// the bars themselves went on 2026-10-08).
+test('no band under hidden status lines', () => {
   const out = [];
-  let bars = 0;
   const windows = [...PHONES, ...TABLETS].flatMap(([S, L]) => [[L, S], [S, L]]);
   for (const [W, H] of windows) {
     for (const st of [{}, { mapCell: 'rows' }]) {
@@ -390,11 +369,10 @@ test('no room for bars under hidden status lines', () => {
       // as tall as they are, and grants nothing)
       const [msg, status] = hid.spec.bands, stacked = Math.abs(status.x - msg.x) <= 0.01;
       if (stacked && status.h > 0.01) out.push(`${W}x${H} ${JSON.stringify(st)}: ${status.name}, ${status.h} dp, with the lines hidden`);
-      if (shown.usable && shown.spec.bands[1].name === 'status (3 lines + HP/Pw bars)') bars++;
+      if (shown.usable && !/^status \(3 lines\)/.test(shown.spec.bands[1].name)) out.push(`${W}x${H} ${JSON.stringify(st)}: ${shown.spec.bands[1].name}`);
     }
   }
   assert.deepEqual(out, []);
-  assert.ok(bars > 0, 'no window got bars with the lines shown');
 });
 
 // ---- the tablet tier on a monitor's window
@@ -424,9 +402,11 @@ function voidShare(S, step = 4) {
 test("a monitor's window is a tablet with the whole level, its panels in the spare glass or beside the level", () => {
   const out = [];
   const ov = (a, b) => a.x + 0.01 < b.x + b.w && b.x + 0.01 < a.x + a.w && a.y + 0.01 < b.y + b.h && b.y + 0.01 < a.y + a.h;
-  // [W, H, cell, panels beside the level, the most void]
+  // [W, H, cell, panels beside the level, the most void].  2752x1152 and 2560x1080: the
+  // status lines at the text metric (2026-10-08) took a cell step from these short, wide
+  // windows (33.5 -> 32 and 30 -> 29 dp) and left a little more void (9.8% and 10.7%)
   const MONITORS = [[1280, 800, 15.5, false, 0.12], [1920, 1080, 23.5, false, 0.08], [1920, 1200, 23.5, false, 0.08],
-    [2560, 1440, 31.5, false, 0.06], [2752, 1152, 33.5, false, 0.08], [2560, 1080, 30, false, 0.1], [3440, 1440, 42.5, false, 0.09],
+    [2560, 1440, 31.5, false, 0.06], [2752, 1152, 32, false, 0.10], [2560, 1080, 29, false, 0.11], [3440, 1440, 42.5, false, 0.09],
     [3440, 1080, 37.5, false, 0.18], [3840, 1080, 42.5, false, 0.09], [3840, 1600, 47.5, false, 0.05], [3840, 2160, 47.5, false, 0.06],
     [5120, 1440, 48, true, 0.25], [5120, 2160, 48, false, 0.15]];
   for (const [W, H, T, beside, most] of MONITORS) {

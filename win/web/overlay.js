@@ -38,7 +38,7 @@
 import * as C from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
-import { textMetrics } from './layout.js';
+import { textMetrics, STATUS_PAD } from './layout.js';
 import { budgetedLayout, withClasses, classesOf, deviceReport, browserFamily } from './viewer.js';
 import { eraTag } from './channel.js';
 
@@ -763,14 +763,16 @@ export class Overlay {
     const padKey = clamp(Number(P.get('padCell')) || 58, 40, 72);
     // the message rows as the page sets them (msgTextPx) and the status band
     // as web.js draws it: inputs to the rule, so it never puts text over a key.
-    // In twin banks the status lines follow the system's text size too, as the
-    // message rows do (the design's section 10: 48 dp times the text size);
-    // classic's stay at the case's scale.
+    // In twin banks the status lines are set at the text metric, as the
+    // message rows are (Lucas, 2026-10-08; layout.js textMetrics): one message
+    // row per line, three lines (two in compact, none hidden), plus the band's
+    // padding; classic's stay at the case's scale.
     resetTextScale();
     const textScale = osTextScale();
     const text = textMetrics({ msgFont: P.get('msgFont') === 'screen' ? 'screen' : 'atkinson',
       msgSize: Number(P.get('msgSize')) || 1, textScale, xHeight: MSG_X });
-    const statusH = textScale * ({ hidden: 0, compact: STATUS_BAND - LINE }[P.get('statusLines')] ?? STATUS_BAND);
+    const statusRows = { hidden: 0, compact: 2, full: 3 }[P.get('statusLines')] ?? 3;
+    const statusH = statusRows ? statusRows * text.msgRowH + STATUS_PAD * textScale : 0;
     // The header goes where the rule puts it: stacked at the top of the glass,
     // side by side once the glass is wide enough (a tablet, a laptop), or over
     // the banks when that shows more of the level -- with the map cell
@@ -3749,8 +3751,10 @@ export class Overlay {
       seg('statusLines', 'Status lines', [['full', 'Full'], ['compact', 'Compact'], ['hidden', 'Hidden']]),
       { seg: 'morePause', label: 'When the message band is full', value: P.get('morePause') ? 'on' : 'off',
         options: [['on', 'Pause (--More--)'], ['off', "Don't pause"]] },
-      seg('msgFont', 'Message font', [['atkinson', 'Hyperlegible'], ['screen', 'Screen font']]),
-      seg('msgSize', 'Message size', [['0.85', 'Small'], ['1', 'Standard'], ['1.2', 'Large'], ['1.4', 'Larger']]),
+      // one text size and face for the message band and, in twin banks, the
+      // status lines (Lucas, 2026-10-08: "message size renamed text size")
+      seg('msgFont', 'Text font', [['atkinson', 'Hyperlegible'], ['screen', 'Screen font']]),
+      seg('msgSize', 'Text size', [['0.85', 'Small'], ['1', 'Standard'], ['1.2', 'Large'], ['1.4', 'Larger']]),
       seg('mapMode', 'Map', [['tiles', 'Tiles'], ['text', 'Text']]),
       { id: 'userRc', multiline: true, value: P.get('userRc'),
         label: 'Your option lines, one per line, used from the next start. To recolour a monster on the text map, '
@@ -3766,11 +3770,14 @@ export class Overlay {
           : this.twin && this.twin.spec.fit.degraded ? `. Twin banks here are squeezed: ${firstReason(this.twin.reason)}` : ''}`,
         [['twin', 'Twin banks'], ['classic', 'Classic']]),
       // the design's section 11 and its test 5: today's columns by default,
-      // the bigger glyphs of the earlier rule a choice; a pinch zooms either
-      seg('mapCell', "Map cell (twin banks): Columns shows at least today's 34 of the level's 80 columns in landscape, "
-        + 'with all 21 rows, where the screen allows; Rows draws bigger tiles that fill the landscape height with the '
-        + '21 rows, so fewer columns show. The same size in both orientations',
-        [['columns', 'Columns'], ['rows', 'Rows']]),
+      // the bigger glyphs of the earlier rule a choice; a pinch zooms either.
+      // Only on a phone, where it changes the layout: on tablets, laptops and
+      // the desk the two give the same cell (Lucas, 2026-10-08, in plain words)
+      ...(document.documentElement.dataset.tier === 'phone' ? [
+        seg('mapCell', 'Map tiles on this phone: smaller shows more of the level (at least 34 of its 80 columns in '
+          + 'landscape, all 21 rows where they fit); bigger fills the height with the 21 rows and scrolls more sideways. '
+          + 'The same size in both orientations',
+          [['columns', 'Smaller, see more'], ['rows', 'Bigger, scroll more']])] : []),
       { seg: 'ghostDeck', label: 'Old key spots (twin banks, landscape): a map tap where COMBAT, PIN 2, FLICK, LOOK or CONTEXT sat '
           + 'on the old deck shows where the key went, and a second tap on the same place walks there. It retires itself '
           + 'after three sessions in a row, each of 100 turns or more played in twin banks in landscape, in which no '
@@ -3814,7 +3821,7 @@ export class Overlay {
         put('padCell', parseInt(v.padCell, 10));
         if ((v.ghostDeck === 'on') !== this.ghostOn()) this.setGhostOn(v.ghostDeck === 'on');
         put('layout', v.layout === 'classic' ? 'classic' : 'twin');
-        put('mapCell', v.mapCell === 'rows' ? 'rows' : 'columns');
+        if (v.mapCell !== undefined) put('mapCell', v.mapCell === 'rows' ? 'rows' : 'columns');   // the row shows only on phones
         put('labelMode', v.labelMode);
         put('keyFlash', v.keyFlash === 'on');
         put('touchKeyboard', v.touchKeyboard === 'on');

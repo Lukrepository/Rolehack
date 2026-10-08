@@ -115,6 +115,19 @@ when the design's `layout.js` gives other numbers than `EDGE` holds.
 
 ## Refreshing them when the design changes the rule
 
+Since 2026-10-08 the rule is changed in the repo itself (the design folder's
+`layout-cli.mjs` stayed in its working session), so a decided change goes:
+record it in `DESIGN.md`'s CHANGES; change `win/web/layout.js`; run the gate,
+`node doc/twin-banks/checks/sweep.mjs` (and `drag.mjs`); rewrite the golden
+screens with `node win/web/test/spec-cli.mjs` and the edge windows with
+`node win/web/test/edge-cli.mjs <a copy of win/web/layout.js>` (it refuses the
+page's own path; copy the file first, and change `EDGE`'s numbers there first
+when the change moves them); read the diff `git` shows in `fixtures/`: it is
+the change's effect on every screen, and nothing in it may be a surprise.
+Never regenerate to make a failing test pass.
+
+The original procedure, from the design folder:
+
 1. In the design folder, regenerate the specs with `node layout-cli.mjs`. It
    rewrites `spec.json` and `variants/`. The design's CI gate is
    `node checks/sweep.mjs`.

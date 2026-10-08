@@ -119,15 +119,22 @@ const KIND = {
 //    band over a key.
 // ---------------------------------------------------------------------------------------
 export const X_HEIGHT = { atkinson: 0.496, screen: 0.400 };   // Atkinson Hyperlegible Next, VT323 (OS/2 tables)
-export const MSG_X = 9.5, MSG_X_ANDROID = 10, MSG_LEADING = 1.35, STATUS_H = 48;
+export const MSG_X = 9.5, MSG_X_ANDROID = 10, MSG_LEADING = 1.35;
+// The status lines are set at the same text metric as the message rows (Lucas,
+// 2026-10-08; until then a 48 dp band of 14 px text): three lines, each one
+// message row tall (two in compact), plus the band's own padding, 3 dp above
+// and 4 below at the system's text size.
+export const STATUS_ROWS = 3, STATUS_PAD = 7;
 export function textMetrics({ msgFont = 'atkinson', msgSize = 1, textScale = 1, xHeight = MSG_X } = {}) {
   // the system's text size is clamped as overlay.js osTextScale() clamps it
   const s = clamp(Number(textScale) || 1, 0.8, 2);
   const xh = X_HEIGHT[msgFont] ?? X_HEIGHT.atkinson;
   const x = Number(xHeight) > 0 ? Number(xHeight) : MSG_X;
-  return { msgRowH: (x / xh) * (Number(msgSize) || 1) * s * MSG_LEADING, statusH: STATUS_H * s };
+  const msgRowH = (x / xh) * (Number(msgSize) || 1) * s * MSG_LEADING;
+  return { msgRowH, statusH: STATUS_ROWS * msgRowH + STATUS_PAD * s };
 }
 const ROW_H = textMetrics().msgRowH;          // 25.86 dp at the web's defaults (27.22 at Android's 10 dp)
+export const STATUS_H = textMetrics().statusH; // 84.59 dp at the web's defaults: three status lines at the text metric
 
 export const DEFAULTS = {
   padKey: 58,          // the player's movement key size: 46, 52 or 58 dp.  Never scaled to fit.
@@ -148,7 +155,7 @@ export const DEFAULTS = {
   msgRows: { landscape: 2, portrait: 3 },   // Lucas's settings (2026-09-28)
   shortScreenRows: 2,  // screens under 800 dp tall get at most this many message rows
   msgRowH: ROW_H,      // one message row, dp (textMetrics())
-  statusH: STATUS_H,   // three status lines
+  statusH: STATUS_H,   // three status lines at the text metric (textMetrics)
   statusW: 412,        // side by side, the status takes today's band width
   gripLift: 0,         // raise both banks along their side edges (same in both orientations; clamped to fit)
   hand: 'right',       // 'left' mirrors the layout: the movement pad takes the right corner
@@ -502,7 +509,7 @@ function placeBanks(W, H, M, st, table) {
 // 6. The text header: messages and status, side by side when the width allows (messages
 //    at most 960 dp, status at least 412), else stacked, messages first.
 // ---------------------------------------------------------------------------------------
-function header(x, y, w, rows, st, statusExtra = 0) {
+function header(x, y, w, rows, st) {
   const BH = bandH(rows, st.msgRowH);
   if (w >= HEADER_SIDE && st.header !== 'stacked') {
     const h = Math.max(BH, st.statusH);
@@ -511,16 +518,16 @@ function header(x, y, w, rows, st, statusExtra = 0) {
       h, sideBySide: true, rows,
       bands: [
         { name: `messages (${rows} rows; MORE lamp at the right end)`, x, y, w: mw, h },
-        { name: 'status (3 lines, then HP and Pw bars)', x: x + mw + 6, y, w: w - mw - 6, h },
+        { name: 'status (3 lines)', x: x + mw + 6, y, w: w - mw - 6, h },
       ],
     };
   }
-  const SH = st.statusH + statusExtra;
+  const SH = st.statusH;
   return {
     h: BH + 2 + SH, sideBySide: false, rows,
     bands: [
       { name: `messages (${rows} rows; MORE lamp at the right end)`, x, y, w, h: BH },
-      { name: statusExtra ? 'status (3 lines + HP/Pw bars)' : 'status (3 lines)', x, y: y + BH + 2, w, h: SH },
+      { name: 'status (3 lines)', x, y: y + BH + 2, w, h: SH },
     ],
   };
 }
@@ -628,8 +635,11 @@ function keptGlass(best, list, prev, W, H, pickAt, whole) {
   });
   return near ? kept : best;
 }
-// what a stored glass may be: { kind, over[, whole] }, or nothing
-const glassOf = (g) => (g && typeof g === 'object' && typeof g.kind === 'string' ? { kind: g.kind, over: !!g.over, whole: !!g.whole } : null);
+// what a stored glass may be: { kind, over[, whole][, portrait] }, or nothing; one that
+// says its orientation counts only in that orientation (a turn keeps no glass)
+const glassOf = (g, portrait) => (g && typeof g === 'object' && typeof g.kind === 'string'
+  && (g.portrait == null || portrait == null || !!g.portrait === !!portrait)
+  ? { kind: g.kind, over: !!g.over, whole: !!g.whole } : null);
 
 // ---------------------------------------------------------------------------------------
 // 8. One map cell per device, decided on the device's landscape geometry (the remembered
@@ -853,7 +863,7 @@ function layoutCore(W0, H0, pointer, settings) {
   // Each window tried has its own cell: the device's, which a window without a budget
   // decides from its own sides (at 1366 wide the cell grows from 12 dp at 699 tall to 13.5
   // at 740, and the glass the ranking picks there at 13.5 is not the one it picks at 12).
-  let G = keptGlass(bestOf(scored), scored, glassOf(st.prevGlass), W, H, (w, h) => {
+  let G = keptGlass(bestOf(scored), scored, glassOf(st.prevGlass, portrait), W, H, (w, h) => {
     const Pn = placeBanks(w, h, M, st, table);
     let n = rowsFor(h, h > w, st), cs = candidates(w, h, M, Pn, st, n);
     while (!cs.length && n > 1) { n--; cs = candidates(w, h, M, Pn, st, n); }
@@ -931,8 +941,8 @@ function layoutCore(W0, H0, pointer, settings) {
 }
 
 // Fill a glass candidate at cell T: the map (the cells actually drawn, at the top of the
-// glass, so spare height lies between the map and the banks), extra message rows, status
-// bars and panels from what the level does not need.
+// glass, so spare height lies between the map and the banks), extra message rows and
+// panels from what the level does not need.
 function fillGlass(G, T, a, tier, st, rows0, P, W, H) {
   const R = G.region;
   const c = cellsAt(R, T, a);
@@ -968,7 +978,7 @@ function fillGlass(G, T, a, tier, st, rows0, P, W, H) {
   const hasLog = () => flank || panels.some((q) => q.name.startsWith('panel: message log'));
   let spare = R.h - mh;
   let y0 = R.y;
-  // spare height: first message rows (up to 4 in all), then status bars, then a log panel
+  // spare height: first message rows (up to 4 in all), then a log panel
   const canGrow = !G.over;                       // a header over the banks has a fixed height
   if (canGrow && spare > 1) {
     const msgBand = bands[0];
@@ -983,12 +993,6 @@ function fillGlass(G, T, a, tier, st, rows0, P, W, H) {
         bands = bands.map((b, i) => (i === 0 ? { ...b, name: b.name.replace(/\d+ rows/, `${rowsMsg} rows`), h: b.h + grow }
           : b.x === msgBand.x && b.y > msgBand.y ? { ...b, y: b.y + grow } : { ...b, h: b.h + grow }));
         y0 += grow; spare -= grow;
-      }
-      // HP and Pw bars under the status lines -- none where the player hid the lines
-      // (statusH 0): the band is not drawn, and 14 dp kept for it stood empty over the map
-      if (!G.hd.sideBySide && spare >= 14 && st.statusH > 0) {
-        bands = bands.map((b, i) => (i === 1 ? { ...b, name: 'status (3 lines + HP/Pw bars)', h: b.h + 14 } : b));
-        y0 += 14; spare -= 14;
       }
       // what is still spare (two rows' worth or more) becomes the message log under the map:
       // on Lucas's phone in portrait, the 13.4 dp cell's 21 rows leave about 90 dp
