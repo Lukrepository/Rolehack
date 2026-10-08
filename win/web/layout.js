@@ -729,23 +729,81 @@ export function deviceCell(S, L, settings, M, table = BANK, Tfixed = null) {
 //      window can hold them.  Near-square split screens land here (443x460 on Lucas's
 //      phone beside a wiki): no rectangle is left for a map.
 // ---------------------------------------------------------------------------------------
+// One try of the rule with the bands' own fallbacks: the glass's band (section 7) never
+// costs a window its twin banks (a kept glass is clear of the keys, but may be too narrow for
+// the drawer: 600x620, where the column between the banks was kept 160 dp wide), so the
+// ranking's own pick decides then; nor does the desk's band (section 10) cost a window its
+// desk.
+function layoutOnce(W, H, pointer, st) {
+  const r = layoutCore(W, H, pointer, st);
+  if (!r.usable && (st.prevGlass || st.prevCellGlass)) {
+    const plain = layoutCore(W, H, pointer, { ...st, prevGlass: null, prevCellGlass: null });
+    if (plain.usable) return plain;
+  }
+  if (!r.usable && pointer === 'mouse' && st.prevDesk) {
+    const plain = layoutCore(W, H, pointer, { ...st, prevDesk: null });
+    if (plain.usable) return plain;
+  }
+  return r;
+}
+
 export function layout(W, H, pointer = 'touch', settings = {}) {
   try {
     const st = settings || {};
-    const r = layoutCore(W, H, pointer, st);
-    // The glass's band (section 7) never costs a window its twin banks: a kept glass is
-    // clear of the keys, but may be too narrow for the drawer (600x620, where the column
-    // between the banks was kept 160 dp wide), so the ranking's own pick decides then.
-    if (!r.usable && (st.prevGlass || st.prevCellGlass)) {
-      const plain = layoutCore(W, H, pointer, { ...st, prevGlass: null, prevCellGlass: null });
-      if (plain.usable) return plain;
+    // The status lines are the last thing to give way before classic (2026-10-08).  At the
+    // text metric three lines can be what costs a window its twin banks: an iPhone SE's
+    // Safari in portrait (375x553), a 360x640 phone at twice the system text size, the
+    // near-square windows of 528 to 552 by 608 at 52 and 46 dp keys, a desk window 825 wide
+    // at 520 tall.  So a window with no room for its lines drops one, then another (three,
+    // two, one: the page draws compact, then the HP line alone), and says so in
+    // fit.statusLines and fit.reasons.  How many lines a touch window can hold is judged at
+    // the default key size, so that smaller keys never show less of the map than larger ones
+    // (the sweep's rule: as the keys shrink the map never shrinks); a window usable with its
+    // lines at the player's own keys but not at 58 dp takes the count 58 dp needs.  At the
+    // desk the count is part of the arrangement the band keeps (info.desk.lines, given back
+    // in settings.prevDesk): while the band holds the arrangement it holds the count, and
+    // when it lets go the window takes the most lines its new arrangement holds.  Hidden
+    // lines (statusH 0) are nothing to drop.
+    const sd = settled(W, H, st);
+    const lines = sd.msgRowH > 0 ? Math.floor(sd.statusH / sd.msgRowH) : 0;
+    const at = (k, extra) => layoutOnce(W, H, pointer, k ? { ...st, ...extra, statusH: sd.statusH - k * sd.msgRowH } : { ...st, ...extra });
+    const mark = (r, k) => {
+      const left = lines - k;
+      if (k) {
+        r.spec.fit.statusLines = left;
+        r.spec.fit.reasons.push(left === 1 ? 'one status line: no room for more' : `two status lines: no room for ${lines}`);
+        if (r.info && r.info.fit) r.info.fit = { ...r.info.fit, reasons: r.spec.fit.reasons };
+      }
+      if (r.info && r.info.desk) r.info.desk = { ...r.info.desk, lines: left };
+      return r;
+    };
+    if (pointer === 'mouse') {
+      // the kept count first, and only while the kept arrangement holds
+      const pd = st.prevDesk, kept = pd && typeof pd === 'object' && Number.isFinite(pd.lines) ? Math.round(pd.lines) : 0;
+      if (kept > 0 && kept < lines) {
+        const r = at(lines - kept, {});
+        const d = r.usable && r.info && r.info.desk;
+        if (d && !!d.sideBySide === !!pd.sideBySide && !!d.beside === !!pd.beside && !!d.log === !!pd.log && !!d.inv === !!pd.inv) return mark(r, lines - kept);
+      }
+      let base = null;
+      for (let k = 0; k < Math.max(1, lines); k++) {
+        const r = at(k, {});
+        if (k === 0) base = r;
+        if (r.usable) return mark(r, k);
+      }
+      return base;
     }
-    // Nor does the desk's band (section 10 below) cost a window its desk.
-    if (!r.usable && pointer === 'mouse' && st.prevDesk) {
-      const plain = layoutCore(W, H, pointer, { ...st, prevDesk: null });
-      if (plain.usable) return plain;
+    let first = 0;
+    if (lines > 1 && sd.padKey < DEFAULTS.padKey - 1e-6) {
+      for (let k = 0; k < lines; k++) if (at(k, { padKey: DEFAULTS.padKey }).usable) { first = k; break; }
     }
-    return r;
+    let base = null;
+    for (let k = first; k < Math.max(1, lines); k++) {
+      const r = at(k, {});
+      if (k === 0) base = r;
+      if (r.usable) return mark(r, k);
+    }
+    return base || at(0, {});
   } catch (e) {
     return { spec: null, usable: false, info: null, degraded: true, reason: `layout() failed: ${e && e.message}` };
   }

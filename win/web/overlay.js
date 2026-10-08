@@ -1377,6 +1377,8 @@ export class Overlay {
       glass: { ...S.glass, r: this.caseless ? 0 : 10 },
       map: S.mapArea, msgBand, statusBand, msgRows: r.info.fill.rows_msg, cell: r.info.T,
       headerOver: !!r.info.G.over, textScale, statusLinesH: statusH,
+      // 2 or 1 where the rule dropped lines to keep twin banks (layout.js section 9), else null
+      statusLines: (r.spec.fit && r.spec.fit.statusLines) || null,
       // The panels the layout leaves room for, the message log and the
       // inventory (its chrome), which web.js lays out and fills
       // (layoutPanels).  'beyond': a log under the band's rows (a phone's, in

@@ -33,7 +33,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { layout, collisions } from '../layout.js';
+import { layout, collisions, textMetrics } from '../layout.js';
 import { EDGE, summary, expectDiff } from './edge-cli.mjs';
 
 const FIXTURES = new URL('./fixtures/', import.meta.url);
@@ -481,6 +481,61 @@ test("a monitor's window dragged wider or taller grows the level half a dp at a 
 });
 
 // ---- 5. the page imports the file as it is
+
+// ---- the status lines give way before classic (2026-10-08)
+
+test('a window with no room for three status lines gets two before it falls back to classic', () => {
+  const ROW = textMetrics().msgRowH;
+  // an iPhone SE's Safari in portrait: a 7-row map with three lines, so two
+  const se = layout(375, 553, 'touch', {});
+  assert.equal(se.usable, true, se.reason);
+  assert.equal(se.spec.fit.statusLines, 2);
+  assert.ok(se.spec.fit.reasons.some((x) => /two status lines/.test(x)), se.spec.fit.reasons.join('; '));
+  assert.ok(Math.abs(se.spec.bands[1].h - (2 * ROW + 7)) < 0.01, `status band ${se.spec.bands[1].h}`);
+  // a small phone at twice the system text size
+  const big = layout(360, 640, 'touch', { text: { msgFont: 'atkinson', msgSize: 1, textScale: 2 } });
+  assert.equal(big.usable, true, big.reason);
+  assert.equal(big.spec.fit.statusLines, 2);
+  // a window with room keeps three and says nothing
+  const ok = layout(896, 443, 'touch', {});
+  assert.equal(ok.spec.fit.statusLines, undefined);
+  assert.ok(Math.abs(ok.spec.bands[1].h - (3 * ROW + 7)) < 0.01, `status band ${ok.spec.bands[1].h}`);
+  // compact already has room there, and hidden lines are nothing to drop
+  assert.equal(layout(375, 553, 'touch', { statusH: 2 * ROW + 7 }).spec.fit.statusLines, undefined);
+  assert.equal(layout(375, 553, 'touch', { statusH: 0 }).spec.fit.statusLines, undefined);
+  // the count is judged at the default keys, so smaller keys never show less of the map:
+  // 480x600 needs two lines at 58 dp, and takes two at 52 and 46 as well
+  const cells = (r) => r.info.fill.cols * r.info.fill.rows;
+  const at58 = layout(480, 600, 'touch', {}), at52 = layout(480, 600, 'touch', { padKey: 52 }), at46 = layout(480, 600, 'touch', { padKey: 46 });
+  assert.equal(at58.spec.fit.statusLines, 2);
+  assert.equal(at52.spec.fit.statusLines, 2);
+  assert.equal(at46.spec.fit.statusLines, 2);
+  assert.ok(cells(at46) >= cells(at52) - 1e-6 && cells(at52) >= cells(at58) - 1e-6, `${cells(at46)} / ${cells(at52)} / ${cells(at58)} cells at 46 / 52 / 58`);
+  // the desk too: 825x520 holds the stacked header only with two lines, 826x520 side by
+  // side with three; a window too short for any of it stays classic
+  const d825 = layout(825, 520, 'mouse', {}), d826 = layout(826, 520, 'mouse', {});
+  assert.equal(d825.usable, true, d825.reason);
+  assert.equal(d825.spec.fit.statusLines, 2);
+  assert.equal(d825.info.desk.lines, 2);
+  assert.equal(d826.spec.fit.statusLines, undefined);
+  assert.equal(d826.info.desk.lines, 3);
+  assert.equal(layout(700, 450, 'mouse', {}).usable, false);
+  // the count is part of the desk's kept arrangement: narrowed from 826 the lines drop with
+  // the stacked header at 825; widened back, the stacked two-line header is kept for the
+  // band's 24 dp, then the side-by-side header takes three lines again
+  let prevDesk = null;
+  const dragTo = (W) => { const r = layout(W, 520, 'mouse', { prevDesk }); if (r.usable && r.info.desk) prevDesk = r.info.desk; return r; };
+  const seq = [];
+  for (let W = 830; W >= 820; W--) seq.push([W, dragTo(W)]);
+  for (let W = 821; W <= 860; W++) seq.push([W, dragTo(W)]);
+  const at = (W, i) => seq.filter((q) => q[0] === W)[i][1];
+  assert.equal(at(826, 0).spec.fit.statusLines, undefined);
+  assert.equal(at(825, 0).spec.fit.statusLines, 2);
+  assert.equal(at(826, 1).spec.fit.statusLines, 2, 'widened back by a dp: the stacked two-line header is kept');
+  assert.equal(at(849, 0).spec.fit.statusLines, 2, "kept to the band's edge");
+  assert.equal(at(850, 0).spec.fit.statusLines, undefined, 'past the band: side by side, three lines');
+  assert.equal(at(850, 0).info.desk.sideBySide, true);
+});
 
 test('layout.js is a plain module: no imports, no DOM, no node', () => {
   const src = fs.readFileSync(new URL('../layout.js', import.meta.url), 'utf8').replace(/\/\/.*$/gm, '');

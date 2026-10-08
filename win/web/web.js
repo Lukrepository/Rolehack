@@ -1600,7 +1600,11 @@ function statusTitle(title) {
 
 function statusHtml() {
   if (!bare('BL_HPMAX')) return '';
-  const mode = P.get('statusLines'), compact = mode === 'compact';
+  // three lines, two (compact: no attribute line) or one (the HP line alone): by the
+  // setting, or fewer where the layout dropped lines to keep twin banks (layout.js
+  // section 9, fit.statusLines; overlay.js passes it as geom.statusLines)
+  const mode = P.get('statusLines'), forced = geom && geom.twin ? geom.statusLines : null;
+  const lines = forced || (mode === 'compact' ? 2 : 3);
   const title = bare('BL_TITLE');
   const hp = Number(bare('BL_HP')), hpmax = Number(bare('BL_HPMAX')) || 1;
   const frac = clamp(hp / hpmax, 0, 1);
@@ -1621,12 +1625,12 @@ function statusHtml() {
     ? `<span class="title">${esc(shown)}<span class="hpbar" style="width:calc(${(frac * 100).toFixed(1)}% + 1px);`
       + `background:${hpCol}"><span>${esc(shown)}</span></span></span>`
     : `<span class="title">${esc(shown)}</span>`;
-  const row1 = `<div class="row">${titleHtml}&nbsp;&nbsp;${esc(tail1)}${compact ? badgeHtml : ''}</div>`;
+  const row1 = lines >= 2 ? `<div class="row">${titleHtml}&nbsp;&nbsp;${esc(tail1)}${lines === 2 ? badgeHtml : ''}</div>` : '';
   const hpText = `HP:${esc(bare('BL_HP'))}(${esc(bare('BL_HPMAX'))})`;
   const hpHtml = tier === 2 ? `<span class="hpcrit" style="background:${hpCol}">${hpText}</span>`
     : `<span style="color:${hpCol}">${hpText}</span>`;
-  const row2 = `<div class="row">${hpHtml}&nbsp;${esc(tail2)}</div>`;
-  const row3 = compact ? '' : `<div class="row">${esc(stats)}&nbsp;&nbsp;${badgeHtml}</div>`;
+  const row2 = `<div class="row">${hpHtml}&nbsp;${esc(tail2)}${lines === 1 ? badgeHtml : ''}</div>`;
+  const row3 = lines === 3 ? `<div class="row">${esc(stats)}&nbsp;&nbsp;${badgeHtml}</div>` : '';
   return row1 + row2 + row3;
 }
 
