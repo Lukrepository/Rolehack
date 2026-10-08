@@ -249,7 +249,7 @@ export function deviceReport(f) {
   const F = f || {};
   const parts = [];
   const b = F.build || {};
-  parts.push(`Rolehack ${rTxt(b.short)}${b.date ? ` (${b.date})` : ''}${F.channel === 'preview' ? ' preview' : ''}`);
+  parts.push(`Rolehack ${rTxt(b.short)}${b.date ? ` (${b.date})` : ''}${F.channel === 'preview' ? ' preview' : ''}${F.core ? ` core ${F.core}` : ''}`);
   // the page's own address, so a line says which install it came from
   parts.push(`at ${rTxt(F.address)}`);
   const win = F.window || {};

@@ -1,0 +1,1235 @@
+<title>Rolehack Dressing Room</title>
+<!-- Written for Rolehack by Lucas Ruiz, 2026-09-26.  See ROLEHACK-CHANGES.md. -->
+<meta name="description" content="Dress any NetHack hero in any armour, cloak or weapon, drawn exactly as the Rolehack paper doll draws it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@400;600&family=VT323&display=swap">
+<style>
+/* Tokens.  The three looks of Rolehack's terminal interface (RhTheme.java):
+   Terminal light (putty case, light wells) is the light palette; Terminal
+   (putty case, dark wells) is the dark one; GameCube (indigo case, saturated
+   keys) is an explicit choice. */
+:root {
+  --desk: #cfc6b1;
+  --desk-ink: #3b342b;
+  --case-top: #e8dfc8; --case-bottom: #d5c9ab;
+  --case-edge: #b9ad90;
+  --hood-top: #aaa18c; --hood-bottom: #968d79;
+  --well-top: #958c78; --well-bottom: #a39a86;
+  --lip: #3b342b;
+  --well-ink: #2a2622; --well-ink-dim: #4a4238;
+  --glass: #090d0a;
+  --phosphor: #d7e3d0; --phosphor-dim: #8c9a88; --phosphor-hot: #ffb347;
+  --cap-top: #dcd6c8; --cap-bottom: #c9c2b3; --cap-edge: #a8a091; --cap-ink: #2a2622;
+  --cap2-top: #3b3530; --cap2-bottom: #2c2723; --cap2-edge: #1b1815; --cap2-ink: #f1e8d5;
+  --capon-top: #e59633; --capon-bottom: #c9761c; --capon-edge: #9f5b12; --capon-ink: #2a1503;
+  --lamp: #ffb347;
+  --focus: #e38a26;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --desk: #12100d; --desk-ink: #c9bea6;
+    --hood-top: #3a322b; --hood-bottom: #221d19;
+    --well-top: #171411; --well-bottom: #241f1b;
+    --lip: #3b342b;
+    --well-ink: #e8dfc8; --well-ink-dim: #a39a86;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --desk: #12100d; --desk-ink: #c9bea6;
+  --hood-top: #3a322b; --hood-bottom: #221d19;
+  --well-top: #171411; --well-bottom: #241f1b;
+  --lip: #3b342b;
+  --well-ink: #e8dfc8; --well-ink-dim: #a39a86;
+  color-scheme: dark;
+}
+/* The page's own style switch wins over the theme (same specificity, later). */
+:root[data-skin="terminal"] {
+  --desk: #12100d; --desk-ink: #c9bea6;
+  --case-top: #e8dfc8; --case-bottom: #d5c9ab; --case-edge: #b9ad90;
+  --hood-top: #3a322b; --hood-bottom: #221d19;
+  --well-top: #171411; --well-bottom: #241f1b;
+  --lip: #3b342b; --well-ink: #e8dfc8; --well-ink-dim: #a39a86;
+}
+:root[data-skin="light"] {
+  --desk: #cfc6b1; --desk-ink: #3b342b;
+  --case-top: #e8dfc8; --case-bottom: #d5c9ab; --case-edge: #b9ad90;
+  --hood-top: #aaa18c; --hood-bottom: #968d79;
+  --well-top: #958c78; --well-bottom: #a39a86;
+  --lip: #3b342b; --well-ink: #2a2622; --well-ink-dim: #4a4238;
+}
+:root[data-skin="gamecube"] {
+  --desk: #0d0e2b; --desk-ink: #b9bdf0;
+  --case-top: #3b40a0; --case-bottom: #2a2d7c; --case-edge: #1c1f5c;
+  --hood-top: #23265e; --hood-bottom: #171941;
+  --well-top: #15173f; --well-bottom: #1f2257;
+  --lip: #b9bdf0; --well-ink: #eef0ff; --well-ink-dim: #9ea3dd;
+  --cap-top: #c4c4ce; --cap-bottom: #a7a7b4; --cap-edge: #80808e; --cap-ink: #24242c;
+  --cap2-top: #3a3c62; --cap2-bottom: #2b2d4f; --cap2-edge: #1a1b36; --cap2-ink: #eef0ff;
+  --capon-top: #eab800; --capon-bottom: #d4a300; --capon-edge: #a67f00; --capon-ink: #3a2a00;
+  --lamp: #ffd21f; --focus: #ffd21f;
+}
+
+html, body { background: var(--desk); }
+body {
+  margin: 0;
+  color: var(--desk-ink);
+  font: 15px/1.45 "IBM Plex Sans Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  padding-inline: 16px;
+  padding-block: 20px 28px;
+}
+.app { background: var(--desk); max-width: 1180px; margin: 0 auto; }
+
+/* The case */
+.case {
+  background: linear-gradient(var(--case-top), var(--case-bottom));
+  border-radius: 18px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.35) inset, 0 -2px 0 var(--case-edge) inset, 0 14px 40px rgba(0,0,0,.35);
+  padding: 14px;
+  display: grid;
+  gap: 14px;
+}
+.hood {
+  background: linear-gradient(var(--hood-top), var(--hood-bottom));
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 18px;
+  color: var(--well-ink);
+}
+.hood h1 {
+  margin: 0;
+  font: 400 30px/1 VT323, "IBM Plex Mono", monospace;
+  letter-spacing: .04em;
+  color: var(--lamp);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--lamp) 45%, transparent);
+}
+.hood h1 small { font-size: 20px; color: var(--well-ink-dim); text-shadow: none; margin-left: .5em; }
+.lamps { display: flex; gap: 6px; align-items: center; font: 500 11px/1 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--well-ink-dim); }
+
+.body-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+@media (max-width: 860px) { .body-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* The glass */
+.glass {
+  background: radial-gradient(ellipse at 50% 40%, #121a14 0%, var(--glass) 70%);
+  border-radius: 14px;
+  box-shadow: 0 0 0 3px #1b1815, 0 0 0 5px var(--case-edge), inset 0 0 40px rgba(0,0,0,.8);
+  padding: 16px;
+  color: var(--phosphor);
+  font-family: VT323, "IBM Plex Mono", monospace;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 12px;
+}
+.glass::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+}
+.stage { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: center; }
+@media (max-width: 640px) { .stage { grid-template-columns: minmax(0, 1fr); justify-items: center; } .readout { justify-self: stretch; } }
+.doll-frame { position: relative; width: min(288px, 70vw); aspect-ratio: 1; max-width: 100%; }
+.doll-frame canvas, .scene canvas, .cast canvas { image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
+.doll-frame canvas { width: 100%; height: 100%; }
+.grid-over {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(0,0,0,.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,.35) 1px, transparent 1px);
+  background-size: calc(100% / 16) calc(100% / 16);
+}
+.readout { font-size: 21px; line-height: 1.15; display: grid; gap: 6px; min-width: 0; }
+.readout .who { color: var(--phosphor-hot); font-size: 26px; }
+.readout ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.readout li { color: var(--phosphor); overflow-wrap: anywhere; }
+.readout li b { font-weight: 400; color: var(--phosphor-dim); }
+.readout li.none { color: var(--phosphor-dim); }
+.scene { display: grid; gap: 4px; justify-items: start; }
+.scene canvas { width: min(432px, 100%); aspect-ratio: 9 / 5; height: auto; }
+.label { font: 500 11px/1.2 "IBM Plex Mono", monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--phosphor-dim); }
+
+/* Wells and keycaps */
+.deck { display: grid; gap: 12px; }
+.well {
+  background: linear-gradient(var(--well-top), var(--well-bottom));
+  border-radius: 12px;
+  box-shadow: inset 0 3px 8px rgba(0,0,0,.45);
+  padding: 12px;
+  color: var(--well-ink);
+  display: grid;
+  gap: 10px;
+}
+.well h2 {
+  margin: 0;
+  font: 600 12px/1 "IBM Plex Sans Condensed", sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--well-ink-dim);
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+}
+.well h2 span { letter-spacing: .02em; text-transform: none; font-weight: 400; }
+.keys { display: flex; flex-wrap: wrap; gap: 6px; }
+.key {
+  appearance: none; border: 0; cursor: pointer;
+  font: 600 13px/1 "IBM Plex Sans Condensed", sans-serif;
+  letter-spacing: .02em;
+  color: var(--cap-ink);
+  background: linear-gradient(var(--cap-top), var(--cap-bottom));
+  border-radius: 7px;
+  padding: 8px 10px 9px;
+  box-shadow: 0 3px 0 var(--cap-edge), 0 4px 6px rgba(0,0,0,.35);
+  transform: translateY(0);
+  transition: transform .06s, box-shadow .06s;
+  min-height: 32px;
+}
+.key:hover { filter: brightness(1.04); }
+.key:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--cap-edge), 0 2px 3px rgba(0,0,0,.35); }
+.key.dark { color: var(--cap2-ink); background: linear-gradient(var(--cap2-top), var(--cap2-bottom)); box-shadow: 0 3px 0 var(--cap2-edge), 0 4px 6px rgba(0,0,0,.35); }
+.key[aria-pressed="true"] { color: var(--capon-ink); background: linear-gradient(var(--capon-top), var(--capon-bottom)); box-shadow: 0 3px 0 var(--capon-edge), 0 0 12px color-mix(in srgb, var(--lamp) 40%, transparent); }
+.key:disabled { opacity: .45; cursor: not-allowed; }
+.key:focus-visible, select:focus-visible, .cast button:focus-visible, .swatch:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.roles { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px; }
+.roles .key { width: 100%; }
+.row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.swatches { display: flex; flex-wrap: wrap; gap: 6px; }
+.swatch {
+  width: 28px; height: 28px; border-radius: 6px; border: 0; cursor: pointer; padding: 0;
+  box-shadow: 0 2px 0 rgba(0,0,0,.45), inset 0 0 0 1px rgba(0,0,0,.25);
+}
+.swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--well-bottom), 0 0 0 4px var(--lamp); }
+.slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px 10px; }
+.slot { display: grid; gap: 3px; min-width: 0; }
+.slot label { font: 600 11px/1 "IBM Plex Sans Condensed", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--well-ink-dim); }
+select {
+  width: 100%;
+  font: 600 13px/1.2 "IBM Plex Sans Condensed", sans-serif;
+  color: var(--cap2-ink);
+  background: linear-gradient(var(--cap2-top), var(--cap2-bottom));
+  border: 0; border-radius: 7px;
+  padding: 7px 8px;
+  box-shadow: 0 2px 0 var(--cap2-edge);
+}
+select option { color: #111; background: #fff; }
+.note { font-size: 13px; color: var(--well-ink-dim); margin: 0; }
+.link-out { width: 100%; box-sizing: border-box; font: 500 12px/1.3 "IBM Plex Mono", monospace; color: var(--cap2-ink); background: var(--cap2-bottom); border: 0; border-radius: 6px; padding: 7px 8px; }
+.toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+.toggle input { accent-color: var(--lamp); width: 16px; height: 16px; }
+
+/* The cast */
+.cast-well { background: linear-gradient(var(--well-top), var(--well-bottom)); }
+.cast { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 6px; }
+.cast button {
+  appearance: none; border: 0; cursor: pointer; padding: 5px 0 4px;
+  background: #0c100d; border-radius: 8px;
+  display: grid; justify-items: center; gap: 3px;
+  color: #8c9a88; font: 500 10px/1 "IBM Plex Mono", monospace;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.cast button[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--lamp); color: var(--lamp); }
+.cast canvas { width: 48px; height: 48px; }
+
+footer { margin: 16px auto 0; max-width: 1180px; font-size: 13px; color: var(--desk-ink); opacity: .85; display: grid; gap: 4px; }
+footer p { margin: 0; max-width: 78ch; }
+@media (prefers-reduced-motion: reduce) { .key { transition: none; } }
+/* the Showcase: a caption over the stage, a shutter flicker on each still, a glow on the Astral Plane */
+.caption { margin: 0 0 12px; min-height: 3.2em; }
+.caption .cap-where { color: var(--phosphor-hot); font-size: 18px; letter-spacing: .14em; text-transform: uppercase; }
+.caption .cap-line { color: var(--phosphor); font-size: 25px; line-height: 1.15; }
+.doll-frame.shutter::after { content: ""; position: absolute; inset: 0; background: var(--phosphor); pointer-events: none; animation: shutter 160ms ease-out forwards; }
+@keyframes shutter { from { opacity: .45; } to { opacity: 0; } }
+.doll-frame.astral { box-shadow: 0 0 0 3px #ffd75e, 0 0 40px 10px rgba(255, 215, 94, .55); transition: box-shadow .8s; }
+@media (prefers-reduced-motion: reduce) { .doll-frame.shutter::after { animation: none; opacity: 0; } }
+</style>
+
+<div class="app" id="app">
+  <div class="case">
+    <header class="hood">
+      <h1>ROLEHACK<small>dressing room</small></h1>
+      <div class="lamps" role="group" aria-label="Look">
+        <span>Look</span>
+        <button class="key dark" data-skin="auto" aria-pressed="true">Auto</button>
+        <button class="key dark" data-skin="terminal" aria-pressed="false">Terminal</button>
+        <button class="key dark" data-skin="light" aria-pressed="false">Tan</button>
+        <button class="key dark" data-skin="gamecube" aria-pressed="false">GameCube</button>
+        <button class="key" id="showKey" title="A stop-motion ascension, one piece at a time">&#9654; Showcase</button>
+      </div>
+    </header>
+
+    <div class="body-grid">
+      <section class="glass" aria-label="The hero">
+        <div class="caption" id="caption" hidden aria-live="polite"><div class="cap-where" id="capWhere"></div><div class="cap-line" id="capLine"></div></div>
+        <div class="stage">
+          <div class="doll-frame">
+            <canvas id="doll" width="16" height="16" role="img" aria-label="The dressed hero, 16 by 16 pixels"></canvas>
+            <div class="grid-over" id="gridOver" hidden></div>
+          </div>
+          <div class="readout" aria-live="polite">
+            <div class="who" id="who"></div>
+            <ul id="worn"></ul>
+          </div>
+        </div>
+        <div class="scene">
+          <span class="label">At game size, as the map draws it</span>
+          <canvas id="scene" width="144" height="80" role="img" aria-label="The hero standing in a room with a calico kitten"></canvas>
+        </div>
+      </section>
+
+      <div class="deck">
+        <section class="well" aria-labelledby="h-hero">
+          <h2 id="h-hero">Hero <span id="heroNote"></span></h2>
+          <div class="roles" id="roles"></div>
+          <div class="row">
+            <label class="toggle"><input type="checkbox" id="showrace"> Show race (the <code>showrace</code> option)</label>
+          </div>
+          <div class="roles" id="races" hidden></div>
+          <div class="row">
+            <div class="keys" role="group" aria-label="Gender">
+              <button class="key dark" id="g-male" aria-pressed="true">Male</button>
+              <button class="key dark" id="g-female" aria-pressed="false">Female</button>
+            </div>
+          </div>
+          <div class="row">
+            <span class="note">Skin tone</span>
+            <div class="swatches" id="tones"></div>
+            <button class="key dark" id="toneRandom">Random</button>
+          </div>
+        </section>
+
+        <section class="well" aria-labelledby="h-gear">
+          <h2 id="h-gear">Gear <span>every slot the doll draws</span></h2>
+          <div class="slots" id="slots"></div>
+          <div class="keys">
+            <button class="key" id="p-kit">Starting kit</button>
+            <button class="key" id="p-asc">Ascension kit</button>
+            <button class="key" id="p-rand">Random outfit</button>
+            <button class="key dark" id="p-strip">Strip</button>
+            <button class="key dark" id="p-link">Copy outfit link</button>
+          </div>
+          <input id="linkOut" class="link-out" type="text" readonly aria-label="Link to this outfit" hidden>
+          <div class="row">
+            <label class="toggle"><input type="checkbox" id="costume" checked> Costume rule</label>
+            <label class="toggle"><input type="checkbox" id="dollOn" checked> Paper doll on</label>
+            <label class="toggle"><input type="checkbox" id="grid"> Pixel grid</label>
+          </div>
+          <p class="note" id="ruleNote"></p>
+        </section>
+      </div>
+    </div>
+
+    <section class="well cast-well" aria-labelledby="h-cast">
+      <h2 id="h-cast">The cast <span>everyone in this outfit; pick one</span></h2>
+      <div class="cast" id="cast"></div>
+    </section>
+  </div>
+
+  <footer>
+    <p>Drawn by the same rules as the Rolehack app's paper doll: armour cut from each item's own floor tile, cloaks as capes behind the body, pauldrons on dragon scale mail, a short frame for dwarves and gnomes.</p>
+    <p>Magic cloaks, helmets, gloves and boots change their look every game; this room shows NetHack's default pairing. Tiles from NetHack 5.0 (NetHack General Public License). Apothecary tiles and doll layers by Claude for Rolehack, at Lucas Ruiz's invitation.</p>
+  </footer>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+"use strict";
+const D = JSON.parse(document.getElementById("data").textContent);
+
+// ---------------------------------------------------------------- palette and tiles
+const PAL = {};
+for (const [k, v] of Object.entries(D.palette)) PAL[k] = parseInt(v.slice(1), 16);
+const fixed = c => (c in PAL ? PAL[c] : 0xff00ff);
+function pixels(s) { const a = new Int32Array(256); for (let i = 0; i < 256; i++) a[i] = PAL[s[i]]; return a; }
+const BODY = {}; D.bodies.forEach(b => { b.pxa = pixels(b.px); BODY[b.id] = b; });
+const ITEM = {}; D.items.forEach(i => { i.pxa = pixels(i.px); ITEM[i.id] = i; });
+const SCENE = {}; for (const [k, v] of Object.entries(D.scene)) SCENE[k] = pixels(v);
+
+// ---------------------------------------------------------------- the doll (a port of RhDoll.java)
+const TONES = [0xffd6ba, 0xffb691, 0xeca67e, 0xd28e68, 0xb27254, 0x905844, 0x704238, 0x54322e];
+const VANILLA_SKIN = 0xffb691;
+const HIDE = 0x200, COSTUME = 0x400, DRAGON = 0x800, FRONT = 0x10000;
+const PAULDRONS = [
+  "4,6,O 5,6,W 3,7,O 4,7,Q 5,7,W 3,8,W",
+  "4,5,N 2,6,N 4,6,H 5,6,H 3,7,H 4,7,C 5,7,C 3,8,C",
+  "3,5,N 4,5,N 3,6,N 4,6,B 5,6,N 3,7,B 4,7,N 5,7,B 3,8,N",
+  "3,4,H 3,5,C 5,5,H 3,6,D 4,6,C 5,6,D 3,7,D 4,7,D 3,8,J",
+  "4,6,N 5,6,O 3,7,N 4,7,O 5,7,O 2,8,B 3,8,O 2,9,B",
+  "4,5,C 5,5,C 3,6,C 5,6,K 3,7,C 4,7,K 5,7,K 3,8,K",
+  "3,3,W 3,4,R 5,4,W 3,5,R 4,5,Q 5,5,R 3,6,Q 4,6,R 5,6,R 3,7,Q 4,7,R 3,8,Q",
+  "4,3,B 3,4,B 4,5,B 5,5,E 3,6,E 4,6,E 5,6,E 3,7,E 4,7,B 3,8,E",
+  "3,5,G 5,5,G 3,6,F 4,6,F 5,6,F 3,7,F 4,7,G 5,7,F 3,8,F 3,10,G",
+  "4,6,H 5,6,H 3,7,H 4,7,H 5,7,K 3,8,H 3,9,G 3,11,G",
+];
+const PAULDRON_NAMES = ["a dead stud", "sparks", "a mirror plate", "flames", "icicles", "a crescent", "shards", "a lightning bolt", "fangs and a drop", "acid"];
+const DARKER_FROM = "NOWHCKBG", DARKER_TO = "OWVCKJEF";
+const C_ROBE = 10, C_APRON = 11, C_WRAPPING = 12;
+function cape(l, r, hem, x) { return Object.assign({ l, r, hem, fleck: "", trim: "", glint: "", clasp: "", rough: null, check: null, hood: null, collar: null, ragged: false }, x || {}); }
+const CAPES = [null,
+  cape("O", "F", "G", { fleck: "G" }),
+  cape("C", "K", "J", { rough: ["C", "K"] }),
+  cape("B", "P", "P", { hood: ["B", "P"] }),
+  cape("J", "A", "J", { glint: "N" }),
+  cape("K", "J", "J"),
+  cape("O", "P", "O", { ragged: true }),
+  cape("N", "O", "O", { collar: ["N", "O"], clasp: "D" }),
+  cape("A", "A", "P", { trim: "P", clasp: "H" }),
+  cape("P", "P", "B", { check: ["P", "B"] }),
+];
+const HELMS = [null,
+  "6,2,J 7,2,C 8,2,K 9,2,J 5,3,J 6,3,C 7,3,K 8,3,K 9,3,J 10,3,A 5,4,J 10,4,J 5,5,J 10,5,J",  // leather hat
+  "7,2,B 8,2,P 6,3,N 7,3,B 8,3,P 9,3,P 10,3,A 5,4,J 10,4,J",  // iron skull cap
+  "7,1,P 8,1,P 6,2,P 7,2,N 8,2,P 9,2,P 10,2,A 5,3,P 6,3,P 7,3,P 8,3,P 9,3,P 10,3,P 11,3,A",  // hard hat
+  "6,1,A 7,1,A 8,1,A 9,1,A 6,2,K 7,2,K 8,2,K 9,2,K 4,3,A 5,3,A 6,3,A 7,3,A 8,3,A 9,3,A 10,3,A 11,3,A",  // fedora
+  "8,0,E 7,1,B 8,1,E 6,2,E 7,2,N 8,2,B 9,2,E 5,3,E 6,3,B 7,3,B 8,3,B 9,3,B 10,3,E",  // conical hat
+  "6,1,B 7,1,P 8,1,P 9,1,P 6,2,B 7,2,P 8,2,A 9,2,P 10,2,J 11,1,J 12,0,J 6,3,B 7,3,B 8,3,P 9,3,P 10,3,A",  // dented pot
+  "7,1,N 8,1,N 6,2,N 7,2,I 8,2,B 9,2,N 10,2,A 6,3,B 7,3,N 8,3,I 9,3,B 10,3,A",  // crystal helmet
+  "8,0,D 9,0,D 7,1,I 8,1,D 6,2,P 7,2,N 8,2,P 9,2,P 10,2,A 6,3,N 7,3,P 8,3,P 9,3,P 10,3,A",  // plumed helmet
+  "6,2,P 7,2,N 8,2,B 9,2,P 10,2,A 6,3,N 7,3,B 8,3,N 9,3,B 10,3,A",  // etched helmet
+  "8,0,H 7,1,H 8,1,H 9,1,H 6,2,P 7,2,N 8,2,P 9,2,P 10,2,A 6,3,N 7,3,P 8,3,P 9,3,P 10,3,A",  // crested helmet
+  "6,2,P 7,2,N 8,2,P 9,2,P 10,2,A 6,3,P 7,3,P 8,3,P 9,3,P 10,3,A 6,4,P 7,4,B 8,4,B 9,4,P 6,5,P 9,5,P",  // visored helmet
+];
+const HELMS_SHORT = [null,
+  "5,5,C 6,5,K 7,5,J 4,6,J 5,6,C 6,6,K 7,6,K 8,6,J 4,7,J 8,7,J",  // leather hat
+  "5,5,B 6,5,P 7,5,A 4,6,N 5,6,B 6,6,P 7,6,P 8,6,A 4,7,J 8,7,J",  // iron skull cap
+  "5,4,P 6,4,P 4,5,P 5,5,N 6,5,P 7,5,P 8,5,A 3,6,P 4,6,P 5,6,P 6,6,P 7,6,P 8,6,P 9,6,A",  // hard hat
+  "5,4,A 6,4,A 7,4,A 5,5,K 6,5,K 7,5,K 3,6,A 4,6,A 5,6,A 6,6,A 7,6,A 8,6,A 9,6,A",  // fedora
+  "6,2,E 6,3,B 7,3,E 5,4,E 6,4,N 7,4,E 5,5,E 6,5,B 7,5,B 8,5,E 4,6,E 5,6,B 6,6,B 7,6,B 8,6,E",  // conical hat
+  "5,5,B 6,5,P 7,5,P 8,5,P 4,6,B 5,6,P 6,6,A 7,6,P 8,6,P 9,6,J 10,5,J 11,4,J",  // dented pot
+  "5,5,N 6,5,N 4,6,N 5,6,I 6,6,B 7,6,N 8,6,A",  // crystal helmet
+  "6,3,D 5,4,I 6,4,D 5,5,P 6,5,N 7,5,P 8,5,A 4,6,N 5,6,P 6,6,P 7,6,P 8,6,A",  // plumed helmet
+  "5,5,P 6,5,N 7,5,B 8,5,A 4,6,N 5,6,B 6,6,N 7,6,B 8,6,A",  // etched helmet
+  "6,3,H 5,4,H 6,4,H 5,5,P 6,5,N 7,5,P 8,5,A 4,6,N 5,6,P 6,6,P 7,6,P 8,6,A",  // crested helmet
+  "5,5,P 6,5,N 7,5,P 8,5,A 4,6,P 5,6,P 6,6,P 7,6,P 8,6,A 5,7,B 6,7,B 7,7,B",  // visored helmet
+];
+const HELM_WORDS = [null, "a soft cap with ear flaps", "a skull cap with straps", "a dome with a brim", "a dark crown, a brown band, a wide brim", "a tall cone with a star", "a pot, handle and all", "glass with coloured glints", "a red plume", "etched lines", "a yellow crest", "a visor over the eyes"];
+const CAPE_WORDS = [null, "flecked with green", "rough", "the hood up behind the head", "a glossy glint", "plain leather", "the hem in rags", "a tall collar, a red clasp", "trim and a gold clasp", "checked"];
+const SHORT_BLADE = 1, SWORD = 2, GREAT_SWORD = 3, AXE = 4, PICK = 5, BLUNT = 6, STAFF = 7, POLE = 8, LAUNCHER = 9, MISSILE = 10, WHIP = 11, HORN = 12, CHAIN = 13;
+
+const S = (...r) => { const o = []; for (let i = 0; i < r.length; i += 3) o.push([r[i], r[i + 1], r[i + 2]]); return o; };
+const S_HELMET = S(0, 3, "~~~~~~~~~~", 1, 3, "~~~~~~~~~~", 2, 3, "~~~~lmA~~~", 3, 3, "~~~lmmdA~~");
+const S_EYEWEAR = S(4, 5, "dmmmmd");
+const S_SUIT = S(7, 5, "lmddmd", 8, 4, "Nlmmmldd", 9, 4, "lAlmmdAd", 10, 6, "lmmd", 11, 6, "mmdd");
+const S_SHIRT = S(8, 5, "lmmmmd", 9, 6, "mmmd", 10, 6, "mmmd");
+const S_HIDE = S(7, 5, "lmmmmd", 8, 4, "lmlmlmdd", 9, 4, "mAmlmdAd", 10, 6, "lmld", 11, 6, "mlmd");
+const BODY_Y = [7, 8, 9, 10, 11], BODY_X0 = [5, 4, 4, 6, 6], BODY_X1 = [10, 11, 11, 9, 9];
+const GAP_FILL_ABOVE = 0.5, BLACK_HIDE_ABOVE = 0.55;
+const S_CLOAK = S(7, 5, "lmHmmd", 8, 4, "lmmmmmmd", 9, 4, "lmmmmmmd", 10, 5, "mmmAmd", 11, 4, "lmmmAmmd", 12, 4, "lmmmAmmd");
+const S_AMULET = S(8, 7, "lm");
+const S_SHIELD = S(-2, -1, "lmdA", -1, -1, "mWdA", 0, -1, "mmdA", 1, 0, "dA");   // a shield whose look is not named
+// Shields, as the core numbers them (rh_shield_looks[]), full size on every body (Lucas, 2026-09-26)
+const SHIELDS = [null,
+  S(-2, -1, "CKJA", -1, -1, "KKJA", 0, -1, "KJJA", 1, 0, "JA"),  // wooden shield
+  S(-2, -1, "NNNA", -1, -1, "BNGA", 0, -1, "BNGA", 1, 0, "NA"),  // blue and green shield
+  S(-2, -1, "KJJA", -1, -1, "PNPA", 0, -1, "NNPA", 1, 0, "PA"),  // white-handed shield
+  S(-2, -1, "KKJA", -1, -1, "DADA", 0, -1, "PDPA", 1, 0, "PA"),  // red-eyed shield
+  S(-3, -1, "NNNOA", -2, -1, "NPPOA", -1, -1, "NPPOA", 0, -1, "NPPOA", 1, 0, "NPOA", 2, 1, "OA"),  // large shield
+  S(-3, 0, "BB", -2, -1, "BKKBA", -1, -1, "BKJBA", 0, -1, "BJJBA", 1, 0, "BBA"),  // large round shield
+  S(-2, -1, "NNOA", -1, -1, "NNZA", 0, -1, "NZOA", 1, 0, "OA"),  // polished silver shield
+];
+const SHIELD_WORDS = [null, "a brown wooden kite", "white rim, blue and green halves", "a white hand on a dark field", "a red eye, a black pupil", "a tall steel tower shield", "round, a blue rim over wood", "mirror-bright silver"];
+// Gloves and boots, as the core numbers them (rh_glove_looks[], rh_boot_looks[]): tools/paperdoll/gloves_boots.py
+const GLOVE_LOOKS = [null, "J.", "CC", "KJ", "NO"];
+// Amulets, as the core numbers them (rh_amulet_looks[]; tools/paperdoll/amulets.py), worn over armour
+const AMULET_LOOKS = [null, ".C.C.C.K.", ".C.CHK.K.", ".C..K..K.", ".C.CKK...", ".C.CKJKJJ", "CK.KK....", "C.KKKJ...", ".C.CKK.K.", "CKKKKK.K.", "CKKKAK.K.", "CCKKKJKKJ", "HDH.B...."];
+const AMULET_WORDS = [null, "a ring with a hole", "a ball with a glint", "a tall drop", "a small triangle", "a shaded pyramid", "a flat block", "a bowl", "a diamond", "a round block", "a pierced plate", "a shaded cube", "a gold chain, a blue and red gem"];
+// an amulet as its look: a gold chain on the collar, the pendant on the chest -- over any armour
+function stampAmulet(px, bg, look, a) {
+  const st = look.shape("amulet") & 0xff;
+  if (look.art("amulet") === ART_AETHIOPICA || st <= 0 || st >= AMULET_LOOKS.length) {
+    stamp(px, bg, look.art("amulet") === ART_AETHIOPICA ? S_AETHIOPICA : S_AMULET, a.torso[0], a.torso[1], false, ramp(look.item("amulet"), false));
+    return;
+  }
+  const p = AMULET_LOOKS[st];
+  putPx(px, 7 + a.torso[0], 7 + a.torso[1], fixed("H")); putPx(px, 9 + a.torso[0], 7 + a.torso[1], fixed("H"));
+  for (let i = 0; i < 9; i++) if (p[i] !== ".") putPx(px, 7 + i % 3 + a.torso[0], 8 + Math.floor(i / 3) + a.torso[1], fixed(p[i]));
+}
+function amuletShortColour(look) {
+  if (look.art("amulet") === ART_AETHIOPICA) return fixed(AETHIOPICA_SHORT);
+  const st = look.shape("amulet") & 0xff;
+  if (st <= 0 || st >= AMULET_LOOKS.length) return ramp(look.item("amulet"), false)[1];
+  const c = [...AMULET_LOOKS[st]].find(ch => ch !== ".");
+  return c ? fixed(c) : ramp(look.item("amulet"), false)[1];
+}
+// Eyewear, as the core numbers it (rh_eyewear_looks[]; tools/paperdoll/eyewear.py)
+const EYEWEAR_HUMAN = [null, S(4, 5, "PNBPNB"), S(4, 5, "RQQQQR", 5, 10, "RR", 6, 11, "R"), S(3, 5, "OOOOOO", 4, 5, "OPPPPOP", 5, 10, "P")];
+const EYEWEAR_SHORT = [null, S(7, 4, "PNPNB"), S(7, 4, "RQQQR", 8, 9, "R"), S(6, 4, "OOOOO", 7, 4, "OPPPP")];
+const EYEWEAR_WORDS = [null, "two glass lenses, a glint in each", "a dark band, its ties trailing", "a thick towel over the eyes and brow"];
+function eyewearSprite(look, shortFrame) {
+  if (look.art("eyewear") === ART_EYES) return shortFrame ? S_EYES_SHORT : S_EYES;
+  const st = look.shape("eyewear") & 0xff, set = shortFrame ? EYEWEAR_SHORT : EYEWEAR_HUMAN;
+  return st > 0 && st < set.length ? set[st] : (shortFrame ? S_EYEWEAR_SHORT : S_EYEWEAR);
+}
+const BOOT_LOOKS = [null, "JK..", "PN..", "KL..", "JJK.", "RFF.", "JJG.", "KKC.", "KKKH", "QRQ.", "OON."];
+const GLOVE_WORDS = [null, "worn dark brown", "light tan, a padded cuff", "brown, a dark gauntlet cuff", "white, a long white cuff"];
+const BOOT_WORDS = [null, "low: a brown shoe", "low: iron, a glint", "low: brown, tan laces", "tall: brown", "tall: army green, a dark sole", "tall: a green upper, a brown foot", "tall: orange tops", "tall: brown, a gold buckle", "tall: glossy black", "tall: white fur"];
+// gloves as their look: the hand colour, the cuff beside each hand (the anchor's, else the pixel above)
+function stampGloves(px, bg, look, a, h) {
+  const st = look.shape("gloves") & 0xff, g = st > 0 && st < GLOVE_LOOKS.length ? GLOVE_LOOKS[st] : null;
+  const hand = g ? fixed(g[0]) : ramp(look.item("gloves"), false)[1];
+  for (let i = 0; i + 1 < h.length; i += 2) {
+    recolour(px, bg, h[i], h[i + 1], hand);
+    if (!g || g[1] === ".") continue;
+    const own = a.cuffs && i + 1 < a.cuffs.length;
+    recolour(px, bg, own ? a.cuffs[i] : h[i], own ? a.cuffs[i + 1] : h[i + 1] - 1, fixed(g[1]));
+  }
+}
+// boots as their look: each foot's first pixel outer, the rest inner; a tall boot takes the leg row above
+function stampBoots(px, bg, look, a) {
+  const st = look.shape("boots") & 0xff, b = st > 0 && st < BOOT_LOOKS.length ? BOOT_LOOKS[st] : null;
+  const tint = b ? 0 : ramp(look.item("boots"), false)[1];
+  a.feetCols.forEach((x, i) => { const first = i === 0 || x !== a.feetCols[i - 1] + 1; recolour(px, bg, x, a.feetRow, b ? fixed(b[first ? 0 : 1]) : tint); });
+  if (!b || b[2] === "." || a.feetRow < 1) return;
+  const y = a.feetRow - 1, x0 = a.short ? 3 : 4 + a.torso[0], x1 = a.short ? 9 : 11 + a.torso[0];
+  let prev = false;
+  for (let x = Math.max(0, x0); x <= Math.min(15, x1); x++) {
+    const p = px[y * 16 + x], leg = p !== bg && (p & 0xffffff) !== 0;
+    if (leg) px[y * 16 + x] = fixed(!prev && b[3] !== "." ? b[3] : b[2]);
+    prev = leg;
+  }
+}
+const shieldSprite = look => { const st = look.shape("shield") & 0xff; return st > 0 && st < SHIELDS.length ? SHIELDS[st] : S_SHIELD; };
+const S_SHORT_BLADE = S(-3, 0, "N", -2, 0, "O", -1, -1, "KHK");
+const S_SWORD = S(-7, 0, "N", -6, 0, "N", -5, 0, "O", -4, 0, "N", -3, 0, "O", -2, 0, "O", -1, -1, "KHK", 1, 0, "J");
+const S_GREAT_SWORD = S(-10, 0, "N", -9, 0, "N", -8, 0, "O", -7, 0, "N", -6, 0, "O", -5, 0, "N", -4, 0, "O", -3, 0, "O", -2, -1, "KHK", -1, 0, "J", 1, 0, "J");
+const S_AXE = S(-6, -2, "NOJ", -5, -2, "OWJ", -4, -1, "WJ", -3, 0, "J", -2, 0, "J", -1, 0, "J");
+const S_PICK = S(-6, -2, "OOJOO", -5, -2, "W.J.W", -4, 0, "J", -3, 0, "J", -2, 0, "J", -1, 0, "J");
+const S_BLUNT = S(-6, -1, "lm", -5, -1, "md", -4, 0, "J", -3, 0, "J", -2, 0, "J", -1, 0, "J");
+const S_STAFF = S(-8, 0, "K", -7, 0, "J", -6, 0, "J", -5, 0, "J", -4, 0, "J", -3, 0, "J", -2, 0, "J", -1, 0, "J", 1, 0, "J", 2, 0, "J");
+const S_POLE = S(-10, 0, "N", -9, 0, "O", -8, -1, "WOW", -7, 0, "J", -6, 0, "J", -5, 0, "J", -4, 0, "J", -3, 0, "J", -2, 0, "J", -1, 0, "J", 1, 0, "J", 2, 0, "J");
+const S_LAUNCHER = S(-4, -1, "J", -3, -2, "J", -2, -2, "J", -1, -2, "J", 0, -2, "J", 1, -2, "J", 2, -1, "J");
+const S_MISSILE = S(-2, 0, "l", -1, 0, "m");
+const S_WHIP = S(1, -1, "J", 2, -2, "J", 3, -2, "J", 3, -1, "J");
+const S_HORN = S(-5, 0, "N", -4, 0, "Z", -3, 0, "N", -2, 0, "Z", -1, 0, "N");
+// a morning star: a spiked ball on a chain, as vanilla's floor tile draws it (Lucas, 2026-09-26)
+const S_CHAIN = S(-8, -3, "d", -7, -3, "lmd", -6, -4, "dmd", -5, -2, "X", -4, -1, "X", -3, 0, "K", -2, 0, "J", -1, 0, "J");
+// Artifacts with art of their own (Lucas, 2026-09-26; tools/paperdoll/artgen.py), numbered as
+// the core's rh_doll_arts[]: artilist.h's order.
+const ART_EYES = 26, ART_MITRE = 27, ART_AETHIOPICA = 33;
+const ART_NAMES = [null, "Excalibur", "Stormbringer", "Mjollnir", "Cleaver", "Grimtooth", "Orcrist", "Sting", "Magicbane", "Frost Brand", "Fire Brand", "Dragonbane", "Demonbane", "Werebane", "Grayswandir", "Giantslayer", "Ogresmasher", "Trollsbane", "Vorpal Blade", "Snickersnee", "Sunsword", "Orb of Detection", "Heart of Ahriman", "Sceptre of Might", "Staff of Aesculapius", "Magic Mirror of Merlin", "Eyes of the Overworld", "Mitre of Holiness", "Longbow of Diana", "Master Key of Thievery", "Tsurugi of Muramasa", "Platinum Yendorian Express Card", "Orb of Fate", "Eye of the Aethiopica", "Lapis Philosophorum"];
+const ART_WORDS = [null, "a wide gold crossguard, a blue stone", "a black blade with red runes", "a broad silver hammer, lightning sparks", "a great crescent blade and a back spike", "black blade, red warning glow, green edge", "white blade, a light-blue glow, a green elven hilt", "white blade glowing light blue, a green elven hilt", "magenta sparks at the tip, an athame's black hilt", "an ice-blue blade, a frost glint", "a blade of flame", "mirror-bright (it reflects), red wing guard", "all silver, a gold flame on top, a gold collar", "a curved silver blade, a wolfsbane-purple guard", "a curved grey blade, a moonlit glint, a dark hilt", "a broad blade, a heavy guard", "a huge dark-iron head", "spiked iron ball on a chain, dark grey spikes", "two pixels longer, a black hilt", "katana: curved tip, gold tsuba, long grip", "a white-gold blade, a star of light at the tip", "clear glass, a white glint (it gives ESP)", "a red stone cut as a heart", "a gold sceptre, a crown holding a magenta gem", "a staff with a green serpent coiled up it", "a gold hand-mirror, its glass catching light", "lenses that glow gold (Monk)", "a white mitre with a gold cross (Priest)", "a longer silver bow, moon-white glints", "a gold key: bit at the top, the ring below the hand", "long straight blade, a line of blood", "a black card with a platinum edge and a gold chip", "a golden orb (it gives luck)", "a blue eye set in gold (Wizard)", "a unicorn horn banded in gold (Rolehack)"];
+const ART_HELD = [null,
+  S(-7, 0, "N", -6, 0, "N", -5, 0, "N", -4, 0, "M", -3, 0, "N", -2, 0, "M", -1, -2, "HHBHH", 1, 0, "H"),  // 1 Excalibur
+  S(-7, 0, "R", -6, 0, "D", -5, 0, "R", -4, 0, "Q", -3, 0, "D", -2, 0, "R", -1, -1, "QDQ", 1, 0, "D"),  // 2 Stormbringer
+  S(-7, -3, "B", -6, -2, "NOO", -5, -2, "OWW", -4, -2, "B.J", -3, 0, "J", -2, 0, "J", -1, 0, "K"),  // 3 Mjollnir
+  S(-7, -2, "N.J", -6, -3, "NOOJ", -5, -3, "OWWJW", -4, -2, "W.J", -3, 0, "J", -2, 0, "J", -1, 0, "J"),  // 4 Cleaver
+  S(-4, 0, "S", -3, -1, "DR", -2, 0, "G", -1, -1, "RJR"),  // 5 Grimtooth
+  S(-7, 0, "N", -6, -1, "BN", -5, 0, "N", -4, -1, "BN", -3, 0, "N", -2, 0, "O", -1, -1, "FGF", 1, 0, "F"),  // 6 Orcrist
+  S(-4, 0, "B", -3, -1, "BN", -2, 0, "N", -1, -1, "FGF"),  // 7 Sting
+  S(-4, -1, "I.I", -3, 0, "N", -2, 0, "M", -1, -1, "QIQ"),  // 8 Magicbane
+  S(-7, 0, "N", -6, -1, "NB", -5, 0, "B", -4, 0, "N", -3, 0, "B", -2, 0, "B", -1, -1, "PBP", 1, 0, "P"),  // 9 Frost Brand
+  S(-7, 0, "H", -6, 0, "C", -5, 0, "H", -4, -1, "DC", -3, 0, "D", -2, 0, "D", -1, -1, "RDR", 1, 0, "D"),  // 10 Fire Brand
+  S(-7, 0, "N", -6, 0, "N", -5, 0, "N", -4, 0, "N", -3, 0, "M", -2, -2, "D.M.D", -1, -2, "DKKKD", 1, 0, "K"),  // 11 Dragonbane
+  S(-7, 0, "H", -6, -1, "NN", -5, -1, "ZZ", -4, 0, "H", -3, 0, "O", -2, 0, "O", -1, 0, "O"),  // 12 Demonbane
+  S(-7, -1, "N", -6, -1, "Z", -5, 0, "N", -4, 0, "Z", -3, 0, "N", -2, 0, "Z", -1, -1, "IEI", 1, 0, "I"),  // 13 Werebane
+  S(-7, -1, "Z", -6, -1, "Y", -5, 0, "Z", -4, -1, "NZ", -3, 0, "Y", -2, 0, "Z", -1, -1, "TST", 1, 0, "S"),  // 14 Grayswandir
+  S(-7, 0, "Z", -6, -1, "YZ", -5, -1, "YO", -4, -1, "YZ", -3, -1, "YO", -2, -1, "YO", -1, -2, "JKKJ", 1, 0, "K"),  // 15 Giantslayer
+  S(-7, -1, "YYW", -6, -1, "WWS", -5, -1, "WSS", -4, 0, "J", -3, 0, "J", -2, 0, "J", -1, 0, "J"),  // 16 Ogresmasher
+  S(-9, -3, "S", -8, -4, "ZYX", -7, -5, "SYXWS", -6, -4, "XWW", -5, -3, "S.X", -4, -1, "X", -3, 0, "K", -2, 0, "J", -1, 0, "J"),  // 17 Trollsbane
+  S(-9, 0, "N", -8, 0, "M", -7, 0, "N", -6, 0, "M", -5, 0, "N", -4, 0, "M", -3, 0, "N", -2, 0, "M", -1, -1, "SQS", 1, 0, "S"),  // 18 Vorpal Blade
+  S(-7, 1, "N", -6, 0, "N", -5, 0, "O", -4, 0, "N", -3, 0, "O", -2, 0, "N", -1, -1, "AHA", 1, 0, "R", 2, 0, "N"),  // 19 Snickersnee
+  S(-8, 0, "H", -7, -1, "HNH", -6, 0, "H", -5, 0, "N", -4, 0, "H", -3, 0, "H", -2, 0, "N", -1, -1, "CHC", 1, 0, "H"),  // 20 Sunsword
+  S(-3, -2, "NB", -2, -3, "BBP", -1, -2, "PE"),  // 21 Orb of Detection
+  S(-3, -3, "D.D", -2, -3, "DCD", -1, -2, "D"),  // 22 Heart of Ahriman
+  S(-8, -1, "H.H", -7, -1, "HIH", -6, 0, "H", -5, 0, "H", -4, 0, "H", -3, 0, "H", -2, 0, "H", -1, 0, "K"),  // 23 Sceptre of Might
+  S(-8, -1, "GK", -7, 0, "G", -6, 0, "JG", -5, 0, "G", -4, -1, "GJ", -3, 0, "G", -2, 0, "JG", -1, 0, "J", 1, 0, "J", 2, 0, "J"),  // 24 Staff of Aesculapius
+  S(-5, -1, "H", -4, -2, "HBH", -3, -2, "HNH", -2, -1, "H", -1, 0, "H"),  // 25 Magic Mirror of Merlin
+  null,  // 26 Eyes of the Overworld (worn)
+  null,  // 27 Mitre of Holiness (worn)
+  S(-5, -1, "N", -4, -2, "Z", -3, -2, "Z", -2, -2, "N", -1, -2, "Z", 0, -2, "Z", 1, -2, "Z", 2, -2, "N", 3, -1, "Z"),  // 28 Longbow of Diana
+  S(-5, 0, "H", -4, -1, "HH", -3, -1, "HH", -2, 0, "H", -1, 0, "K", 1, -1, "H.H", 2, 0, "H"),  // 29 Master Key of Thievery
+  S(-10, 0, "N", -9, 0, "O", -8, 0, "D", -7, 0, "N", -6, 0, "O", -5, 0, "D", -4, 0, "N", -3, 0, "O", -2, -1, "AHA", -1, 0, "R", 1, 0, "R"),  // 30 Tsurugi of Muramasa
+  S(-4, -3, "ZNN", -3, -3, "RRS", -2, -3, "HRR", -1, -3, "QQR"),  // 31 Platinum Yendorian Express Card
+  S(-3, -2, "NH", -2, -3, "HHK", -1, -2, "KJ"),  // 32 Orb of Fate
+  null,  // 33 Eye of the Aethiopica (worn)
+  S(-5, 0, "H", -4, 0, "N", -3, 0, "H", -2, 0, "N", -1, 0, "H"),  // 34 Lapis Philosophorum
+];
+const ART_MITRE_HUMAN = "7,0,N 8,0,M 6,1,N 7,1,H 8,1,N 9,1,M 6,2,H 7,2,H 8,2,H 9,2,H 5,3,N 6,3,N 7,3,H 8,3,N 9,3,M 10,3,A";
+const ART_MITRE_SHORT = "6,2,N 5,3,N 6,3,H 7,3,M 5,4,H 6,4,H 7,4,H 5,5,N 6,5,H 7,5,M 4,6,N 5,6,N 6,6,H 7,6,N 8,6,M";
+const S_EYES = S(4, 5, "AHNHNA"), S_EYES_SHORT = S(7, 4, "HNHNH");
+const S_AETHIOPICA = S(8, 6, "HEH"), AETHIOPICA_SHORT = "E";
+const S_HELMET_SHORT = S(0, 2, "~~~~~~~~~", 1, 2, "~~~~~~~~~", 2, 2, "~~~~~~~~~", 3, 2, "~~~~~~~~~", 4, 2, "~~~~~~~~~", 5, 2, "~~~lmA~~~", 6, 2, "~~lmmdA~~", 7, 4, "~...~");
+const S_EYEWEAR_SHORT = S(7, 4, "dmmmd");
+const S_FRONT_SHORT = S(9, 3, "lmmmmmd", 10, 3, "lAmmmAd", 11, 5, "mmm", 12, 4, "lmmmd");
+const S_ROBE = S(7, 5, "CCJKKK", 8, 4, "CCCJKKKK", 9, 4, "CACJKKAK", 10, 5, "CCJKKK", 11, 4, "CCCJKKKK", 12, 4, "CCCJKKKK");
+const S_ROBE_SHORT = S(9, 3, "CCJKKKK", 10, 3, "CAJKKAK", 11, 5, "CJK", 12, 4, "CCJKK");
+const S_APRON = S(7, 6, "F..R", 8, 6, "FFFR", 9, 6, "FFFR", 10, 6, "FFFR", 11, 6, "FFFR", 12, 6, "FFFR");
+const S_APRON_SHORT = S(9, 5, "FFR", 10, 5, "FFR", 11, 5, "FFR", 12, 5, "FFR");
+const SHORT_Y = [9, 10, 11], SHORT_X0 = [3, 3, 5], SHORT_X1 = [9, 9, 7];
+const S_HELD = S(-2, -1, "lm", -1, -1, "md");
+// what the hand holds: an artifact's own art once its name is known, else its family's
+function heldSprite(look, slot) {
+  const art = look.art(slot), s = art > 0 && art < ART_HELD.length ? ART_HELD[art] : null;
+  return s || weaponSprite(look.shape(slot));
+}
+function weaponSprite(shape) {
+  switch (shape & 0xff) {
+    case SHORT_BLADE: return S_SHORT_BLADE; case SWORD: return S_SWORD; case GREAT_SWORD: return S_GREAT_SWORD;
+    case AXE: return S_AXE; case PICK: return S_PICK; case BLUNT: return S_BLUNT; case STAFF: return S_STAFF;
+    case POLE: return S_POLE; case LAUNCHER: return S_LAUNCHER; case MISSILE: return S_MISSILE;
+    case WHIP: return S_WHIP; case HORN: return S_HORN; case CHAIN: return S_CHAIN; default: return S_HELD;
+  }
+}
+
+const keeps = (a, x, y) => { for (let i = 0; i + 1 < a.keep.length; i += 2) if (a.keep[i] === x && a.keep[i + 1] === y) return true; return false; };
+const putPx = (px, x, y, col) => { if (x >= 0 && x < 16 && y >= 0 && y < 16) px[y * 16 + x] = col; };
+function capePx(px, bg, x, y, col, overShadow) {
+  if (x < 0 || x >= 16 || y < 0 || y >= 16) return;
+  const p = px[y * 16 + x];
+  if (p === bg || (overShadow && p === 0)) px[y * 16 + x] = col;
+}
+function recolour(px, bg, x, y, col) {
+  if (x < 0 || x >= 16 || y < 0 || y >= 16) return;
+  const p = px[y * 16 + x];
+  if (p === bg || p === 0) return;
+  px[y * 16 + x] = col;
+}
+function stamp(px, bg, s, ox, oy, mirror, ramp) {
+  for (const [ys, x0, row] of s) for (let i = 0; i < row.length; i++) {
+    const c = row[i]; if (c === ".") continue;
+    const dx = x0 + i, x = ox + (mirror ? -dx : dx), y = oy + ys;
+    if (x < 0 || x >= 16 || y < 0 || y >= 16) continue;
+    px[y * 16 + x] = c === "~" ? bg : c === "l" ? ramp[0] : c === "m" ? ramp[1] : c === "d" ? ramp[2] : fixed(c);
+  }
+}
+function stampKeep(px, s, a, ramp) {
+  for (const [y, x0, row] of s) for (let i = 0; i < row.length; i++) {
+    const c = row[i], x = x0 + i;
+    if (c === "." || keeps(a, x, y)) continue;
+    putPx(px, x, y, c === "l" ? ramp[0] : c === "m" ? ramp[1] : c === "d" ? ramp[2] : fixed(c));
+  }
+}
+const mix = (c, to, f) => {
+  const r = (c >> 16) & 255, g = (c >> 8) & 255, b = c & 255, R = (to >> 16) & 255, G = (to >> 8) & 255, B = to & 255;
+  return (Math.round(r + (R - r) * f) << 16) | (Math.round(g + (G - g) * f) << 8) | Math.round(b + (B - b) * f);
+};
+const TINT = new Map();
+function tint(item) {
+  if (TINT.has(item.id)) return TINT.get(item.id);
+  const px = item.pxa, bg = px[0], n = new Map(); let best = 0x808080, bestN = 0;
+  for (const p of px) {
+    if (p === bg || ((p >> 16) & 255) + ((p >> 8) & 255) + (p & 255) < 90) continue;
+    const v = (n.get(p) || 0) + 1; n.set(p, v);
+    if (v > bestN) { bestN = v; best = p; }
+  }
+  TINT.set(item.id, best); return best;
+}
+function ramp(item, large) {
+  const c = tint(item);
+  return large ? [c, mix(c, 0, 0.2), mix(c, 0, 0.5)] : [mix(c, 0xffffff, 0.45), c, mix(c, 0, 0.45)];
+}
+function shoulderRow(it) {
+  const ibg = it[0];
+  for (let y = 0; y < 16; y++) { let n = 0; for (let x = 3; x <= 12; x++) if (it[y * 16 + x] !== ibg) n++; if (n >= 6) return y; }
+  return -1;
+}
+function gapFill(it, sy) {
+  const ibg = it[0], n = new Map(); let fill = 0, best = 0;
+  for (let y = sy; y < 16; y++) for (let x = 8; x < 16; x++) {
+    const c = it[y * 16 + x]; if (c === ibg || c === 0) continue;
+    const v = (n.get(c) || 0) + 1; n.set(c, v);
+    if (v > best) { best = v; fill = c; }
+  }
+  return fill;
+}
+function hideRamp(item) {
+  const it = item.pxa, ibg = it[0]; let drawn = 0, black = 0;
+  for (const p of it) { if (p === ibg) continue; drawn++; if (p === 0) black++; }
+  if (drawn > 0 && black > BLACK_HIDE_ABOVE * drawn) return [0x6c91b6, 0x363636, 0x121212];
+  return ramp(item, false);
+}
+function stampLegs(px, bg, a, it, sy, fill, two) {
+  if (a.feetRow < 0) return;
+  for (let Y = 12 + a.torso[1]; Y < a.feetRow; Y++) {
+    const yf = Y - a.torso[1], fy = sy + 2 + ((yf - 12) % 3 + 3) % 3;
+    for (let xf = 4; xf <= 11; xf++) {
+      const X = xf + a.torso[0]; if (X < 0 || X >= 16 || Y < 0 || Y >= 16) continue;
+      const p = px[Y * 16 + X]; if (p === bg || p === 0) continue;
+      if (two) px[Y * 16 + X] = two[(xf + yf) % 2];
+      else if (fy >= 0 && fy < 16) { const c = it[fy * 16 + xf]; if (c !== it[0]) px[Y * 16 + X] = c; else if (fill) px[Y * 16 + X] = fill; }
+    }
+  }
+}
+function stampBody(px, bg, look, slot, a, fallback) {
+  const pants = slot === "suit", item = look.item(slot);
+  if (look.shape(slot) & HIDE) {
+    const r = hideRamp(item); stamp(px, bg, S_HIDE, a.torso[0], a.torso[1], false, r);
+    if (pants) stampLegs(px, bg, a, null, -1, 0, r); return;
+  }
+  const it = item.pxa, sy = shoulderRow(it);
+  if (sy < 0) {
+    const r = ramp(item, true); stamp(px, bg, fallback, a.torso[0], a.torso[1], false, r);
+    if (pants) stampLegs(px, bg, a, null, -1, 0, [r[1], r[1]]); return;
+  }
+  const ibg = it[0], gaps = []; let cells = 0;
+  for (let r = 0; r < BODY_Y.length; r++) {
+    const y = BODY_Y[r], fy = sy + 1 + (y - 7);
+    for (let x = BODY_X0[r]; x <= BODY_X1[r]; x++) {
+      const X = x + a.torso[0], Y = y + a.torso[1], inside = X >= 0 && X < 16 && Y >= 0 && Y < 16;
+      if (y === 9 && (x === 5 || x === 10)) { if (inside) px[Y * 16 + X] = 0; continue; }
+      cells++;
+      const c = fy >= 0 && fy < 16 ? it[fy * 16 + x] : ibg;
+      if (c !== ibg) { if (inside) px[Y * 16 + X] = c; } else if (inside) gaps.push(Y * 16 + X);
+    }
+  }
+  const fill = gaps.length > GAP_FILL_ABOVE * cells ? gapFill(it, sy) : 0;
+  if (fill) for (const g of gaps) px[g] = fill;
+  if (pants) stampLegs(px, bg, a, it, sy, fill, null);
+}
+function stampBodyShort(px, bg, look, slot, a, pants) {
+  const item = look.item(slot); let two = null, sy = -1, it = null, ibg = 0;
+  if (look.shape(slot) & HIDE) { const r = hideRamp(item); two = [r[0], r[1]]; }
+  else { it = item.pxa; ibg = it[0]; sy = shoulderRow(it); }
+  if (!two && sy < 0) { const r = ramp(item, true); two = [r[1], r[1]]; }
+  const gaps = []; let cells = 0;
+  for (let r = 0; r < SHORT_Y.length; r++) {
+    const y = SHORT_Y[r];
+    for (let x = SHORT_X0[r]; x <= SHORT_X1[r]; x++) {
+      if (keeps(a, x, y)) continue;
+      if (y === 10 && (x === 4 || x === 8)) { px[y * 16 + x] = 0; continue; }
+      cells++;
+      if (two) { px[y * 16 + x] = two[(x + y) % 2]; continue; }
+      const fy = sy + 2 + (y - 9), c = fy < 16 ? it[fy * 16 + x + 1] : ibg;
+      if (c !== ibg) px[y * 16 + x] = c; else gaps.push(y * 16 + x);
+    }
+  }
+  const fill = !two && gaps.length > GAP_FILL_ABOVE * cells ? gapFill(it, sy) : 0;
+  if (fill) for (const g of gaps) px[g] = fill;
+  if (!pants) return;
+  for (let x = 4; x <= 8; x++) {
+    const p = px[12 * 16 + x]; if (p === bg || p === 0) continue;
+    if (two) px[12 * 16 + x] = two[(x + 12) % 2];
+    else { const c = sy + 2 < 16 ? it[(sy + 2) * 16 + x + 1] : ibg; if (c !== ibg) px[12 * 16 + x] = c; else if (fill) px[12 * 16 + x] = fill; }
+  }
+}
+function stampHelmet(px, bg, look, a) {
+  const mitre = look.art("helmet") === ART_MITRE;
+  const st = look.shape("helmet") & 0xff, set = a.short ? HELMS_SHORT : HELMS;
+  if (!mitre && (st <= 0 || st >= set.length)) {
+    if (a.short) stamp(px, bg, S_HELMET_SHORT, 0, 0, false, ramp(look.item("helmet"), false));
+    else stamp(px, bg, S_HELMET, a.head[0], a.head[1], false, ramp(look.item("helmet"), false));
+    return;
+  }
+  const dx = a.short ? 0 : a.head[0], dy = a.short ? 0 : a.head[1];
+  if (a.short) {
+    for (let y = 0; y <= 6; y++) for (let x = 2; x <= 10; x++) px[y * 16 + x] = bg;
+    putPx(px, 4, 7, bg); putPx(px, 8, 7, bg);
+  } else for (let y = 0; y <= 3; y++) for (let x = 3; x <= 12; x++) if (!keeps(a, x + dx, y + dy)) putPx(px, x + dx, y + dy, bg);
+  const spec = mitre ? (a.short ? ART_MITRE_SHORT : ART_MITRE_HUMAN) : set[st];
+  for (const p of spec.split(" ")) { const [x, y, c] = p.split(","); putPx(px, +x + dx, +y + dy, fixed(c)); }
+}
+function stampPauldrons(px, dragon, a) {
+  if (dragon < 0 || dragon >= PAULDRONS.length) return;
+  for (const p of PAULDRONS[dragon].split(" ")) {
+    const [xs, ys, c] = p.split(","), x = +xs, y = +ys, d = DARKER_FROM.indexOf(c), cr = d >= 0 ? DARKER_TO[d] : c;
+    if (a.short) { putPx(px, x - 1, y + 2, fixed(c)); putPx(px, 13 - x, y + 2, fixed(cr)); }
+    else { putPx(px, x + a.torso[0], y + a.torso[1], fixed(c)); putPx(px, 15 - x + a.torso[0], y + a.torso[1], fixed(cr)); }
+  }
+}
+const capeStyle = look => { const st = look.shape("cloak") & 0xff; return st > 0 && st < CAPES.length ? CAPES[st] : null; };
+function stampCape(px, bg, a, r) {
+  const bottom = a.feetRow >= 0 ? a.feetRow : 13 + a.torso[1];
+  for (let y = 7 + a.torso[1]; y <= bottom; y++) { capePx(px, bg, 3 + a.torso[0], y, r[0], false); capePx(px, bg, 12 + a.torso[0], y, r[2], true); }
+  for (let y = bottom - 1; y <= bottom; y++) { capePx(px, bg, 2 + a.torso[0], y, r[1], false); capePx(px, bg, 13 + a.torso[0], y, r[2], true); }
+}
+function stampCapeShort(px, bg, r) {
+  for (let y = 9; y <= 13; y++) { capePx(px, bg, 2, y, r[0], false); capePx(px, bg, 10, y, r[2], true); }
+  for (let y = 12; y <= 13; y++) { capePx(px, bg, 1, y, r[1], false); capePx(px, bg, 11, y, r[2], true); }
+}
+function stampCloakBehind(px, bg, look, a) {
+  const st = capeStyle(look);
+  if (!st) { const r = ramp(look.item("cloak"), true); if (a.short) stampCapeShort(px, bg, r); else stampCape(px, bg, a, r); return; }
+  let lx, rx, top, bottom, hy, hx0, hx1;
+  if (a.short) { lx = 2; rx = 10; top = 9; bottom = 13; hy = 2; hx0 = 3; hx1 = 9; }
+  else { lx = 3 + a.torso[0]; rx = 12 + a.torso[0]; top = 7 + a.torso[1]; bottom = a.feetRow >= 0 ? a.feetRow : 13 + a.torso[1]; hy = 1 + a.head[1]; hx0 = 5 + a.head[0]; hx1 = 10 + a.head[0]; }
+  for (let y = top; y <= bottom; y++) {
+    let cl = st.l, cr = st.r;
+    if (st.rough) cl = st.rough[y % 2];
+    if (st.check) { cl = st.check[y % 2]; cr = st.check[(y + 1) % 2]; }
+    if (st.fleck && y % 3 === 0) cl = st.fleck;
+    if (st.ragged && y === bottom && y % 2 === 1) continue;
+    capePx(px, bg, lx, y, fixed(cl), false); capePx(px, bg, rx, y, fixed(cr), true);
+  }
+  for (let y = bottom - 1; y <= bottom; y++) {
+    if (st.ragged && y === bottom) continue;
+    capePx(px, bg, lx - 1, y, fixed(st.hem), false); capePx(px, bg, rx + 1, y, fixed(st.r === "A" ? st.l : st.hem), true);
+  }
+  if (st.trim) for (let y = top; y <= bottom; y++) { capePx(px, bg, lx - 1, y, fixed(st.trim), false); capePx(px, bg, rx + 1, y, fixed(st.trim), true); }
+  if (st.glint && top + 2 < 16 && lx >= 0 && px[(top + 2) * 16 + lx] === fixed(st.l)) px[(top + 2) * 16 + lx] = fixed(st.glint);
+  if (st.hood) {
+    const hoodY = a.short ? 4 : hy, hoodLen = a.short ? 3 : 5;
+    for (let x = hx0 + 1; x < hx1; x++) capePx(px, bg, x, hoodY, fixed(2 * x < hx0 + hx1 ? st.hood[0] : st.hood[1]), false);
+    for (let y = hoodY + 1; y <= hoodY + hoodLen; y++) { capePx(px, bg, hx0, y, fixed(st.hood[0]), false); capePx(px, bg, hx1, y, fixed(st.hood[1]), true); }
+  }
+  if (st.collar) {
+    const cy = hy + 3;
+    capePx(px, bg, hx0 - 1, cy, fixed(st.collar[0]), false); capePx(px, bg, hx0, cy + 1, fixed(st.collar[0]), false); capePx(px, bg, hx0, cy + 2, fixed(st.collar[0]), false);
+    capePx(px, bg, hx1 + 1, cy, fixed(st.collar[1]), true); capePx(px, bg, hx1, cy + 1, fixed(st.collar[1]), true); capePx(px, bg, hx1, cy + 2, fixed(st.collar[1]), true);
+  }
+}
+function stampCloakFront(px, bg, look, a) {
+  const st = look.shape("cloak") & 0xff, dx = a.short ? 0 : a.torso[0], dy = a.short ? 0 : a.torso[1];
+  const bottom = a.feetRow >= 0 ? a.feetRow - 1 : 12 + dy;
+  if (st === C_WRAPPING) {
+    const top = a.short ? 9 : 7 + dy;
+    for (let y = top; y <= bottom && y < 16; y++) for (let x = 0; x < 16; x++) {
+      if (keeps(a, x, y) || (!a.short && (x < 3 + dx || x > 12 + dx))) continue;
+      const p = px[y * 16 + x]; if (p === bg || p === 0) continue;
+      px[y * 16 + x] = fixed(y % 2 === 1 ? "N" : "O");
+    }
+    const spots = a.short ? [5, 10, 7, 12] : [6 + dx, 9 + dy, 9 + dx, 11 + dy];
+    for (let i = 0; i < spots.length; i += 2) {
+      const x = spots[i], y = spots[i + 1];
+      if (x >= 0 && x < 16 && y >= 0 && y < 16 && (px[y * 16 + x] === fixed("N") || px[y * 16 + x] === fixed("O"))) px[y * 16 + x] = fixed("D");
+    }
+    return;
+  }
+  const s = st === C_ROBE ? (a.short ? S_ROBE_SHORT : S_ROBE) : st === C_APRON ? (a.short ? S_APRON_SHORT : S_APRON) : null;
+  if (!s) { const r = ramp(look.item("cloak"), true); if (a.short) stampKeep(px, S_FRONT_SHORT, a, r); else stamp(px, bg, S_CLOAK, a.torso[0], a.torso[1], false, r); return; }
+  for (const [ys, x0, row] of s) for (let i = 0; i < row.length; i++) {
+    const c = row[i], x = x0 + i + dx, y = ys + dy;
+    if (c === "." || keeps(a, x, y) || (y > bottom && a.feetRow >= 0)) continue;
+    putPx(px, x, y, fixed(c));
+  }
+}
+function dressHuman(px, bg, look, a, skin, tile) {
+  // first, before any layer: the tile's off-hand pose gives way to a shield or a second weapon
+  if (look.draws("shield") || look.has("offhand"))
+    for (let i = 0; i + 2 < a.offPose.length; i += 3) { const c = a.offPose[i + 2]; putPx(px, a.offPose[i], a.offPose[i + 1], c === "~" ? bg : c === "L" ? skin : fixed(c)); }
+  const front = look.has("cloak") && (look.shape("cloak") & FRONT) !== 0;
+  const capeOn = look.draws("cloak") && !front, covered = look.has("suit") || front;
+  if (capeOn) stampCloakBehind(px, bg, look, a);
+  if (look.draws("shirt") && !covered) stampBody(px, bg, look, "shirt", a, S_SHIRT);
+  if (look.draws("suit")) stampBody(px, bg, look, "suit", a, S_SUIT);
+  // a front garment the tile itself wears (the Apothecary's smock, a Priest's robe) goes back over the armour
+  if (look.draws("suit") && front && (look.shape("cloak") & COSTUME))
+    for (let y = 7; y <= 11; y++) for (let x = 6; x <= 9; x++) { const X = x + a.torso[0], Y = y + a.torso[1]; if (X >= 0 && X < 16 && Y >= 0 && Y < 16) px[Y * 16 + X] = tile[Y * 16 + X]; }
+  if (look.draws("cloak") && front) stampCloakFront(px, bg, look, a);
+  if (capeOn) { const st = capeStyle(look), clasp = st === null ? "H" : st.clasp; if (clasp) putPx(px, 7 + a.torso[0], 7 + a.torso[1], fixed(clasp)); }
+  if (look.draws("suit") && (look.shape("suit") & DRAGON)) stampPauldrons(px, (look.shape("suit") >> 12) & 0xf, a);
+  if (look.draws("amulet")) stampAmulet(px, bg, look, a);   // over any armour (Lucas)
+  if (look.draws("boots") && a.feetRow >= 0) stampBoots(px, bg, look, a);
+  if (look.draws("gloves")) stampGloves(px, bg, look, a, a.hands || [a.main[0], a.main[1], a.off[0], a.off[1]]);
+  if (look.draws("helmet")) stampHelmet(px, bg, look, a);
+  if (look.draws("eyewear")) stamp(px, bg, eyewearSprite(look, false), a.head[0], a.head[1], false, ramp(look.item("eyewear"), false));
+  if (look.draws("shield")) stamp(px, bg, shieldSprite(look), a.off[0], a.off[1], false, ramp(look.item("shield"), false));
+  if (look.has("weapon")) stamp(px, bg, heldSprite(look, "weapon"), a.main[0], a.main[1], false, ramp(look.item("weapon"), false));
+  if (look.has("offhand")) stamp(px, bg, heldSprite(look, "offhand"), a.off[0], a.off[1], true, ramp(look.item("offhand"), false));
+}
+function dressShort(px, bg, look, a) {
+  const front = look.has("cloak") && (look.shape("cloak") & FRONT) !== 0;
+  const capeOn = look.draws("cloak") && !front, covered = look.has("suit") || front;
+  if (capeOn) stampCloakBehind(px, bg, look, a);
+  if (look.draws("shirt") && !covered) stampBodyShort(px, bg, look, "shirt", a, false);
+  if (look.draws("suit")) stampBodyShort(px, bg, look, "suit", a, true);
+  if (look.draws("cloak") && front) stampCloakFront(px, bg, look, a);
+  if (look.draws("suit") && (look.shape("suit") & DRAGON)) stampPauldrons(px, (look.shape("suit") >> 12) & 0xf, a);
+  if (look.draws("amulet")) putPx(px, 6, 11, amuletShortColour(look));   // under the beard, over any armour
+  if (look.draws("boots")) stampBoots(px, bg, look, a);
+  if (look.draws("gloves")) stampGloves(px, bg, look, a, [a.main[0], a.main[1], a.off[0], a.off[1]]);
+  if (look.draws("helmet")) stampHelmet(px, bg, look, a);
+  if (look.draws("eyewear")) stamp(px, bg, eyewearSprite(look, true), 0, 0, false, ramp(look.item("eyewear"), false));
+  if (look.draws("shield")) stamp(px, bg, shieldSprite(look), a.off[0], a.off[1], false, ramp(look.item("shield"), false));   // full size (Lucas)
+  // weapons at full size: pound for pound the small races are the strong ones (Lucas, 2026-09-26)
+  if (look.has("weapon")) stamp(px, bg, heldSprite(look, "weapon"), a.main[0], a.main[1], false, ramp(look.item("weapon"), false));
+  if (look.has("offhand")) stamp(px, bg, heldSprite(look, "offhand"), a.off[0], a.off[1], true, ramp(look.item("offhand"), false));
+}
+// The look the core would send (winandroid.c, and_send_hero_look()).
+function makeLook(bodyId, st) {
+  const body = BODY[bodyId];
+  const costumeIds = st.costume && body.group === "role" ? (D.costume[body.key] || []) : [];
+  const item = s => (st.slots[s] != null ? ITEM[st.slots[s]] : null);
+  const shape = s => {
+    const i = item(s); if (!i) return 0; let v = 0;
+    if (s === "weapon" || s === "offhand") v |= i.family || 0;
+    if (i.hide) v |= HIDE;
+    if (i.dragon != null) v |= DRAGON | (i.dragon << 12);
+    if (i.front) v |= FRONT;
+    if (s === "cloak" && i.cloak) v |= i.cloak;
+    if (s === "helmet" && i.helm) v |= i.helm;
+    if (s === "shield" && i.shield) v |= i.shield;
+    if (s === "gloves" && i.glove) v |= i.glove;
+    if (s === "boots" && i.boot) v |= i.boot;
+    if (s === "amulet" && i.amulet) v |= i.amulet;
+    if (s === "eyewear" && i.eyewear) v |= i.eyewear;
+    if (i.art) v |= i.art << 17;   // the artifact's own art (the core sends it once the name shows)
+    if (s !== "weapon" && s !== "offhand" && costumeIds.includes(i.id)) v |= COSTUME;
+    return v;
+  };
+  return { body, item, shape, has: s => !!item(s), draws: s => !!item(s) && !(shape(s) & COSTUME),
+           art: s => (shape(s) >> 17) & 0x3f };
+}
+function compose(bodyId, st) {
+  const look = makeLook(bodyId, st), a = look.body.anchor, px = Int32Array.from(look.body.pxa), bg = px[0];
+  const skin = TONES[st.tone];
+  for (let i = 0; i < 256; i++) if (px[i] === VANILLA_SKIN) px[i] = skin;
+  if (!st.doll) return px;
+  if (a.short) dressShort(px, bg, look, a); else dressHuman(px, bg, look, a, skin, Int32Array.from(px));
+  return px;
+}
+
+// ---------------------------------------------------------------- drawing
+function put(ctx, px, ox, oy) {
+  const img = ctx.createImageData(16, 16);
+  for (let i = 0; i < 256; i++) { const c = px[i]; img.data[i * 4] = (c >> 16) & 255; img.data[i * 4 + 1] = (c >> 8) & 255; img.data[i * 4 + 2] = c & 255; img.data[i * 4 + 3] = 255; }
+  ctx.putImageData(img, ox, oy);
+}
+
+// ---------------------------------------------------------------- state and UI
+const SLOTS = [
+  ["helmet", "Helmet"], ["eyewear", "Eyewear"], ["amulet", "Amulet"], ["cloak", "Cloak"],
+  ["suit", "Body armour"], ["shirt", "Shirt"], ["gloves", "Gloves"], ["boots", "Boots"],
+  ["weapon", "Weapon"], ["offhand", "Off hand (two weapons)"], ["shield", "Shield"],
+];
+const byName = n => D.items.find(i => i.name === n && !i.held).id;
+const ASCENSION = { suit: "gray dragon scale mail", cloak: "cloak of magic resistance", boots: "speed boots", gloves: "gauntlets of power", helmet: "helm of brilliance", shield: "shield of reflection", amulet: "amulet of life saving", weapon: "long sword" };
+const state = {
+  body: "gnome,male", race: true, tone: 5, costume: true, doll: true, grid: false,
+  slots: { helmet: byName("helm of brilliance"), eyewear: null, amulet: null, cloak: byName("cloak of protection"), suit: byName("black dragon scale mail"), shirt: null, gloves: byName("gauntlets of power"), boots: byName("speed boots"), weapon: byName("long sword"), offhand: null, shield: byName("shield of reflection") },
+};
+const $ = id => document.getElementById(id);
+const app = $("app");
+
+// An outfit as a link: the artifact passes only a bare #token (letters, digits,
+// . _ ~ -), so the outfit is one dotted token, e.g. gnome-f.t6.s117.c149 --
+// body-gender, t<tone 1-8>, then a slot letter and an item id per worn item,
+// and k0 / n0 when the costume rule or the doll is off.  tools/paperdoll/
+// viewer/outfit.py writes these from plain item names.
+const ARTIFACT_URL = "https://claude.ai/artifact/Q71uL4CefJHJRnfe8g4t7r";
+const CODES = { helmet: "h", eyewear: "e", amulet: "a", cloak: "c", suit: "s", shirt: "u", gloves: "g", boots: "b", weapon: "w", offhand: "o", shield: "d" };
+const SLOT_OF = Object.fromEntries(Object.entries(CODES).map(([k, v]) => [v, k]));
+function tokenOf() {
+  const b = BODY[state.body];
+  const parts = [b.key.replace(/ /g, "_") + "-" + b.gender[0], "t" + (state.tone + 1)];
+  for (const [s] of SLOTS) if (state.slots[s] != null) parts.push(CODES[s] + state.slots[s]);
+  if (!state.costume) parts.push("k0");
+  if (!state.doll) parts.push("n0");
+  return parts.join(".");
+}
+function applyToken(tok) {
+  const parts = tok.split(".");
+  const m = /^([a-z_]+)-([mf])$/.exec(parts[0] || "");
+  if (!m) return false;
+  const id = m[1].replace(/_/g, " ") + "," + (m[2] === "m" ? "male" : "female");
+  if (!BODY[id]) return false;
+  state.body = id; state.race = BODY[id].group === "race";
+  state.costume = true; state.doll = true;
+  for (const [s] of SLOTS) state.slots[s] = null;
+  for (const p of parts.slice(1)) {
+    const c = p[0], v = p.slice(1);
+    if (c === "t") { const n = +v; if (n >= 1 && n <= 8) state.tone = n - 1; }
+    else if (c === "k") state.costume = v !== "0";
+    else if (c === "n") state.doll = v !== "0";
+    else if (SLOT_OF[c]) {
+      const s = SLOT_OF[c], it = ITEM[+v];
+      if (it && (it.slot === s || (s === "weapon" && it.slot === "weapon") || (s === "offhand" && it.slot === "weapon" && !it.held)))
+        state.slots[s] = it.id;
+    }
+  }
+  ruleCheck();
+  return true;
+}
+function applyHash() {
+  const tok = decodeURIComponent((location.hash || "").slice(1));
+  if (tok && applyToken(tok)) {
+    $("showrace").checked = state.race; $("costume").checked = state.costume; $("dollOn").checked = state.doll;
+    return true;
+  }
+  return false;
+}
+
+function ruleCheck(changed) {
+  const w = state.slots.weapon != null ? ITEM[state.slots.weapon] : null;
+  const notes = [];
+  if (w && w.two) {
+    if (state.slots.shield != null) { state.slots.shield = null; notes.push("A two-handed weapon leaves no hand for a shield."); }
+    if (state.slots.offhand != null) { state.slots.offhand = null; notes.push("You can't two-weapon with a two-handed weapon."); }
+  }
+  if (state.slots.offhand != null) {
+    const o = ITEM[state.slots.offhand];
+    if (!w) { state.slots.offhand = null; notes.push("Two-weapon combat needs a weapon in your main hand first."); }
+    else if (o.two) { state.slots.offhand = null; notes.push("Only a one-handed weapon fits the off hand."); }
+    else if (state.slots.shield != null) {
+      if (changed === "shield") { state.slots.offhand = null; notes.push("A shield takes the off hand, so the second weapon is put away."); }
+      else { state.slots.shield = null; notes.push("Two-weapon combat takes the shield hand, so the shield comes off."); }
+    }
+  }
+  $("ruleNote").textContent = notes.join(" ");
+}
+
+function buildControls() {
+  const roles = $("roles"), races = $("races");
+  const seen = new Set();
+  for (const b of D.bodies) {
+    if (seen.has(b.key)) continue; seen.add(b.key);
+    const k = document.createElement("button");
+    k.className = "key"; k.textContent = b.label; k.dataset.key = b.key;
+    k.addEventListener("click", () => { state.body = `${b.key},${genderOf()}`; state.race = b.group === "race"; $("showrace").checked = state.race; render(); });
+    (b.group === "role" ? roles : races).appendChild(k);
+  }
+  $("showrace").addEventListener("change", e => {
+    state.race = e.target.checked;
+    state.body = state.race ? `gnome,${genderOf()}` : `valkyrie,${genderOf()}`;
+    render();
+  });
+  $("g-male").addEventListener("click", () => setGender("male"));
+  $("g-female").addEventListener("click", () => setGender("female"));
+  const tones = $("tones");
+  TONES.forEach((t, i) => {
+    const s = document.createElement("button");
+    s.className = "swatch"; s.style.background = "#" + t.toString(16).padStart(6, "0");
+    s.setAttribute("aria-label", `Skin tone ${i + 1} of 8`); s.title = `skintone:${i + 1}`;
+    s.addEventListener("click", () => { state.tone = i; render(); });
+    tones.appendChild(s);
+  });
+  $("toneRandom").addEventListener("click", () => { state.tone = Math.floor(Math.random() * 8); render(); });
+
+  const slotsEl = $("slots");
+  for (const [slot, label] of SLOTS) {
+    const wrap = document.createElement("div"); wrap.className = "slot";
+    const id = "slot-" + slot;
+    const lab = document.createElement("label"); lab.htmlFor = id; lab.textContent = label;
+    const sel = document.createElement("select"); sel.id = id;
+    const none = document.createElement("option"); none.value = ""; none.textContent = "(nothing)"; sel.appendChild(none);
+    const pool = D.items.filter(i => (slot === "offhand" ? i.slot === "weapon" && !i.held : i.slot === slot));
+    const groups = slot === "weapon" ? [["Weapons", pool.filter(i => !i.held)], ["Other things to hold", pool.filter(i => i.held)]] : [[null, pool]];
+    for (const [gname, list] of groups) {
+      const parent = gname ? Object.assign(document.createElement("optgroup"), { label: gname }) : sel;
+      for (const i of list) {
+        const o = document.createElement("option"); o.value = i.id;
+        o.textContent = i.look && i.look !== i.name && !i.held ? `${i.name} (${i.look})` : i.name;
+        parent.appendChild(o);
+      }
+      if (gname) sel.appendChild(parent);
+    }
+    sel.addEventListener("change", () => { state.slots[slot] = sel.value === "" ? null : +sel.value; ruleCheck(slot); render(); });
+    wrap.append(lab, sel); slotsEl.appendChild(wrap);
+  }
+  $("p-kit").addEventListener("click", () => {
+    const b = BODY[state.body]; if (b.group !== "role") return;
+    for (const [s] of SLOTS) state.slots[s] = null;
+    Object.assign(state.slots, D.kits[b.key]); ruleCheck(); render();
+  });
+  $("p-asc").addEventListener("click", () => { for (const [s] of SLOTS) state.slots[s] = null; for (const [s, n] of Object.entries(ASCENSION)) state.slots[s] = byName(n); ruleCheck(); render(); });
+  $("p-rand").addEventListener("click", () => {
+    for (const [s] of SLOTS) {
+      const pool = D.items.filter(i => (s === "offhand" ? false : i.slot === s && !i.held));
+      state.slots[s] = pool.length && Math.random() < (s === "eyewear" || s === "amulet" || s === "shirt" ? 0.35 : 0.8) ? pool[Math.floor(Math.random() * pool.length)].id : null;
+    }
+    state.tone = Math.floor(Math.random() * 8); ruleCheck(); render();
+  });
+  $("p-strip").addEventListener("click", () => { for (const [s] of SLOTS) state.slots[s] = null; $("ruleNote").textContent = ""; render(); });
+  $("p-link").addEventListener("click", () => {
+    const url = ARTIFACT_URL + "#" + tokenOf(), out = $("linkOut"), key = $("p-link");
+    const shown = () => { out.value = url; out.hidden = false; out.focus(); out.select(); };
+    const done = () => { key.textContent = "Link copied"; setTimeout(() => { key.textContent = "Copy outfit link"; }, 1600); shown(); };
+    try { navigator.clipboard.writeText(url).then(done, shown); } catch (e) { shown(); }
+  });
+  $("costume").addEventListener("change", e => { state.costume = e.target.checked; render(); });
+  $("dollOn").addEventListener("change", e => { state.doll = e.target.checked; render(); });
+  $("grid").addEventListener("change", e => { state.grid = e.target.checked; render(); });
+
+  const cast = $("cast");
+  for (const b of D.bodies) {
+    const btn = document.createElement("button");
+    btn.dataset.body = b.id;
+    const c = document.createElement("canvas"); c.width = 16; c.height = 16;
+    const lbl = document.createElement("span");
+    lbl.textContent = (b.group === "race" ? b.label.toLowerCase() : b.label.slice(0, 3)) + (b.gender === "female" ? " ♀" : "");
+    btn.title = `${b.label}, ${b.gender}`; btn.setAttribute("aria-label", `${b.label}, ${b.gender}`);
+    btn.append(c, lbl);
+    btn.addEventListener("click", () => { state.body = b.id; state.race = b.group === "race"; $("showrace").checked = state.race; render(); });
+    cast.appendChild(btn);
+  }
+
+  document.querySelectorAll(".lamps .key").forEach(k => k.addEventListener("click", () => setSkin(k.dataset.skin)));
+}
+const genderOf = () => BODY[state.body].gender;
+function setGender(g) { state.body = `${BODY[state.body].key},${g}`; render(); }
+function setSkin(sk) {
+  const root = document.documentElement;
+  if (sk === "auto") delete root.dataset.skin; else root.dataset.skin = sk;
+  document.querySelectorAll(".lamps .key").forEach(k => k.setAttribute("aria-pressed", String(k.dataset.skin === sk)));
+  try { localStorage.setItem("rh-dressing-skin", sk); } catch (e) { /* no storage: the choice lasts this visit */ }
+}
+
+function describe(look) {
+  const lines = [], b = look.body;
+  const hidden = s => (s === "shirt" && (look.has("suit") || (look.has("cloak") && (look.shape("cloak") & FRONT)))) ||
+                      false;   // an amulet is worn over armour now (Lucas)
+  for (const [s, label] of SLOTS) {
+    if (!look.has(s)) continue;
+    const i = look.item(s), sh = look.shape(s);
+    let how;
+    if (!state.doll) how = "not drawn: the doll is off";
+    else if (sh & COSTUME) how = "already on the tile (costume)";
+    else if (hidden(s)) how = "worn underneath, out of sight";
+    else if ((sh >> 17) & 0x3f) how = ART_WORDS[(sh >> 17) & 0x3f];
+    else if (s === "suit") how = (sh & HIDE ? "a scale hide" : "cut from its floor tile") + (sh & DRAGON ? `, pauldrons: ${PAULDRON_NAMES[(sh >> 12) & 0xf]}` : "") + (b.anchor.feetRow >= 0 ? ", down to the boots" : "");
+    else if (s === "helmet") how = (sh & 0xff) ? HELM_WORDS[sh & 0xff] : "drawn";
+    else if (s === "shield") how = (sh & 0xff) ? SHIELD_WORDS[sh & 0xff] : "drawn";
+    else if (s === "cloak") how = sh & FRONT ? "worn in front" : `a cape behind${(sh & 0xff) ? ": " + CAPE_WORDS[sh & 0xff] : ""}`;
+    else if (s === "shirt") how = "cut from its floor tile";
+    else if (s === "boots" && b.anchor.feetRow < 0) how = "the robe hides them";
+    else if (s === "gloves") how = (sh & 0xff) ? GLOVE_WORDS[sh & 0xff] : "its colour on the hands";
+    else if (s === "boots") how = (sh & 0xff) ? BOOT_WORDS[sh & 0xff] : "its colour on the feet";
+    else if (s === "eyewear") how = (sh & 0xff) ? EYEWEAR_WORDS[sh & 0xff] : "drawn";
+    else if (s === "amulet") how = ((sh & 0xff) ? AMULET_WORDS[sh & 0xff] : "drawn") + ", over any armour";
+    else if (s === "weapon" || s === "offhand") how = i.held ? "held up in the hand" : "in hand";
+    else how = "drawn";
+    lines.push([i.name, how]);
+  }
+  return lines;
+}
+
+function render() {
+  const b = BODY[state.body], look = makeLook(state.body, state);
+  $("linkOut").hidden = true;   // a copied link is stale once the outfit changes
+  // the hero
+  put($("doll").getContext("2d"), compose(state.body, state), 0, 0);
+  $("gridOver").hidden = !state.grid;
+  $("who").textContent = `${b.label} · ${b.gender} · skintone:${state.tone + 1}`;
+  const ul = $("worn"); ul.textContent = "";
+  const lines = describe(look);
+  if (!lines.length) { const li = document.createElement("li"); li.className = "none"; li.textContent = "wearing nothing the doll draws"; ul.appendChild(li); }
+  for (const [n, how] of lines) { const li = document.createElement("li"); li.innerHTML = ""; li.append(n, Object.assign(document.createElement("b"), { textContent: ": " + how })); ul.appendChild(li); }
+  $("heroNote").textContent = b.anchor.short ? "short frame" : b.group === "race" ? "race tile" : "role tile";
+  // the room
+  const sc = $("scene").getContext("2d");
+  for (let y = 0; y < 5; y++) for (let x = 0; x < 9; x++) {
+    let t = "floor of a room";
+    if (y === 0) t = x === 0 ? "main walls tlcorn" : x === 8 ? "main walls trcorn" : "main walls horizontal";
+    else if (x === 0 || x === 8) t = "main walls vertical";
+    put(sc, SCENE[t], x * 16, y * 16);
+  }
+  put(sc, SCENE["staircase down"], 2 * 16, 3 * 16);
+  put(sc, SCENE["kitten,female"], 6 * 16, 3 * 16);
+  put(sc, compose(state.body, state), 4 * 16, 2 * 16);
+  // controls
+  document.querySelectorAll("#roles .key, #races .key").forEach(k => k.setAttribute("aria-pressed", String(k.dataset.key === b.key)));
+  $("races").hidden = !state.race;
+  $("g-male").setAttribute("aria-pressed", String(b.gender === "male"));
+  $("g-female").setAttribute("aria-pressed", String(b.gender === "female"));
+  document.querySelectorAll("#tones .swatch").forEach((s, i) => s.setAttribute("aria-pressed", String(i === state.tone)));
+  for (const [s] of SLOTS) $("slot-" + s).value = state.slots[s] == null ? "" : String(state.slots[s]);
+  $("p-kit").disabled = b.group !== "role";
+  $("p-kit").title = b.group === "role" ? `What a new ${b.label} starts in` : "Race tiles have no starting kit; pick a role";
+  // the cast
+  document.querySelectorAll("#cast button").forEach(btn => {
+    put(btn.querySelector("canvas").getContext("2d"), compose(btn.dataset.body, state), 0, 0);
+    btn.setAttribute("aria-pressed", String(btn.dataset.body === state.body));
+  });
+}
+
+// ---------------------------------------------------------------- the Showcase
+// A stop-motion ascension (Lucas, 2026-09-26): a Valkyrie on her classic tile, dressed one piece at a
+// time, then the same kit on every hero, and the Apothecary last.  Each beat is a still: where, a line,
+// and what changes.  Items are named as in the game; the drawing is the doll's own.
+const itemId = n => { const it = D.items.find(i => i.name === n); if (!it) console.warn("showcase: no item", n); return it ? it.id : null; };
+const KIT = { helmet: "helm of brilliance", cloak: "cloak of magic resistance", suit: "gray dragon scale mail",
+              gloves: "gauntlets of power", boots: "speed boots", shield: "shield of reflection", amulet: "amulet of life saving" };
+const MONTAGE = [
+  ["archeologist,female", 2, { weapon: "the Orb of Detection" }, "Archeologist"],
+  ["barbarian,male", 4, { weapon: "Cleaver", suit: "silver dragon scale mail" }, "Barbarian"],
+  ["cave dweller,female", 5, { weapon: "the Sceptre of Might", suit: "black dragon scale mail" }, "Cave dweller"],
+  ["healer,male", 1, { weapon: "the Staff of Aesculapius" }, "Healer"],
+  ["knight,female", 0, { weapon: "Excalibur", suit: "silver dragon scale mail" }, "Knight"],
+  ["monk,male", 3, { weapon: null, eyewear: "the Eyes of the Overworld", suit: "black dragon scale mail" }, "Monk"],
+  ["cleric,female", 6, { weapon: "Demonbane", helmet: "the Mitre of Holiness" }, "Priest"],
+  ["ranger,male", 2, { weapon: "the Longbow of Diana", suit: "silver dragon scale mail" }, "Ranger"],
+  ["rogue,female", 1, { weapon: "the Master Key of Thievery", suit: "black dragon scale mail" }, "Rogue"],
+  ["samurai,male", 3, { weapon: "the Tsurugi of Muramasa" }, "Samurai"],
+  ["tourist,female", 0, { weapon: "the Platinum Yendorian Express Card", suit: "silver dragon scale mail" }, "Tourist"],
+  ["valkyrie,male", 1, { weapon: "Mjollnir", suit: "black dragon scale mail" }, "Valkyrie"],
+  ["wizard,female", 5, { weapon: "Magicbane", amulet: "the Eye of the Aethiopica" }, "Wizard"],
+  ["human,female", 3, { weapon: "Sunsword", suit: "silver dragon scale mail" }, "Human"],
+  ["elf,male", 0, { weapon: "Orcrist" }, "Elf"],
+  ["dwarf,female", 2, { weapon: "dwarvish mattock", suit: "black dragon scale mail" }, "Dwarf, full-size mattock"],
+  ["gnome,male", 4, { weapon: "Sting", suit: "silver dragon scale mail" }, "Gnome"],
+  ["orc,female", 6, { weapon: "Grimtooth" }, "Orc"],
+];
+const VALK = "valkyrie,female";
+const SHOW = [
+  { body: VALK, tone: 1, doll: false, strip: true, where: "The Valkyrie you know", line: "Her classic tile, exactly as vanilla draws it.", hold: 2800 },
+  { doll: true, set: { weapon: "long sword", shield: "small shield" }, where: "Dlvl 1", line: "She sets out with a long sword and a small shield.", hold: 2500 },
+  { set: { weapon: "Excalibur" }, where: "Dlvl 3", line: "A fountain. Most people quaff. She dips.", hold: 2700 },
+  { set: { helmet: "dwarvish iron helm" }, where: "The Gnomish Mines", line: "A dwarf drops a hard hat.", hold: 2000 },
+  { set: { suit: "dwarvish mithril-coat" }, where: "The Gnomish Mines", line: "...and his mithril. Dwarves are generous, eventually.", hold: 2300 },
+  { set: { cloak: "elven cloak" }, where: "Minetown", line: "An elven cloak, paid for in full. Probably.", hold: 2100 },
+  { set: { amulet: "amulet of reflection" }, where: "Sokoban", line: "The prize at the top: reflection.", hold: 2100 },
+  { set: { eyewear: "towel" }, where: "Medusa's Island", line: "A towel over the eyes. Just in case.", hold: 2100 },
+  { set: { eyewear: null }, where: "Medusa's Island", line: "Reflection did the work. The towel comes off.", hold: 1900 },
+  { set: { suit: "gray dragon scale mail" }, where: "The Castle", line: "A wand of wishing. Wish one: gray dragon scale mail.", hold: 2800 },
+  { set: { boots: "speed boots" }, where: "The Castle", line: "Wish two: speed boots.", hold: 1500 },
+  { set: { gloves: "gauntlets of power" }, where: "The Castle", line: "Wish three: gauntlets of power.", hold: 1500 },
+  { set: { helmet: "helm of brilliance" }, where: "The Castle", line: "Wish four: a helm of brilliance. The hard hat retires.", hold: 2000 },
+  { set: { cloak: "cloak of magic resistance" }, where: "The Castle", line: "Wish five: a cloak of magic resistance.", hold: 1800 },
+  { set: { shield: "shield of reflection" }, where: "The Castle", line: "Wish six: a shield of reflection. That frees the amulet slot...", hold: 2100 },
+  { set: { amulet: "amulet of life saving" }, where: "The Castle", line: "...for life saving.", hold: 1800 },
+  { where: "Gehennom", line: "Nothing new to wear. Just a very long walk down.", hold: 1900 },
+  { set: { amulet: "Amulet of Yendor" }, where: "The Sanctum", line: "The Amulet of Yendor. Nobody has to wear it. She does anyway.", hold: 3000 },
+  { where: "The Astral Plane", line: "Ascended.", hold: 3400, astral: true },
+  { doll: false, where: "Before", line: "Where she started.", hold: 1100 },
+  { doll: true, where: "After", line: "Where she ended.", hold: 1100 },
+  { doll: false, where: "Before", line: "Where she started.", hold: 700 },
+  { doll: true, where: "After", line: "Where she ended.", hold: 1500 },
+  { where: "And every hero after her", line: "The same kit, and each one's own artifact.", hold: 2000 },
+  ...MONTAGE.map(([body, tone, over, name]) => ({ body, tone, doll: true, strip: true, set: Object.assign({}, KIT, over), where: name, line: over.weapon || over.eyewear || "", hold: 620 })),
+  { body: "apothecary,male", tone: 1, doll: true, strip: true, set: { helmet: "fedora", cloak: "alchemy smock", suit: "silver dragon scale mail", gloves: "leather gloves", boots: "high boots", amulet: "amulet of life saving", weapon: "the Lapis Philosophorum" },
+    where: "And one hero vanilla never had", line: "The Apothecary: smock over the dragon mail, the Lapis in hand, the fedora stays.", hold: 3600 },
+  { where: "Rolehack", line: "The paper doll. Every piece drawn as the look you see, and nothing it shows is a spoiler.", hold: 4200 },
+];
+let showRun = 0;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function showBeat(beat) {
+  if (beat.body) { state.body = beat.body; state.race = BODY[beat.body].group === "race"; }
+  if (beat.tone != null) state.tone = beat.tone;
+  if (beat.doll != null) state.doll = beat.doll;
+  state.costume = true;
+  if (beat.strip) for (const [s] of SLOTS) state.slots[s] = null;
+  for (const [s, n] of Object.entries(beat.set || {})) state.slots[s] = n == null ? null : itemId(n);
+  ruleCheck();
+  $("showrace").checked = state.race; $("costume").checked = state.costume; $("dollOn").checked = state.doll;
+  render();
+  $("capWhere").textContent = beat.where || "";
+  $("capLine").textContent = beat.line || "";
+  const f = document.querySelector(".doll-frame");
+  f.classList.remove("shutter"); void f.offsetWidth; f.classList.add("shutter");
+  f.classList.toggle("astral", !!beat.astral || beat.where === "After");   // the glow: ascended, and her after-frames
+}
+async function showcase() {
+  const run = ++showRun;
+  $("caption").hidden = false;
+  $("showKey").innerHTML = "&#9632; Stop";
+  document.querySelector(".doll-frame").classList.remove("astral");
+  for (const beat of SHOW) {
+    if (run !== showRun) return;
+    showBeat(beat);
+    await sleep(beat.hold || 1800);
+  }
+  if (run === showRun) { $("showKey").innerHTML = "&#9654; Replay"; showRun++; }
+}
+function stopShowcase() {
+  if (!$("caption").hidden) { showRun++; $("caption").hidden = true; $("showKey").innerHTML = "&#9654; Showcase"; document.querySelector(".doll-frame").classList.remove("astral", "shutter"); }
+}
+$("showKey").addEventListener("click", () => { if ($("showKey").textContent.includes("Stop")) stopShowcase(); else showcase(); });
+document.querySelector(".deck").addEventListener("pointerdown", stopShowcase);
+
+buildControls();
+try { const sk = localStorage.getItem("rh-dressing-skin"); if (sk) setSkin(sk); } catch (e) { /* storage blocked: follow the theme */ }
+applyHash();
+$("showrace").checked = state.race;
+window.addEventListener("hashchange", () => { if (location.hash === "#showcase") showcase(); else if (applyHash()) render(); });
+render();
+if (location.hash === "#showcase") showcase();
+</script>

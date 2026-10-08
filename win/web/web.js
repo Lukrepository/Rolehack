@@ -8,7 +8,7 @@
 // follow; the message and status lines after RhScreen), menus, prompts and
 // forms.  The touch controls are overlay.js.
 import createNetHack from './nethack.js';
-import { CHANNEL, PREVIEW, SAVE_DB, LOCK, TITLE } from './channel.js';
+import { CHANNEL, PREVIEW, LOCK, TITLE, FIRST_ERA, saveDbFor } from './channel.js';
 import { setPalette, dressHero, LOOK_LEN } from './doll.js';
 import { Overlay, STATUS_BAND, LINE, msgRows, msgBandPx, msgTextPx, MSG_LEADING, resetTextScale, creationCap,
   GHOST_CONFIRM_MS, RING_REACH } from './overlay.js';
@@ -2529,6 +2529,8 @@ globalThis.nethackCallback = async (name, ...args) => {
 globalThis.rolehackWaiting = () => { syncSaves(); };
 // for looking at the playground from the browser's console
 globalThis.rolehackFiles = () => M && M.FS;
+// the save era this page runs (channel.js, mountSaves), for support from the console
+globalThis.rolehackSaveSig = () => saveSig;
 
 // A copy takes a few milliseconds; closing the page in the middle of one
 // asks first, which gives it time to finish.
@@ -2554,9 +2556,77 @@ function syncSaves() {
     catch (e) { console.warn('save sync', e); resolve(); }
   }).then(() => {
     syncing = null;
+    // this channel's saves are now of the running build's era
+    if (saveSig && P.get('saveEra') !== saveSig) P.set('saveEra', saveSig);
     if (syncAgain) { syncAgain = false; return syncSaves(); }
   });
   return syncing;
+}
+
+// The save era (channel.js FIRST_ERA, saveDbFor; the release plan's B2, first
+// piece; Lucas, 2026-10-06).  Before main() runs, the core says its save
+// signature (winshim.c web_save_signature: what check_version() compares in
+// a save, plus the struct-size bytes), and the saves are mounted from the
+// store named for it: the first era keeps /save (or /save-preview), a later
+// one gets its own.  So a build whose format differs never opens, recovers or
+// re-stamps an older game: recover_savefile() checks no version, and
+// store_version() would stamp the running build's.  The era that last wrote
+// this channel's saves is kept in the settings (saveEra); a build of another
+// era that finds games it cannot read says so once, and the older game stays
+// where it is, for the build that wrote it (D4: an update never deletes a
+// game).
+let saveSig = '';
+async function mountSaves(M) {
+  try { saveSig = M.ccall('web_save_signature', 'string', [], []) || ''; } catch (e) { console.warn('save signature', e); saveSig = ''; }
+  const db = saveDbFor(saveSig), first = saveDbFor(FIRST_ERA);
+  const was = P.get('saveEra');
+  let olderGames = false;
+  if (db !== first && was !== saveSig) {
+    // a build of a new era, where this channel last saved under another era
+    // (or before eras were recorded): are there games it would have read?
+    olderGames = was ? true : await storeHasGames(M, first);
+  }
+  M.FS.mkdir(db);
+  M.FS.mount(M.IDBFS, {}, db);
+  if (db !== '/save') M.FS.symlink(db, '/save');
+  await syncIn(M);
+  preparePlayground(M.FS);
+  if (olderGames) await eraNotice();
+  if (saveSig && hasGames(M.FS, '/save') && P.get('saveEra') !== saveSig) P.set('saveEra', saveSig);
+}
+function syncIn(M) {
+  return new Promise((resolve) => {
+    try { M.FS.syncfs(true, (err) => { if (err) console.warn('save restore', err); resolve(); }); }
+    catch (e) { console.warn('save restore', e); resolve(); }
+  });
+}
+// a store's games: a save file under save/, or a checkpoint at the top
+// (<uid><name>.<level>, where the uid is a digit)
+function hasGames(FS, dir) {
+  const list = (p) => { try { return FS.readdir(p).filter((f) => f !== '.' && f !== '..'); } catch (e) { return []; } };
+  return list(`${dir}/save`).length > 0 || list(dir).some((f) => /^\d/.test(f));
+}
+// a look into a store without keeping it: the IDBFS database is named by its
+// mount point, so the store is mounted where it belongs, read, and let go
+async function storeHasGames(M, dir) {
+  try {
+    M.FS.mkdir(dir);
+    M.FS.mount(M.IDBFS, {}, dir);
+    await syncIn(M);
+    const r = hasGames(M.FS, dir);
+    M.FS.unmount(dir);
+    M.FS.rmdir(dir);
+    return r;
+  } catch (e) { console.warn('older saves', e); return false; }
+}
+function eraNotice() {
+  return new Promise((resolve) => {
+    form('A newer version of the game', [
+      { note: 'Rolehack has moved to a newer version of the game, which cannot read saved games from the earlier version.' },
+      { note: 'Your earlier game is kept untouched, in its own place. It is not lost. A new game starts fresh here.' },
+      { note: 'The earlier version will be published at its own address, where the old game can be finished.' },
+    ], [{ label: 'OK', primary: true, run: () => resolve() }]);
+  });
 }
 
 // The playground as NetHack expects to find it.  Before 2026-09-26 only the
@@ -2616,6 +2686,7 @@ overlay = new Overlay({
   // for the device report (overlay.js deviceFacts): the build this page is, and classic's tile
   build: () => build,
   channel: () => CHANNEL,
+  saveSig: () => saveSig,
   tileSize: () => tileSize(),
   guardsAside: () => moreShown || !$('modal').hidden || !$('formwrap').hidden,
   windowClosed,
@@ -2667,6 +2738,7 @@ async function start() {
     rulesKept = true;
   }
   createNetHack({
+    noInitialRun: true,
     preRun: [(mod) => {
       if (rc) {
         mod.ENV.HOME = '/home/web_user';
@@ -2689,26 +2761,20 @@ async function start() {
       // (the review, 2026-10-03).
       permInvent = P.get('layout') !== 'classic';
       mod.ENV.NETHACKOPTIONS = permInvent ? 'perm_invent,perminv_mode:full,time' : '!perm_invent,time';
-      // the saves live in the IndexedDB database the mount names: the live
-      // page's is /save, the preview channel's /save-preview (channel.js), with
-      // /save a link to it, so the core's playground is /save either way
-      mod.FS.mkdir(SAVE_DB);
-      mod.FS.mount(mod.IDBFS, {}, SAVE_DB);
-      if (SAVE_DB !== '/save') mod.FS.symlink(SAVE_DB, '/save');
-      mod.addRunDependency('syncfs');
-      mod.FS.syncfs(true, (err) => {
-        if (err) console.warn('save restore', err);
-        preparePlayground(mod.FS);
-        mod.removeRunDependency('syncfs');
-      });
+      // the saves are mounted once the runtime is up (mountSaves), when the
+      // core can say its save signature
     }],
     print: (s) => console.log(s),
     printErr: (s) => console.warn(s),
-    // main() starts right after this, before the factory's promise settles
+    // the runtime is up and main() waits (noInitialRun): the saves are
+    // mounted from the store of the core's save era first, then main() runs
     onRuntimeInitialized() {
       M = this;
-      $('boot').remove();
-      M.ccall('shim_graphics_set_callback', null, ['string'], ['nethackCallback']);
+      mountSaves(M).then(() => {
+        $('boot').remove();
+        M.ccall('shim_graphics_set_callback', null, ['string'], ['nethackCallback']);
+        M.callMain([]);
+      }).catch((e) => { $('boot').textContent = `The game failed to load: ${e}`; });
     },
   }).catch((e) => { $('boot').textContent = `The game failed to load: ${e}`; });
 }

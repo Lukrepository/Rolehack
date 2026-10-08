@@ -1,4 +1,5 @@
-/* NetHack 5.0	patchlevel.h	$NHDT-Date: 1753856387 2025/07/29 22:19:47 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.288 $ */
+/* NetHack 5.0	patchlevel.h	$NHDT-Date: 1781973085 2026/06/20 16:31:25 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.310 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-25.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -7,6 +8,11 @@
 #define PATCHLEVEL_H
 
 /* NetHack 5.0.x */
+/* ROLEHACK: the variant's own version, shown ahead of the NetHack it is
+ * built on (release checklist, 2026-09-25).  Variants number themselves; a
+ * "5.0.1" would read as the DevTeam's next patch release. */
+#define ROLEHACK_VERSION "0.1.0"
+
 #define VERSION_MAJOR 5
 #define VERSION_MINOR 0
 /*
@@ -30,7 +36,7 @@
 /*
  * Development status of this NetHack version.
  */
-#define NH_DEVEL_STATUS NH_STATUS_RELEASED
+#define NH_DEVEL_STATUS NH_STATUS_POSTRELEASE
 
 #ifndef DEBUG  /* allow tool chains to define without causing warnings */
 #define DEBUG
@@ -42,6 +48,14 @@
 /* nomakedefs.copyright_banner_c is generated at runtime */
 #define COPYRIGHT_BANNER_C nomakedefs.copyright_banner_c
 #define COPYRIGHT_BANNER_D "         See license for details."
+
+/*
+ * SAVEFILE_REVISION_LEVEL
+ * Increment this if there has been a change to a data structure
+ * that the source code is prepared to handle and convert properly.
+ * The SAVEFILE_REVISION_LEVEL value needs to fit into an unsigned byte.
+ */
+#define SAVEFILE_REVISION_LEVEL 0x00
 
 /*
  * If two or more successive releases have compatible data files, define

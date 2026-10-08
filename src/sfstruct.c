@@ -1,4 +1,4 @@
-/* NetHack 5.0	sfstruct.c	$NHDT-Date: 1606765215 2020/11/30 19:40:15 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.4 $ */
+/* NetHack 5.0	sfstruct.c	$NHDT-Date: 1781973066 2026/06/20 16:31:06 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.28 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2025. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -194,7 +194,6 @@ struct sf_structlevel_procs historical_sfo_procs = {
         historical_sfo_version_info,
         historical_sfo_you,
         historical_sfo_any,
-
         historical_sfo_aligntyp,
         historical_sfo_boolean,
         historical_sfo_coordxy,
@@ -219,6 +218,10 @@ struct sf_structlevel_procs historical_sfo_procs = {
         historical_sfo_xint8,
         historical_sfo_char,
         historical_sfo_bitfield,
+#ifdef DEMO_UPLIFTS
+        historical_sfo_mystruct,
+        historical_sfo_mystruct_rev0,
+#endif
     }
 };
 
@@ -295,6 +298,10 @@ struct sf_structlevel_procs historical_sfi_procs = {
         historical_sfi_xint8,
         historical_sfi_char,
         historical_sfi_bitfield,
+#ifdef DEMO_UPLIFTS
+        historical_sfi_mystruct,
+        historical_sfi_mystruct_rev0,
+#endif
     }
 };
 

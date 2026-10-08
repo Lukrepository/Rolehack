@@ -1,4 +1,5 @@
-/* NetHack 5.0	extern.h	$NHDT-Date: 1770949988 2026/02/12 18:33:08 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.1523 $ */
+/* NetHack 5.0	extern.h	$NHDT-Date: 1778886716 2026/05/15 15:11:56 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.1558 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-08-16 to 2026-10-07.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Steve Creps, 1988.                               */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -339,6 +340,7 @@ extern char *get_configfile(void);
 extern const char *get_default_configfile(void);
 extern void rcfile(void);
 extern void rcfile_interface_options(void);
+extern void rcfile_only_this_option(enum opt);
 extern void heed_all_config_statements(void);
 extern void disregard_all_config_statements(void);
 extern void heed_this_config_statement(int);
@@ -346,6 +348,14 @@ extern void disregard_this_config_statement(int);
 extern boolean config_unmatched_ignored(void);
 extern void clear_ignore_errors_on_unmatched(void);
 extern void set_ignore_errors_on_unmatched(void);
+extern void rcfile_only_this_statement(int);
+#ifdef WIN32
+extern boolean check_for_portable_config(void);
+#endif
+#ifdef MSWIN_GRAPHICS
+extern void disregard_some_mswin_options(void);
+extern void rcfile_only_some_mswin_options(void);
+#endif
 
 /* ### coloratt.c ### */
 
@@ -511,6 +521,7 @@ extern void destroy_drawbridge(coordxy, coordxy);
 /* ### decl.c ### */
 
 extern void program_state_init(void);
+extern void level_status_init(void);
 extern void decl_globals_init(void);
 extern void sa_victual(volatile struct victual_info *);
 
@@ -684,7 +695,8 @@ extern void free_mgivenname(struct monst *) NONNULLARG1;
 extern void new_oname(struct obj *, int) NONNULLARG1;
 extern void free_oname(struct obj *) NONNULLARG1;
 extern const char *safe_oname(struct obj *) NONNULLARG1;
-extern struct monst *christen_monst(struct monst *, const char *) NONNULLARG1;
+extern struct monst *christen_monst(struct monst *, const char *) NONNULL
+                                                                   NONNULLARG1;
 extern struct obj *oname(struct obj *, const char *, unsigned) NONNULLPTRS;
 extern boolean objtyp_is_callable(int);
 extern int name_ok(struct obj *);
@@ -989,10 +1001,13 @@ extern void done1(int);
 extern int done2(void);
 extern void done_in_by(struct monst *, int) NONNULLARG1;
 extern void done_object_cleanup(void);
-extern void NH_abort(char *);
+extern void NH_abort(const char *);
 #endif /* !MAKEDEFS_C && MDLIB_C && !CPPREGEX_C */
 #if !defined(CPPREGEX_C)
 ATTRNORETURN extern void panic(const char *, ...) PRINTF_F(1, 2) NORETURN;
+#endif
+#ifdef ANDROID
+void and_you_die();
 #endif
 #if !defined(MAKEDEFS_C) && !defined(MDLIB_C) && !defined(CPPREGEX_C)
 extern void done(int);
@@ -1095,7 +1110,7 @@ extern NHFILE *get_freeing_nhfile(void);
 extern NHFILE *restore_saved_game(void);
 extern int check_panic_save(void);
 #ifdef SELECTSAVED
-extern char *plname_from_file(const char *, boolean) NONNULLARG1;
+extern char *plname_from_file(const char *, boolean, int) NONNULLARG1;
 #endif
 extern char **get_saved_games(void);
 extern void free_saved_games(char **);
@@ -1176,16 +1191,16 @@ int set_map_customcolor(glyph_map *gm, uint32 nhcolor) NONNULLARG1;
 extern int unicode_val(const char *);
 extern int glyphrep(const char *) NONNULLARG1;
 extern int match_glyph(char *) NONNULLARG1;
-extern void dump_all_glyphids(FILE *fp) NONNULLARG1;
-extern void wizcustom_glyphids(winid win);
-extern void fill_glyphid_cache(void);
-extern void free_glyphid_cache(void);
-extern boolean glyphid_cache_status(void);
+extern void dump_all_glyphnames(FILE *fp) NONNULLARG1;
+extern void wizcustom_glyphnames(winid win);
+extern void populate_glyphname_hash_indices(void);
+extern void empty_glyphname_hash_indices(void);
+extern boolean glyphname_hash_indices_loaded(void);
 extern void apply_customizations(enum graphics_sets which_set,
                                  enum do_customizations docustomize);
 extern void purge_custom_entries(enum graphics_sets which_set);
 extern void purge_all_custom_entries(void);
-extern void dump_glyphids(void);
+extern void dump_glyphnames(void);
 extern void clear_all_glyphmap_colors(void);
 extern void reset_customcolors(void);
 extern int glyph_to_cmap(int);
@@ -1396,6 +1411,7 @@ extern void perm_invent_toggled(boolean negated);
 extern void prepare_perminvent(winid window);
 extern struct obj *carrying_stoning_corpse(void);
 extern void repopulate_perminvent(void);
+extern int check_for_puzzling_nonmerge(struct obj *);
 
 /* ### ioctl.c ### */
 
@@ -1453,7 +1469,12 @@ extern boolean stumble_on_door_mimic(coordxy, coordxy);
 extern int doopen_indir(coordxy, coordxy);
 extern int doclose(void);
 
-#ifdef MACOS9
+#if defined(ANDROID) || defined(SHIM_GRAPHICS)
+/* Rolehack: the Android port's (winandroid.c) and the web's (winshim.c) */
+extern void lock_mouse_cursor(boolean);
+#endif
+
+#ifdef MAC68K
 /* outdated functions removed */
 /* ### macfile.c ### */
 /* ### macmain.c ### */
@@ -2162,7 +2183,7 @@ extern void tutorial(boolean);
 
 #if !defined(MAKEDEFS_C) && !defined(MDLIB_C) && !defined(CPPREGEX_C)
 
-/* ### consoletty.c ### */
+/* ### consoletty.c  ### */
 
 #ifdef WIN32
 extern void get_scr_size(void);
@@ -2175,7 +2196,10 @@ void console_g_putch(int in_ch);
 extern void set_output_mode(int);
 extern void synch_cursor(void);
 extern void nethack_enter_consoletty(void);
-extern void consoletty_exit(void);
+/* body in consoletty.c and mhmain.c */
+extern int get_approx_display_cols(void);
+extern int get_approx_display_rows(void);
+extern void console_exit(void);
 extern int set_keyhandling_via_option(void);
 #ifdef ENHANCED_SYMBOLS
 extern void tty_utf8graphics_fixup(void);
@@ -2226,6 +2250,8 @@ extern boolean the_unique_pm(struct permonst *) NONNULLARG1;
 extern boolean erosion_matters(struct obj *) NONNULLARG1;
 extern char *doname(struct obj *) NONNULLARG1;
 extern char *doname_with_price(struct obj *) NONNULLARG1;
+extern char *doname_with_cgender(struct obj *) NONNULLARG1;
+extern char *doname_with_price_and_cgender(struct obj *) NONNULLARG1;
 extern char *doname_vague_quan(struct obj *) NONNULLARG1;
 extern boolean not_fully_identified(struct obj *) NONNULLARG1;
 extern char *corpse_xname(struct obj *, const char *, unsigned) NONNULLARG1;
@@ -2742,9 +2768,18 @@ void restore_gamelog(NHFILE *);
 boolean restgamestate(NHFILE *);
 void restore_msghistory(NHFILE *);
 #endif
-extern void rest_adjust_levelflags(void);
+extern void rest_adjust_levelflags(long);
 extern void moves_to_relative_time(long *);
 extern void relative_time_to_moves(long *);
+extern boolean revision_increment(int, int, uchar *);
+
+/* ### revision.c ### */
+
+extern boolean revision_increment(int, int, uchar *);
+#ifdef DEMO_UPLIFTS
+void uplift_mystruct_rev0_to_mystruct(struct mystruct_rev0 *rev0,
+                                      struct mystruct *rev1);
+#endif /* DEMO_UPLIFTS */
 
 /* ### rip.c ### */
 
@@ -2977,6 +3012,7 @@ extern void credit_report(struct monst *shkp, int idx,
                           boolean silent) NONNULLARG1;
 extern void use_unpaid_trapobj(struct obj *, coordxy, coordxy) NONNULLARG1;
 extern void noisy_shop(struct mkroom *);
+extern const char *says(void);
 
 
 /* ### shknam.c ### */
@@ -3584,7 +3620,8 @@ extern void dump_version_info(void);
 extern void store_critical_bytes(NHFILE *) NONNULLARG1;
 extern int compare_critical_bytes(NHFILE *, int *, unsigned long) NONNULLARG1;
 extern int get_critical_size_count(void);
-extern int validate(NHFILE *, const char *, boolean) NONNULLARG1;
+extern int get_critical_size_byte(int); /* Rolehack: winshim.c web_save_signature */
+extern int validate(NHFILE *, const char *, boolean, int) NONNULLARG1;
 
 /* ### video.c ### */
 
@@ -3807,6 +3844,9 @@ extern void genl_status_update(int, genericptr_t, int, int, int,
                                unsigned long *) NONNULLARG2;
 #ifdef DUMPLOG
 extern char *dump_fmtstr(const char *, char *, boolean) NONNULLPTRS;
+#ifdef ANDROID
+extern void and_get_dumplog_dir(char *);
+#endif
 #endif
 extern void dump_open_log(time_t);
 extern void dump_close_log(void);

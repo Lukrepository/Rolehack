@@ -1,4 +1,5 @@
 -- NetHack Apothecary Apo-filb.lua
+-- Written for Rolehack by Lucas Ruiz, 2026-07-31 to 2026-08-21.  See ROLEHACK-CHANGES.md.
 --      Rolehack: the Apothecary quest -- the Rookery, behind the gaol.
 --      Regenerated 2026-08-21: every building wall is flush with the street
 --      it faces, so no door opens into rock.  Layout is flood-fill verified.

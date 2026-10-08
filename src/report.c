@@ -1,4 +1,5 @@
 /* NetHack 5.0	report.c	$NHDT-Date: 1777240823 2026/04/26 22:00:23 $  $NHDT-Branch: to500 $:$NHDT-Revision: 1.19 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-25.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Kenneth Lorber, Kensington, Maryland, 2024 */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -464,7 +465,7 @@ dobugreport(void)
         pline("Unable to send bug report.  Please visit %s instead.",
               (sysopt.crashreporturl && *sysopt.crashreporturl)
               ? sysopt.crashreporturl
-              : DEVTEAM_URL
+              : ROLEHACK_BUGS_URL /* ROLEHACK */
         );
     }
     return ECMD_OK;

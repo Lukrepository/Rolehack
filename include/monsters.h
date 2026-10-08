@@ -1,4 +1,5 @@
-/* NetHack 5.0	monsters.h	$NHDT-Date: 1723945838 2024/08/18 01:50:38 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.124 $ */
+/* NetHack 5.0	monsters.h	$NHDT-Date: 1781973083 2026/06/20 16:31:23 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.134 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-07-31 to 2026-08-16.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Michael Allison, 2006. */
 /* NetHack may be freely redistributed.  See license for details. */

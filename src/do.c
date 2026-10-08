@@ -1,4 +1,4 @@
-/* NetHack 5.0	do.c	$NHDT-Date: 1774269965 2026/03/23 04:46:05 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.404 $ */
+/* NetHack 5.0	do.c	$NHDT-Date: 1781973045 2026/06/20 16:30:45 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.411 $ */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Derek S. Ray, 2015. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -1375,6 +1375,11 @@ void
 save_currentstate(void)
 {
     NHFILE *nhfp;
+
+    if (!program_state.something_worth_saving
+        || program_state.in_self_recover
+        || program_state.in_checkpoint)
+        return;
 
     program_state.in_checkpoint++;
     if (flags.ins_chkpt) {

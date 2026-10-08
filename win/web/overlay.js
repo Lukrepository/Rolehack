@@ -42,6 +42,7 @@ import { textMetrics, layout } from './layout.js';
 import { budgetedLayout, withClasses, classesOf, deviceReport, browserFamily } from './viewer.js';
 import { startMode, freshInput, inputStep, inputSwitched, controlsOf,
   isPrefix, prefixChar, prefixEntry, PREFIX, PREFIX_CODES, placeOfKey, macPlatform, ARROWS } from './input.js';
+import { eraTag } from './channel.js';
 
 // a Mac: Ctrl+click is its right-click (input.js macPlatform)
 const MAC = typeof navigator !== 'undefined' && macPlatform(navigator.platform, navigator.userAgent);
@@ -4255,6 +4256,7 @@ export class Overlay {
     return {
       build: this.host.build ? this.host.build() : null,
       channel: this.host.channel ? this.host.channel() : 'live',
+      core: this.host.saveSig && this.host.saveSig() ? eraTag(this.host.saveSig()) : null,
       address: `${location.host}${location.pathname}`,
       window: { w: box.width || window.innerWidth, h: box.height || window.innerHeight },
       screen: { w: Number(screen.width) || 0, h: Number(screen.height) || 0 },

@@ -1,4 +1,5 @@
-/* NetHack 5.0	uhitm.c	$NHDT-Date: 1752823766 2025/07/17 23:29:26 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.477 $ */
+/* NetHack 5.0	uhitm.c	$NHDT-Date: 1781973071 2026/06/20 16:31:11 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.503 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-08-16 to 2026-09-27.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2012. */
 /* NetHack may be freely redistributed.  See license for details. */

@@ -1,4 +1,5 @@
-/* NetHack 5.0	artifact.h	$NHDT-Date: 1602692711 2020/10/14 16:25:11 $  $NHDT-Branch: NetHack-3.7 $:$NHDT-Revision: 1.15 $ */
+/* NetHack 5.0	artifact.h	$NHDT-Date: 1781973076 2026/06/20 16:31:16 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.23 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-08-21.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2011. */
 /* NetHack may be freely redistributed.  See license for details. */

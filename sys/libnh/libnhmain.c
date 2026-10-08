@@ -1,4 +1,5 @@
 /* NetHack 5.0  libnhmain.c $NHDT-Date: 1693359589 2023/08/30 01:39:49 $  $NHDT-Branch: keni-crashweb2 $:$NHDT-Revision: 1.106 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-26 to 2026-10-07.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2011. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -43,7 +44,7 @@ extern struct passwd *getpwnam(const char *);
 #ifdef CHDIR
 void chdirx(const char *, boolean);
 #endif /* CHDIR */
-static boolean whoami(void);
+boolean whoami(void);
 static void process_options(int, char **);
 
 #ifdef _M_UNIX
@@ -57,6 +58,7 @@ extern void init_linux_cons(void);
 
 static void wd_message(void);
 static struct passwd *get_unix_pw(void);
+/* ATTRNORETURN static void opt_terminate(void) NORETURN; */
 
 #ifdef __EMSCRIPTEN__
 /* if WebAssembly, export this API and don't optimize it out */
@@ -536,7 +538,7 @@ chdirx(const char *dir, boolean wr)
 #endif /* CHDIR */
 
 /* returns True iff we set plname[] to username which contains a hyphen */
-static boolean
+boolean
 whoami(void)
 {
     /*
@@ -788,6 +790,34 @@ sys_random_seed(void)
     }
     return seed;
 }
+
+#if 0
+/* now found in earlyarg.c */
+/* for command-line options that perform some immediate action and then
+   terminate the program without starting play, like 'nethack --version'
+   or 'nethack -s Zelda'; do some cleanup before that termination */
+ATTRNORETURN static void
+opt_terminate(void)
+{
+    config_error_done(); /* free memory allocated by config_error_init() */
+
+    nh_terminate(EXIT_SUCCESS);
+    /*NOTREACHED*/
+}
+/* show the sysconf file name, playground directory, run-time configuration
+   file name, dumplog file name if applicable, and some other things */
+ATTRNORETURN void
+after_opt_showpaths(const char *dir)
+{
+#ifdef CHDIR
+    chdirx(dir, FALSE);
+#else
+    nhUse(dir);
+#endif
+    opt_terminate();
+    /*NOTREACHED*/
+}
+#endif
 
 void
 get_nhuuid(void)
@@ -1118,6 +1148,7 @@ void js_constants_init() {
     SET_CONSTANT("GLYPH", GLYPH_SWALLOW_OFF);
     SET_CONSTANT("GLYPH", GLYPH_WARNING_OFF);
     SET_CONSTANT("GLYPH", GLYPH_STATUE_OFF);
+    SET_CONSTANT("GLYPH", GLYPH_PILETOP_OFF);
     SET_CONSTANT("GLYPH", GLYPH_UNEXPLORED_OFF);
     SET_CONSTANT("GLYPH", GLYPH_NOTHING_OFF);
     SET_CONSTANT("GLYPH", MAX_GLYPH);

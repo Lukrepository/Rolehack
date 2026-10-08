@@ -39,7 +39,7 @@
 #define termstruct termio
 #endif
 #endif /* POSIX_TYPES */
-#ifdef LINUX
+# if defined(LINUX) && !defined(ANDROID)
 #include <sys/ioctl.h>
 /* ANDROID-PORT: bionic has no curses.h; nothing below needs it there */
 #ifndef CROSS_TO_ANDROID
@@ -476,7 +476,7 @@ init_linux_cons(void)
 
 DISABLE_WARNING_FORMAT_NONLITERAL
 
-#ifndef __begui__ /* the Be GUI will define its own error proc */
+#if !defined(__begui__) && !defined(ANDROID)  /* the Be GUI will define its own error proc */
 /* fatal error */
 void
 error(const char *s, ...)

@@ -1,0 +1,11 @@
+bin
+libs/*
+app/assets/nethackdir
+gen
+.gradle
+build
+local.properties
+# Rolehack: the release key and its passwords never enter the repository
+keystore.properties
+*.jks
+*.keystore
