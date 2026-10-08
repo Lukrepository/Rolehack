@@ -7,11 +7,17 @@
 // between the rules below is that port unchanged: when RhDoll.java changes,
 // port the change to the Dressing Room and copy the section here again.
 
-// ---- palette: letters of win/share/monsters.txt, set from tiles.json
+// ---- palette: letters of win/share/monsters.txt, set from tiles.json and,
+// in a Colour vision mode, moved by its tile palette (web.js TILE_MODES)
 const PAL = {};
 const fixed = c => (c in PAL ? PAL[c] : 0xff00ff);
-export function setPalette(palette) {
-  for (const [k, v] of Object.entries(palette)) PAL[k] = parseInt(v.slice(1), 16);
+export function setPalette(palette, map) {
+  // an item's tint is read from its floor tile, so it changes with the palette
+  TINT.clear();
+  for (const [k, v] of Object.entries(palette)) {
+    const c = parseInt(v.slice(1), 16);
+    PAL[k] = map && map.has(c) ? map.get(c) : c;
+  }
 }
 
 // ======================================================================
@@ -305,7 +311,7 @@ function gapFill(it, sy) {
 function hideRamp(item) {
   const it = item.pxa, ibg = it[0]; let drawn = 0, black = 0;
   for (const p of it) { if (p === ibg) continue; drawn++; if (p === 0) black++; }
-  if (drawn > 0 && black > BLACK_HIDE_ABOVE * drawn) return [0x6c91b6, 0x363636, 0x121212];
+  if (drawn > 0 && black > BLACK_HIDE_ABOVE * drawn) return [fixed('P'), fixed('R'), fixed('Q')];
   return ramp(item, false);
 }
 function stampLegs(px, bg, a, it, sy, fill, two) {

@@ -4328,11 +4328,20 @@ export class Overlay {
       seg('style', 'Style', [['terminal', 'Terminal'], ['light', 'Terminal (light)'], ['gamecube', 'GameCube']]),
       { seg: 'case', label: 'Case', value: P.get('case') ? 'on' : 'off', options: [['on', 'Show the case'], ['off', 'Caseless']] },
       seg('phosphor', 'Screen phosphor', [['color', 'Colour'], ['amber', 'Amber'], ['green', 'Green'], ['white', 'White']]),
-      seg('colourVision', "Colour vision: the game's colours in menus, messages and the text map. Protanopia and "
-        + 'deuteranopia share a red-green palette and tritanopia has its own; monochrome changes only blessed, '
-        + 'uncursed, cursed and HP, by brightness. Tiles are unchanged for now',
-        [['standard', 'Standard'], ['protanopia', 'Protanopia'], ['deuteranopia', 'Deuteranopia'],
-         ['tritanopia', 'Tritanopia'], ['monochrome', 'Monochrome']]),
+      // Lucas, 2026-10-08: colour vision in a box of its own, Accessibility, and
+      // marked beta: a game earns goodwill for these options, but how good they
+      // are is seldom clear, and ours are tuned by simulation only so far
+      { group: 'Accessibility', fields: [
+        seg('colourVision', 'Colour vision (beta)',
+          [['standard', 'Standard'], ['protanopia', 'Protanopia'], ['deuteranopia', 'Deuteranopia'],
+           ['tritanopia', 'Tritanopia'], ['monochrome', 'Monochrome']]),
+        { note: 'Beta: the palettes are tuned by simulation, and no colour-blind player has checked them yet; '
+          + 'tell Lucas what works and what does not. A mode recolours menus, messages, the text map, the tiles '
+          + 'and the paper doll for players who see colour differently. Protanopia and deuteranopia share a '
+          + 'red-green palette and tritanopia has its own; monochrome sets blessed, uncursed, cursed and HP '
+          + 'apart by brightness. In simulation the tile palettes keep monsters drawn alike apart, except in '
+          + 'Monochrome, where 12 pairs still look alike (mostly dragons). Standard, the default, swaps nothing.' },
+      ] },
       seg('statusLines', 'Status lines', [['full', 'Full'], ['compact', 'Compact'], ['hidden', 'Hidden']]),
       { seg: 'morePause', label: 'When the message band is full', value: P.get('morePause') ? 'on' : 'off',
         options: [['on', 'Pause (--More--)'], ['off', "Don't pause"]] },
@@ -4343,9 +4352,9 @@ export class Overlay {
       seg('mapMode', 'Map', [['tiles', 'Tiles'], ['text', 'Text']]),
       { id: 'userRc', multiline: true, value: P.get('userRc'),
         label: 'Your option lines, one per line, used from the next start. To recolour a monster on the text map, '
-          + 'start with a symset line (OPTIONS=symset:DECgraphics, or Enhanced1), then e.g. '
+          + 'start with a symset line, OPTIONS=symset:Enhanced1 (DECgraphics draws garbled here), then e.g. '
           + 'OPTIONS=glyph:G_male_brown_mold/0-128-255 and the same for G_female_brown_mold (a pet is G_pet_male_ '
-          + 'and G_pet_female_); put :U+2663 before the colour to change its symbol too, with Enhanced1' },
+          + 'and G_pet_female_); put :U+2663 before the colour to change its symbol too' },
       // Lucas, 2026-10-02: twin banks by default, classic kept as it was.  When
       // this window has no room for twin banks, or squeezes them, the first
       // reason why is said here, in a line, never in a pop-up (the design's
