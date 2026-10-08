@@ -9,6 +9,35 @@ Everything comes from one function, `layout(W, H, pointer, settings)`, in `win/w
 
 ## CHANGES (v2, 2 October 2026)
 
+### The desk on very wide screens, and within the safe insets (Lucas, 2026-10-08)
+
+Lucas, after desktop mode was merged: "work on the 21:9 step and safe insets next. and we can plan on working on docked and hide-the-dock afterwards". Both are `layout.js` section 10, for the desk only (`checks/same.mjs`: every touch and pen layout identical).
+
+- **The 21:9 ramp.**
+  - **Before:** where 32 px tiles would leave strips wider than a panel (240 dp) beside the level, the desk's cap leapt to 48 px at one width. At 1440 tall the level went from 32 px to 38 px between 3055 and 3056 wide, and the log and the inventory left the strips beside the map for the dock row at the same pixel.
+  - **Now:** the cap rises over the next 160 dp of width (`WIDE_RAMP`), as a tablet's does (`tabletCap`), so a window dragged wider grows the level a device pixel at a time. At 1440 tall: 32 px at 3056 wide, 35 at 3136, 37 at 3180, 40 at 3216, where the level fills the width. From there it is the cell the step gave (3440x1440: 42 px, as before). Text cells keep their cap, as before.
+  - The golden fixtures' desk screens (16:9) and the sweep's ultrawide screens are past the ramp or short of it, so they are as they were.
+  - **The cell drawn steps a device pixel at a time too.** A cell the band holds above the rule's own that stops fitting now gives way to the largest cell under it that still fits, not to the rule's own. A window dragged smaller meets every cell, as one dragged larger does. Inside the ramp the rule's own cell is held under the largest that fits by the cap, so falling to it skipped 2 to 4 device px at a pixel. The review of this change found it: a 3081-wide window made shorter went from 34 px to 32 at 1054 tall, where 33 fitted.
+- **The safe insets.** The desk ignored them, against §13's "the text bands always pad by the safe insets". Every part of the desk keeps at least 2 dp from the window's edges:
+  - the glass round the bands and the map, 2 dp;
+  - the header and the panels, 4;
+  - the map's strips, 8;
+  - the banks, 12, and their wells 6 less (2.8 at the narrowest usable, scaled-down dock).
+
+  So an inset counts only beyond those 2 dp, as a cutout counts only beyond the margin that already clears it (§13). The desk is laid out in the window less what is left of the insets, and moved in by it.
+  - With no inset past 2 dp it is the desk as it was, to the last digit.
+  - With a notched iPhone's landscape insets (47/47/0/21), an iPad's with a keyboard (0/0/24/20), one side only, or all four at once, nothing of the desk reaches into them, the glass included.
+  - The page already gave the desk its insets (`deskResult`, from `safeInsets()`); only the rule had to use them.
+  - A first cut counted beyond 4 dp and left the glass, and a scaled-down dock's wells, up to 2 dp inside an inset (the review).
+- **Checks.** `checks/desk.mjs` gains three issues and one variant:
+  - **A step:** the cell changing by more than a device pixel between two windows of a drag with the same header arrangement, both the rule's own cell and the cell drawn.
+  - **The insets:** anything of the desk within the safe insets, the glass included, checked in a run with insets on all four sides.
+  - **A refinement of the band's "late" issue:** a panel or the legend is not late when it is still the rule's own pick at that window with the drawn cell held. In the ramp a wider window at the same cell has wider strips, so the panels beside the map still fit at the drawn cell, though they no longer did at that cell 24 dp behind. Without the refinement the check reported 18 such false issues, at dpr 2.4375.
+  - **The band's issues compare drawn desks only.** An unusable desk shows the thumb banks and is never handed on as `prevDesk`. The inset run made a 483 dp desk unusable at 915 wide, and the check then read a header flip into it. The rule before this change does the same at 826x483 without insets; the check simply never walked that height.
+
+  The rule before this change fails the check, and so do this change without its band and this change without the held cell's step down. `desk.test.mjs` holds the ramp's numbers, the drawn cell in a narrow-then-shorter drag, and the insets.
+- **An adversarial review** (three reviewers, two skeptics a finding) found the drawn cell's 2–4 px drop, the 2 dp of glass in the insets, a test that could not fail (text cells at 1440 tall, where the height binds), and two untrue comments. All are fixed above.
+
 ### Desktop mode is built (Lucas, 2026-10-06 and 2026-10-07)
 
 Lucas lifted the deferral of 3 October on 6 October ("I want it now"). It is for him, on a Windows touchscreen laptop with a mouse, a touchpad and a keyboard (Edge in a tab and installed), and for his uncle, who plays Firefox on a Mac and Safari on an iPhone. The decisions of record stand: twin banks stay the default with classic one setting away; a mouse or keyboard switches to the desk arrangement as §12 says; Ctrl+; is tested on each OS (test 7); nothing moves for a touch player. It is built on `room/desktop-mode` in three steps: (1) the input switch and the desk on the page, (2) the keyboard, (3) the rest of the rule. Steps 1 and 2 go into `web` together, so no player gets a desk without its key letters.
@@ -496,7 +525,8 @@ The desk rows are desktop mode, built on 2026-10-07; the rows marked "today" are
 
 Built on 2026-10-07 (CHANGES, "Desktop mode is built"), as below, with these changes: the cell is whole device pixels (a `dpr` input; at density 1.25 and 1.5 a cell often lost a device pixel); a map too short for the whole level is never wider than it; the arrangement (the header, the cell, the panels, the legend) keeps a 24 dp band, as the touch glass does; a window too short for the dock gets the thumb banks, then classic; where the layout leaves no room for the key legend, the message log shows it while the prefix waits, Ctrl is held or a keyboard-opened layer is up.
 
-- **Map.** The whole level at the largest whole-pixel cell that fits the width and leaves room for the dock, up to 32 px wide: 15, 23 and 31 px. Android's text cells may stand up to 57 px tall (32 px wide). On 21:9 and wider, where 32 px tiles would leave strips wider than a panel beside the level, tiles may grow to 48 px: 42 px on 3440x1440. It sits right under the header.
+- **Map.** The whole level at the largest whole-pixel cell that fits the width and leaves room for the dock, up to 32 px wide: 15, 23 and 31 px. Android's text cells may stand up to 57 px tall (32 px wide). On 21:9 and wider, where 32 px tiles would leave strips wider than a panel beside the level, tiles may grow to 48 px over the next 160 dp of width, a device pixel at a time (2026-10-08; it was a step): 42 px on 3440x1440. It sits right under the header.
+- **Safe insets.** The desk lies within them. Each counts only beyond the 2 dp the desk keeps from every edge (§13).
 - **Dock.** The same two banks at 40 dp (upper rows 34, strip 30), in the same order, in the row under the map at its outer edges, 12 dp in from the screen's sides. Each has its own well. A phone player finds every key in the same relative place, and on a touchscreen laptop the hands reach the banks where they rest (Lucas, 2026-10-08; until then the banks stood side by side with a 24 dp gap, centred under the map). Every key shows its keyboard key (§12).
 - **Panels.** The message log and the inventory share the row between the banks, the full height of the row, each at least 160 dp. The log stays alone when only one fits, since the legend borrows its place. The key legend goes under the left bank when 60 dp are left there. When the strips beside the map are 160 dp or wider (text cells on 16:9, any cell on 32:9), the log and the inventory stand beside the map, from its top to the banks' wells. The legend then takes the row between the banks.
 - **Header.** Messages (at most 960 dp, about 110 characters a row) and status side by side at the top.
@@ -810,6 +840,7 @@ Android (later): `Configuration.smallestScreenWidthDp` is not the view's size; t
   - REST's swipe to Long rest starts in the outer column, but it is vertical, and Back ignores vertical swipes.
   - `setSystemGestureExclusionRects` covers the two 190 dp pad blocks, within Android's 200 dp limit (Android, later).
 - **The text bands** always pad by the safe insets.
+- **The desk** (a mouse and keyboard, §4) lies within them as a whole. Every part of it keeps at least 2 dp from every edge (the glass 2, the header and panels 4, the banks 12), so an inset counts only beyond those 2 dp. The desk is laid out in the window less the rest, and moved in by it (2026-10-08).
 
 ---
 

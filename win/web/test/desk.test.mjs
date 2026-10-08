@@ -15,7 +15,11 @@
 //     dragged a pixel at a time across a step keeps the old cell, header or panels for 24 dp
 //     on the way up, and drops them where they stop fitting on the way down;
 //  4. the banks stand at the dock row's outer edges, the log and the inventory between them
-//     (Lucas, 2026-10-08).
+//     (Lucas, 2026-10-08);
+//  5. on 21:9 and wider the cell's cap rises over 160 dp of width, as a tablet's does, not at
+//     one width (Lucas, 2026-10-08);
+//  6. the desk lies within the safe insets, each counted only beyond the 2 dp the desk keeps
+//     from every edge (section 13; Lucas, 2026-10-08).
 // Also: nonsense dpr and prevDesk never throw, and a touch or pen layout is the same with
 // or without them.  doc/twin-banks/checks/desk.mjs and same.mjs run the same rules over many
 // more windows.
@@ -122,6 +126,97 @@ test('the banks stand at the dock row\'s edges, the log and the inventory betwee
   const tab = desk(1272, 588);
   assert.deepEqual(tab.spec.chrome.filter((p) => p.name.startsWith('panel:')).map((p) => [p.name.split(' (')[0], p.x, p.w]),
     [['panel: message log', 162, 468], ['panel: inventory', 642, 468]]);
+});
+
+test('on 21:9 and wider the cell grows with the window a device pixel at a time, never at one width', () => {
+  // at 1440 tall the cap leapt from 32 to 48 px at 3056 wide: the level from 32 px to 38
+  for (const [H, dpr] of [[1440, 1], [1440, 1.5], [1600, 1], [1080, 2]]) {
+    let prev = null;
+    for (let W = 2900; W <= 3500; W++) {
+      const d = desk(W, H, { dpr }).info.desk;
+      if (prev && prev.sideBySide === d.sideBySide) assert.ok(Math.abs(d.Td - prev.Td) <= 1, `${W}x${H} dpr ${dpr}: ${prev.Td} -> ${d.Td} device px`);
+      prev = d;
+    }
+  }
+  // where the strips beside a 32 px level are a panel wide the ramp begins, as the step did
+  // (3056 wide less 16 dp of margins, less the 2560 dp level: 240 dp each side) ...
+  assert.equal(desk(3056, 1440).info.T, 32);
+  // half way, a cap half way from 32 to the 39 dp that fills the width: 35.5, so 35 px
+  assert.equal(desk(3136, 1440).info.T, 35);
+  // ... and over 160 dp the level comes to fill the width, to 48 px; 3440x1440 is past it
+  assert.equal(desk(3216, 1440).info.T, 40);
+  assert.equal(desk(3440, 1440).info.T, 42);
+  // text cells keep their cap, 32 dp wide (56.9 tall): there is no ramp to climb.  At 1700
+  // tall the cap is what holds them, so a text cell that ramped would show here
+  assert.equal(desk(3056, 1700, { cellAspect: 0.5625 }).info.T, 56);
+  assert.equal(desk(3216, 1700, { cellAspect: 0.5625 }).info.T, 56);
+});
+
+test('the cell drawn in a drag through the ramp changes a device pixel at a time too', () => {
+  // A window narrowed through the ramp keeps a cell over the rule's own (the band), then made
+  // shorter: when that cell stopped fitting it fell to the rule's own, 2 to 4 device px at a
+  // pixel, with cells between that fitted (the review of 2026-10-08: 3081 wide, 1055 -> 1054
+  // tall, 34 -> 32 px at dpr 1 where 33 fitted).  Laid out as the page does, each window
+  // handed the arrangement the last one drew.
+  for (const dpr of [1, 1.5, 2.4375]) {
+    for (const Wt of [3081, 3102, 3147, 3182]) {
+      let prev = null, last = null;
+      const step = (W, H) => {
+        const r = desk(W, H, { dpr, prevDesk: prev });
+        if (!r.usable) return;
+        const d = r.info.desk;
+        if (last && last.sideBySide === d.sideBySide && !last.degraded && !r.spec.fit.degraded) {
+          assert.ok(Math.abs(d.Td - last.Td) <= 1, `dpr ${dpr}, to ${Wt} wide then shorter: ${last.Td} -> ${d.Td} device px at ${W}x${H}`);
+        }
+        prev = d; last = { ...d, degraded: r.spec.fit.degraded };
+      };
+      for (let W = 3400; W >= Wt; W--) step(W, 1440);
+      for (let H = 1440; H >= 900; H--) step(Wt, H);
+    }
+  }
+});
+
+test('the desk lies within the safe insets, each counted beyond the 2 dp it keeps from every edge', () => {
+  const inside = (r, ins) => {
+    const S = r.spec;
+    const out = (q) => q.x < ins.l - 0.01 || q.y < ins.t - 0.01 || q.x + q.w > S.W - ins.r + 0.01 || q.y + q.h > S.H - ins.b + 0.01;
+    return [...S.controls.map((c) => [c.id, c]), ...[...S.bands, ...S.chrome, ...S.decor, ...S.popups].map((b) => [b.name || b.label, b]),
+      ['map', S.mapArea], ['glass', S.glass]]
+      .filter(([, q]) => out(q)).map(([n]) => n);
+  };
+  // a notched iPhone in landscape (no top inset there), an iPad with a keyboard (top and
+  // bottom), one side only, and all four at once: stricter than any one device
+  const SHAPES = [{ l: 47, r: 47, t: 0, b: 21 }, { l: 0, r: 0, t: 24, b: 20 }, { l: 62, r: 0, t: 0, b: 0 }, { l: 47, r: 47, t: 20, b: 21 }];
+  for (const [W, H] of [[1280, 800], [1920, 1080], [1366, 768], [1272, 588], [2560, 1440], [3440, 1440]]) {
+    for (const ins of SHAPES) {
+      const r = desk(W, H, { insets: ins, dpr: 1.5 }), at = `${W}x${H} ${JSON.stringify(ins)}`;
+      assert.equal(r.usable, true, `${at}: ${r.reason}`);
+      assert.deepEqual(inside(r, ins), [], `${at}: within the insets`);
+      assert.deepEqual(collisions(r.spec), [], at);
+      assert.equal(r.spec.W, W);
+      assert.equal(r.spec.H, H);
+    }
+  }
+  // a narrow window whose dock is scaled down, its wells nearer the edge than 4 dp, with
+  // side insets: still clear of them (the review of 2026-10-08: 1.2 dp inside, counted
+  // beyond 4 dp)
+  let scaled = 0;
+  for (let W = 300; W <= 420; W += 2) {
+    const ins = { l: 47, r: 47, t: 0, b: 21 };
+    const r = desk(W, 700, { insets: ins });
+    if (!r.usable) continue;
+    if (r.spec.fit.degraded) scaled++;
+    assert.deepEqual(inside(r, ins), [], `${W}x700 within the insets`);
+  }
+  assert.ok(scaled > 0, 'no usable scaled dock with side insets was laid out');
+  // one side's inset moves that side only: the right bank keeps its 12 dp from the edge
+  const left = desk(1280, 800, { insets: { l: 62, r: 0, t: 0, b: 0 } });
+  assert.equal(left.info.banks.L.x0, 62 - 2 + 12);
+  assert.equal(left.info.banks.R.x1, 1280 - 12);
+  // an inset the 2 dp already clear changes nothing, to the last digit
+  for (const [W, H] of WINDOWS) {
+    assert.equal(JSON.stringify(desk(W, H, { insets: { l: 2, r: 1, t: 2, b: 0 } })), JSON.stringify(desk(W, H)), `${W}x${H}`);
+  }
 });
 
 // A window dragged 1 dp at a time, laid out as the page lays it out: each layout gets the
