@@ -440,7 +440,14 @@ class Key {
   // Desktop mode: the keyboard key that does what this key does (its legend,
   // the design's section 12), in the corner over whatever it held; null
   // gives the corner back.
-  legend(t) { this.legendText = t || null; this.updateCorner(); return this; }
+  legend(t) {
+    const was = this.legendText;
+    this.legendText = t || null;
+    this.updateCorner();
+    // the word makes room for the letter (fit)
+    if (this.legendText !== was) scheduleFit(this);
+    return this;
+  }
 
   updateCorner() {
     this.rk.classList.toggle('leg', !!this.legendText);
@@ -474,15 +481,49 @@ class Key {
     if (!this.el.isConnected) return;
     if (skirtFit) this.fitSkirt();
     if (ARROW_DEG[this.text] !== undefined) return;
-    let size = this.size;
-    this.lg.style.fontSize = `${size}px`;
-    const avail = this.tp.clientWidth - 4, availH = this.tp.clientHeight - 2;
+    const leg = this.legendText ? this.rk : null;
+    if (!leg) this.rk.style.fontSize = '';
+    const tpW = this.tp.clientWidth, avail = tpW - 4, availH = this.tp.clientHeight - 2;
     if (avail <= 0 || availH <= 0) return;   // hidden: fitted when shown
-    if (this.lg.style.paddingRight) this.lg.style.maxWidth = `${avail}px`;
-    while (size > 5 && (this.lg.scrollWidth > avail || this.lg.scrollHeight > availH)) {
-      size *= 0.92;
-      this.lg.style.fontSize = `${size}px`;
+    const padded = this.lg.style.paddingRight ? `${avail}px` : '';
+    const plain = { w: avail, h: availH, top: 0, max: padded };
+    let ways = [plain];
+    // Desktop mode's key letter in the corner: the word fits clear of it --
+    // narrower and still centred, under it, or in the room right of it (the
+    // short keys of the top row) -- whichever lets it be the largest (Lucas,
+    // 2026-10-08: REST and SACRIFICE printed over theirs).  The letter is
+    // smaller on a short face, where the word is the one to be read.
+    if (leg) leg.style.fontSize = `${clamp(availH * 0.36, 6, 8.5).toFixed(1)}px`;
+    if (leg && leg.offsetWidth) {
+      const side = leg.offsetLeft + leg.offsetWidth + 1, below = leg.offsetTop + leg.offsetHeight + 1;
+      ways = [{ w: tpW - 2 * side, h: availH, top: 0, max: `${tpW - 2 * side}px` },
+        { w: avail, h: availH - below, top: below, max: padded },
+        { w: tpW - side - 2, h: availH, top: 0, left: side - 2, max: `${tpW - side - 2}px` }]
+        .filter((way) => way.w > 0 && way.h > 0);
+      if (!ways.length) ways = [plain];
     }
+    let best = null;
+    for (const way of ways) {
+      const size = this.fitIn(way);
+      if (!best || size > best.size) best = { way, size };
+    }
+    if (best && best.way !== ways[ways.length - 1]) this.fitIn(best.way);
+  }
+
+  // the largest size, down from the key's own, at which the word fits the
+  // room; a left margin moves the centred word right by half of it
+  fitIn(way) {
+    const lg = this.lg;
+    let size = this.size;
+    lg.style.marginTop = way.top ? `${way.top}px` : '';
+    lg.style.marginLeft = way.left ? `${way.left}px` : '';
+    lg.style.maxWidth = way.max;
+    lg.style.fontSize = `${size}px`;
+    while (size > 5 && (lg.scrollWidth > way.w || lg.scrollHeight > way.h)) {
+      size *= 0.92;
+      lg.style.fontSize = `${size}px`;
+    }
+    return size;
   }
 
   // the skirt's hold hint, in twin banks (skirtFit)
@@ -649,6 +690,13 @@ export class Overlay {
       // a mouse's press is no request to see the key letters: a Mac's
       // Ctrl+click is its right-click
       if (e.pointerType === 'mouse') { clearTimeout(this.ctrlTimer); this.setCtrlHeld(false); }
+      // A button that asks for the desk is down before the board knows it
+      // (watchTwin counts it after this): counted now, the desk waits for its
+      // lift (switchQuiet), so the click lands on the board it was aimed at.
+      // Drawn under it, the map had moved and the click travelled, or looked,
+      // at another square (Lucas, 2026-10-08).  A mouse's press is never
+      // consumed, so watchTwin's lift always takes it off again.
+      if (e.pointerType === 'mouse' && this.pointersDown) this.pointersDown.add(e.pointerId);
       const finger = e.pointerType === 'touch' || e.pointerType === 'pen';
       const r = this.feedInput({ kind: 'pointer', type: e.pointerType, t: performance.now() });
       // A touch while the desk shows does nothing but bring the thumb banks back
