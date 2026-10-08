@@ -496,7 +496,11 @@ Built on 2026-10-07 (CHANGES, "Desktop mode is built"), as below, with these cha
 - **Dock.** The same two banks at 40 dp (upper rows 34, strip 30), in the same order, in the row under the map at its outer edges, 12 dp in from the screen's sides. Each has its own well. A phone player finds every key in the same relative place, and on a touchscreen laptop the hands reach the banks where they rest (Lucas, 2026-10-08; until then the banks stood side by side with a 24 dp gap, centred under the map). Every key shows its keyboard key (§12).
 - **Panels.** The message log and the inventory share the row between the banks, the full height of the row, each at least 160 dp. The log stays alone when only one fits, since the legend borrows its place. The key legend goes under the left bank when 60 dp are left there. When the strips beside the map are 160 dp or wider (text cells on 16:9, any cell on 32:9), the log and the inventory stand beside the map, from its top to the banks' wells. The legend then takes the row between the banks.
 - **Header.** Messages (at most 960 dp, about 110 characters a row) and status side by side at the top.
-- **Void.** 4.4% at 1920x1080, 3.4% at 2560x1440, 3.2% at 3440x1440; 20.9% at 5120x2160, the worst tested (48 px tiles leave height over). Text cells: 14.5%, 8.2% and 7.7%, and 17.9% at 1280x800. Today's 1920x1080: 21.8%. With the panels counted as void it is 47–50%: a 3.8:1 level cannot fill a 16:9 screen.
+- **Void**, with the banks at the edges (the sweep's measure, 2026-10-08):
+  - tiles: 6.6% at 1920x1080, 5.5% at 2560x1440, 4.0% at 3440x1440, 3.7% at 3840x1600 and 2.6% at 5120x1440;
+  - text cells, the same screens: 14.7%, 8.3%, 2.6%, 2.7% and 2.4%.
+
+  The edges cost about 2 points at 16:9: the row under the right bank is empty where the legend stood under the centred dock. Measured before them: 4.4%, 3.4% and 3.2%; 20.9% at 5120x2160, the worst tested (48 px tiles leave height over); text cells 14.5%, 8.2% and 7.7%, and 17.9% at 1280x800. Today's 1920x1080: 21.8%, the sweep's ceiling. With the panels counted as void it is 47–50%: a 3.8:1 level cannot fill a 16:9 screen.
 
 ---
 
