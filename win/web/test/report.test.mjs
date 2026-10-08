@@ -43,6 +43,31 @@ test('one line, the fields in one order', () => {
     + ' · budget seen w443 h443 l896 · fit full · map cell columns · zoom ×1 · terminal, case');
 });
 
+// Lucas's laptop in the installed app (his report of 2026-10-07), at the desk
+const DESK = {
+  ...PHONE, build: { short: 'b43cf21a3', date: '2026-10-06' }, window: { w: 1280, h: 640 }, screen: { w: 1280, h: 720 }, dpr: 1.5,
+  browser: { name: 'Edge', version: '154', os: 'Windows' }, touchPoints: 10, msgSize: 1.2,
+  input: 'desk', controls: 'auto', legends: false, deskFallback: null,
+  tier: 'desk', padSetting: 40, pad: 40, rightColumns: 40, cell: 13.33, cols: 80, rows: 21, whole: true, glass: 'dock',
+  budgetUsed: 'none', budget: null, zoomFactor: 1,
+};
+
+test('the input switch: the board in use, the setting, the key letters, a mouse window on the thumb banks', () => {
+  const line = deviceReport(DESK);
+  assert.match(line, / · layout twin · input desk · tier desk · keys 40 dp · cell 13\.3 dp · map 80×21 whole · glass dock · budget none · /);
+  // the movement key size is not the desk's: no "58 set, 40 drawn"
+  assert.doesNotMatch(line, /set, 40 drawn/);
+  assert.match(deviceReport({ ...PHONE, input: 'thumb', controls: 'auto', legends: true }), / · layout twin · input thumbs, key letters · tier phone · /);
+  assert.match(deviceReport({ ...DESK, controls: 'desk' }), / · input desk \(set\) · /);
+  const fell = deviceReport({ ...DESK, tier: 'tablet', padSetting: 58, pad: 58, rightColumns: 58, glass: 'above',
+    deskFallback: 'the map shows 57x5 cells, under 8x8' });
+  assert.match(fell, / · input desk, thumb banks: the map shows 57x5 cells, under 8x8 · tier tablet · keys 58 dp · /);
+  // classic says nothing of the switch
+  assert.equal(deviceReport({ ...DESK, layout: 'classic', shown: 'classic', tier: null }).includes('input'), false);
+  // nor does a report from before the switch
+  assert.equal(deviceReport(PHONE).includes('input'), false);
+});
+
 test('a squeezed small phone says what gave way', () => {
   const line = deviceReport({ ...PHONE, window: { w: 640, h: 360 }, padSetting: 58, pad: 58, rightColumns: 44.7,
     fitLevel: 'full', reason: '2 message row(s): the window is too small for more', cols: 23.3, rows: 19.9, cell: 12 });

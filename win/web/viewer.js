@@ -3,9 +3,10 @@
 // What the twin banks know of the device they are viewed on, beyond the
 // window in hand: the remembered budget and the size classes (the design's
 // section 12), which the design gives this module.  Its input-mode machine,
-// which would switch a mouse or keyboard player to the desk's dock, is not
-// built: desktop mode is deferred (Lucas, 2026-10-03), and every window is
-// laid out as for touch (overlay.js rebuildTwin).  A plain module like
+// which switches a mouse or keyboard player to the desk's dock, is a module
+// of its own, input.js (desktop mode, Lucas 2026-10-07); the budget and the
+// size classes here are the thumb banks', which the desk neither reads nor
+// teaches (overlay.js rebuildTwin).  A plain module like
 // layout.js, which it imports: no DOM and no storage, so overlay.js hands it
 // the screen, the insets, the stored entry and the tiers it last drew, and
 // stores what it says it learnt; node tests it (test/viewer.test.mjs).
@@ -125,8 +126,10 @@ export function budgetedLayout(W, H, pointer, settings, screen, insets, entry) {
 // Size classes (the design's sections 4 and 12): a window is a phone when it
 // is under 600 dp wide or under 480 dp tall -- Android's compact width and
 // compact height, so a phone turned to landscape is still a phone -- and a
-// tablet otherwise, a touch laptop and any large window with a mouse
-// included (desktop mode is deferred: Lucas, 2026-10-03).  The tier changes
+// tablet otherwise, a touch laptop included.  A window with the mouse or the
+// keyboard in use is the desk (layout.js tierOf, section 10), whose own
+// arrangement keeps a band of its own (prevDesk); these classes are the thumb
+// banks', kept apart so a turn at the desk never costs them.  The tier changes
 // the map's treatment and the panels, never a key: the whole level when its
 // cell is 12 dp or more, the message log and the inventory between the banks
 // or in spare glass, or beside the level on a window far wider than it
@@ -267,6 +270,16 @@ export function deviceReport(f) {
   let lay = `layout ${rTxt(F.layout)}`;
   if (F.layout && F.shown && F.shown !== F.layout) lay += `, shown as ${F.shown}${F.fallback ? `: ${rCut(F.fallback)}` : ''}`;
   parts.push(lay);
+  // the input switch (input.js; desktop mode, Lucas 2026-10-07): the board's
+  // mode -- the thumb banks for touch, the desk for the mouse and keyboard --
+  // whether the Controls setting fixed it, the key letters, and why a mouse
+  // window shows the thumb banks
+  if (F.shown === 'twin' && F.input) {
+    let inp = `input ${F.input === 'desk' ? 'desk' : 'thumbs'}${F.controls && F.controls !== 'auto' ? ' (set)' : ''}`;
+    if (F.legends) inp += ', key letters';
+    if (F.deskFallback) inp += `, thumb banks: ${rCut(F.deskFallback)}`;
+    parts.push(inp);
+  }
   if (F.shown === 'twin' || F.tier) {
     parts.push(`tier ${rTxt(F.tier)}`);
     let keys = `keys ${rNum(F.pad)} dp`;

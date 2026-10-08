@@ -13,6 +13,7 @@ import { setPalette, dressHero, LOOK_LEN } from './doll.js';
 import { Overlay, STATUS_BAND, LINE, msgRows, msgBandPx, msgTextPx, MSG_LEADING, resetTextScale, creationCap,
   GHOST_CONFIRM_MS, RING_REACH } from './overlay.js';
 import { keyEvents } from './commands.js';
+import { keyCodeOf, macPlatform } from './input.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
 
@@ -132,27 +133,20 @@ async function nextKey() {
   }
 }
 
-const ARROWS = { ArrowLeft: 'h', ArrowRight: 'l', ArrowUp: 'k', ArrowDown: 'j',
-                 Home: 'y', PageUp: 'u', End: 'b', PageDown: 'n' };
+// A Mac (or an iPad with a keyboard): its Cmd shortcuts are the browser's, its
+// Option types the M- commands, Ctrl+click is its right-click (input.js).
+const MAC = macPlatform(navigator.platform, navigator.userAgent);
 
-function keyCode(e) {
-  if (ARROWS[e.key]) {
-    const c = ARROWS[e.key];
-    return (e.shiftKey ? c.toUpperCase() : c).charCodeAt(0);
-  }
-  switch (e.key) {
-  case 'Enter': return 13;
-  case 'Escape': return 27;
-  case 'Backspace': return 8;
-  case 'Tab': return 9;
-  case 'Delete': return 0x7f;
-  }
-  if (e.key.length !== 1) return null;
-  const c = e.key.charCodeAt(0);
-  if (e.ctrlKey && /^[a-z]$/i.test(e.key)) return e.key.toUpperCase().charCodeAt(0) & 0x1f;
-  if (e.altKey && c < 128) return c | 0x80;   // M- commands
-  return c;
-}
+// What a keydown is to the game (input.js keyCodeOf: the arrows walk as
+// vi-keys, Ctrl and a letter is the control character, Alt the M- command;
+// desktop mode's step 2 left a Mac's Cmd to the browser, read its Option by
+// the key's place, and let AltGr type its characters).
+const keyCode = (e) => keyCodeOf(e, MAC);
+
+// Desktop mode, twin banks only: a mouse's right button (a Mac's Ctrl+click)
+// and its others are no tap on the bands, the glass or a prompt's chips; the
+// right-click has its own work on the map and the keys.
+const otherMouse = (e) => !!(geom && geom.twin) && e.pointerType === 'mouse' && (e.button !== 0 || (MAC && e.ctrlKey));
 
 let formOpen = null;
 
@@ -163,12 +157,33 @@ window.addEventListener('keydown', (e) => {
     return;
   }
   if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+  // Rolehack's own keys first (desktop mode's step 2): the prefix, Ctrl+;
+  // by default, and the key after it; a layer it opened takes its places
+  if (overlay && overlay.keyFirst(e)) { e.preventDefault(); return; }
   const k = keyCode(e);
   if (k === null) return;
   e.preventDefault();
+  // a key typed to the game is input in use: the switch (input.js) counts it
+  if (overlay) overlay.noteKey(e);
   // Esc closes the interface's own popups first, as Back did on the phone
   if (k === 27 && $('modal').hidden && overlay && overlay.onBack()) return;
+  // a key meets what a touch or the mouse left open: armed Fight takes a
+  // direction, a drawer its numbers; anything else closes first (Lucas's
+  // answer 8)
+  if ($('modal').hidden && overlay && overlay.typedKey(k)) return;
   push({ key: k });
+});
+
+// Desktop mode: a mouse's back and forward buttons (3 and 4) would leave the
+// page in the middle of a game; in twin banks they do nothing.  Chromium
+// navigates on their mouseup, Firefox on their mousedown or auxclick.
+for (const type of ['mousedown', 'mouseup', 'auxclick']) {
+  window.addEventListener(type, (e) => { if ((e.button === 3 || e.button === 4) && geom && geom.twin) e.preventDefault(); }, true);
+}
+// and the browser's own menu never opens over the board in twin banks: a
+// right-click has its own work there (a field keeps its menu, to paste)
+window.addEventListener('contextmenu', (e) => {
+  if (geom && geom.twin && e.target && e.target.closest && !e.target.closest('input, textarea') && $('app').contains(e.target)) e.preventDefault();
 });
 
 // the overlay's commands, in gurrhack's notation, go in as keys; "#name" and
@@ -504,7 +519,7 @@ function panelOf(kind) {
   el.dataset.kind = kind;
   const title = document.createElement('div');
   title.className = 'ptitle';
-  title.textContent = kind === 'log' ? 'Messages' : 'Inventory';
+  title.textContent = { log: 'Messages', inventory: 'Inventory', legend: 'Keys' }[kind] || kind;
   const body = document.createElement('div');
   body.className = 'pbody';
   el.append(title, body);
@@ -633,9 +648,36 @@ function hidePanels() { for (const p of panels.values()) hidePanel(p); }
 const panelShown = (p) => !!p && p.el.style.display !== 'none' && !!p.el.parentNode;
 function renderPanels() {
   if (!(geom && geom.twin)) return;
-  const log = panels.get('log'), inv = panels.get('inventory');
-  if (panelShown(log)) renderLog(log);
+  const log = panels.get('log'), inv = panels.get('inventory'), leg = panels.get('legend');
+  // where the desk has no room for its key legend, the log shows it while it
+  // is wanted: the prefix waiting, Ctrl held, a layer the keyboard opened
+  const borrow = !!geom.desk && !panelShown(leg) && !!(overlay && overlay.legendWanted && overlay.legendWanted());
+  if (panelShown(log)) { if (borrow) renderLegend(log); else renderLog(log); }
   if (panelShown(inv)) renderInventory(inv);
+  if (panelShown(leg)) renderLegend(leg);
+}
+
+// The desk's key legend (desktop mode's step 2): the keys behind the prefix,
+// Ctrl+; by default, or the places of the layer open on the pad by their
+// vi-keys (overlay.js legendLines).  Lit while the prefix waits for its key.
+function renderLegend(p) {
+  const L = overlay && overlay.legendLines ? overlay.legendLines() : null;
+  if (!L) return;
+  const sig = JSON.stringify(L);
+  if (sig === p.sig) return;
+  p.sig = sig;
+  // the log lends its place (renderPanels): its title and look are the
+  // legend's till it is given back, its own place kept to be put back
+  if (p.kind !== 'legend' && !p.legend) {
+    p.legend = true;
+    p.saved = { follow: p.follow, top: p.top, fx: p.fx, first: p.first };
+    p.el.dataset.kind2 = 'legend';
+    p.body.scrollTop = 0;
+  }
+  p.title.hidden = false;
+  p.title.textContent = `Keys: ${L.title}`;
+  if (L.armed) p.el.dataset.armed = ''; else delete p.el.dataset.armed;
+  fillPanel(p, `<div class="pcols">${L.lines.map(([k, w]) => `<div class="pi"><span class="let">${esc(k)}</span><span>${esc(w)}</span></div>`).join('')}</div>`, false);
 }
 
 // a panel's body redrawn; the log keeps to its end while it follows it, and
@@ -657,6 +699,17 @@ function fillPanel(p, html, toEnd, gone = 0) {
 }
 
 function renderLog(p) {
+  // the key legend it lent its place to goes (renderPanels): its own title,
+  // as layoutPanels shows it, and its place, as the player left it
+  let back = null;
+  if (p.legend) {
+    p.legend = false; p.sig = '';
+    back = p.saved || null; p.saved = null;
+    p.first = null;
+    p.title.textContent = 'Messages';
+    p.title.hidden = (parseFloat(p.el.style.height) || 0) < 120;
+    delete p.el.dataset.armed; delete p.el.dataset.kind2;
+  }
   const first = histSeq - history.length;
   const upto = p.beyond ? Math.min(bandFrom, histSeq) : histSeq;
   const n = Math.max(0, Math.min(history.length, upto - first));
@@ -668,7 +721,9 @@ function renderLog(p) {
   p.sig = sig;
   const gone = p.first === null ? 0 : Math.max(0, first - p.first);
   p.first = first;
+  if (back) { p.follow = back.follow; p.top = back.top; p.fx = back.fx; }
   fillPanel(p, history.slice(0, n).map((t, i) => `<div class="pl${first + i >= fresh ? ' new' : ''}">${esc(t)}</div>`).join(''), true, gone);
+  if (back) { p.follow = back.follow; p.top = back.top; p.fx = back.fx; putPlace(p); }
 }
 
 function renderInventory(p) {
@@ -727,10 +782,13 @@ function panelTaps(p, kind) {
     const d = down;
     down = null;
     if (!d || d.id !== e.pointerId || !(geom && geom.twin)) return;
+    // the log lending its place to the key legend is a list to read; a mouse's other buttons tap nothing
+    if (p.legend || otherMouse(e)) return;
     if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10 || Math.abs(p.body.scrollTop - d.top) > 2 || Math.abs(p.body.scrollLeft - d.left) > 2) return;
     if (moreShown) { push({ key: 32 }); return; }
     if (page.some((q) => q.ask) || (overlay && overlay.answering)) return;
     if (kind === 'log') send('^P');
+    else if (kind === 'legend') return;   // a list to read: a tap there does nothing
     else if (commandWait && !(overlay && (overlay.layerUp() || overlay.armed))) send('i');
   });
 }
@@ -747,6 +805,8 @@ function panelTaps(p, kind) {
     if (mq.removeEventListener) mq.removeEventListener('change', changed);
     else mq.removeListener(changed);
     if (geom) layoutGlass(geom);
+    // the desk's map cell is whole device pixels, decided by the layout itself
+    if (geom && geom.desk && overlay) overlay.requestRebuild();
     watchDensity();
   };
   if (mq.addEventListener) mq.addEventListener('change', changed);
@@ -780,14 +840,19 @@ function toDevicePx(v) {
 
 // the factor a twin banks pinch under way has reached (setZoom), 0 between pinches
 let pinchFactor = 0;
+// The desk's own zoom (desktop mode, 2026-10-07), a factor of its cell kept
+// for the visit only: the desk opens on the whole level, and its wheel never
+// changes the thumb banks' zoomFactor.
+let deskZoom = 1;
 
 function tileSize() {
   // Twin banks: the device's one map cell (layout.js), the same in both
   // orientations, times twin's own zoom factor -- the pinch's while fingers
   // are down -- in classic's 8 to 96 px (the design's section 11).  Classic's
   // zoom is not read here: it is classic's, and a pinch in twin never writes it.
+  // At the desk the factor is the desk's own (deskZoom).
   if (geom && geom.twin && geom.cell > 0) {
-    const f = pinchFactor || Number(P.get('zoomFactor')) || 1;
+    const f = pinchFactor || (geom.desk ? deskZoom : Number(P.get('zoomFactor')) || 1);
     return clamp(geom.cell * f, 8, 96);
   }
   const z = Number(P.get('zoom')) || 0;
@@ -803,12 +868,12 @@ function tileSize() {
 function setZoom(px, live) {
   if (!(geom && geom.twin && geom.cell > 0)) { P.set('zoom', clamp(px, 8, 96)); return; }
   const f = clamp(px, 8, 96) / geom.cell;
-  if (live) { pinchFactor = f; render(); } else { pinchFactor = 0; P.set('zoomFactor', f); }
+  if (live) { pinchFactor = f; render(); } else if (geom.desk) { pinchFactor = 0; deskZoom = f; render(); } else { pinchFactor = 0; P.set('zoomFactor', f); }
 }
 function endPinch() {
   const f = pinchFactor;
   pinchFactor = 0;
-  if (f && geom && geom.twin) P.set('zoomFactor', f);
+  if (f && geom && geom.twin) { if (geom.desk) { deskZoom = f; render(); } else P.set('zoomFactor', f); }
 }
 
 // Twin banks' overview (the design's section 11): while two fingers rest on
@@ -1000,13 +1065,15 @@ function guardTap(e, x, y, inLevel, down) {
   }
   if (overlay.layerUp()) { overlay.dismissPopups(); return true; }
   if (down - closedAt < AFTER_CLOSE_MS) { overlay.noteGuard('closing', e); return true; }
-  const d = overlay.keyDistance(e.clientX, e.clientY);
+  // the ring and the ghost deck are for a thumb's near miss, never a mouse's click
+  const mouse = e.pointerType === 'mouse';
+  const d = mouse ? null : overlay.keyDistance(e.clientX, e.clientY);
   const ring = d !== null && d <= RING_REACH;
   if (ring && down - overlay.keyUpAt < RING_AFTER_KEY_MS) { overlay.noteGuard('bounce', e); return true; }
   if (!inLevel) { clearGhostPreview(false); return true; }
   // a preview's second tap on its cell walks; any other tap clears it (ghostTap)
   if (ghostPreview && ghostPreview.x === x && ghostPreview.y === y) { clearGhostPreview(true); return false; }
-  if (ghostTap(e, x, y)) return true;
+  if (!mouse && ghostTap(e, x, y)) return true;
   if (!ring) return false;
   ghostPreview = { x, y, ring: true, timer: setTimeout(() => clearGhostPreview(false), GHOST_CONFIRM_MS) };
   overlay.noteGuard('ring', e);
@@ -1038,7 +1105,21 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
     if (two) { clearTimeout(two.timer); two = null; }
   };
   const endOverview = () => { if (overview && !pts.size) { overview = false; renderMap(); } };
+  // Desktop mode (Lucas's answer 5a): a right-click looks at the square it
+  // lands on -- the core's own second mouse button, clicklook (cmd.c), which
+  // takes no turn -- where it walked the hero there and opened the browser's
+  // menu over the map.  A Mac's Ctrl+click is its right-click.  The middle
+  // button does nothing.  Only a mouse's: a long touch's contextmenu is
+  // nothing here.
+  let right = null;
+  cv.addEventListener('contextmenu', (e) => { if (geom && geom.twin) e.preventDefault(); });
   cv.addEventListener('pointerdown', (e) => {
+    // twin banks only: classic's map is as it was
+    if (geom && geom.twin && e.pointerType === 'mouse' && (e.button !== 0 || (MAC && e.ctrlKey))) {
+      e.preventDefault();
+      right = e.button === 2 || e.button === 0 ? { id: e.pointerId, x: e.clientX, y: e.clientY } : null;
+      return;
+    }
     e.preventDefault();
     try { cv.setPointerCapture(e.pointerId); } catch (x) { /* synthetic */ }
     pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -1099,6 +1180,12 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
     }
   });
   const up = (e) => {
+    if (right && right.id === e.pointerId && !pts.has(e.pointerId)) {
+      const r0 = right;
+      right = null;
+      if (Math.hypot(e.clientX - r0.x, e.clientY - r0.y) < 10) lookAt(e);
+      return;
+    }
     if (!pts.has(e.pointerId)) return;
     pts.delete(e.pointerId);
     if (pts.size < 2 && (pinch || two)) endTwo();
@@ -1117,10 +1204,23 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
     if (geom && geom.twin ? guardTap(e, x, y, inLevel, downAt) || !inLevel : !inLevel || ghostTap(e, x, y)) return;
     push({ click: { x, y, mod: 1 } });
   };
+  // a right-click's look: at --More-- it is Space, as any tap; with a layer
+  // up it only closes it, as a tap does; else the core describes the square
+  const lookAt = (e) => {
+    if (moreShown) { push({ key: 32 }); return; }
+    if (overlay && overlay.layerUp()) { overlay.dismissPopups(); return; }
+    const r = cv.getBoundingClientRect();
+    const x = Math.floor((e.clientX - r.left - view.left) / view.T);
+    const y = Math.floor((e.clientY - r.top - view.top) / view.T);
+    if (x >= 0 && x < COLNO && y >= 0 && y < ROWNO) push({ click: { x, y, mod: 2 } });
+  };
   cv.addEventListener('pointerup', up);
-  cv.addEventListener('pointercancel', (e) => { pts.delete(e.pointerId); if (pts.size < 2 && (pinch || two)) endTwo(); endOverview(); });
+  cv.addEventListener('pointercancel', (e) => { if (right && right.id === e.pointerId) right = null; pts.delete(e.pointerId); if (pts.size < 2 && (pinch || two)) endTwo(); endOverview(); });
   cv.addEventListener('wheel', (e) => {
     e.preventDefault();
+    // the wheel that asked for the desk (input.js) never zooms the thumb
+    // banks: their zoom is theirs, and the desk opens on the whole level
+    if (geom && geom.twin && !geom.desk && overlay && overlay.deskPending()) return;
     // Each notch scales the cell asked for (tileSize()), not the drawn one: the
     // drawn cell is that floored to device pixels, so a trackpad's small steps
     // scaled from it would each be floored away and the map never grow.
@@ -1131,7 +1231,8 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
   // only sometimes teaches that it never does (the message band research,
   // step 4).  At --More-- the tap is Space.  Not while a question waits on the
   // band or the pad, where a key would be taken as the answer.
-  $('msgband').addEventListener('pointerup', () => {
+  $('msgband').addEventListener('pointerup', (e) => {
+    if (otherMouse(e)) return;
     if (moreShown) push({ key: 32 });
     else if (!page.some((e) => e.ask) && !(overlay && overlay.answering)) send('^P');
   });
@@ -1151,12 +1252,14 @@ const OVERVIEW_MS = 250, OVERVIEW_SLOP = 10, PINCH_SLOP = 12;
   gl.addEventListener('pointerup', (e) => {
     const down = glassDown;
     glassDown = null;
+    if (otherMouse(e)) return;
     if (down === e.pointerId && own(e) && geom && geom.twin && moreShown) push({ key: 32 });
   });
   sb.addEventListener('pointerdown', (e) => { statDown = e.pointerId; });
   sb.addEventListener('pointerup', (e) => {
     const down = statDown;
     statDown = null;
+    if (otherMouse(e)) return;
     if (down === e.pointerId && geom && geom.twin && moreShown) push({ key: 32 });
   });
 }());
@@ -1583,7 +1686,7 @@ function showChips(choices) {
     b.textContent = ch;
     b.addEventListener('pointerdown', () => { b.classList.add('pressed'); FB.press(); });
     b.addEventListener('pointerleave', () => b.classList.remove('pressed'));
-    b.addEventListener('pointerup', (e) => { e.preventDefault(); b.classList.remove('pressed'); FB.up(); windowClosed(); push({ key: ch.charCodeAt(0) }); });
+    b.addEventListener('pointerup', (e) => { e.preventDefault(); b.classList.remove('pressed'); if (otherMouse(e)) return; FB.up(); windowClosed(); push({ key: ch.charCodeAt(0) }); });
     c.appendChild(b);
   }
   const x = document.createElement('button');
@@ -1591,7 +1694,7 @@ function showChips(choices) {
   x.textContent = 'Esc';
   x.addEventListener('pointerdown', () => { x.classList.add('pressed'); FB.press(); });
   x.addEventListener('pointerleave', () => x.classList.remove('pressed'));
-  x.addEventListener('pointerup', (e) => { e.preventDefault(); x.classList.remove('pressed'); FB.up(); windowClosed(); push({ key: 27 }); });
+  x.addEventListener('pointerup', (e) => { e.preventDefault(); x.classList.remove('pressed'); if (otherMouse(e)) return; FB.up(); windowClosed(); push({ key: 27 }); });
   c.appendChild(x);
   sizeChips();
   placeChips();
@@ -2587,6 +2690,11 @@ overlay = new Overlay({
   tileSize: () => tileSize(),
   guardsAside: () => moreShown || !$('modal').hidden || !$('formwrap').hidden,
   windowClosed,
+  // the desk's own zoom, for the device report and Settings' Reset zoom
+  deskZoom: () => deskZoom,
+  // the key legend's content changed: the prefix waits, a layer opened or closed
+  legendChanged: () => renderPanels(),
+  resetDeskZoom: () => { deskZoom = 1; render(); },
 });
 // what the near-miss guard did, for the near-miss test on a device (the
 // design's section 18, test 2), from the browser's console

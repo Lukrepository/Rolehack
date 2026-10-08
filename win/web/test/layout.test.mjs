@@ -399,8 +399,8 @@ test('no room for bars under hidden status lines', () => {
 
 // ---- the tablet tier on a monitor's window
 
-// Desktop mode is deferred (Lucas, 2026-10-03): the page lays out a monitor's
-// window as for touch, a tablet.  A tablet's whole-level cell stops at 24 dp,
+// A monitor's window laid out as for touch -- touched, or while desktop mode
+// was deferred (3 to 7 October 2026) -- is a tablet.  A tablet's whole-level cell stops at 24 dp,
 // which no tablet reaches; on a monitor it left the level small in a glass
 // half void (2560x1440: 52%, 3440x1440: 62%).  Where 24 dp would leave strips
 // wider than a panel (240 dp) beside the level, the cap rises over the next

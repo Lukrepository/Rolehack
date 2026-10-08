@@ -9,6 +9,64 @@ Everything comes from one function, `layout(W, H, pointer, settings)`, in `win/w
 
 ## CHANGES (v2, 2 October 2026)
 
+### Desktop mode is built (Lucas, 2026-10-06 and 2026-10-07)
+
+Lucas lifted the deferral of 3 October on 6 October ("I want it now"). It is for him, on a Windows touchscreen laptop with a mouse, a touchpad and a keyboard (Edge in a tab and installed), and for his uncle, who plays Firefox on a Mac and Safari on an iPhone. The decisions of record stand: twin banks stay the default with classic one setting away; a mouse or keyboard switches to the desk arrangement as §12 says; Ctrl+; is tested on each OS (test 7); nothing moves for a touch player. It is built on `room/desktop-mode` in three steps: (1) the input switch and the desk on the page, (2) the keyboard, (3) the rest of the rule. Steps 1 and 2 go into `web` together, so no player gets a desk without its key letters.
+
+**Lucas's answers (2026-10-07) to the plan's questions:**
+1. **His laptop** (its device report): the installed app is 1280x640, an Edge tab 1272x588, on a 1280x720 screen at density 1.5 with 10 touch points. Chromium reports `pointer: coarse` and no hover there although a mouse and a touchpad are in use, which is why §12 decides nothing from those queries. The device has no folded tablet posture, and its keyboard is always live. He plays with mouse clicks to travel and the keyboard's Esc.
+2. **His uncle plays Firefox on a Mac.** Lucas keeps a list of things to ask him: `tester-requests-uncle-2026-10-07.md` in the workspace.
+3. **The switch on a device that can touch** (§12 changes):
+   - (a) typed keys alone only turn on the key letters; the mouse, the touchpad or the wheel is the automatic way to the desk. A device that cannot touch starts at the desk. ("Three game keys" ask for the desk only where no touch is possible.)
+   - (b) a touch or a pen while the desk shows only brings the thumb banks back: it is consumed (no key, no travel, no panel), and the switch comes at its lift, never held back by the 3 s rule. (§12 had "the touch itself acts in the current layout".)
+4. **A mouse window too short for the dock** gets the thumb banks, then classic (§12 sent an unusable desk to classic), with a 24 dp band at that edge so the board does not flip at a pixel. §14's bent rule 4 gains this case: the board moves between the dock and the corners when a mouse window's height crosses about 440 to 490 dp, past the band.
+5. **Right-click.**
+   - (a) On the map it looks at the square: the core's own second mouse button, `clicklook`, which uses no turn.
+   - (b) On a key it does the key's hold where a hold opens something (a hub's layer, a macro's editor, the FLICK legend), and nothing on the pins, the equipment keys and SACRIFICE, whose holds empty the key or pray.
+   - Built on `button === 2` with a mouse, never on `contextmenu`, which a long touch also fires. On a Mac, Ctrl+click is a right-click too.
+6. **Drawer keys** (§9 changes): typing an item's own game key runs it and closes the drawer, keeping the muscle memory; only items with no game key of their own get numbers.
+7. **The desk's keys keep their words**, with the keyboard key in the corner, whatever "Key labels" says. Rolehack's own keys are written `^;4`, NetHack's `^` for Ctrl as MSGS shows `^P`, not `⌃;4`.
+8. **Typed keys while something opened by touch or the mouse is up:** with Fight armed, a typed direction fights; any other typed key closes the layer or drawer, or disarms, before it goes to the game; vi-keys pick a layer's places only when Ctrl+; opened it.
+9. **"Docked" and "hide the dock" are postponed.** Lucas: keyboard-only players likely play NetHack's own terminal, which now runs natively on Windows, and it is "not a design space I want to intrude on unnecessarily". Until then the Controls setting has three values: automatic / thumb banks / mouse and keyboard.
+
+**Decided in the plan, which Lucas let stand:**
+- KEYS (the soft keyboard) has no Ctrl+; letter: a desk player has a real keyboard. `k` stays flick ↑, as §12's table has it (`layout.js`'s LEGEND gave it to KEYS too).
+- The key after the prefix counts with Ctrl held or released, and is read as typed, so `f` (FLICK's tap) differs from `F` (COMBAT's layer). WORLD moves from `w` to `o` and the count layer from `n` to `x`: a browser tab cannot stop Ctrl+W (close the tab) or Ctrl+N (a new window). The prefix is a setting, Ctrl+; by default, matched by `code`, with AltGr excluded.
+- The legends say what each key sends: REST `20.` (LEGEND's `20s` would search), SACRIFICE Alt+o (its hold, Pray, Alt+p), the pad centre `s` or `,`, a pin the key it holds.
+- The near-miss guard is for thumbs. At the desk, with a mouse, there are no halos, seams, ghost deck or habit guards (the ring was already off for a mouse); the 200 ms after a window closes and the armed-Fight rule stay.
+- The desk keeps its own wheel zoom for the page's visit: it opens on the whole level and never changes the thumb banks' `zoomFactor`.
+- The remembered budget is the thumb banks' alone: a desk window neither uses nor teaches it (`deskLayout` never read it).
+- Keyboard fixes in step 2: on a Mac the Cmd shortcuts are the browser's (Cmd+R reached the game as `r`, read) and Option+letter types the M- command; AltGr characters are characters, not M- commands.
+- The rule's shortfalls at the desk are fixed in `layout.js`, for the desk only (every touch and pen layout stays identical, and a check holds it so): the cell in whole device pixels (a `dpr` input, 1 by default); a panning map never wider than the level; a 24 dp band for the desk's arrangement; later, the 21:9 ramp and the safe insets.
+
+**As built (2026-10-07, `room/desktop-mode`).**
+- `win/web/input.js` (new, node-tested): the switch, and the keys (the Mac's Cmd and Option, AltGr, the prefix and its table). `overlay.js` feeds it from the window's capture phase and lays out the desk; `web.js` routes the keyboard through the prefix and the "typed key meets what is open" rule, and right-click on the map looks (`mod: 2`).
+- `layout.js`, desk only: `dpr` (the cell in whole device pixels: Lucas's 1280x640 at density 1.5 gets 21 device px, 14 dp, the whole level; his 1272x588 tab pans at 18 device px, 12 dp, its map 960 dp, the level's width, where it was 1256); `prevDesk` / `info.desk` (the band: each part of the arrangement changes 24 dp after the rule's own step on the way up, where it stops fitting on the way down, and every cell size is shown on a drag); LEGEND as decided. `checks/desk.mjs` drags desk windows and fails a rule without the band, without whole device pixels or with a map wider than the level; `checks/same.mjs` holds every non-mouse layout identical to the rule before (117,903 layouts).
+- Three independent reviews of the page's steps, and two of the rule, found real bugs, all fixed before this record: Firefox on a Mac reports AltGraph while Option is held (Option+o gave a stray character); a drawer's hidden numbers ran items; the wheel that asked for the desk changed the thumb banks' zoom; a consumed touch's click filter dropped other taps; arrows did not pick a keyboard layer's places; the band ran up to 184 dp wide; the desk check could not fail.
+- Classic is unchanged: the right-click rules and the context-menu guard are twin banks' only. Ctrl with anything but a letter (Ctrl+- and Ctrl+=, the page's zoom) is the browser's again in both layouts: it reached the game as - and =.
+
+**Open, for Lucas's eye on a real screen:**
+- On short, wide windows (about 440 to 590 dp tall, from 1320 wide) the log and the inventory now stand tall and narrow beside the 960 dp map (187 dp at 1366x585) instead of in the dock row beside a map wider than the level.
+- A window dragged taller shows every cell size, one change per 21/dpr dp: more changes than before, none undone when the drag turns back.
+- With Android's text cells at about 1040 wide, the key legend has room in the dock row at one cell only; the band hides it in a drag, a first layout there shows it (a rule quirk, left as it is).
+- Not testable here: whether Firefox on a touchscreen that gives its touches only as mouse events (a Surface, by Mozilla's own notes) would be taken for a mouse (Settings, Controls, Thumb banks is the way out); whether a Mac's Option+e, an accent key, makes the next letter arrive accented (on the uncle's list).
+
+**Lucas's first test on his laptop (2026-10-08), in an Edge tab.**
+- **Passed:**
+  - the touchpad's scroll brings the desk;
+  - a touch brings the thumb banks back and does nothing else;
+  - typed keys only light the key letters (`:` three times; "the board didnt change");
+  - the prefix table ("all worked as described");
+  - right-click looks ("it was cool to right click all over the map safely").
+- **Two bugs, fixed:**
+  - The click that switched to the desk landed on the new layout. The desk was drawn on its press, before the button came up, so the click travelled to, or looked at, another square.
+  - The key letters printed over REST ×20's and SACRIFICE's words.
+- **His decisions:**
+  1. **The banks stand at the dock row's outer edges, with the log and the inventory between them, always.** "On my touch screen it would be better if the banks were on the outside edge of their row"; "messages and inventory between them, yes. Im leaning towards the mouse and keyboard view being edges always". §4's dock and panels below say how. **The golden fixtures' 22 desk screens were rewritten for it, at his word** ("yes, update the 22 desk screens"): three per variant, and `edge.json`'s 700x450 mouse. `layout-cli.mjs`, which wrote them, is not in the repo, so they came from `win/web/layout.js`. Every touch screen and every other field of the files is byte for byte as it was. In the desk screens only the banks' x, the popups, the panels, the wells and the source line moved, and the keys' descriptions now carry the legend decided on 7 October (`^;o`, `M-o`, `20.`, `s`, KEYS none), which the fixture test does not compare.
+  2. **A board that changes by itself names itself.** It shows for 3 s at the top of the map, on automatic switches only, and takes no click. The words come first, as the Controls setting names them ("front-loading": "No smoking", not "Smoking not allowed"); this is his pick of the short form: "**Mouse and keyboard** · Settings › Controls" and "**Thumb banks** · Settings › Controls". A switch the window cannot draw (too short for the desk) says nothing.
+  3. **A click that switches to the desk still does what it does.** "Travel by clicking is one of the desktop's best features."
+  4. **The status lines go to the layout session** (`status-lines-brief-2026-10-08.md` in the workspace): the name-and-title bar follows vanilla's `hitpointbar`, shipping off as vanilla does ("ship as vanilla does"); the HP and Pw bars go ("the raw numbers are more valuable than seeing a bar"); and the lines grow as the message band did.
+
 ### The save era (Lucas, 2026-10-06; the release plan's B2, first piece, for D26 and D4)
 
 Before `main()` runs, the core says its save signature (`win/shim/winshim.c` `web_save_signature()`: what `check_version()` compares in a save, the version number with EDITLEVEL, the feature bits and the entity count, plus the struct-size bytes `store_critical_bytes()` writes), and the page mounts the saves from the store named for it (`web.js` `mountSaves()`, `channel.js` `saveDbFor()`): the first era keeps `/save` (and `/save-preview`), a later one gets `/save-<tag>`. So a build whose format differs never opens, recovers or re-stamps an older game: `recover_savefile()` checks no version, and `store_version()` would stamp the rebuilt save with the running build's. The era that last wrote a channel's saves is kept in the settings (`saveEra`); a build of another era that finds games it cannot read says so once and keeps them aside (D4: an update never deletes a game; the earlier version to be published at its own address). `src/version.c` gains `get_critical_size_byte()`; the page runs `main()` itself (`noInitialRun`, `callMain`) after the mount. The device report carries the era's tag after the build (`core <tag>`).
@@ -368,7 +426,7 @@ The rest of twin-banks stands: the bank table, the budget memory for browser tab
 
 ## 4. Screen classes
 
-The tier comes from Android's size classes and the input in use: **phone** when the width is under 600 dp or the height under 480 dp (a landscape phone is compact *height*); **tablet** when both are larger; **desk** whenever a mouse or keyboard is the input in use (deferred, Lucas, 2026-10-03: the web lays out every window as for touch, so a mouse window is a phone or a tablet by its size; see CHANGES). Each threshold has a ±24 dp hysteresis band, so a window on a boundary does not flicker. The tier changes the map treatment and the panels only. No key's size or offset depends on the tier or on the orientation.
+The tier comes from Android's size classes and the input in use: **phone** when the width is under 600 dp or the height under 480 dp (a landscape phone is compact *height*); **tablet** when both are larger; **desk** whenever a mouse or keyboard is the input in use (deferred on 2026-10-03, built on 2026-10-07: see CHANGES, "Desktop mode is built"; where touch is possible, typed keys alone only turn on the key letters). Each threshold has a ±24 dp hysteresis band, so a window on a boundary does not flicker. The tier changes the map treatment and the panels only. No key's size or offset depends on the tier or on the orientation.
 
 | screen | tier | pad / pitch | right columns | edge / bottom offset | bank gap (portrait) | upper rows / gap | glass | header | map dp | cell | cells shown | msg rows | panels |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -392,7 +450,7 @@ The tier comes from Android's size classes and the input in use: **phone** when 
 | 2560x1440 mouse, today | tablet | 58 / 66 | 58 | 18 / 18 | 1024 | 48 / 6 | above | side by side | 2520×662 | 31.5 | whole | 2 | log, inventory |
 | 3440x1440 mouse, today | tablet | 58 / 66 | 58 | 18 / 18 | 1024 | 48 / 6 | above | side by side | 3400×893 | 42.5 | whole | 4 | log, inventory |
 
-The desk rows are the design for desktop mode; the rows marked "today" are what the web does while it is deferred (Lucas, 2026-10-03): the tablet tier, its banks at phone size in the corners, the cell as §11's monitor cap gives it.
+The desk rows are desktop mode, built on 2026-10-07; the rows marked "today" are what a mouse window got while it was deferred (3 to 7 October), and what any window still gets while it is touched: the tablet tier, its banks at phone size in the corners, the cell as §11's monitor cap gives it.
 
 "Cell" is the map cell's height in dp (the web's tile; Android's text cell is 0.5625 as wide). The web draws it at `floor(cell × dpr) / dpr`. The right columns are not rounded to whole dp: a rounding remainder would widen the gap between the banks for one key size and not the next.
 
@@ -436,13 +494,17 @@ The desk rows are the design for desktop mode; the rows marked "today" are what 
 
 ### Desktop, mouse and keyboard (1280x800, 1920x1080, 2560x1440; ultrawide)
 
-Deferred (Lucas, 2026-10-03). Until it is built, these windows are tablets (the rows marked "today" above, and CHANGES).
+Built on 2026-10-07 (CHANGES, "Desktop mode is built"), as below, with these changes: the cell is whole device pixels (a `dpr` input; at density 1.25 and 1.5 a cell often lost a device pixel); a map too short for the whole level is never wider than it; the arrangement (the header, the cell, the panels, the legend) keeps a 24 dp band, as the touch glass does; a window too short for the dock gets the thumb banks, then classic; where the layout leaves no room for the key legend, the message log shows it while the prefix waits, Ctrl is held or a keyboard-opened layer is up.
 
 - **Map.** The whole level at the largest whole-pixel cell that fits the width and leaves room for the dock, up to 32 px wide: 15, 23 and 31 px. Android's text cells may stand up to 57 px tall (32 px wide). On 21:9 and wider, where 32 px tiles would leave strips wider than a panel beside the level, tiles may grow to 48 px: 42 px on 3440x1440. It sits right under the header.
-- **Dock.** The same two banks at 40 dp (upper rows 34, strip 30), in the same order, side by side with a 24 dp gap, centred directly under the map. A mouse never travels to a far corner, and a phone player finds every key in the same relative place. Every key shows its keyboard key (§12).
-- **Panels.** The message log to the left of the dock and the inventory to the right, the full height of the row; the key legend under the dock. When the strips beside the map are 160 dp or wider (text cells on 16:9, any cell on 32:9), the log and inventory stand beside the map from its top to the bottom of the screen and the legend takes the dock row.
+- **Dock.** The same two banks at 40 dp (upper rows 34, strip 30), in the same order, in the row under the map at its outer edges, 12 dp in from the screen's sides. Each has its own well. A phone player finds every key in the same relative place, and on a touchscreen laptop the hands reach the banks where they rest (Lucas, 2026-10-08; until then the banks stood side by side with a 24 dp gap, centred under the map). Every key shows its keyboard key (§12).
+- **Panels.** The message log and the inventory share the row between the banks, the full height of the row, each at least 160 dp. The log stays alone when only one fits, since the legend borrows its place. The key legend goes under the left bank when 60 dp are left there. When the strips beside the map are 160 dp or wider (text cells on 16:9, any cell on 32:9), the log and the inventory stand beside the map, from its top to the banks' wells. The legend then takes the row between the banks.
 - **Header.** Messages (at most 960 dp, about 110 characters a row) and status side by side at the top.
-- **Void.** 4.4% at 1920x1080, 3.4% at 2560x1440, 3.2% at 3440x1440; 20.9% at 5120x2160, the worst tested (48 px tiles leave height over). Text cells: 14.5%, 8.2% and 7.7%, and 17.9% at 1280x800. Today's 1920x1080: 21.8%. With the panels counted as void it is 47–50%: a 3.8:1 level cannot fill a 16:9 screen.
+- **Void**, with the banks at the edges (the sweep's measure, 2026-10-08):
+  - tiles: 6.6% at 1920x1080, 5.5% at 2560x1440, 4.0% at 3440x1440, 3.7% at 3840x1600 and 2.6% at 5120x1440;
+  - text cells, the same screens: 14.7%, 8.3%, 2.6%, 2.7% and 2.4%.
+
+  The edges cost about 2 points at 16:9: the row under the right bank is empty where the legend stood under the centred dock. Measured before them: 4.4%, 3.4% and 3.2%; 20.9% at 5120x2160, the worst tested (48 px tiles leave height over); text cells 14.5%, 8.2% and 7.7%, and 17.9% at 1280x800. Today's 1920x1080: 21.8%, the sweep's ceiling. With the panels counted as void it is 47–50%: a 3.8:1 level cannot fill a 16:9 screen.
 
 ---
 
@@ -632,7 +694,7 @@ Every layer paints on the movement pad, which is identical in both orientations.
 - **Size and place.** min(420, map width − 12) dp wide, at most 352 dp tall (it scrolls), bottom-anchored and centred in the map area: 420×274 on Lucas's phone in both orientations, between the banks in landscape and above them in portrait, never over a key. A usable layout always has room for it: at least 200 dp for three columns and 88 dp for two rows of 44 dp items. A window that cannot hold it has nowhere to open MENU, so `layout()` calls it unusable and the page shows classic (§12).
 - **What carries over.** The drawer's grid is identical in both orientations, but its place on screen follows the map. Drawers are for finding a command, not for blind taps, so that is accepted.
 - **Closing.** For 200 ms after a drawer closes, map taps are swallowed (§6).
-- **Desk.** Items also get number keys.
+- **Desk.** An item's own key, typed, closes the drawer and goes to the game, which runs it; the items with no key of their own take 1 to 9, shown while the key letters are (Lucas, 2026-10-07; the design had number keys for every item, and drawers hold up to 31).
 
 ---
 
@@ -693,11 +755,13 @@ Never used to decide: the user agent, `pointer: coarse` alone, `hover` alone.
 **The device report** (Lucas, 2026-10-06; CHANGES). Everything in this table that the page can read, and what it decided from it, goes into one line at the end of Settings (`viewer.js` `deviceReport()`, from `overlay.js` `deviceFacts()`), with the browser and system named coarsely for the reader. A player shares or copies it and sends it to Lucas; the page sends nothing by itself.
 
 **The input-mode state machine** (from size-classes, in `viewer.js`):
-- A touch or pen `pointerdown` asks for thumb mode. The touch itself acts in the current layout, and the switch waits for the finger to lift.
-- Two mouse clicks (or wheel use) or three game keys within 10 s, with no touch for 5 s, ask for desk mode. On a phone-tier window, keys alone only turn on the legends: a Bluetooth keyboard on a phone does not shrink the thumb banks.
-- A switch or a re-layout is applied at the next idle frame, only when nothing is busy: no pointer down, no hold timer, no open layer, drawer or --More--, no assignment in progress, **no text input focused**. After a switch, no switch back for 3 s.
+As built on 2026-10-07 (`input.js`, a module of its own; CHANGES, "Desktop mode is built", with Lucas's answers):
+- A touch or pen `pointerdown` asks for thumb mode. While the desk shows, that touch does nothing else: it is consumed (no desk key, no travel, no panel), and the thumb banks come at its lift, never held back by the 3 s rule (answer 3b; the design had the touch act in the current layout).
+- Two mouse clicks (or wheel use) within 10 s, with no touch for 5 s, ask for desk mode, not within 3 s of the last switch. Typed keys alone never move the board where touch is possible: three game keys in 10 s only turn on the key letters (answer 3a; the design had that for phone-tier windows only). Where no touch is possible the page starts at the desk, and three keys ask for it there.
+- A switch to the desk is applied only when nothing is busy: no pointer down, no open layer, drawer, --More--, menu or form, no assignment in progress, no question on the pad, no spot being picked, **no text input focused**. Armed Fight is kept across it.
 - Rebuilds keep armed state and open layers, because control ids are stable. `resetState()` runs only when a control disappears.
-- The mode is remembered per device. A setting overrides it: "Controls: automatic / thumb banks / docked / mouse and keyboard". "Docked" is the desk arrangement at touch size, for a tablet propped on a table.
+- The mode is remembered per browser (and per channel). A setting overrides it: "Controls: automatic / thumb banks / mouse and keyboard". "Docked", the desk arrangement at touch size, and "hide the dock" are postponed (answer 9).
+- The near-miss guard is for thumbs: the desk's dock has none, and on the thumb banks no part of it acts on a mouse's click.
 
 **The layout setting** (Lucas, 2026-10-02). MENU → Settings gains "Layout: twin banks / classic", prefs key `layout: 'twin' | 'classic'`, default `'twin'`. Classic is today's overlay, unchanged, and stays the fallback. Twin's own changes stay out of classic's way: the zoom factor (`zoomFactor`, §11), `viewport-fit=cover` and the `paranoid_confirmation` line (§16) apply only while the layout is twin.
 
@@ -706,7 +770,7 @@ What the page does with each `layout()` result, while the setting is twin:
 - **Usable and degraded** (`fit.degraded`; for instance 46 dp keys on a 336 dp short side, or 40 dp right columns): drawn as given. `layout()` guarantees that every key is on screen and on no other key or the map, that no band or panel covers a key, that the map shows at least 8×8 cells, and that the drawer fits. Only sizes fall under the rule's floors. The Layout setting shows the first reason in one line, never as a pop-up.
 - **Unusable** (`usable: false`, `fit.level: 'unusable'`), or no spec at all (something threw): the page shows classic for this window, without changing the setting. Twin comes back at the next re-layout whose result is usable. Today that happens on near-square windows: Lucas's phone in split screen (443x460), squares under about 650 dp, and windows under about 300 dp on a side. No real phone, foldable, split view or tablet in the verifiers' lists is unusable; the sweep's sections 7 and 10 count 2,715.
 
-**Desk keys.** Each key shows its keyboard key: the pad shows `y k u h . l b j n`, COMBAT `F`, SEARCH `s`, INVENTORY `i`, EAT `e`, APPLY `a`, DROP `d`, the equipment `W P w T R x`, LOOK `:`, MSGS `^P`. Rolehack's own features sit behind one prefix, **Ctrl+;**, the key right of L, matched by `KeyboardEvent.code` (`Semicolon`) whatever the layout prints on it. It is configurable.
+**Desk keys.** Each key shows its keyboard key: the pad shows `y k u h . l b j n`, COMBAT `F`, SEARCH `s`, INVENTORY `i`, EAT `e`, APPLY `a`, DROP `d`, the equipment `W P w T R x`, LOOK `:`, MSGS `^P`. Rolehack's own features sit behind one prefix, **Ctrl+;**, the key right of L, matched by `KeyboardEvent.code` (`Semicolon`) whatever the layout prints on it. It is configurable (Settings: Ctrl+; Ctrl+' Ctrl+\). As built, a key keeps its word and shows its keyboard key in the corner, the game's own where there is one (SACRIFICE `M-o`, REST `20.`, a pin its own key) and else the prefix and a letter, written `^;` as NetHack writes Ctrl (Lucas, 2026-10-07).
 - **Why not Ctrl+Space.** Ctrl+Space switches input sources on macOS and ChromeOS, and so do round 1's replacements: Control-Option-Space on macOS and Ctrl+Shift+Space on ChromeOS.
 - **Why Ctrl+;.** It is on none of the published ChromeOS, macOS or Windows shortcut lists we found. Japanese input methods use it only while composing in a text field, which the game page is not.
 - **The game never had it.** Ctrl+; makes no control character; `web.js` `keyCode()` passes it to the game as a plain `;` (farlook), and the prefix takes it before that.
@@ -717,13 +781,13 @@ What the page does with each `layout()` result, while the setting is twin:
 | `1` `2` `3` | M1 M2 M3 |
 | `4` `5` | PIN 1, PIN 2 |
 | `f`, `k`, `u` | FLICK tap, flick ↑, flick ↗ |
-| `m` `w` `g` | MENU, WORLD, GAME drawers |
-| `c` | CONTEXT (the HERE layer when several apply) |
+| `m` `o` `g` | MENU, WORLD, GAME drawers (WORLD was `w`: a browser tab cannot stop Ctrl+W, and the key after the prefix may come with Ctrl still held) |
+| `c` | CONTEXT (the HERE layer when several apply, or when none does) |
 | `z` | Long rest |
-| a hub's letter (`F i e a d`) | paints that hub's layer on the dock's pad; vi-keys pick a place, `.` opens ALL |
-| `n` | the count layer for the last counted key |
+| a hub's letter (`F i e a d`) | paints that hub's layer on the dock's pad; vi-keys, the arrows or Home, End, PageUp, PageDown pick a place, `.` opens ALL |
+| `x` | the count layer for the last counted key (was `n`: a tab cannot stop Ctrl+N either) |
 
-Holding Ctrl shows every legend. A "hide the dock" option gives keyboard-only players the whole row for panels.
+The key after the prefix is read as typed, so `f` and `F` differ; KEYS (the soft keyboard) has no letter. Holding Ctrl alone for 0.4 s shows every legend. "Hide the dock" is postponed (Lucas, 2026-10-07).
 
 Android (later): `Configuration.smallestScreenWidthDp` is not the view's size; the budget comes from `onSizeChanged` (Android, later).
 
@@ -773,7 +837,7 @@ Android (later): `Configuration.smallestScreenWidthDp` is not the view's size; t
 1. **Count-chip rows are gone.** Counts are a layer on the pad instead of a 236 dp row above the key. In a 3×6 bank, nothing above SEARCH or CONTEXT is free of keys. The layer is the owner's own "layers, not fans" grammar, covers nothing and sits 10–40 mm from the corner. The owner's rule is kept in spirit (counts open over no live key), not in letter.
 2. **Drawers keep their grid, not their screen place,** between orientations (§9).
 3. **On notched iPhones in a browser, the landscape banks sit 6.2–8.1 mm inward** (§13).
-4. **Switching between thumb and desk modes moves keys** (58 → 40 dp, corners → dock). It follows a sustained change of input device, not a rotation, and the arrangement is unchanged.
+4. **Switching between thumb and desk modes moves keys** (58 → 40 dp, corners → dock). It follows a sustained change of input device, not a rotation, and the arrangement is unchanged. Since 2026-10-07 also: a mouse window too short for the dock (about 440 to 490 dp tall, by its width) gets the thumb banks, and the dock again 24 dp taller (Lucas's answer 4).
 5. **On short sides the pad steps down** (58 → 52 → 46, under about 358 dp with 58 dp keys), so a 640x336 window that never shows portrait still gets 46 dp keys. The remembered budget keeps 58 where the portrait width allows it.
 6. **The right bank's columns pay for the 24 dp gap.** At 360 dp they are 44.7 dp wide at a 47.7 dp pitch (today 53.7); with 46 or 52 dp keys they narrow before the margins and pad gaps do, as asked. The cost is inside the action pad: COMBAT → CONTEXT 2.6% at 360 against today's 1.7%, even with the 8 dp seams. Its costly outcome, a change of level, now takes a second tap (§6, §8).
 7. **Android's Control scale setting no longer scales keys.** It scales text instead (Android, later).
