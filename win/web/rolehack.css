@@ -192,6 +192,12 @@ body { font-family: var(--capfont); color: #f1e8d5; -webkit-tap-highlight-color:
 .rhpanel[data-wide][data-more] .pbody { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
   mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); }
 .rhpanel .pnote { color: var(--phos-dim); white-space: normal; }
+/* the desk's key legend (web.js renderLegend): lit while the prefix waits for its key */
+.rhpanel:is([data-kind="legend"], [data-kind2="legend"]) .pcols { columns: 9em; column-gap: 12px; }
+.rhpanel:is([data-kind="legend"], [data-kind2="legend"]) .pi .let { min-width: 1.2em; color: var(--phos); }
+.rhpanel:is([data-kind="legend"], [data-kind2="legend"]) .pi > span:last-child { color: var(--phos-dim); }
+.rhpanel[data-armed] { box-shadow: 0 0 0 2px #110e0c, 0 0 0 3px rgba(255,190,80,.6); }
+.rhpanel[data-armed] .ptitle { color: #ffcf6a; }
 /* twin banks: choices that run past the map's bottom scroll, and only then
    take the touches between them (web.js sizeChips) */
 :root[data-ui="twin"] #chips.scroll { overflow-y: auto; pointer-events: auto; touch-action: pan-y; scrollbar-width: none;
@@ -242,6 +248,10 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
          max-width: 100%; }
 .k.nocase .lg { text-transform: none; }
 .k .rk { position: absolute; top: 2px; left: 3px; font-size: 8.5px; font-weight: 700; line-height: 1; color: var(--raw); }
+/* desktop mode: a key's keyboard key in its corner (overlay.js applyLegends),
+   no case taken from the key's word (^P, M-o, F); held Ctrl lights them all */
+.k .rk.leg { text-transform: none; letter-spacing: .02em; }
+:root[data-ctrl] .k .rk.leg { color: #ffcf6a; text-shadow: 0 0 4px rgba(255,190,80,.6); }
 .k .lamp { position: absolute; top: 4px; right: 4px; width: 10px; height: 4px; border-radius: 2px; background: #4a3413;
            box-shadow: inset 0 1px 1px rgba(0,0,0,.6); }
 .k .lamp.on { background: #ffb347; box-shadow: 0 0 6px #ffb347; }
@@ -311,6 +321,14 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
   border-radius: 12px; background: var(--acc); color: #111; font-size: 9.5px; font-weight: 700; letter-spacing: .12em;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #keys > .layerpill.on { display: flex; }
+/* desktop mode: a board that changed by itself names itself at the top of the
+   map, then fades (overlay.js switchNote; Lucas, 2026-10-08) */
+#keys > .switchnote { position: absolute; transform: translateX(-50%); pointer-events: none; z-index: 30;
+  padding: 5px 12px; border-radius: 14px; background: rgba(12,13,11,.9); border: 1px solid rgba(255,179,71,.55);
+  color: #e9e3d0; font-family: var(--msgfont); font-size: 14px; line-height: 1.2; white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,.5); transition: opacity .5s ease-out; }
+#keys > .switchnote b { color: #ffc166; font-weight: 700; }
+#keys > .switchnote.gone { opacity: 0; }
 /* the flick key: a rubber nub standing out of the case (RhFace.drawNub) */
 .k.nub .sk, .k.nub .fr, .k.nub .rk { display: none; }
 .k.nub .sh { border-radius: 50%; background: rgba(0,0,0,.85); box-shadow: none; }
@@ -517,6 +535,9 @@ input.line::-webkit-calendar-picker-indicator { opacity: .45; cursor: pointer; }
        box-shadow: inset 0 1px 0 rgba(255,255,255,.14), inset 0 -2px 0 rgba(0,0,0,.35), 0 0 0 1px rgba(0,0,0,.35),
                    0 8px 28px rgba(0,0,0,.6); }
 #kbd.on { display: block; }
+/* at the desk the dock is under the map, where the soft keyboard stands: it
+   comes up at the map's top instead */
+:root[data-tier="desk"] #kbd { top: 72px; bottom: auto; }
 #kbd .row { display: flex; gap: 4px; justify-content: center; margin-top: 4px; }
 #kbd .row:first-child { margin-top: 0; }
 #kbd .cap { flex: 1 1 0; min-width: 0; padding: 2px 2px 7px; text-transform: none; font-size: clamp(10px, 2.5vw, 15px);

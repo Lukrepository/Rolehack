@@ -94,15 +94,20 @@ export const LABEL = {
   eq_wield: 'Wield w', eq_puton: 'Put on P', eq_wear: 'Wear W',
   m3: 'M3 macro', m2: 'M2 macro', keys: 'KEYS (soft keyboard)',
 };
-// keyboard legends shown on every key in mouse mode (section 12)
+// keyboard legends shown on every key in mouse mode (section 12): what each key sends.
+// REST sends . with its count (20. rests; 20s would search), SACRIFICE M-o (its hold, Pray,
+// is M-p), the pad centre s (or , for an object).  KEYS, the soft keyboard, has no legend: a
+// desk player has a real keyboard, and k after the prefix is flick ↑ (Lucas, 2026-10-07).
 export const LEGEND = {
-  pad_y: 'y', pad_k: 'k', pad_u: 'u', pad_h: 'h', pad_centre: '.', pad_l: 'l', pad_b: 'b', pad_j: 'j', pad_n: 'n',
-  drop: 'd', msgs: '^P', pin1: '⌃;4', rest: '20s', m1: '⌃;1', world: '⌃;w', game: '⌃;g', menu: '⌃;m', sacrifice: '#offer',
-  apply: 'a', search: 's', inventory: 'i', eat: 'e', context: '⌃;c', combat: 'F', look: ':', flick: '⌃;f', pin2: '⌃;5',
-  eq_swap: 'x', eq_remove: 'R', eq_takeoff: 'T', eq_wield: 'w', eq_puton: 'P', eq_wear: 'W', m3: '⌃;3', m2: '⌃;2', keys: '⌃;k',
+  pad_y: 'y', pad_k: 'k', pad_u: 'u', pad_h: 'h', pad_centre: 's', pad_l: 'l', pad_b: 'b', pad_j: 'j', pad_n: 'n',
+  drop: 'd', msgs: '^P', pin1: '^;4', rest: '20.', m1: '^;1', world: '^;o', game: '^;g', menu: '^;m', sacrifice: 'M-o',
+  apply: 'a', search: 's', inventory: 'i', eat: 'e', context: '^;c', combat: 'F', look: ':', flick: '^;f', pin2: '^;5',
+  eq_swap: 'x', eq_remove: 'R', eq_takeoff: 'T', eq_wield: 'w', eq_puton: 'P', eq_wear: 'W', m3: '^;3', m2: '^;2',
 };
-// '⌃;' is the desk prefix, Ctrl and the key right of L (section 12): Ctrl+Space and the
-// chords tried after it are input-source switches on macOS and ChromeOS.
+// '^;' is the desk prefix, Ctrl and the key right of L (section 12), written with NetHack's ^
+// for Ctrl as MSGS's ^P is (Lucas, 2026-10-07): Ctrl+Space and the chords tried after it are
+// input-source switches on macOS and ChromeOS.  WORLD is ^;o, not ^;w: a browser tab cannot
+// stop Ctrl+W.
 const KIND = {
   drop: 'hub', apply: 'hub', inventory: 'hub', eat: 'hub', combat: 'hub', flick: 'flick',
   look: 'strip', context: 'strip', search: 'strip', msgs: 'chrome-key', menu: 'chrome-key', world: 'chrome-key',
@@ -152,6 +157,8 @@ export const DEFAULTS = {
   tabletWideCellMax: 48, // ...or here where 24 dp would leave strips wider than a panel beside the level: a monitor's window (section 8 below)
   deskCellMax: 32,     // desk: whole device pixels up to this (the cell's width, so text cells may stand taller)
   deskWideCellMax: 48, // desk, when 32 px strips beside the map would each be wider than a panel (21:9 and wider)
+  dpr: 1,              // device pixels per dp (the page's devicePixelRatio): the desk's cell is whole device pixels
+  prevDesk: null,      // the desk's arrangement last drawn (info.desk), for its band (section 10 below)
   msgRows: { landscape: 2, portrait: 3 },   // Lucas's settings (2026-09-28)
   shortScreenRows: 2,  // screens under 800 dp tall get at most this many message rows
   msgRowH: ROW_H,      // one message row, dp (textMetrics())
@@ -201,9 +208,10 @@ const PAD_FLOOR = 46, KR_MIN = TOUCH_MIN, KR_LAST = 40;
 //    window's, settings.prevCellTier for the device cell's (section 8 below), which the page
 //    keeps (viewer.js, its size classes), so a window on a boundary keeps its tier until it is
 //    24 dp past it.
-//    Desktop mode is deferred (Lucas, 2026-10-03): the page lays out every window as for
-//    touch, whatever the pointer, so a mouse or keyboard player keeps the phone or tablet
-//    tier the window's size gives.  'desk' and section 10 stay here, unused by the page.
+//    Desktop mode is being built (Lucas, 2026-10-06 and 2026-10-07; it was deferred on
+//    3 October): the page asks for the desk, pointer 'mouse', when its input switch says a
+//    mouse or touchpad is in use (section 12), and for 'touch' otherwise, where a monitor's
+//    window keeps the tablet tier its size gives.
 // ---------------------------------------------------------------------------------------
 export function tierOf(W, H, pointer, prev = null) {
   if (pointer === 'mouse') return 'desk';
@@ -652,11 +660,12 @@ const glassOf = (g, portrait) => (g && typeof g === 'object' && typeof g.kind ==
 //    - tablets: the cell that shows the whole level when that is 12 dp or more (cap 24),
 //      else the phone rule.  No tablet is wide enough to reach the cap -- 1920x1080 shows
 //      the level at 23.5 dp -- so it binds only on a monitor, which the design gave the
-//      desk.  Desktop mode is deferred (Lucas, 2026-10-03) and a monitor's window is a
-//      tablet; there, where 24 dp would leave strips wider than a panel beside the level
-//      (WIDE_STRIP), the cap rises towards tabletWideCellMax, the desk's widest (section 10
-//      below), rather than leave the window black: a 2560x1440 window showed the level at
-//      24 dp in a glass half void (52%), 3440x1440 62%; now 31.5 and 42.5 dp, 5% and 8%.
+//      desk.  A monitor's window laid out for touch is a tablet (it was every monitor's
+//      window while desktop mode was deferred, Lucas, 2026-10-03); there, where 24 dp would
+//      leave strips wider than a panel beside the level (WIDE_STRIP), the cap rises towards
+//      tabletWideCellMax, the desk's widest (section 10 below), rather than leave the window
+//      black: a 2560x1440 window showed the level at 24 dp in a glass half void (52%),
+//      3440x1440 62%; now 31.5 and 42.5 dp, 5% and 8%.
 //      It rises over WIDE_RAMP dp of width, not at once (tabletCap): a first cut switched
 //      to 48 dp at the strips' width, and a monitor's window dragged across 2408 dp wide
 //      swapped a 24 dp level for a 30 dp one, and moved the log, at every pixel either side
@@ -731,6 +740,11 @@ export function layout(W, H, pointer = 'touch', settings = {}) {
       const plain = layoutCore(W, H, pointer, { ...st, prevGlass: null, prevCellGlass: null });
       if (plain.usable) return plain;
     }
+    // Nor does the desk's band (section 10 below) cost a window its desk.
+    if (!r.usable && pointer === 'mouse' && st.prevDesk) {
+      const plain = layoutCore(W, H, pointer, { ...st, prevDesk: null });
+      if (plain.usable) return plain;
+    }
     return r;
   } catch (e) {
     return { spec: null, usable: false, info: null, degraded: true, reason: `layout() failed: ${e && e.message}` };
@@ -798,6 +812,7 @@ function settled(W, H, settings) {
   st.msgRowH = pos(st.msgRowH, ROW_H);
   st.statusH = Math.max(0, num(st.statusH, STATUS_H));
   st.cellAspect = pos(st.cellAspect, 1);
+  st.dpr = clamp(pos(st.dpr, 1), 0.5, 8);
   for (const k of ['cellColumns', 'fitFloor', 'cellMax', 'tabletCellMax', 'tabletWideCellMax', 'deskCellMax', 'deskWideCellMax', 'halo', 'ring', 'statusW', 'shortScreenRows']) st[k] = pos(st[k], DEFAULTS[k]);
   st.msgRows = { landscape: Math.max(1, Math.round(num(st.msgRows.landscape, 2))), portrait: Math.max(1, Math.round(num(st.msgRows.portrait, 3))) };
   st.header = st.header === 'stacked' ? 'stacked' : 'auto';
@@ -1078,19 +1093,88 @@ function popupsFor(P, fill, st) {
 //     Panels fill the row beside and under the dock.  The cell is capped by its width, so
 //     Android's text cells stand taller than tiles; on 21:9 and wider the cap rises to 48 px
 //     rather than leave strips wider than a panel beside the map.
-//     Deferred (Lucas, 2026-10-03): the page never asks for it (it lays out as for touch,
-//     section 3 above); kept, and still tested, for when desktop mode is built.
+//     Desktop mode is being built (Lucas, 2026-10-06 and 2026-10-07; it was deferred from
+//     3 October until then): the page asks for the desk when its input switch says a mouse
+//     or a touchpad is in use (section 12).  Three things changed for the desk alone, and
+//     every result for 'touch' or 'pen' is as it was (checks/same.mjs holds it so):
+//     - the cell is whole device pixels (settings.dpr, the page's devicePixelRatio, sections
+//       4 and 11): the largest whole device-pixel cell that fits, which the page draws as it
+//       is (web.js drawnCell, floor(T x dpr) / dpr).  In whole dp, 1280x800 at dpr 1.25
+//       drew 18 device px where 19 fit.  Under the whole level it is the smallest whole
+//       device-pixel cell at or over fitFloor (12 dp at dpr 1, 1.25, 1.5 and 2);
+//     - a map that pans is never wider than the level (round 2, item 8, as on touch):
+//       1280x585 drew a 1264 dp map round a 960 dp level.  It stays centred, so on a short,
+//       wide window the log and the inventory may stand beside it;
+//     - the arrangement keeps a band (below).
 // ---------------------------------------------------------------------------------------
-function deskLayout(W, H, M0, st, table, reasons) {
-  const a = st.cellAspect;
+
+// The desk's band.  The desk's arrangement -- the cell, the header side by side or stacked,
+// the log and the inventory beside the map or in the dock row (and in the row each shown or
+// not), the key legend in the dock row, under the dock or nowhere -- changed at single
+// pixels: the header at 826 dp wide, the panels where the strips beside the map reach 160 dp,
+// the legend where 60 dp are left under the dock, the cell at every step, so a window sitting
+// on one flipped at every pixel either side.  So it keeps a band of GLASS_BAND dp, as the
+// glass does on touch (section 7; Lucas, 2026-10-04).  The page keeps the arrangement it last
+// drew (info.desk, given back as settings.prevDesk), and each part of it stays while it still
+// fits this window and the rule's own pick at one of the eight windows GLASS_BAND dp away
+// chose it, those windows asked with the parts decided before it held at this window's
+// (DESK_HELD, where they fit there); otherwise the rule's own pick, given those parts, is
+// taken.  The cell is kept while it lies between their cells, and else goes to the nearest
+// of them.  Its steps along the height are 21 / dpr dp apart, closer than the band, so a
+// window grown taller meets every cell, each GLASS_BAND dp late; taking the rule's own cell
+// instead skipped a step or two (12 -> 14 -> 16 dp at 1450 wide) and landed 3 dp past where
+// the new cell fits, so a hand that overshot and came back 4 dp changed it again, and the
+// panels with it (1760 wide).  While the cell is on its way to the rule's own, a later part
+// that is already what the rule's own arrangement here has also stays: with text cells at
+// 1040 wide the legend has room in the dock row at the 15 dp cell only, and it came and went
+// within that cell's 21 dp.  So a part changes GLASS_BAND dp late on the way up, and on the
+// way down where it stops fitting.  A window that also sits within GLASS_BAND dp of the same
+// part's step on its other side keeps it while it is dragged along, as the glass does: at
+// 1295x720 shrinking, the legend's 'under' waits for the 14 dp cell, because 24 dp shorter
+// the 15 dp cell leaves it no room.  Before the windows around were asked with the cell held,
+// the panels' band ran 104 to 184 dp wide (1952x780: beside the map at 2136; review of
+// 2026-10-07).  The parts are decided in order -- header, cell, panels, legend -- and every
+// one is placed by the rule's own geometry, so no key goes anywhere the rule would not put
+// one, and a kept arrangement that leaves the desk unusable yields to the rule (layout(),
+// section 9).  A prevDesk made at another dpr, cell aspect or key size is ignored, and a first layout keeps
+// nothing.
+//
+// info.desk, which the page keeps and passes back as settings.prevDesk:
+//   { dpr, a, k,        the settings it was made at: dpr, cellAspect, deskKey
+//     Td, T,            the cell in whole device pixels, and in dp (Td / dpr)
+//     sideBySide,       the header's messages and status side by side (else stacked)
+//     beside,           the log and the inventory beside the map (else in the dock row,
+//                       between the banks, which stand at its edges)
+//     log, inv,         each shown in the dock row (both true when beside)
+//     legend,           the key legend: 'row' (the dock row's middle; beside only), 'under'
+//                       (under the left bank) or 'none'
+//     whole }           the whole level shows (derived from the rest; never kept)
+const DESK_LEGENDS = ['row', 'under', 'none'];
+// the parts each part's band holds at the windows around: those deskPlan decides before it
+// and that its fit depends on (the log, the inventory and the legend do not depend on each other)
+const DESK_HELD = { sideBySide: [], Td: ['sideBySide'], beside: ['sideBySide', 'Td'], log: ['sideBySide', 'Td', 'beside'], inv: ['sideBySide', 'Td', 'beside'], legend: ['sideBySide', 'Td', 'beside'] };
+function deskOf(d, st) {
+  if (!d || typeof d !== 'object' || d.dpr !== st.dpr || d.a !== st.cellAspect || d.k !== st.deskKey) return null;
+  const b = (v) => (typeof v === 'boolean' ? v : undefined);
+  return { Td: Number.isInteger(d.Td) && d.Td > 0 ? d.Td : undefined, sideBySide: b(d.sideBySide), beside: b(d.beside), log: b(d.log), inv: b(d.inv), legend: DESK_LEGENDS.includes(d.legend) ? d.legend : undefined };
+}
+
+// The desk's arrangement and geometry at one window.  choose(part, own, fits) returns the
+// part to use: the rule's own pick by default, or what the band keeps.
+function deskPlan(W, H, M0, st, choose = (part, own) => own) {
+  const a = st.cellAspect, dpr = st.dpr;
   const top = 4;
   const rows = st.msgRows.landscape;
-  const hd = header(4, top, Math.max(1, W - 8), rows, st);
+  const reasons = [];
+  const canSide = W - 8 >= HEADER_SIDE && st.header !== 'stacked';
+  const sideBySide = choose('sideBySide', canSide, (v) => !v || canSide);
+  const hd = header(4, top, Math.max(1, W - 8), rows, sideBySide ? st : { ...st, header: 'stacked' });
   const mapTop = top + hd.h + 4;
   let M = M0, degraded = false;
   // a window too small for the dock: the dock scales (degraded) rather than leave the screen
+  // (the banks at its edges, M.m in, and M.c at least between them)
   {
-    const dockW = 2 * bankWidth(M, M.k) + M.c, f = Math.min(1, (W - 8) / dockW, Math.max(0.3, (H - mapTop - 12 - 12 - 4 - 60) / M.B));
+    const need = 2 * bankWidth(M, M.k) + 2 * M.m + M.c, f = Math.min(1, W / need, Math.max(0.3, (H - mapTop - 12 - 12 - 4 - 60) / M.B));
     if (f < 1) {
       M = { ...M }; for (const key of ['k', 'kR', 'm', 'mb', 'g', 'c', 'u', 'gr', 's']) M[key] *= f; M.B = bankHeight(M);
       degraded = true; reasons.push(`the window is too small for the ${st.deskKey} dp dock; it is scaled to ${r2(f * 100)}%`);
@@ -1103,21 +1187,101 @@ function deskLayout(W, H, M0, st, table, reasons) {
   // level, tiles may grow to 48 px (text cells keep their cap).
   let cap = st.deskCellMax / Math.min(1, a);
   if ((W - 16 - 80 * a * cap) / 2 >= 240) cap = Math.max(cap, st.deskWideCellMax);
-  let T = Math.min(Math.floor((W - 16) / (80 * a)), Math.floor(availH / 21), Math.floor(cap));
-  const whole = T >= st.fitFloor;
-  if (!whole) T = st.fitFloor;
-  const mw = whole ? 80 * a * T : Math.max(0, W - 16), mh = Math.min(21 * T, availH);
+  // the cell in whole device pixels (the 1e-6: a quotient a rounding error short of whole)
+  const fitD = Math.min(Math.floor((W - 16) * dpr / (80 * a) + 1e-6), Math.floor(availH * dpr / 21 + 1e-6));
+  const raw = Math.min(fitD, Math.floor(cap * dpr + 1e-6));
+  const floorD = Math.ceil(st.fitFloor * dpr - 1e-6);
+  const ownWhole = raw / dpr >= st.fitFloor - 1e-9;
+  const ownD = ownWhole ? raw : floorD;
+  const Td = choose('Td', ownD, (d) => d === floorD || (d > floorD && d <= fitD));
+  const whole = Td === ownD ? ownWhole : Td <= fitD;
+  const T = Td / dpr;
+  // never wider than the level's 80 columns (round 2, item 8), as on touch (fillGlass)
+  const mw = Math.max(0, Math.min(W - 16, 80 * a * T)), mh = Math.min(21 * T, availH);
   if (mh < 60) { degraded = true; reasons.push('the map is under 60 dp tall'); }
   const map = { x: (W - mw) / 2, y: mapTop, w: mw, h: mh };
-  const dx0 = Math.round((W - dockW) / 2), dy0 = map.y + mh + 12;
+  // The banks stand at the dock row's outer edges, M.m in from the screen's sides, and the
+  // log and the inventory between them (Lucas, 2026-10-08: on a touchscreen laptop the edges
+  // are where hands reach; "messages and inventory between them, yes ... edges always").
+  // The middle starts past the left bank's well (6 dp) and a 12 dp gap.
+  const bw = bankWidth(M, M.k), xL = M.m, xR = W - M.m - bw;
+  const dy0 = map.y + mh + 12;
+  const rowY = dy0, rowH = Math.max(0, H - 4 - rowY);
+  const mx0 = xL + bw + 6 + 12, midW = Math.max(0, xR - 6 - 12 - mx0);
+  // under the left bank: from the screen's margin to the middle's gap
+  const underW = mx0 - 12 - 4, underH = rowH - dockH - 12;
+  const underFits = underH >= 60 && underW >= 100;
+  const side = map.x - 12 - 4;
+  // beside the map, the panels stop over the banks' wells
+  const besideH = mh - 6;
+  const besideFits = side >= 160 && besideH >= 60;
+  const beside = choose('beside', besideFits, (v) => !v || besideFits);
+  let log = true, inv = true, legend;
+  if (beside) {
+    const rowFits = midW >= 160 && rowH >= 60;
+    legend = choose('legend', rowFits ? 'row' : underFits ? 'under' : 'none', (v) => v === 'none' || (v === 'row' ? rowFits : underFits));
+  } else {
+    // the log alone wants 160 dp of the middle; with the inventory, 160 dp each
+    const logFits = midW >= 160 && rowH >= 60, invFits = midW >= 2 * 160 + 12 && rowH >= 60;
+    log = choose('log', logFits, (v) => !v || logFits);
+    inv = choose('inv', invFits, (v) => !v || invFits);
+    legend = choose('legend', underFits ? 'under' : 'none', (v) => v === 'none' || (v === 'under' && underFits));
+  }
+  return {
+    desk: { dpr, a, k: st.deskKey, Td, T, sideBySide, beside, log, inv, legend, whole },
+    hd, M, degraded, reasons, rows, mapTop, dockW, dockH, T, Td, whole, map, mw, mh, bw, xL, xR, dy0, rowY, rowH, side, besideH, mx0, midW, underW, underH,
+  };
+}
+
+function deskLayout(W, H, M0, st, table, reasons) {
+  const a = st.cellAspect;
+  // the band: the rule's own arrangement at the eight windows GLASS_BAND dp away, made only
+  // when a part of the last one differs from the rule's own pick here, once for each set of
+  // parts held
+  const prev = deskOf(st.prevDesk, st);
+  // The windows around are asked with the parts already decided here held (DESK_HELD), where
+  // they fit there: asked on their own, a window 24 dp taller picks a bigger cell, its map is
+  // 80 dp wider, and it kept the panels in the dock row 104 to 184 dp past their step, not 24.
+  // A window with no room for the cell held takes its own (a smaller one), or a legend with
+  // room at one cell only came and went on the way down (text cells, 1040 wide, dpr 1.25:
+  // the 18 device px cell, 659 to 643 tall).
+  const here = {}, near = new Map();
+  let plain = null;                // the rule's own arrangement here, when it is asked for
+  const around = (part) => {
+    const held = {};
+    for (const p of DESK_HELD[part]) held[p] = here[p];
+    const key = JSON.stringify(held);
+    if (!near.has(key)) near.set(key, NEAR.map(([dx, dy]) => deskPlan(Math.max(1, W + dx * GLASS_BAND), Math.max(1, H + dy * GLASS_BAND), M0, st, (p, own, fits) => (p in held && fits(held[p]) ? held[p] : own)).desk));
+    return near.get(key);
+  };
+  const keep = (part, own, fits) => {
+    const v = prev[part];
+    let out = own;
+    if (v !== undefined && v !== own && fits(v)) {
+      if (part === 'Td') {
+        // the kept cell, else the nearest of the cells around (never past the rule's own)
+        const ds = around(part).map((d) => d.Td);
+        const c = clamp(v, Math.min(...ds), Math.max(...ds));
+        if (c >= Math.min(v, own) && c <= Math.max(v, own) && fits(c)) out = c;
+      } else if (around(part).some((d) => d[part] === v)) out = v;
+      // while the cell is on its way to the rule's own, a part that is already what the
+      // rule's own arrangement here has stays so, rather than change and change back
+      else if (here.Td !== undefined && here.Td !== (plain || (plain = deskPlan(W, H, M0, st).desk)).Td && plain[part] === v) out = v;
+    }
+    here[part] = out;
+    return out;
+  };
+  const D = prev ? deskPlan(W, H, M0, st, keep) : deskPlan(W, H, M0, st);
+  reasons.push(...D.reasons);
+  const { hd, M, map, mw, mh, bw, xL, xR, dy0, dockH, rowY, rowH, T, Td, whole, rows, mapTop } = D;
+  const degraded = D.degraded;
   const spans = rowSpans(M);
   const controls = [];
   const banks = {};
   const mirror = st.hand === 'left';
   for (const corner of ['L', 'R']) {
     const content = mirror ? (corner === 'L' ? 'R' : 'L') : corner;
-    const bw = bankWidth(M, M.k);
-    const x0 = corner === 'L' ? dx0 : dx0 + bw + M.c;
+    const x0 = corner === 'L' ? xL : xR;
     banks[corner] = { x0, x1: x0 + bw, y0: dy0, y1: dy0 + dockH, bw, bh: dockH, content };
     table[content].forEach((row, r) => row.forEach((id, c) => {
       const cc = id.startsWith('pad_') && corner === 'R' ? 2 - c : c;
@@ -1125,45 +1289,46 @@ function deskLayout(W, H, M0, st, table, reasons) {
       const x = corner === 'L' ? x0 + inDp : x0 + bw - inDp - M.k;
       const h = spans[r].h;
       const y = dy0 + dockH - spans[r].up0 - h;
-      controls.push({ id, label: `${LABEL[id]} [${LEGEND[id]}]`, x: r2(x), y: r2(y), w: r2(M.k), h: r2(h), thumb: corner, kind: id.startsWith('pad_') ? 'pad' : KIND[id] || 'key' });
+      controls.push({ id, label: LEGEND[id] ? `${LABEL[id]} [${LEGEND[id]}]` : LABEL[id], x: r2(x), y: r2(y), w: r2(M.k), h: r2(h), thumb: corner, kind: id.startsWith('pad_') ? 'pad' : KIND[id] || 'key' });
     }));
   }
   const rest = controls.find((c) => c.id === 'rest');
-  controls.push({ ...rest, id: 'longrest', label: 'LONG REST [⌃;z]', behind: 'rest' });
-  const rowY = dy0, rowH = Math.max(0, H - 4 - rowY);
+  controls.push({ ...rest, id: 'longrest', label: 'LONG REST [^;z]', behind: 'rest' });
   const panels = [];
   const LOG = 'panel: message log (history, newest last)', INV = 'panel: inventory (a copy of the INVENTORY list; the key stays in the dock)';
   const LEG = 'panel: key legend (the Ctrl+; prefix routes to layers, drawers, macros, flicks)';
-  const under = rowH - dockH - 12;
-  const side = map.x - 12 - 4;
-  if (side >= 160 && H - 4 - mapTop >= 60) {
-    // A level narrower than the screen (text cells on 16:9, any cell on 32:9): the log and the
-    // inventory stand beside the map, from its top to the bottom of the screen, and the key
-    // legend takes the dock row's left or the space under the dock.
-    panels.push({ name: LOG, x: 4, y: mapTop, w: side, h: H - 4 - mapTop });
-    panels.push({ name: INV, x: map.x + mw + 12, y: mapTop, w: side, h: H - 4 - mapTop });
-    const innerW = dx0 - 12 - map.x;
-    if (innerW >= 160 && rowH >= 60) panels.push({ name: LEG, x: map.x, y: rowY, w: innerW, h: rowH });
-    else if (under >= 60) panels.push({ name: LEG, x: dx0, y: dy0 + dockH + 12, w: dockW, h: under });
+  const { legend } = D.desk;
+  const under = { name: LEG, x: 4, y: dy0 + dockH + 12, w: D.underW, h: D.underH };
+  if (D.desk.beside) {
+    // A level narrower than the screen (text cells on 16:9, any cell on 32:9, a short wide
+    // window): the log and the inventory stand beside the map, from its top to the banks'
+    // wells under it, and the key legend takes the dock row's middle or the space under the
+    // left bank.
+    panels.push({ name: LOG, x: 4, y: mapTop, w: D.side, h: D.besideH });
+    panels.push({ name: INV, x: map.x + mw + 12, y: mapTop, w: D.side, h: D.besideH });
+    if (legend === 'row') panels.push({ name: LEG, x: D.mx0, y: rowY, w: D.midW, h: rowH });
+    else if (legend === 'under') panels.push(under);
   } else {
-    const lw = dx0 - 12 - 4, rx = dx0 + dockW + 12, rw = W - 4 - rx;
-    if (lw >= 160 && rowH >= 60) panels.push({ name: LOG, x: 4, y: rowY, w: lw, h: rowH });
-    if (rw >= 160 && rowH >= 60) panels.push({ name: INV, x: rx, y: rowY, w: rw, h: rowH });
-    if (under >= 60) panels.push({ name: LEG, x: dx0, y: dy0 + dockH + 12, w: dockW, h: under });
+    // the log and the inventory share the middle, the log alone when only it fits
+    const shown = [D.desk.log && LOG, D.desk.inv && INV].filter(Boolean);
+    const pw = shown.length ? (D.midW - 12 * (shown.length - 1)) / shown.length : 0;
+    shown.forEach((name, n) => panels.push({ name, x: D.mx0 + n * (pw + 12), y: rowY, w: pw, h: rowH }));
+    if (legend === 'under') panels.push(under);
   }
   const fill = { map, bands: hd.bands, panels, glass: bbox([...hd.bands, map], 2), whole, cols: Math.min(80, mw / (a * T)), rows: Math.min(21, mh / T), rows_msg: rows };
   const P = { banks, controls, bankTop: dy0 };
   const popups = popupsFor(P, fill, st);
-  const decor = [{ name: 'dock well', ...rnd({ x: dx0 - 6, y: dy0 - 6, w: dockW + 12, h: dockH + 12 }) }];
+  // a well round each bank, as twin banks has
+  const decor = ['L', 'R'].map((c) => ({ name: `dock well ${c === 'L' ? 'left' : 'right'}`, ...rnd({ x: banks[c].x0 - 6, y: dy0 - 6, w: bw + 12, h: dockH + 12 }) }));
   const fit = { level: degraded ? 'degraded' : 'full', pad: r2(M.k), padSetting: st.deskKey, rightColumns: r2(M.k), degraded, reasons };
   const spec = {
     W, H, pointer: 'mouse',
-    source: `v2 layout(): tier desk, dock ${r2(dockW)}x${r2(dockH)} centred under the map, keys ${r2(M.k)} dp with keyboard legends, map cell ${T} dp (${whole ? 'whole level' : 'pans'}; ${r2(fill.cols)}x${r2(fill.rows)} cells)`,
+    source: `v2 layout(): tier desk, banks ${r2(bw)}x${r2(dockH)} at the dock row's edges, keys ${r2(M.k)} dp with keyboard legends, map cell ${r2(T)} dp${st.dpr !== 1 ? ` (${Td} device px at dpr ${st.dpr})` : ''} (${whole ? 'whole level' : 'pans'}; ${r2(fill.cols)}x${r2(fill.rows)} cells)`,
     controls, glass: rnd(fill.glass), mapArea: rnd(map),
     bands: hd.bands.map((b) => ({ name: b.name, ...rnd(b) })),
     popups, chrome: panels.map((p) => ({ name: p.name, ...rnd(p) })), decor, fit,
   };
-  return { spec, degraded, reason: reasons.length ? reasons.join('; ') : null, info: { tier: 'desk', S: Math.min(W, H), L: Math.max(W, H), portrait: H > W, M, banks, G: { kind: 'dock', over: false, hd }, fill, T, DC: { T }, bankTop: dy0, rows, fit } };
+  return { spec, degraded, reason: reasons.length ? reasons.join('; ') : null, info: { tier: 'desk', S: Math.min(W, H), L: Math.max(W, H), portrait: H > W, M, banks, G: { kind: 'dock', over: false, hd }, fill, T, DC: { T }, bankTop: dy0, rows, fit, desk: D.desk } };
 }
 
 function r2(v) { return Math.round(v * 100) / 100; }

@@ -65,7 +65,6 @@ Your clone may still be at `ec134a7` (the last commit before the redesign) or ol
    - the Layout Parity canvas;
    - the release-plan doc;
    - the Android repositories (RolehackDroid and RolehackFront);
-   - desktop mode, which already has a ready-to-start task card, "Build desktop mode for the Rolehack web port", with the full desk spec. Building it here as well would do the work twice.
 
 ## 4. What is there
 
@@ -93,7 +92,7 @@ They are recorded in `doc/twin-banks/README.md` ("Decisions") and in `DESIGN.md`
 - **The map** drags freely, and locks and centres only at rest (his rule of 27 September).
 - **Pray** is a hold of SACRIFICE (his choice of 23 September: tap to sacrifice, hold to pray), at the code's existing 380 ms hold, not the 800 ms the design proposed.
 - **"Layout: twin banks / classic"** in Settings: twin by default, classic unchanged.
-- **Desktop mode is deferred** (3 October). A mouse window gets the touch layout its size gives. He wants it built later: the dock, key legends, the Ctrl+; prefix, and switching by input. The desk stays in `layout.js`, switched off.
+- **Desktop mode was deferred** (3 October) and **is built since 7 October** (`room/desktop-mode`; DESIGN's CHANGES, "Desktop mode is built", holds his answers): the dock under the map with the mouse or the keyboard in use, key letters, the Ctrl+; prefix, and switching by the input in use (`win/web/input.js`).
 - **3440×1440 stays as it is** (4 October): the map spans the window, and the panels sit under it.
 - **The glass gets a 24 dp band** (4 October), so the map doesn't jump when a window sits at a step.
 
@@ -175,7 +174,6 @@ It works only on a temporary folder beside the clone, `rh-pages`, built from `or
   - Lucas is still answering its "This week" list: the ForkFront authors' reply, which keys his backup holds, three decisions (D1 the permanent address, D6 the fork network, D26 which game code the web uses), and turning on Actions for RolehackDroid.
   - Its "Claude" tasks are not yet assigned to a workspace. Ask Lucas which are yours.
 - **Not built yet** (`BUILD.md`, "Deviations" 1 and 10 to 16):
-  - desktop mode (see its task card, section 3);
   - edge tells;
   - Settings rows for the grip lift, the anchor, left-handed play and COMBAT on the other thumb, which the rule already supports;
   - the sharp tile filter;

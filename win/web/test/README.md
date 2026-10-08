@@ -47,8 +47,8 @@ and it imports every `*.test.mjs` here. Naming the files also works:
   messages over the status, no band stands beside another or over the banks,
   and a window whose header is stacked in the glass anyway lays out as it does
   by default;
-- a monitor's window, which the page lays out as a tablet while desktop mode
-  is deferred, shows the whole level with its panels clear of every key and of
+- a monitor's window, laid out as a tablet while it is touched (and with a
+  mouse too while desktop mode was deferred, 3 to 7 October 2026), shows the whole level with its panels clear of every key and of
   the map. Where a 24 dp cell would leave strips wider than a panel beside the
   level, the cell grows up to 48 dp (2560x1440: 31.5 dp, 3440x1440: 42.5 dp).
   Where the level is still narrower than the column between the banks by a
@@ -62,6 +62,17 @@ and it imports every `*.test.mjs` here. Naming the files also works:
   time wider or taller, a window's cell never moves by more than half a dp
   (the first cut jumped from 24 to 30 dp between 2406 and 2408 dp wide);
 - `layout.js` stays a plain module, with no imports, no DOM and nothing from node.
+
+`desk.test.mjs` checks the desk, the layout for a mouse and a keyboard (desktop
+mode, Lucas, 2026-10-06 and 2026-10-07): its cell is the largest whole
+device-pixel cell that fits (`dpr`), which the page draws exactly, and at dpr 1
+the cell it always was; a map that pans is never wider than the level and
+stays centred; dragged a pixel at a time with the arrangement it last drew
+(`prevDesk`), a cell step, the header at 826 dp and the panels' flip each come
+24 dp late on the way up and where the old one stops fitting on the way down,
+a window dragged taller meets every cell, each 24 dp late, and nothing flips
+back within 24 dp; nonsense `dpr` and `prevDesk` never throw;
+and a touch or pen layout is the same with or without them.
 
 `viewer.test.mjs` checks the remembered budget (`viewer.js`) with the rule
 itself, as the page uses them:
@@ -84,9 +95,34 @@ itself, as the page uses them:
   level and the panels once each way, at the band's edges, and jittered about a
   boundary it never changes. No key moves for a tier. A fallback to classic
   keeps the tiers last drawn;
-- a large window laid out as the page lays it out (as for touch: desktop mode
-  is deferred) is a tablet, with phone-size keys, the whole level, the log and
+- a large window laid out as for touch (touched, or with Controls set to
+  thumb banks) is a tablet, with phone-size keys, the whole level, the log and
   the inventory, never the desk.
+
+`input.test.mjs` checks the input switch (`../input.js`, desktop mode, Lucas's
+answers of 2026-10-07), which picks the thumb banks or the desk from the input
+in use:
+
+- a page starts in the mode this browser remembers, else the thumb banks where
+  touch is possible, else the desk; the Controls setting overrides it;
+- a touch or a pen asks for the thumb banks at once, and is consumed while the
+  desk shows (never on the thumb banks a mouse window fell back to); the 3 s
+  lockout never holds a touch back;
+- two mouse presses or the wheel, within 10 s and with no touch for 5 s, ask
+  for the desk, not within 3 s of a switch;
+- where touch is possible, typed keys only turn on the key letters; where it
+  is not, three in 10 s ask for the desk;
+- the keys the game is sent: as before, with a Mac's Cmd left to the browser,
+  its Option typing the M- command by the key's place (a German Mac's Option+5
+  still types `[`), and AltGr characters typed as themselves;
+- the Ctrl+; prefix by the key's place, never with Alt, AltGr or Cmd; the key
+  after it read as typed (`f` and `F` differ), with no `w` or `n` (a tab
+  cannot stop Ctrl+W or Ctrl+N);
+- it never throws, and stays a plain module with no DOM and no clock.
+
+`report.test.mjs` also holds the device report's input field: the board in use,
+whether the Controls setting fixed it, the key letters, and why a mouse window
+shows the thumb banks.
 
 ## Where the fixtures come from
 
@@ -102,6 +138,13 @@ Each one was written by the design folder's `layout-cli.mjs`. It runs the
 design's `layout.js`, which is `win/web/layout.js` with a different header
 comment. The `*.report.json` files next to them are the harness's scores, not
 layout results, so they are not copied.
+
+**One exception, at Lucas's word (2026-10-08).** The desk's screens (1280x800,
+1920x1080 and 2560x1440 in each file, and `edge.json`'s "700x450 mouse") were
+rewritten from `win/web/layout.js` when the desk's banks moved to the dock
+row's outer edges. `layout-cli.mjs` is not in the repo. Every touch screen and
+every other field stayed byte for byte as the design wrote it (DESIGN.md's
+CHANGES, "Lucas's first test on his laptop").
 
 `edge.json` is not in the design folder. `edge-cli.mjs`, here, writes it from
 the design's `layout.js` for the windows in its `EDGE` table: the Z Fold's

@@ -6835,12 +6835,12 @@
     "W": 700,
     "H": 450,
     "pointer": "mouse",
-    "source": "v2 layout(): tier desk, dock 243.99x206.72 centred under the map, keys 33.89 dp with keyboard legends, map cell 12 dp (pans; 57x5 cells)",
+    "source": "v2 layout(): tier desk, banks 111.83x206.72 at the dock row's edges, keys 33.89 dp with keyboard legends, map cell 12 dp (pans; 57x5 cells)",
     "controls": [
      {
       "id": "pad_b",
       "label": "↙ b [b]",
-      "x": 228,
+      "x": 10.17,
       "y": 400.11,
       "w": 33.89,
       "h": 33.89,
@@ -6850,7 +6850,7 @@
      {
       "id": "pad_j",
       "label": "↓ j [j]",
-      "x": 266.97,
+      "x": 49.14,
       "y": 400.11,
       "w": 33.89,
       "h": 33.89,
@@ -6860,7 +6860,7 @@
      {
       "id": "pad_n",
       "label": "↘ n [n]",
-      "x": 305.94,
+      "x": 88.11,
       "y": 400.11,
       "w": 33.89,
       "h": 33.89,
@@ -6870,7 +6870,7 @@
      {
       "id": "pad_h",
       "label": "← h [h]",
-      "x": 228,
+      "x": 10.17,
       "y": 361.14,
       "w": 33.89,
       "h": 33.89,
@@ -6879,8 +6879,8 @@
      },
      {
       "id": "pad_centre",
-      "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer) [.]",
-      "x": 266.97,
+      "label": "centre: REST 1 / PICK UP (hold and slide: the HERE layer) [s]",
+      "x": 49.14,
       "y": 361.14,
       "w": 33.89,
       "h": 33.89,
@@ -6890,7 +6890,7 @@
      {
       "id": "pad_l",
       "label": "→ l [l]",
-      "x": 305.94,
+      "x": 88.11,
       "y": 361.14,
       "w": 33.89,
       "h": 33.89,
@@ -6900,7 +6900,7 @@
      {
       "id": "pad_y",
       "label": "↖ y [y]",
-      "x": 228,
+      "x": 10.17,
       "y": 322.17,
       "w": 33.89,
       "h": 33.89,
@@ -6910,7 +6910,7 @@
      {
       "id": "pad_k",
       "label": "↑ k [k]",
-      "x": 266.97,
+      "x": 49.14,
       "y": 322.17,
       "w": 33.89,
       "h": 33.89,
@@ -6920,7 +6920,7 @@
      {
       "id": "pad_u",
       "label": "↗ u [u]",
-      "x": 305.94,
+      "x": 88.11,
       "y": 322.17,
       "w": 33.89,
       "h": 33.89,
@@ -6930,7 +6930,7 @@
      {
       "id": "msgs",
       "label": "MSGS ^P [^P]",
-      "x": 228,
+      "x": 10.17,
       "y": 288.28,
       "w": 33.89,
       "h": 28.8,
@@ -6940,7 +6940,7 @@
      {
       "id": "drop",
       "label": "DROP (hub) [d]",
-      "x": 266.97,
+      "x": 49.14,
       "y": 288.28,
       "w": 33.89,
       "h": 28.8,
@@ -6949,8 +6949,8 @@
      },
      {
       "id": "pin1",
-      "label": "PIN 1 (empty by default: a tap opens the picker) [⌃;4]",
-      "x": 305.94,
+      "label": "PIN 1 (empty by default: a tap opens the picker) [^;4]",
+      "x": 88.11,
       "y": 288.28,
       "w": 33.89,
       "h": 28.8,
@@ -6959,8 +6959,8 @@
      },
      {
       "id": "game",
-      "label": "GAME drawer [⌃;g]",
-      "x": 228,
+      "label": "GAME drawer [^;g]",
+      "x": 10.17,
       "y": 256.09,
       "w": 33.89,
       "h": 28.8,
@@ -6969,8 +6969,8 @@
      },
      {
       "id": "m1",
-      "label": "M1 macro [⌃;1]",
-      "x": 266.97,
+      "label": "M1 macro [^;1]",
+      "x": 49.14,
       "y": 256.09,
       "w": 33.89,
       "h": 28.8,
@@ -6979,8 +6979,8 @@
      },
      {
       "id": "menu",
-      "label": "MENU (settings) [⌃;m]",
-      "x": 305.94,
+      "label": "MENU (settings) [^;m]",
+      "x": 88.11,
       "y": 256.09,
       "w": 33.89,
       "h": 28.8,
@@ -6989,8 +6989,8 @@
      },
      {
       "id": "rest",
-      "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST) [20s]",
-      "x": 228,
+      "label": "REST ×n (hold: count layer on the pad; swipe up: LONG REST) [20.]",
+      "x": 10.17,
       "y": 227.28,
       "w": 33.89,
       "h": 25.42,
@@ -6999,8 +6999,8 @@
      },
      {
       "id": "world",
-      "label": "WORLD drawer [⌃;w]",
-      "x": 266.97,
+      "label": "WORLD drawer [^;o]",
+      "x": 49.14,
       "y": 227.28,
       "w": 33.89,
       "h": 25.42,
@@ -7009,8 +7009,8 @@
      },
      {
       "id": "sacrifice",
-      "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY) [#offer]",
-      "x": 305.94,
+      "label": "SACRIFICE (tap: offer; hold 380 ms: PRAY) [M-o]",
+      "x": 88.11,
       "y": 227.28,
       "w": 33.89,
       "h": 25.42,
@@ -7020,7 +7020,7 @@
      {
       "id": "apply",
       "label": "APPLY (hub) [a]",
-      "x": 438.1,
+      "x": 655.95,
       "y": 400.11,
       "w": 33.89,
       "h": 33.89,
@@ -7030,7 +7030,7 @@
      {
       "id": "search",
       "label": "SEARCH s×n (hold: count layer; SEARCH lamp on the cap) [s]",
-      "x": 399.13,
+      "x": 616.97,
       "y": 400.11,
       "w": 33.89,
       "h": 33.89,
@@ -7040,7 +7040,7 @@
      {
       "id": "inventory",
       "label": "INVENTORY (hub) [i]",
-      "x": 360.16,
+      "x": 578,
       "y": 400.11,
       "w": 33.89,
       "h": 33.89,
@@ -7050,7 +7050,7 @@
      {
       "id": "eat",
       "label": "EAT/QUAFF/READ (hub) [e]",
-      "x": 438.1,
+      "x": 655.95,
       "y": 361.14,
       "w": 33.89,
       "h": 33.89,
@@ -7059,8 +7059,8 @@
      },
      {
       "id": "context",
-      "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts) [⌃;c]",
-      "x": 399.13,
+      "label": "CONTEXT (tap: this turn's action; several: the HERE layer, sticky; hold: counts) [^;c]",
+      "x": 616.97,
       "y": 361.14,
       "w": 33.89,
       "h": 33.89,
@@ -7070,7 +7070,7 @@
      {
       "id": "combat",
       "label": "COMBAT (hub; ARMED lamp on the cap) [F]",
-      "x": 360.16,
+      "x": 578,
       "y": 361.14,
       "w": 33.89,
       "h": 33.89,
@@ -7080,7 +7080,7 @@
      {
       "id": "look",
       "label": "LOOK : (hold: farlook) [:]",
-      "x": 438.1,
+      "x": 655.95,
       "y": 322.17,
       "w": 33.89,
       "h": 33.89,
@@ -7089,8 +7089,8 @@
      },
      {
       "id": "flick",
-      "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro) [⌃;f]",
-      "x": 399.13,
+      "label": "FLICK (tap: macro; flick ↑ Kick, ↗ second macro) [^;f]",
+      "x": 616.97,
       "y": 322.17,
       "w": 33.89,
       "h": 33.89,
@@ -7099,8 +7099,8 @@
      },
      {
       "id": "pin2",
-      "label": "PIN 2 (Fire by default) [⌃;5]",
-      "x": 360.16,
+      "label": "PIN 2 (Fire by default) [^;5]",
+      "x": 578,
       "y": 322.17,
       "w": 33.89,
       "h": 33.89,
@@ -7110,7 +7110,7 @@
      {
       "id": "eq_swap",
       "label": "Swap x [x]",
-      "x": 438.1,
+      "x": 655.95,
       "y": 288.28,
       "w": 33.89,
       "h": 28.8,
@@ -7120,7 +7120,7 @@
      {
       "id": "eq_remove",
       "label": "Remove R (asks: paranoid_confirmation:+Remove) [R]",
-      "x": 399.13,
+      "x": 616.97,
       "y": 288.28,
       "w": 33.89,
       "h": 28.8,
@@ -7130,7 +7130,7 @@
      {
       "id": "eq_takeoff",
       "label": "Take off T (asks: paranoid_confirmation:+Remove) [T]",
-      "x": 360.16,
+      "x": 578,
       "y": 288.28,
       "w": 33.89,
       "h": 28.8,
@@ -7140,7 +7140,7 @@
      {
       "id": "eq_wield",
       "label": "Wield w [w]",
-      "x": 438.1,
+      "x": 655.95,
       "y": 256.09,
       "w": 33.89,
       "h": 28.8,
@@ -7150,7 +7150,7 @@
      {
       "id": "eq_puton",
       "label": "Put on P [P]",
-      "x": 399.13,
+      "x": 616.97,
       "y": 256.09,
       "w": 33.89,
       "h": 28.8,
@@ -7160,7 +7160,7 @@
      {
       "id": "eq_wear",
       "label": "Wear W [W]",
-      "x": 360.16,
+      "x": 578,
       "y": 256.09,
       "w": 33.89,
       "h": 28.8,
@@ -7169,8 +7169,8 @@
      },
      {
       "id": "m3",
-      "label": "M3 macro [⌃;3]",
-      "x": 438.1,
+      "label": "M3 macro [^;3]",
+      "x": 655.95,
       "y": 227.28,
       "w": 33.89,
       "h": 25.42,
@@ -7179,8 +7179,8 @@
      },
      {
       "id": "keys",
-      "label": "KEYS (soft keyboard) [⌃;k]",
-      "x": 399.13,
+      "label": "KEYS (soft keyboard)",
+      "x": 616.97,
       "y": 227.28,
       "w": 33.89,
       "h": 25.42,
@@ -7189,8 +7189,8 @@
      },
      {
       "id": "m2",
-      "label": "M2 macro [⌃;2]",
-      "x": 360.16,
+      "label": "M2 macro [^;2]",
+      "x": 578,
       "y": 227.28,
       "w": 33.89,
       "h": 25.42,
@@ -7199,8 +7199,8 @@
      },
      {
       "id": "longrest",
-      "label": "LONG REST [⌃;z]",
-      "x": 228,
+      "label": "LONG REST [^;z]",
+      "x": 10.17,
       "y": 227.28,
       "w": 33.89,
       "h": 25.42,
@@ -7241,7 +7241,7 @@
      {
       "owner": "flick",
       "label": "flick legend ↑ (−85°, Kick): feedback while FLICK strokes; a target while FLICK is held or while assigning",
-      "x": 368.08,
+      "x": 585.92,
       "y": 167.28,
       "w": 44,
       "h": 44
@@ -7249,7 +7249,7 @@
      {
       "owner": "flick",
       "label": "flick legend ↗ (−40°, second macro): feedback while FLICK strokes; a target while FLICK is held or while assigning",
-      "x": 420.08,
+      "x": 637.92,
       "y": 167.28,
       "w": 44,
       "h": 44
@@ -7266,25 +7266,32 @@
     "chrome": [
      {
       "name": "panel: message log (history, newest last)",
-      "x": 4,
+      "x": 140,
       "y": 227.28,
-      "w": 212,
+      "w": 204,
       "h": 218.72
      },
      {
       "name": "panel: inventory (a copy of the INVENTORY list; the key stays in the dock)",
-      "x": 483.99,
+      "x": 356,
       "y": 227.28,
-      "w": 212.01,
+      "w": 204,
       "h": 218.72
      }
     ],
     "decor": [
      {
-      "name": "dock well",
-      "x": 222,
+      "name": "dock well left",
+      "x": 4.17,
       "y": 221.28,
-      "w": 255.99,
+      "w": 123.83,
+      "h": 218.72
+     },
+     {
+      "name": "dock well right",
+      "x": 572,
+      "y": 221.28,
+      "w": 123.83,
       "h": 218.72
      }
     ],

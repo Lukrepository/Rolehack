@@ -69,7 +69,7 @@ Everything below was checked in Chromium with real CDP touches (or a mouse where
 
 Deferred or left by decision:
 
-1. **Desktop mode is not built** (section 4's desk, section 12's input-mode machine, the 40 dp dock, the key legends, the Ctrl+; prefix, `data-input`, the "Controls" setting, "hide the dock", test 7's prefix check).  Lucas deferred it on 2026-10-03; DESIGN.md's CHANGES records it.  A mouse window gets the touch tier its size gives: at 1280x800, 1920x1080 and 2560x1440 the page draws the tablet tier with phone-size banks in the corners, as the "today" rows of section 4 say, and `spec.json`'s mouse specs (the desk) are not what the page draws.  `layout.js` keeps the desk, and its tests still check it.
+1. **Desktop mode was not built here; it is since 7 October 2026** (on `room/desktop-mode`; DESIGN's CHANGES, "Desktop mode is built"). As this report found it: (section 4's desk, section 12's input-mode machine, the 40 dp dock, the key legends, the Ctrl+; prefix, `data-input`, the "Controls" setting, "hide the dock", test 7's prefix check).  Lucas deferred it on 2026-10-03; DESIGN.md's CHANGES records it.  A mouse window gets the touch tier its size gives: at 1280x800, 1920x1080 and 2560x1440 the page draws the tablet tier with phone-size banks in the corners, as the "today" rows of section 4 say, and `spec.json`'s mouse specs (the desk) are not what the page draws.  `layout.js` keeps the desk, and its tests still check it.
 2. **3440x1440** puts the log and the inventory under the map, between the banks, not beside it (CHANGES, "For Lucas to decide").
 3. **The glass ranking has no hysteresis band** (CHANGES, "For Lucas to decide").
 
