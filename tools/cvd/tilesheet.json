@@ -1,0 +1,70 @@
+{
+ "families": [
+  "lichen",
+  "brown mold",
+  "yellow mold",
+  "green mold",
+  "red mold",
+  null,
+  "cockatrice",
+  "chickatrice",
+  "pyrolisk",
+  null,
+  "baby red dragon",
+  "baby green dragon",
+  "baby orange dragon",
+  "red dragon",
+  "green dragon",
+  "orange dragon",
+  null,
+  "red naga",
+  "guardian naga",
+  "golden naga",
+  null,
+  "jabberwock",
+  "vorpal jabberwock"
+ ],
+ "sample": [
+  "newt",
+  "jackal",
+  "floating eye",
+  "soldier ant",
+  "fire ant",
+  "dwarf",
+  "Woodland-elf",
+  null,
+  "ruby / gain ability",
+  "pink / restore ability",
+  "orange / confusion",
+  "yellow / blindness",
+  "emerald / paralysis",
+  "dark green / speed",
+  "cyan / levitation",
+  null,
+  "tree",
+  "chaotic altar",
+  "throne",
+  "sink"
+ ],
+ "rows": {
+  "redgreen": [
+   "Today, normal vision",
+   "New palette, normal vision",
+   "Today, deuteranopia",
+   "New palette, deuteranopia",
+   "New palette, protanopia"
+  ],
+  "tritan": [
+   "Today, normal vision",
+   "New palette, normal vision",
+   "Today, tritanopia",
+   "New palette, tritanopia"
+  ],
+  "mono": [
+   "Today, normal vision",
+   "New palette, normal vision",
+   "Today, achromatopsia",
+   "New palette, achromatopsia"
+  ]
+ }
+}

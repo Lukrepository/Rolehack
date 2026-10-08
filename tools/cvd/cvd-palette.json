@@ -1,0 +1,25 @@
+{
+ "palette": {
+  "black": "#4a4040",
+  "red": "#da6b6a",
+  "green": "#6a7e01",
+  "brown": "#664411",
+  "blue": "#0000ff",
+  "magenta": "#8b4082",
+  "cyan": "#0aebfe",
+  "gray": "#89828f",
+  "orange": "#e2aa31",
+  "bright green": "#bbf1a2",
+  "yellow": "#fcff03",
+  "bright blue": "#a275e3",
+  "bright magenta": "#ff9fff",
+  "bright cyan": "#2dd9ab",
+  "white": "#f2fff8"
+ },
+ "score": [
+  15.183353702466068,
+  15.183353702466068,
+  16.867771725125404
+ ],
+ "collapsing_pairs": 0
+}
