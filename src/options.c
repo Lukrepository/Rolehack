@@ -753,6 +753,7 @@ getoptstr(int optidx, int ophase)
         return roleoptvals[roleoptindx][ophase];
     panic("bad index roleoptvals[%d][%d]", roleoptindx, ophase);
     /*NOTREACHED*/
+    return (char *) 0;
 }
 
 /* to track some unparsed option settings in case #saveoptions needs them */
