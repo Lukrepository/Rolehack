@@ -463,7 +463,7 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
 .cline { white-space: pre-wrap; font-size: 20px; line-height: 1.25; }
 .cline.mid { text-align: center; }
 .chero { display: flex; justify-content: center; padding: 8px 0 6px; }
-.cpic { display: block; flex: none; background: url('tiles.png') no-repeat; image-rendering: pixelated; }
+.cpic { display: block; flex: none; background: var(--sheet, url('tiles.png')) no-repeat; image-rendering: pixelated; }
 .ckeys { flex: 0 1 auto; min-height: 0; overflow-y: auto; scrollbar-width: none; margin-top: 10px;
          padding: 1px 2px 4px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .cgrid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: calc(5 * 128px + 4 * 8px); }
@@ -494,7 +494,7 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
 .item.sel { background: rgba(255,179,71,.13); }
 .item.sel .let, .item.sel .mark { color: #ffb347; text-shadow: 0 0 4px rgba(255,170,60,.7); }
 .mtile { display: inline-block; flex: none; width: 32px; height: 32px; margin: 1px 8px 1px 0;
-         background: url('tiles.png') no-repeat; background-size: var(--menu-sheet); image-rendering: pixelated; }
+         background: var(--sheet, url('tiles.png')) no-repeat; background-size: var(--menu-sheet); image-rendering: pixelated; }
 .mtile.none { visibility: hidden; }
 .head { padding: 8px 0 2px; }
 .head:first-child { padding-top: 0; }
@@ -524,6 +524,12 @@ input.line::-webkit-calendar-picker-indicator { opacity: .45; cursor: pointer; }
 .form .seg .cap { font-size: 11px; }
 .form .seg .cap > span { min-width: 0; padding: 6px 10px 5px; }
 .form .note { font: 12px/1.35 var(--capfont); color: var(--lip-text); opacity: .85; }
+/* a group of rows (Settings' Accessibility): a box with its name on the rim, as a drawer heading */
+.form fieldset.group { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 8px 12px 12px;
+                       color: var(--lip-text); border: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+                       border-radius: 6px; min-width: 0; }
+.form fieldset.group > legend { padding: 0 6px; font: 600 9.5px var(--capfont); letter-spacing: .16em;
+                                text-transform: uppercase; color: inherit; }
 .form textarea { font: 20px/1.15 var(--screenfont); color: var(--phos); caret-color: var(--phos); background: var(--glass);
                  border: 1px solid color-mix(in srgb, var(--phos) 30%, transparent); border-radius: 4px; padding: 6px 8px;
                  resize: vertical; user-select: text; letter-spacing: 0; text-transform: none; }
@@ -532,7 +538,8 @@ input.line::-webkit-calendar-picker-indicator { opacity: .45; cursor: pointer; }
 :root[data-case="off"] .box { background: rgba(7,6,5,.84); box-shadow: 0 0 0 1px rgba(255,255,255,.2), 0 14px 40px rgba(0,0,0,.65); }
 :root[data-case="off"] .screen { background: rgba(9,13,10,.9); box-shadow: none; }
 :root[data-case="off"] .screen::after { display: none; }
-:root[data-case="off"] .deck .hint, :root[data-case="off"] .form label, :root[data-case="off"] .form .note { color: #d9d1bd; }
+:root[data-case="off"] .deck .hint, :root[data-case="off"] .form label, :root[data-case="off"] .form .note,
+:root[data-case="off"] .form fieldset.group { color: #d9d1bd; }
 
 /* the soft keyboard: keycaps in a tray of the hood, above the windows (which
    make room for it) so it can answer them */
