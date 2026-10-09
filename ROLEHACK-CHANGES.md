@@ -57,9 +57,11 @@ notices before each release.
 | `src/rhability.c` | added | 2026-09-27 | notice in file |
 | `src/role.c` | changed | 2026-07-31 to 2026-09-27 | notice in file |
 | `src/timeout.c` | changed | 2026-09-27 | notice in file |
+| `src/trap.c` | changed | 2026-10-08 | notice in file |
 | `src/u_init.c` | changed | 2026-07-31 to 2026-09-27 | notice in file |
 | `src/uhitm.c` | changed | 2026-08-16 to 2026-09-27 | notice in file |
 | `src/weapon.c` | changed | 2026-09-23 to 2026-09-27 | notice in file |
+| `src/wield.c` | changed | 2026-10-08 | notice in file |
 | `src/zap.c` | changed | 2026-09-27 | notice in file |
 | `sys/android/Makefile.src` | changed | 2026-08-19 to 2026-09-28 | notice in file |
 | `sys/android/Makefile.top` | changed | 2026-08-19 | notice in file |
