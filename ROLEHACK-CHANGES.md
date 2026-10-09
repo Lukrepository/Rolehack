@@ -42,6 +42,7 @@ notices before each release.
 | `src/exper.c` | changed | 2026-09-27 | notice in file |
 | `src/explode.c` | changed | 2026-09-27 | notice in file |
 | `src/getpos.c` | changed | 2026-09-28 to 2026-10-07 | notice in file |
+| `src/lock.c` | changed | 2026-10-09 | notice in file |
 | `src/mdlib.c` | changed | 2026-09-25 | notice in file |
 | `include/unixconf.h` | changed | 2026-10-07 | notice in file |
 | `src/mon.c` | changed | 2026-08-21 to 2026-10-07 | notice in file |

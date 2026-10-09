@@ -1,0 +1,101 @@
+<!--
+  Rolehack Colour Vision Tiles: a proposal with pictures.
+  Generated 2026-09-28 by tools/cvd/build_tiles_page.py from the tile palette
+  searches (tools/cvd/cvd_tilepal.py) over win/share/monsters.txt, objects.txt
+  and other.txt at NetHack-web ec134a70a.  Written by Claude for Lucas Ruiz.
+  The simulated rows use the same models as colour-vision-brief-2026-09-28.
+-->
+<title>Colour Vision Tiles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root {
+  --ground: #ebe4d3; --surface: #f8f4ea; --ink: #26221e; --muted: #655d51; --rule: #d1c7b0;
+  --accent: #8a4b0c; --accent-soft: #f1dcb9; --sheet-bg: #141210;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --cond: "IBM Plex Sans Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #161310; --surface: #211d19; --ink: #f1e8d5; --muted: #aa9f8c; --rule: #3a342d;
+    --accent: #f2a64a; --accent-soft: #3b2a14; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #161310; --surface: #211d19; --ink: #f1e8d5; --muted: #aa9f8c; --rule: #3a342d;
+  --accent: #f2a64a; --accent-soft: #3b2a14; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font: 16px/1.6 var(--sans); padding-inline: 16px; padding-block: 28px 64px; }
+.wrap { max-width: 1060px; margin: 0 auto; display: grid; gap: 36px; }
+.prose { max-width: 70ch; }
+h1, h2 { font-family: var(--cond); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; }
+h2 { font-size: 1.55rem; font-weight: 700; margin-bottom: 8px; }
+p { margin: 0 0 12px; }
+code { font: 0.86em/1.4 var(--mono); background: var(--accent-soft); padding: 1px 4px; border-radius: 3px; }
+.eyebrow, .kicker, figcaption, th, .rows { font: 600 0.8rem var(--cond); letter-spacing: 0.12em; text-transform: uppercase; }
+.eyebrow { color: var(--muted); margin-bottom: 10px; }
+.kicker { color: var(--accent); }
+.lede { font-size: 1.1rem; max-width: 64ch; margin-top: 12px; }
+section { display: grid; gap: 14px; }
+.sec-head { display: grid; gap: 4px; }
+.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.93rem; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { color: var(--muted); }
+td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+figure { margin: 0; display: grid; gap: 6px; }
+figcaption { color: var(--muted); letter-spacing: 0.08em; }
+.sheet { overflow-x: auto; background: var(--sheet-bg); border-radius: 6px; padding: 6px; }
+.sheet img { display: block; image-rendering: pixelated; max-width: none; }
+.rows { color: var(--muted); margin: 0; letter-spacing: 0.08em; }
+.rowlist { margin: 0; padding-left: 22px; font-size: 0.92rem; }
+.decisions { display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; counter-reset: q; }
+.decisions li { counter-increment: q; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px 14px 52px; position: relative; }
+.decisions li::before { content: "T" counter(q); position: absolute; left: 14px; top: 14px; font: 700 0.95rem var(--cond); color: var(--accent); }
+.lean { display: block; margin-top: 6px; font-size: 0.92rem; color: var(--muted); }
+.lean b { color: var(--ink); }
+.left { margin: 0; padding-left: 20px; font-size: 0.93rem; display: grid; gap: 4px; }
+footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 14px; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Rolehack &middot; colour vision &middot; tiles &middot; 2026-09-28 &middot; for Lucas</div>
+  <h1>Colour Vision Tiles</h1>
+  <p class="lede">Monsters drawn as one sprite in different colours can merge for a colour-blind player on tiles: in simulation, 11 such pairs merge for red-green vision, 8 for tritanopia and 51 in monochrome. Layer 2 swapped the text map's 16 colours per Colour vision mode; the tiles draw from their own table of 29 colours, so each mode could swap those too. Below: what that does to the families, and to everything else.</p>
+  <p class="prose" style="font-size:1rem"><b>The regular palette is not touched.</b> Standard, the default, keeps today's tiles exactly. The palettes below apply only while a player has chosen a Colour vision mode in Settings, as layer 2's text colours do.</p>
+  <p class="prose" style="font-size:.93rem"><b>Decided (Lucas, 2026-09-28):</b> tile palettes in every Colour vision mode, never in Standard; red-green at the strong setting, the only one that keeps every family apart; tritan at the gentle one, which already does; monochrome at the strong one; the 12 pairs it leaves need marks drawn on their tiles, which are not drawn yet. Built into both apps the same day, and marked beta on 2026-10-08 until a colour-blind player has checked it.</p>
+</header>
+
+<section>
+  <div class="sec-head"><span class="kicker">1 &middot; The idea</span><h2>A tile palette per mode</h2></div>
+  <div class="prose">
+    <p>The tile files (<code>win/share/monsters.txt</code>, <code>objects.txt</code>, <code>other.txt</code>) share one table of 29 colours. For each mode a search moved the 11 coloured entries so that monsters sharing a letter stay apart in that mode's vision, measured over the whole tile. The background, black, the greys, the whites and skin stay as they are; the paper doll retints skin, so it must not move. It ran over all 161 same-letter pairs whose tiles share a silhouette, at up to three strengths: how far (in CIEDE2000) each colour may move from its own look.</p>
+    <p>A pair "merges" when the mode's viewer loses more than 60% of the difference a normal eye sees. "Worst pair keeps" is the share the worst pair keeps.</p>
+  </div>
+  <div class="scroll"><table>
+    %%TABLE%%
+  </table></div>
+  <div class="prose"><p><b>What stays merged at each strength:</b></p>%%LEFT%%</div>
+  <p class="prose" style="font-size:.9rem;color:var(--muted)">Families shown: %%FAMS%%. Ordinary tiles: %%SAMPLE%%.</p>
+</section>
+
+%%SECTIONS%%
+
+<section>
+  <div class="sec-head"><span class="kicker">5 &middot; Decisions</span><h2>What Lucas was asked, and what he chose</h2></div>
+  <ol class="decisions">
+    <li><b>Tile palettes in the Colour vision modes?</b> Both builds would swap the tile sheet's pixels when the mode changes: the phone's tile PNG is 98.7% these 29 colours, and the rest can follow the nearest one. The paper doll can follow too: it is built from tile pixels, and its own sprites are written in the same palette letters (<code>RhDoll.java</code>'s palette table, the web's <code>doll.js</code>), so they take the same swap. <b>Standard, the default, keeps today's tiles exactly</b>; the swap happens only in the four Colour vision modes.<span class="lean">My lean: <b>yes</b>. It completes what layer 2 started, and a colour-blind player on tiles gets the same help as one on the text map.</span><span class="lean"><b>Decided: yes</b>, only inside the modes. Standard keeps the regular palette everyone knows.</span></li>
+    <li><b>Which strength?</b> Compare row 2 across the sheets: that is how the art looks to anyone else in the mode. A third route: the gentle palette, which barely changes the art, plus marks drawn on the few tiles it leaves merged (orange and green dragons, red mold).<span class="lean">My lean: %%LEAN%% If keeping the art matters more, the gentle palette plus those marks.</span><span class="lean"><b>Decided: strong</b> for red-green. By the same rule (the smallest shift that keeps every family apart) tritan takes the gentle palette, and monochrome the strong one, which leaves the fewest pairs.</span></li>
+    <li><b>Monochrome:</b> the palette helps with some pairs but not all. The rest need marks drawn on those tiles: a pattern or a small shape per family.<span class="lean">My lean: <b>ship the palette now, and draw marks on the remaining pairs later</b>.</span><span class="lean"><b>Decided: as leaned.</b> The palette is in; the marks are not drawn yet.</span></li>
+    <li><b>Tritanopia:</b> its palette changes little, since those families mostly separate already.<span class="lean">My lean: <b>include it</b>, so every mode behaves the same way.</span><span class="lean"><b>Decided: included.</b></span></li>
+  </ol>
+</section>
+
+<footer>Generated 2026-09-28 by <code>tools/cvd/build_tiles_page.py</code>; palettes from <code>tools/cvd/cvd_tilepal.py</code> (<code>cvd-tilepal-&lt;cap&gt;.json</code>), pictures from <code>cvd_tilesheet.py</code>. Simulations: Brettel 1997 for dichromats, luminance for monochrome, as in the colour-vision brief. The apps' colour maps come from <code>cvd_tilegen.py</code> (<code>cvd-tilemaps.json</code>), which also moves the shades Rolehack's own tiles use outside the table.</footer>
+</div>
