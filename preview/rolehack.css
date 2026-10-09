@@ -201,13 +201,6 @@ body { font-family: var(--capfont); color: #f1e8d5; -webkit-tap-highlight-color:
 .rhpanel:is([data-kind="legend"], [data-kind2="legend"]) .pi > span:last-child { color: var(--phos-dim); }
 .rhpanel[data-armed] { box-shadow: 0 0 0 2px #110e0c, 0 0 0 3px rgba(255,190,80,.6); }
 .rhpanel[data-armed] .ptitle { color: #ffcf6a; }
-/* the HP and Pw bars under the status lines, where the layout leaves room (web.js barsHtml) */
-#statband .bars { display: flex; align-items: center; gap: 14px; max-width: 392px; }   /* as long as a 412 dp band's lines */
-#statband .bar { flex: 1; display: flex; align-items: center; gap: 6px; min-width: 0; }
-#statband .bar b { font-weight: normal; font-size: var(--bartext, 11px); line-height: 1; color: var(--phos-dim); text-shadow: none; }
-#statband .bar .track { flex: 1; height: 5px; border-radius: 1px; overflow: hidden;
-  background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
-#statband .bar .fill { display: block; height: 100%; }
 /* twin banks: choices that run past the map's bottom scroll, and only then
    take the touches between them (web.js sizeChips) */
 :root[data-ui="twin"] #chips.scroll { overflow-y: auto; pointer-events: auto; touch-action: pan-y; scrollbar-width: none;

@@ -38,7 +38,7 @@
 import * as C from './commands.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
-import { textMetrics, layout } from './layout.js';
+import { textMetrics, layout, STATUS_PAD } from './layout.js';
 import { budgetedLayout, withClasses, classesOf, deviceReport, browserFamily } from './viewer.js';
 import { startMode, freshInput, inputStep, inputSwitched, controlsOf,
   isPrefix, prefixChar, prefixEntry, PREFIX, PREFIX_CODES, placeOfKey, macPlatform, ARROWS } from './input.js';
@@ -1263,14 +1263,16 @@ export class Overlay {
     const padKey = clamp(Number(P.get('padCell')) || 58, 40, 72);
     // the message rows as the page sets them (msgTextPx) and the status band
     // as web.js draws it: inputs to the rule, so it never puts text over a key.
-    // In twin banks the status lines follow the system's text size too, as the
-    // message rows do (the design's section 10: 48 dp times the text size);
-    // classic's stay at the case's scale.
+    // In twin banks the status lines are set at the text metric, as the
+    // message rows are (Lucas, 2026-10-08; layout.js textMetrics): one message
+    // row per line, three lines (two in compact, none hidden), plus the band's
+    // padding; classic's stay at the case's scale.
     resetTextScale();
     const textScale = osTextScale();
     const text = textMetrics({ msgFont: P.get('msgFont') === 'screen' ? 'screen' : 'atkinson',
       msgSize: Number(P.get('msgSize')) || 1, textScale, xHeight: MSG_X });
-    const statusH = textScale * ({ hidden: 0, compact: STATUS_BAND - LINE }[P.get('statusLines')] ?? STATUS_BAND);
+    const statusRows = { hidden: 0, compact: 2, full: 3 }[P.get('statusLines')] ?? 3;
+    const statusH = statusRows ? statusRows * text.msgRowH + STATUS_PAD * textScale : 0;
     // The header goes where the rule puts it: stacked at the top of the glass,
     // side by side once the glass is wide enough (a tablet, a laptop), or over
     // the banks when that shows more of the level -- with the map cell
@@ -1375,6 +1377,8 @@ export class Overlay {
       glass: { ...S.glass, r: this.caseless ? 0 : 10 },
       map: S.mapArea, msgBand, statusBand, msgRows: r.info.fill.rows_msg, cell: r.info.T,
       headerOver: !!r.info.G.over, textScale, statusLinesH: statusH,
+      // 2 or 1 where the rule dropped lines to keep twin banks (layout.js section 9), else null
+      statusLines: (r.spec.fit && r.spec.fit.statusLines) || null,
       // The panels the layout leaves room for, the message log and the
       // inventory (its chrome), which web.js lays out and fills
       // (layoutPanels).  'beyond': a log under the band's rows (a phone's, in
@@ -4322,6 +4326,9 @@ export class Overlay {
   openSettings() {
     this.closeAll();
     const seg = (id, label, options) => ({ seg: id, label, value: String(P.get(id)), options });
+    // "The view glides too" as it stands: unset (null) it follows the device
+    // (web.js viewGlides), so Done writes it only when the player changes it
+    const vs = P.get('smoothView'), viewOn = vs == null ? !reducedMotion() : vs !== false;
     this.host.form('Settings', [
       seg('style', 'Style', [['terminal', 'Terminal'], ['light', 'Terminal (light)'], ['gamecube', 'GameCube']]),
       { seg: 'case', label: 'Case', value: P.get('case') ? 'on' : 'off', options: [['on', 'Show the case'], ['off', 'Caseless']] },
@@ -4343,9 +4350,23 @@ export class Overlay {
       seg('statusLines', 'Status lines', [['full', 'Full'], ['compact', 'Compact'], ['hidden', 'Hidden']]),
       { seg: 'morePause', label: 'When the message band is full', value: P.get('morePause') ? 'on' : 'off',
         options: [['on', 'Pause (--More--)'], ['off', "Don't pause"]] },
-      seg('msgFont', 'Message font', [['atkinson', 'Hyperlegible'], ['screen', 'Screen font']]),
-      seg('msgSize', 'Message size', [['0.85', 'Small'], ['1', 'Standard'], ['1.2', 'Large'], ['1.4', 'Larger']]),
+      // one text size and face for the message band and, in twin banks, the
+      // status lines (Lucas, 2026-10-08: "message size renamed text size")
+      seg('msgFont', 'Text font', [['atkinson', 'Hyperlegible'], ['screen', 'Screen font']]),
+      seg('msgSize', 'Text size', [['0.85', 'Small'], ['1', 'Standard'], ['1.2', 'Large'], ['1.4', 'Larger']]),
       seg('mapMode', 'Map', [['tiles', 'Tiles'], ['text', 'Text']]),
+      // Smooth movement (glide.js; Lucas and his brother picked it in the Glide
+      // or Snap mock, 2026-10-09), and the view gliding along with the hero,
+      // which Lucas asked to be able to switch off
+      { seg: 'smoothMove', label: 'Smooth movement (beta): your hero glides from square to square instead of jumping, '
+          + 'in tiles. The game never waits for it'
+          + (!reducedMotion() ? '' : vs == null ? ". Your device asks for less motion, so the view's glide below starts off"
+            : '. Your device asks for less motion'),
+        value: P.get('smoothMove') ? 'on' : 'off', options: [['off', 'Off'], ['on', 'On']] },
+      { seg: 'smoothView', label: 'The view glides too (with smooth movement on): when the map follows your hero, it glides along with them; '
+          + 'off, the map jumps a square at a time and your hero jumps with it'
+          + (reducedMotion() && vs == null ? '. Your device asks for less motion, so this starts off; turn it on to have the view glide anyway' : ''),
+        value: viewOn ? 'on' : 'off', options: [['on', 'On'], ['off', 'Off']] },
       { id: 'userRc', multiline: true, value: P.get('userRc'),
         label: 'Your option lines, one per line, used from the next start. To recolour a monster on the text map, '
           + 'start with a symset line, OPTIONS=symset:Enhanced1 (DECgraphics draws garbled here), then e.g. '
@@ -4374,11 +4395,14 @@ export class Overlay {
         + "layer (then y k u h l b j n or . to pick). Holding Ctrl lights every key's letter",
         Object.entries(PREFIX_CODES)),
       // the design's section 11 and its test 5: today's columns by default,
-      // the bigger glyphs of the earlier rule a choice; a pinch zooms either
-      seg('mapCell', "Map cell (twin banks): Columns shows at least today's 34 of the level's 80 columns in landscape, "
-        + 'with all 21 rows, where the screen allows; Rows draws bigger tiles that fill the landscape height with the '
-        + '21 rows, so fewer columns show. The same size in both orientations',
-        [['columns', 'Columns'], ['rows', 'Rows']]),
+      // the bigger glyphs of the earlier rule a choice; a pinch zooms either.
+      // Only on a phone, where it changes the layout: on tablets, laptops and
+      // the desk the two give the same cell (Lucas, 2026-10-08, in plain words)
+      ...(document.documentElement.dataset.tier === 'phone' ? [
+        seg('mapCell', 'Map tiles on this phone: smaller shows more of the level (at least 34 of its 80 columns in '
+          + 'landscape, all 21 rows where they fit); bigger fills the height with the 21 rows and scrolls more sideways. '
+          + 'The same size in both orientations',
+          [['columns', 'Smaller, see more'], ['rows', 'Bigger, scroll more']])] : []),
       { seg: 'ghostDeck', label: 'Old key spots (twin banks, landscape): a map tap where COMBAT, PIN 2, FLICK, LOOK or CONTEXT sat '
           + 'on the old deck shows where the key went, and a second tap on the same place walks there. It retires itself '
           + 'after three sessions in a row, each of 100 turns or more played in twin banks in landscape, in which no '
@@ -4423,13 +4447,15 @@ export class Overlay {
         put('msgFont', v.msgFont);
         put('msgSize', Number(v.msgSize));
         put('mapMode', v.mapMode);
+        put('smoothMove', v.smoothMove === 'on');
+        if ((v.smoothView !== 'off') !== viewOn) P.set('smoothView', v.smoothView !== 'off');
         put('userRc', String(v.userRc || '').replace(/\r/g, ''));
         put('padCell', parseInt(v.padCell, 10));
         if ((v.ghostDeck === 'on') !== this.ghostOn()) this.setGhostOn(v.ghostDeck === 'on');
         put('layout', v.layout === 'classic' ? 'classic' : 'twin');
         put('controls', controlsOf(v.controls));
         put('prefixKey', PREFIX_CODES[v.prefixKey] ? v.prefixKey : 'Semicolon');
-        put('mapCell', v.mapCell === 'rows' ? 'rows' : 'columns');
+        if (v.mapCell !== undefined) put('mapCell', v.mapCell === 'rows' ? 'rows' : 'columns');   // the row shows only on phones
         put('labelMode', v.labelMode);
         put('keyFlash', v.keyFlash === 'on');
         put('touchKeyboard', v.touchKeyboard === 'on');
@@ -4787,6 +4813,8 @@ const stairsPill = (act) => `${act.word.toUpperCase()}? CENTRE`;
 
 // a layout reason's first clause, for a settings line
 const firstReason = (r) => String(r || '').split('; ')[0];
+// the system's reduced-motion setting, said beside Smooth movement (which is off unless chosen)
+const reducedMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
 
 // Twin banks' attack pins.  They are kept apart from classic's: PIN 2 starts
 // on Fire in twin and classic's second point stays empty, and with one array
