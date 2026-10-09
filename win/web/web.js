@@ -136,10 +136,10 @@ let glideRaf = 0, paintMark = 0;
 const glideOn = () => !!P.get('smoothMove') && P.get('mapMode') !== 'text' && !!sheet;
 // the system's reduced-motion setting, read live (prefers-reduced-motion)
 const lessMotion = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)'); } catch (e) { return null; } })();
-// "The view glides too": unset (null) it follows the device, gliding unless the
-// device asks for less motion; an On or Off chosen in Settings wins (the
-// brief's 6.9, its question 4)
-const viewGlides = () => { const v = P.get('smoothView'); return v == null ? !(lessMotion && lessMotion.matches) : v !== false; };
+// "The view glides too": on unless turned off in Settings, and never while the
+// device asks for less motion, whatever was chosen (Lucas, 2026-10-09: "fine
+// to let the device decide"; the brief's 6.9, its questions 4 and 16)
+const viewGlides = () => !(lessMotion && lessMotion.matches) && P.get('smoothView') !== false;
 
 // The frame-end display_nhwindow(WIN_MAP): the screen the core just finished
 // drawing.  render() also runs part-way through a flush (a status update, a
@@ -1089,7 +1089,8 @@ function placeView(t = performance.now()) {
     : clamp(toDevicePx(start + avail / 2 - T / 2) - fc * T, start + avail - len, start)) + toDevicePx(pan);
   // While the hero glides the view follows where the hero is drawn, so the two
   // move together (smooth movement; Lucas, 2026-10-09: "let the view glide along
-  // with them"), unless "The view glides too" is off.  Only when the view
+  // with them"), unless the view does not glide (viewGlides: "The view glides
+  // too" off, or a device that asks for less motion).  Only when the view
   // follows the hero: a getpos cursor or another point the core names is
   // followed as before.
   const g = viewGlides() ? GL.at(glide, t) : null;
@@ -1099,7 +1100,8 @@ function placeView(t = performance.now()) {
 }
 
 // Would the view, with no pan, move when the point it follows goes from a to
-// b?  With "The view glides too" off, a step under which the view moves is
+// b?  When the view does not glide (viewGlides: "The view glides too" off, or a
+// device that asks for less motion), a step under which the view moves is
 // shown as a jump, hero and all (the brief's rule b).
 function viewOriginMoves(a, b) {
   const r = view.area;

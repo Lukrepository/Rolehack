@@ -61,9 +61,9 @@ export function at(g, t) {
 // A new screen came at time t, with the hero drawn at hero ({ x, y, ridden }),
 // or not drawn at all (null); ridden: the hero's square shows a ridden steed
 // (MG_RIDDEN).  on: smooth movement is on.  jumpWithView: the view moves a
-// whole square under this step and does not glide (the "view glides too"
-// setting off), so the hero jumps with it rather than slide back to the
-// middle (the brief's rule b).
+// whole square under this step and does not glide ("The view glides too" off,
+// or a device that asks for less motion: web.js viewGlides), so the hero
+// jumps with it rather than slide back to the middle (the brief's rule b).
 export function receive(g, hero, t, { on = true, jumpWithView = false } = {}) {
   const prev = g.hero;
   g.hero = hero ? { x: hero.x, y: hero.y, ridden: !!hero.ridden } : null;

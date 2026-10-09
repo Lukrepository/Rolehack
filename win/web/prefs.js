@@ -68,11 +68,11 @@ const DEFAULTS = {
   mapMode: 'tiles',           // tiles | text
   // Smooth movement (glide.js; Lucas, 2026-10-09): the hero glides from square
   // to square, in tiles; beta, so off until playtests say otherwise.  The view
-  // glides along with the hero unless smoothView is turned off; null follows
-  // the device: the view glides unless the device asks for less motion, and an
-  // On or Off chosen in Settings wins (the brief's 6.9, its question 4).
+  // glides along with the hero unless smoothView is turned off (false), and
+  // never while the device asks for less motion, which wins over any choice
+  // here (Lucas, 2026-10-09: "fine to let the device decide").
   smoothMove: false,
-  smoothView: null,
+  smoothView: true,
   zoom: 0,                    // tile size in CSS px; 0 = fit the level's height
   // Twin banks' own zoom (the design's section 11): a factor of the device's
   // map cell, so it carries across windows and both orientations share it;

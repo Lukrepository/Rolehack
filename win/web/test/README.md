@@ -205,7 +205,8 @@ workspace):
 
 - a step of one square glides; anything farther jumps, and so do steps that
   ran with no paint between them (typed-ahead keys), mounting a steed, and a
-  step under which the view jumps ("The view glides too" off);
+  step under which the view jumps ("The view glides too" off, or a device
+  that asks for less motion);
 - a single step eases out over 100 ms; faster steps glide evenly for 0.75 of
   the time since the previous screen in which the hero moved, so a walk-mode
   run's monster screens, 40 ms after the hero's, don't make it hop;
