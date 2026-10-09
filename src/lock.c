@@ -1,4 +1,5 @@
 /* NetHack 5.0	lock.c	$NHDT-Date: 1781973052 2026/06/20 16:30:52 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.150 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-10-09.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2011. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -868,6 +869,7 @@ doopen_indir(coordxy x, coordxy y)
             break;
         default:
             mesg = " is locked";
+            locked = TRUE;
             break;
         }
         set_msg_xy(cc.x, cc.y);

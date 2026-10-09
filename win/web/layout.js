@@ -1146,11 +1146,13 @@ function popupsFor(P, fill, st) {
 }
 
 // ---------------------------------------------------------------------------------------
-// 10. Desk (mouse and keyboard in use): the same two banks at 40 dp, in the same order,
-//     docked side by side and centred directly under the whole level, with keyboard legends.
-//     Panels fill the row beside and under the dock.  The cell is capped by its width, so
-//     Android's text cells stand taller than tiles; on 21:9 and wider the cap rises to 48 px
-//     rather than leave strips wider than a panel beside the map.
+// 10. Desk (mouse and keyboard in use): the same two banks at 40 dp, in the same order, at
+//     the outer edges of the row under the whole level, with keyboard legends (Lucas,
+//     2026-10-08; they stood side by side, centred under it, before).  Panels fill the row
+//     between and under the banks.  The cell is capped by its width, so Android's text cells
+//     stand taller than tiles; on 21:9 and wider the cap rises towards 48 px over WIDE_RAMP dp
+//     of width, as a tablet's does (tabletCap), rather than leave strips wider than a panel
+//     beside the map.  The desk lies within the safe insets (deskLayout, below).
 //     Desktop mode is being built (Lucas, 2026-10-06 and 2026-10-07; it was deferred from
 //     3 October until then): the page asks for the desk when its input switch says a mouse
 //     or a touchpad is in use (section 12).  Three things changed for the desk alone, and
@@ -1242,16 +1244,25 @@ function deskPlan(W, H, M0, st, choose = (part, own) => own) {
   const availH = Math.max(0, H - mapTop - 12 - dockH - 12 - 4);
   // The cap is on the cell's width, so Android's text cells may stand up to 57 dp tall; on
   // 21:9 and wider, where 32 px tiles would leave strips wider than a panel beside the
-  // level, tiles may grow to 48 px (text cells keep their cap).
-  let cap = st.deskCellMax / Math.min(1, a);
-  if ((W - 16 - 80 * a * cap) / 2 >= 240) cap = Math.max(cap, st.deskWideCellMax);
+  // level, tiles may grow to 48 px (text cells keep their cap).  They grow over WIDE_RAMP
+  // dp of width from there, as a tablet's do (tabletCap), not at once: at 1440 tall the
+  // cap leapt from 32 to 48 px at 3056 wide, and the level from 32 px to 38, with the
+  // panels moving from beside the map to the dock row, at a single pixel (the review of
+  // 2026-10-07; Lucas, 2026-10-08, "work on the 21:9 step").
+  const lo = st.deskCellMax / Math.min(1, a), hi = Math.max(lo, st.deskWideCellMax);
+  const ramp = clamp((W - 16 - 80 * a * lo - 2 * WIDE_STRIP) / WIDE_RAMP, 0, 1);
+  const cap = Math.min(hi, lo + ramp * Math.max(0, (W - 16) / (80 * a) - lo));
   // the cell in whole device pixels (the 1e-6: a quotient a rounding error short of whole)
   const fitD = Math.min(Math.floor((W - 16) * dpr / (80 * a) + 1e-6), Math.floor(availH * dpr / 21 + 1e-6));
   const raw = Math.min(fitD, Math.floor(cap * dpr + 1e-6));
   const floorD = Math.ceil(st.fitFloor * dpr - 1e-6);
   const ownWhole = raw / dpr >= st.fitFloor - 1e-9;
   const ownD = ownWhole ? raw : floorD;
-  const Td = choose('Td', ownD, (d) => d === floorD || (d > floorD && d <= fitD));
+  // whether the log and the inventory fit beside the map at a cell (d device px): the strips
+  // beside the level and the height beside it, as `beside` is judged below.  The band's cell
+  // asks it, so as not to push out panels the rule's own cell keeps there (keep()).
+  const besideAt = (d) => { const T = d / dpr; return (W - Math.min(W - 16, 80 * a * T)) / 2 - 16 >= 160 && Math.min(21 * T, availH) - 6 >= 60; };
+  const Td = choose('Td', ownD, (d) => d === floorD || (d > floorD && d <= fitD), besideAt);
   const whole = Td === ownD ? ownWhole : Td <= fitD;
   const T = Td / dpr;
   // never wider than the level's 80 columns (round 2, item 8), as on touch (fillGlass)
@@ -1291,7 +1302,54 @@ function deskPlan(W, H, M0, st, choose = (part, own) => own) {
   };
 }
 
+// The desk within the safe insets (section 13: "the text bands always pad by the safe
+// insets"; Lucas, 2026-10-08).  Every part of the desk keeps at least 2 dp from the
+// window's edges -- the glass round the bands and the map 2, the header and the panels 4,
+// the map's strips 8, the banks 12 and their wells 6 less (2.8 at the narrowest usable,
+// scaled dock) -- so an inset counts only beyond those 2 dp, as a cutout counts only
+// beyond the margin that already clears it: the desk is laid out in the window less what
+// is left of the insets, and moved in by it.  With no inset past 2 dp it is the desk as it
+// always was, to the last digit.  The band's windows around are taken in the same smaller
+// window.  (A first cut counted beyond 4 dp and left the glass and a scaled dock's wells
+// up to 2 dp inside an inset: the review of 2026-10-08.)
+const DESK_EDGE = 2;
 function deskLayout(W, H, M0, st, table, reasons) {
+  const ins = st.insets || {};
+  const e = {};
+  for (const k of ['l', 'r', 't', 'b']) e[k] = Math.max(0, num(ins[k], 0) - DESK_EDGE);
+  if (!(e.l || e.r || e.t || e.b)) return deskLayoutIn(W, H, M0, st, table, reasons);
+  const r = deskLayoutIn(Math.max(1, W - e.l - e.r), Math.max(1, H - e.t - e.b), M0, st, table, reasons);
+  return movedIn(r, W, H, e, ins);
+}
+
+// a desk laid out in the window less the insets, moved into the whole window
+function movedIn(r, W, H, e, ins) {
+  const done = new Set();
+  const mv = (o) => {
+    if (!o || typeof o !== 'object' || done.has(o)) return o;
+    done.add(o);
+    if (typeof o.x === 'number') o.x = r2(o.x + e.l);
+    if (typeof o.y === 'number') o.y = r2(o.y + e.t);
+    if (typeof o.x0 === 'number') { o.x0 += e.l; o.x1 += e.l; }
+    if (typeof o.y0 === 'number') { o.y0 += e.t; o.y1 += e.t; }
+    return o;
+  };
+  const S = r.spec;
+  for (const list of [S.controls, S.bands, S.popups, S.chrome, S.decor]) list.forEach(mv);
+  mv(S.glass); mv(S.mapArea);
+  S.source += `; within the safe insets ${['l', 'r', 't', 'b'].map((k) => r2(num(ins[k], 0))).join('/')} (l/r/t/b)`;
+  S.W = W; S.H = H;
+  const I = r.info;
+  Object.values(I.banks).forEach(mv);
+  I.bankTop += e.t;
+  const f = I.fill;
+  mv(f.map); mv(f.glass);
+  f.bands.forEach(mv); f.panels.forEach(mv);
+  I.S = Math.min(W, H); I.L = Math.max(W, H); I.portrait = H > W;
+  return r;
+}
+
+function deskLayoutIn(W, H, M0, st, table, reasons) {
   const a = st.cellAspect;
   // the band: the rule's own arrangement at the eight windows GLASS_BAND dp away, made only
   // when a part of the last one differs from the rule's own pick here, once for each set of
@@ -1312,7 +1370,7 @@ function deskLayout(W, H, M0, st, table, reasons) {
     if (!near.has(key)) near.set(key, NEAR.map(([dx, dy]) => deskPlan(Math.max(1, W + dx * GLASS_BAND), Math.max(1, H + dy * GLASS_BAND), M0, st, (p, own, fits) => (p in held && fits(held[p]) ? held[p] : own)).desk));
     return near.get(key);
   };
-  const keep = (part, own, fits) => {
+  const keep = (part, own, fits, besideAt) => {
     const v = prev[part];
     let out = own;
     if (v !== undefined && v !== own && fits(v)) {
@@ -1325,6 +1383,25 @@ function deskLayout(W, H, M0, st, table, reasons) {
       // while the cell is on its way to the rule's own, a part that is already what the
       // rule's own arrangement here has stays so, rather than change and change back
       else if (here.Td !== undefined && here.Td !== (plain || (plain = deskPlan(W, H, M0, st).desk)).Td && plain[part] === v) out = v;
+    } else if (part === 'Td' && v !== undefined && v > own) {
+      // A kept cell above the rule's own that no longer fits gives way to the largest cell
+      // under it that still fits, not to the rule's own: a window dragged smaller meets every
+      // cell, as one dragged larger does.  Inside the 21:9 ramp the rule's own cell is held
+      // under the largest that fits by the cap, and falling to it skipped 2 to 4 device px at
+      // a pixel (the review of 2026-10-08).
+      for (let d = v - 1; d > own; d--) if (fits(d)) { out = d; break; }
+    }
+    // A cell held above the rule's own gives way, to the largest that keeps them, where it
+    // would push the log and the inventory the last desk drew beside the map out of the
+    // strips there, and the rule's own cell keeps them: a window narrowed through the 21:9
+    // ramp sent them to the dock row at one pixel and back 11 dp on, when the held cell
+    // stepped down (1120 tall at dpr 1.25 with the status lines' taller header; the review
+    // of 2026-10-08 found the same at 1088 to 1103 tall without it).  The panels are what the
+    // eye follows; the cell then changes where the rule's own already has.
+    if (part === 'Td' && besideAt && prev.beside === true && out > own && !besideAt(out) && besideAt(own)) {
+      let d = out - 1;
+      while (d > own && !(fits(d) && besideAt(d))) d--;
+      out = d;
     }
     here[part] = out;
     return out;
