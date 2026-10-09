@@ -190,7 +190,8 @@ for idx, o in enumerate(objs):
 # ---- bodies: tiles and the anchors RhDoll.java measures
 def A(**kw):
     a = dict(head=[0, 0], torso=[0, 0], main=[4, 10], off=[11, 10], hands=None, feetRow=13,
-             feetCols=[5, 6, 9, 10], short=False, keep=[], offPose=[], cuffs=None)
+             feetCols=[5, 6, 9, 10], short=False, keep=[], offPose=[], cuffs=None,
+             leftPose=[], leftAnchor=None)
     a.update(kw)
     return a
 ANCH = {
@@ -207,10 +208,20 @@ ANCH = {
     "valkyrie": A(), "wizard": A(feetRow=-1),
     # Claude's tile (2026-09-26), on vanilla's frame, a flask held up in the off hand: the flask's
     # neck survives a helmet (keep); a shield or second weapon brings the arm down (offPose:
-    # x, y, colour -- "~" background, "L" skin, else a palette letter)
+    # x, y, colour -- "~" background, "L" skin, else a palette letter).
+    # A left-hander (2026-10-08, tools/paperdoll/lefty-spec-2026-10-08.md section 3) raises the flask
+    # in his right hand instead: leftPose edits the tile before any layer (with the doll off too), and
+    # leftAnchor's fields replace these four while he wears it.
     "apothecary": A(hands=[4, 10, 12, 5, 11, 10], cuffs=[4, 9, 12, 6, 11, 9], keep=[12, 3],
                     offPose=[11, 7, "~", 12, 6, "~", 12, 5, "~", 12, 4, "~", 13, 4, "~", 12, 3, "~",
-                             13, 5, "~", 11, 8, "O", 11, 9, "L", 11, 10, "L"]),
+                             13, 5, "~", 11, 8, "O", 11, 9, "L", 11, 10, "L"],
+                    leftPose=[12, 3, "~", 12, 4, "~", 13, 4, "~", 12, 5, "~", 13, 5, "~", 12, 6, "~",
+                              11, 7, "~", 11, 8, "O", 11, 9, "L", 11, 10, "L", 10, 9, "A", 10, 10, "A",
+                              4, 8, "~", 4, 9, "~", 4, 10, "~", 5, 9, "A", 5, 10, "A",
+                              4, 7, "O", 3, 6, "L", 3, 5, "L", 3, 4, "I", 2, 4, "I", 3, 3, "N"],
+                    leftAnchor=dict(hands=[11, 10, 3, 5, 4, 10], cuffs=[11, 9, 3, 6, 4, 9], keep=[3, 3],
+                                    offPose=[4, 7, "~", 3, 6, "~", 3, 5, "~", 3, 4, "~", 2, 4, "~",
+                                             3, 3, "~", 4, 8, "O", 4, 9, "L", 4, 10, "L"])),
     "human": A(), "elf": A(),
     "dwarf": A(main=[4, 11], off=[8, 11], feetCols=[4, 5, 7, 8], short=True, keep=[5, 9, 6, 9, 7, 9, 6, 10]),
     "gnome,male": A(main=[4, 11], off=[8, 11], feetCols=[4, 5, 7, 8], short=True, keep=[5, 9, 6, 9, 7, 9, 6, 10]),

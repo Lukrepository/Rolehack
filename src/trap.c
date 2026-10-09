@@ -1,4 +1,5 @@
 /* NetHack 5.0	trap.c	$NHDT-Date: 1781973071 2026/06/20 16:31:11 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.645 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-10-08.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2013. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -1616,7 +1617,9 @@ trapeffect_rust_trap(
             (void) water_damage(uarmh, helm_simple_name(uarmh), TRUE);
             break;
         case 1:
-            pline("%s your left %s!", A_gush_of_water_hits, body_part(ARM));
+            /* the off arm: shield, second weapon or two-hander */
+            pline("%s your %s %s!", A_gush_of_water_hits,
+                  URIGHTY ? "left" : "right", body_part(ARM));
             if (water_damage(uarms, "shield", TRUE) != ER_NOTHING)
                 break;
             if (u.twoweap || (uwep && bimanual(uwep)))
@@ -1625,7 +1628,9 @@ trapeffect_rust_trap(
             (void) water_damage(uarmg, gloves_simple_name(uarmg), TRUE);
             break;
         case 2:
-            pline("%s your right %s!", A_gush_of_water_hits, body_part(ARM));
+            /* the dominant arm, which wields the primary weapon */
+            pline("%s your %s %s!", A_gush_of_water_hits,
+                  URIGHTY ? "right" : "left", body_part(ARM));
             (void) water_damage(uwep, 0, TRUE);
             goto uglovecheck;
         default:
