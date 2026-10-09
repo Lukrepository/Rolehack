@@ -1,5 +1,5 @@
 #include <string.h>
-/* Changed for Rolehack by Lucas Ruiz, 2026-09-23 to 2026-09-28.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-23 to 2026-10-08.  See ROLEHACK-CHANGES.md. */
 #include <errno.h>
 #include <jni.h>
 #include <ctype.h>
@@ -1461,7 +1461,7 @@ staticfn void and_send_here_context(boolean always)
  * doll ignores hallucination, as the core does for the hero's own glyph.
  *
  * Layout of the int array (RH_DOLL_LEN):
- *   [0] version (2)   [1] u.ux   [2] u.uy
+ *   [0] version (3)   [1] u.ux   [2] u.uy
  *   [3] tile of the hero's own glyph (hero_glyph: role, or race with showrace),
  *       or -1 when the doll must step aside (polymorphed, riding, engulfed,
  *       underwater, mimicking)
@@ -1501,7 +1501,14 @@ staticfn void and_send_here_context(boolean always)
  *   then, from version 2, the skin: a seed that is fixed for the character
  *   (a hash of ubirthday, which the save keeps) and the skintone option
  *   (0 = random, else the tone the options file fixed).  The interface owns
- *   the tones themselves; it has RH_SKINTONES of them.
+ *   the tones themselves; it has RH_SKINTONES of them.  They sit at fixed
+ *   places, RH_DOLL_SEED and RH_DOLL_TONE, right after the slots.
+ *
+ *   then, from version 3, a word of flags (RH_DOLL_FLAGS): RH_DOLL_LEFTY
+ *   when the hero is left-handed (ULEFTY; u_init.c rolls one hero in ten),
+ *   so the doll puts the weapon in the other hand (Lucas, 2026-10-08).  The
+ *   player can read it with ^X and in the inventory's "(weapon in left
+ *   hand)", so it tells nothing new.  The other bits are 0.
  *
  * Sent when the game waits for a command, and when the hero's own square is
  * drawn -- otherwise the welcome screens show the plain tile, and NetHack's
@@ -1509,7 +1516,11 @@ staticfn void and_send_here_context(boolean always)
  * changed.
  */
 #define RH_DOLL_SLOTS 11
-#define RH_DOLL_LEN (4 + 3 * RH_DOLL_SLOTS + 2)
+#define RH_DOLL_SEED (4 + 3 * RH_DOLL_SLOTS)    /* 37, from version 2 */
+#define RH_DOLL_TONE (RH_DOLL_SEED + 1)         /* 38, from version 2 */
+#define RH_DOLL_FLAGS (RH_DOLL_SEED + 2)        /* 39, from version 3 */
+#define RH_DOLL_LEN (4 + 3 * RH_DOLL_SLOTS + 3)
+#define RH_DOLL_LEFTY 0x01                      /* flags: left-handed */
 #define RH_DOLL_SHORT_BLADE  1  /* dagger, knife */
 #define RH_DOLL_SWORD        2  /* short, broad, long sword, saber */
 #define RH_DOLL_GREAT_SWORD  3
@@ -1766,7 +1777,7 @@ staticfn void and_send_hero_look(boolean from_display)
     slots[4] = uarms; slots[5] = uarmg; slots[6] = uarmf; slots[7] = ublindf;
     slots[8] = uamul; slots[9] = uwep; slots[10] = u.twoweap ? uswapwep : 0;
 
-    look[0] = 2;
+    look[0] = 3;
     look[1] = u.ux;
     look[2] = u.uy;
     if(Upolyd || u.usteed || u.uswallow || Underwater || U_AP_TYPE != M_AP_NOTHING)
@@ -1796,8 +1807,9 @@ staticfn void and_send_hero_look(boolean from_display)
         look[4 + 3 * 7 + 2] |= rh_doll_look(ublindf, rh_eyewear_looks, SIZE(rh_eyewear_looks));
     /* Knuth's multiplicative hash, high bits: games started seconds apart
        should not just step through the tones in order. */
-    look[RH_DOLL_LEN - 2] = (int) ((((unsigned) ubirthday) * 2654435761U) >> 16);
-    look[RH_DOLL_LEN - 1] = iflags.rh_skintone;
+    look[RH_DOLL_SEED] = (int) ((((unsigned) ubirthday) * 2654435761U) >> 16);
+    look[RH_DOLL_TONE] = iflags.rh_skintone;
+    look[RH_DOLL_FLAGS] = ULEFTY ? RH_DOLL_LEFTY : 0;
 
     if(!memcmp(look, last, sizeof look))
         return;
