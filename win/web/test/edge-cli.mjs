@@ -78,8 +78,9 @@ export const EDGE = {
     { usable: false, level: 'unusable', pad: 58, rightColumns: 58, gap: 27 }),
   '480x300': touch(480, 300, "a 300 dp short side with no room for the drawer: classic",
     { usable: false, level: 'unusable', pad: 46, rightColumns: 40, gap: 14 }),
+  // the status lines at the text metric (2026-10-08) made the desk's header taller, so the scaling here deepened (was pad 39.88, gap 23.93)
   '700x450 mouse': { W: 700, H: 450, pointer: 'mouse', settings: {}, why: 'a desk window too short for the 40 dp dock: scaled, a 5-row map, classic',
-    expect: { usable: false, level: 'unusable', pad: 39.88, rightColumns: 39.88, gap: 23.93 } },
+    expect: { usable: false, level: 'unusable', pad: 33.89, rightColumns: 33.89, gap: 20.33 } },
 };
 
 // the design's numbers against a result, as text

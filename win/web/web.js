@@ -475,6 +475,7 @@ function layoutGlass(g) {
   mb.style.lineHeight = `${textPx * MSG_LEADING}px`;
   mb.style.height = `${bandPx}px`;
   mb.style.padding = `${5 * s}px ${10 * s}px ${4 * s}px`;
+  $('statband').style.fontFamily = '';
   $('statband').style.fontSize = `${10.5 * 1.35 * s}px`;
   $('statband').style.height = `${statusBandH() * s}px`;
   $('statband').style.display = P.get('statusLines') === 'hidden' ? 'none' : '';
@@ -542,18 +543,22 @@ function layoutTwinGlass(g) {
     Object.assign(e.style, { left: `${x - ox}px`, top: `${y - oy}px`, width: `${snap(q.x + q.w) - x}px`,
                              height: `${snap(q.y + q.h) - y}px`, right: 'auto', bottom: 'auto' });
   };
-  // the status lines at the system's text size, as the layout sized their band
+  // the status lines at the text metric, as the message rows (Lucas,
+  // 2026-10-08; layout.js textMetrics sized their band the same way): the
+  // text font and size, one message row per line
   const ts = g.textScale || 1;
-  bands.style.setProperty('--line', `${LINE * ts}px`);
   resetTextScale();
   const msg = $('msgband'), textPx = msgTextPx();
-  msg.style.fontFamily = P.get('msgFont') === 'screen' ? 'var(--screenfont)' : 'var(--msgfont)';
+  const face = P.get('msgFont') === 'screen' ? 'var(--screenfont)' : 'var(--msgfont)';
+  bands.style.setProperty('--line', `${textPx * MSG_LEADING}px`);
+  msg.style.fontFamily = face;
   msg.style.fontSize = `${textPx}px`;
   msg.style.lineHeight = `${textPx * MSG_LEADING}px`;
   place(msg, mb);
   msg.style.padding = '5px 10px 4px';
   const st = $('statband');
-  st.style.fontSize = `${10.5 * 1.35 * ts}px`;
+  st.style.fontFamily = face;
+  st.style.fontSize = `${textPx}px`;
   place(st, sb);
   st.style.padding = `${3 * ts}px 10px ${4 * ts}px`;
   st.style.display = P.get('statusLines') === 'hidden' ? 'none' : '';
@@ -1641,8 +1646,7 @@ function renderBands() {
   else if (lastHidden > 0) html += `<span class="slot more" style="${at}">+${lastHidden} ▸</span>`;
   $('msgband').innerHTML = html;
   if (overlay) overlay.setMore(moreShown ? 1 : lastHidden);
-  $('statband').innerHTML = statusHtml();
-  fitStatus();
+  renderStatus();
   renderPanels();
 }
 
@@ -1796,9 +1800,32 @@ function badges() {
   return out.sort((a, b) => a.tier - b.tier || a.order - b.order);
 }
 
+// vanilla's hitpointbar option, read from the core each time the status is
+// drawn (winshim.c web_hitpointbar): off by default, as vanilla ships it
+// ("ship as vanilla does", Lucas, 2026-10-08), so the inverse-video bar behind
+// the name and title shows only for a player who turns the option on, as tty
+function hitpointbar() {
+  try { return !!(M && M._web_hitpointbar && M._web_hitpointbar()); } catch (e) { return false; }
+}
+
+// Twin banks: at the text metric a long name and title can run past a narrow
+// band (a phone in portrait).  renderStatus() first shrinks the lines a
+// little; if that runs out it drops the rank title ("the Troglodyte") and
+// keeps the name (Lucas, 2026-10-08: "(a) then (b) if (a) runs out").
+let shortTitle = false;
+function statusTitle(title) {
+  if (!shortTitle) return title;
+  const m = /^(.+?) the .+$/.exec(title);
+  return m ? m[1] : title;
+}
+
 function statusHtml() {
   if (!bare('BL_HPMAX')) return '';
-  const mode = P.get('statusLines'), compact = mode === 'compact';
+  // three lines, two (compact: no attribute line) or one (the HP line alone): by the
+  // setting, or fewer where the layout dropped lines to keep twin banks (layout.js
+  // section 9, fit.statusLines; overlay.js passes it as geom.statusLines)
+  const mode = P.get('statusLines'), forced = geom && geom.twin ? geom.statusLines : null;
+  const lines = forced || (mode === 'compact' ? 2 : 3);
   const title = bare('BL_TITLE');
   const hp = Number(bare('BL_HP')), hpmax = Number(bare('BL_HPMAX')) || 1;
   const frac = clamp(hp / hpmax, 0, 1);
@@ -1814,50 +1841,44 @@ function statusHtml() {
     `${l}${bare(['BL_STR', 'BL_DX', 'BL_CO', 'BL_IN', 'BL_WI', 'BL_CH'][n])}`).join(' ');
   const badgeHtml = `<span class="badges">${badges().map((b) =>
     `<span class="badge ${TIER_STYLE[b.tier]}" style="--bc:${TIER_BG[b.tier]};--bf:${TIER_FG[b.tier]}">${esc(b.text)}</span>`).join('')}</span>`;
-  const titleHtml = `<span class="title">${esc(title)}<span class="hpbar" style="width:calc(${(frac * 100).toFixed(1)}% + 1px);`
-    + `background:${hpCol}"><span>${esc(title)}</span></span></span>`;
-  const row1 = `<div class="row">${titleHtml}&nbsp;&nbsp;${esc(tail1)}${compact ? badgeHtml : ''}</div>`;
+  const shown = statusTitle(title);
+  const titleHtml = hitpointbar()
+    ? `<span class="title">${esc(shown)}<span class="hpbar" style="width:calc(${(frac * 100).toFixed(1)}% + 1px);`
+      + `background:${hpCol}"><span>${esc(shown)}</span></span></span>`
+    : `<span class="title">${esc(shown)}</span>`;
+  const row1 = lines >= 2 ? `<div class="row">${titleHtml}&nbsp;&nbsp;${esc(tail1)}${lines === 2 ? badgeHtml : ''}</div>` : '';
   const hpText = `HP:${esc(bare('BL_HP'))}(${esc(bare('BL_HPMAX'))})`;
   const hpHtml = tier === 2 ? `<span class="hpcrit" style="background:${hpCol}">${hpText}</span>`
     : `<span style="color:${hpCol}">${hpText}</span>`;
-  const row2 = `<div class="row">${hpHtml}&nbsp;${esc(tail2)}</div>`;
-  const row3 = compact ? '' : `<div class="row">${esc(stats)}&nbsp;&nbsp;${badgeHtml}</div>`;
-  return row1 + row2 + row3 + barsHtml(frac, hpCol);
+  const row2 = `<div class="row">${hpHtml}&nbsp;${esc(tail2)}${lines === 1 ? badgeHtml : ''}</div>`;
+  const row3 = lines === 3 ? `<div class="row">${esc(stats)}&nbsp;&nbsp;${badgeHtml}</div>` : '';
+  return row1 + row2 + row3;
 }
 
-// Twin banks: HP and Pw as bars under the status lines, wherever the layout
-// leaves the status band the room -- the 14 dp of height the level does not
-// need that layout.js fillGlass hands it, or a side-by-side band standing as
-// tall as the message rows beside it (the design's section 10).  A track and
-// its fill, each named, so they read without colour; HP takes the status
-// line's colour steps, Pw the game's bright blue.  The names grow with the
-// system's text size, as the lines over them do, up to the bars' own height
-// (the review, 2026-10-02: 11 px beside status lines twice that).  None in
-// classic.
-const BARS_MIN = 10, BARS_H = 14, BARS_TEXT = 11;
-function barsHtml(frac, hpCol) {
-  if (!(geom && geom.twin && geom.statusBand)) return '';
-  const room = geom.statusBand.h - (geom.statusLinesH || 0);
-  if (room < BARS_MIN) return '';
-  const en = Number(bare('BL_ENE')), enmax = Number(bare('BL_ENEMAX'));
-  const pw = enmax > 0 ? clamp(en / enmax, 0, 1) : 0;
-  const h = Math.min(BARS_H, room), text = Math.min(BARS_TEXT * (geom.textScale || 1), h);
-  const bar = (name, f, colour) => `<span class="bar"><b>${name}</b><span class="track">`
-    + `<span class="fill" style="width:${(f * 100).toFixed(1)}%;background:${colour}"></span></span></span>`;
-  return `<div class="bars" style="height:${h}px;--bartext:${text}px">${bar('HP', frac, hpCol)}${bar('Pw', pw, gameColour(12))}</div>`;
-}
-
-// the lines shrink together until the widest fits
+// The lines shrink together until the widest fits.  Classic: from the case's
+// size, down to 60%, as it always has.  Twin banks: from the text metric (the
+// message band's size, msgTextPx), down to 80%, which is still larger than
+// classic's text.  Says whether the widest line fits at the floor or better.
 function fitStatus() {
   const sb = $('statband');
-  if (!geom || sb.style.display === 'none') return;
-  // twin banks: at the system's text size, as the layout sized the band
-  const base = 10.5 * 1.35 * (geom.twin ? geom.textScale || 1 : geom.s);
+  if (!geom || sb.style.display === 'none') return true;
+  const twin = !!geom.twin;
+  const base = twin ? msgTextPx() : 10.5 * 1.35 * geom.s, floor = twin ? 0.8 : 0.6;
   sb.style.fontSize = `${base}px`;
   const avail = sb.clientWidth - 20 * geom.s;
   let widest = 0;
   for (const r of sb.querySelectorAll('.row')) widest = Math.max(widest, r.scrollWidth);
-  if (widest > avail && avail > 0) sb.style.fontSize = `${base * Math.max(0.6, avail / widest)}px`;
+  if (widest > avail && avail > 0) sb.style.fontSize = `${base * Math.max(floor, avail / widest)}px`;
+  return !(avail > 0) || widest * floor <= avail;
+}
+
+// the status band: the lines, fitted; in twin banks a band too narrow for
+// them even at the floor gets the short title (statusTitle) and is fitted again
+function renderStatus() {
+  const sb = $('statband');
+  shortTitle = false;
+  sb.innerHTML = statusHtml();
+  if (geom && geom.twin && !fitStatus()) { shortTitle = true; sb.innerHTML = statusHtml(); fitStatus(); }
 }
 
 function render() {

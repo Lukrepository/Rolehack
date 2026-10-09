@@ -262,7 +262,12 @@ const mapOf = (R) => ({ cells: R.info.fill.cols * R.info.fill.rows, pct: R.m.map
   for (const [land, port] of [[[896, 443], [443, 939]], [[640, 360], [360, 640]], [[844, 390], [390, 844]], [[915, 412], [412, 915]], [[1024, 768], [768, 1024]]]) {
     for (const msgFont of ['atkinson', 'screen']) for (const msgSize of [0.85, 1, 1.2, 1.4]) for (const textScale of [0.85, 1, 1.3, 2]) for (const mode of ['columns', 'rows']) {
       const b = budgetOf(land, port), st = { text: { msgFont, msgSize, textScale }, mapCell: mode, budget: b }, tag = `${msgFont} ${msgSize} x${textScale} ${mode}`;
-      pair(sec, run(sec, ...land, 'touch', st, tag), run(sec, ...port, 'touch', st, tag), tag, { hits: false });
+      // The one allowance (2026-10-08, the status lines at the text metric; DESIGN.md's
+      // CHANGES): 360x640 with the screen font at Text size Larger and twice the system text
+      // is classic.  One status line alone is 104 dp there (the old 48 dp band at that text
+      // size was 96), and the rule drops no further than one line.
+      const corner = port[0] === 360 && msgFont === 'screen' && msgSize === 1.4 && textScale === 2;
+      pair(sec, run(sec, ...land, 'touch', st, tag), run(sec, ...port, 'touch', st, tag, { allowUnusable: corner }), tag, { hits: false });
     }
   }
 }

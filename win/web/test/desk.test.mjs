@@ -63,7 +63,9 @@ test('the desk\'s cell is the largest whole device-pixel cell that fits, drawn e
 
 test('at dpr 1 the cell is what it always was; at 1.25 it gains the device pixel it lost', () => {
   // the design's desk rows (section 4) and the fidelity report's windows
-  for (const [W, H, T] of [[1280, 800, 15], [1920, 1080, 23], [2560, 1440, 31], [1366, 768, 16], [1536, 864, 19], [3440, 1440, 42], [1280, 640, 14]]) {
+  // (1280x640: 14 until the status lines grew on 2026-10-08; the desk's header, the status
+  // beside the messages, is 85 dp since, and the whole level at that height fits at 13)
+  for (const [W, H, T] of [[1280, 800, 15], [1920, 1080, 23], [2560, 1440, 31], [1366, 768, 16], [1536, 864, 19], [3440, 1440, 42], [1280, 640, 13]]) {
     assert.equal(desk(W, H).info.T, T, `${W}x${H}`);
     assert.equal(desk(W, H, { dpr: 1 }).info.T, T, `${W}x${H}`);
     assert.deepEqual(desk(W, H, { dpr: 1 }).spec, desk(W, H).spec, `${W}x${H}: dpr 1 is the default`);
@@ -281,20 +283,22 @@ function band(name, along, from, to, other, pick, st = {}) {
 }
 
 test("the band: a cell step, the header at 826 dp and the panels' flip each change 24 dp late on the way up", () => {
-  // the cell at 1280 wide steps at 614 dp tall (12 -> 13 dp) and at 635 (14 dp): grown, it
-  // stays 12 dp to 637; shrunk from 640, 14 dp goes at 634, where it stops fitting
-  assert.deepEqual(band('the cell', 'H', 600, 640, 1280, (r) => r.info.desk.Td), { up: 614, down: 634, dragged: 638 });
+  // the cell at 1280 wide steps at 638 dp tall (12 -> 13 dp), at 659 (14) and at 680 (15)
+  // (614, 635 and 656 until the status lines grew the header by 24 dp, 2026-10-08): grown, it
+  // stays 12 dp to 661; shrunk from 680, 15 dp goes at 679, where it stops fitting
+  assert.deepEqual(band('the cell', 'H', 620, 680, 1280, (r) => r.info.desk.Td), { up: 638, down: 679, dragged: 662 });
   // and at dpr 1.5, where its steps are 14 dp apart
-  band('the cell at dpr 1.5', 'H', 600, 640, 1280, (r) => r.info.desk.Td, { dpr: 1.5 });
+  band('the cell at dpr 1.5', 'H', 620, 680, 1280, (r) => r.info.desk.Td, { dpr: 1.5 });
   // the header goes side by side at 826 dp wide
   assert.deepEqual(band('the header', 'W', 800, 860, 800, (r) => r.info.desk.sideBySide), { up: 826, down: 825, dragged: 850 });
   // 1440 tall, the level at its 32 dp cap: the log and the inventory go beside it at 2912 wide
   assert.deepEqual(band('the panels', 'W', 2880, 2950, 1440, (r) => r.info.desk.beside), { up: 2912, down: 2911, dragged: 2936 });
-  // text cells at 768 tall: beside the 900 dp map from 1252 wide.  24 dp taller the cell is
-  // 21 dp and the map 945 wide; asked on its own, that window kept the row to 1321
-  assert.deepEqual(band('the panels, text cells', 'W', 1220, 1340, 768, (r) => r.info.desk.beside, { cellAspect: 0.5625 }), { up: 1252, down: 1251, dragged: 1276 });
-  // tiles at 780 tall, the 20 dp cell: beside from 1952 wide (it was kept to 2136)
-  assert.deepEqual(band('the panels at 780 tall', 'W', 1900, 2150, 780, (r) => r.info.desk.beside), { up: 1952, down: 1951, dragged: 1976 });
+  // text cells at 768 tall: beside the map from 1207 wide (1252 before the taller header,
+  // 2026-10-08).  24 dp taller the cell grows and the map with it; asked on its own, that
+  // window kept the row further
+  assert.deepEqual(band('the panels, text cells', 'W', 1180, 1300, 768, (r) => r.info.desk.beside, { cellAspect: 0.5625 }), { up: 1207, down: 1206, dragged: 1231 });
+  // tiles at 780 tall: beside from 1872 wide (1952 before)
+  assert.deepEqual(band('the panels at 780 tall', 'W', 1850, 2100, 780, (r) => r.info.desk.beside), { up: 1872, down: 1871, dragged: 1896 });
   // and at 600 tall, the level at 12 dp (kept to 1416), at dpr 1 and 1.5
   for (const dpr of [1, 1.5]) assert.deepEqual(band(`the panels at 600 tall, dpr ${dpr}`, 'W', 1250, 1450, 600, (r) => r.info.desk.beside, { dpr }), { up: 1312, down: 1311, dragged: 1336 });
 });
@@ -356,10 +360,10 @@ test('a window dragged a pixel at a time never flips its arrangement back within
 
 test('the band never applies to a first layout, nor across a dpr, cell aspect or key size', () => {
   const kept = desk(1280, 640).info.desk;
-  assert.equal(kept.Td, 14);
-  // with the same settings 1280x660 keeps 14 dp (its own cell is 15 dp, from 656 tall)...
-  assert.equal(desk(1280, 660).info.T, 15);
-  assert.equal(desk(1280, 660, { prevDesk: kept }).info.T, 14);
+  assert.equal(kept.Td, 13);   // 14 until the status lines grew (2026-10-08)
+  // with the same settings 1280x660 keeps 13 dp (its own cell is 14 dp, from 659 tall)...
+  assert.equal(desk(1280, 660).info.T, 14);
+  assert.equal(desk(1280, 660, { prevDesk: kept }).info.T, 13);
   // ...and with others it is laid out as a first layout
   for (const [W, H] of [[1280, 660], [1290, 640], [900, 600]]) {
     assert.equal(JSON.stringify(desk(W, H, { prevDesk: null })), JSON.stringify(desk(W, H)));

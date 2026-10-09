@@ -17,7 +17,7 @@ rebuild and republish.
 
 | File | What it is |
 |---|---|
-| `export.py` | Reads `win/share/*.txt`, `include/objects.h` and `src/u_init.c`; writes `data.json`: bodies with their anchors, every wearable item with its floor tile and flags, some absurd things to hold, the starting kits, and the costume table. |
+| `export.py` | Reads `win/share/*.txt`, `include/objects.h` and `src/u_init.c`; writes `data.json`: bodies with their anchors (and the Apothecary's left-handed pose), every wearable item with its floor tile and flags, some absurd things to hold, the starting kits, and the costume table. |
 | `template.html` | The page and the doll port.  `__DATA__` marks where the data goes. |
 | `build.py` | Inlines `data.json` into `template.html` and writes `rolehack-dressing-room.html`. |
 | `outfit.py` | Writes a link to the page wearing an outfit given in plain words. |
@@ -33,10 +33,12 @@ An artifact link can carry only a bare `#token`, so an outfit is one dotted
 token: `body-gender`, `t` and a skin tone 1-8, then a slot letter and an item
 id for each worn item (h helmet, e eyewear, a amulet, c cloak, s suit,
 u shirt, g gloves, b boots, w weapon, o off hand, d shield), with `k0` or
-`n0` when the costume rule or the doll is off.  For example
-`#gnome-f.t6.s107.c147`.  Write one from names:
+`n0` when the costume rule or the doll is off, and `l1` for a left-handed
+hero (without it the hero is right-handed, so older links still load).  For
+example `#gnome-f.t6.s107.c147`.  Write one from names:
 
     python3 outfit.py gnome female tone=6 suit="black dragon scale mail" cloak="opera cloak"
+    python3 outfit.py knight lefty=1 weapon="long sword" shield="large shield"
 
 The page's "Copy outfit link" key gives one back.  Item ids are positions in
 `objects[]`, so links go stale if `objects.h` gains items.
@@ -44,6 +46,6 @@ The page's "Copy outfit link" key gives one back.  Item ids are positions in
 ## Credits
 
 Tiles from NetHack 5.0, under the NetHack General Public License (see
-`LICENSE`).  Apothecary tiles by Lucas Ruiz.  The doll's layers, the page and
-these tools were written by Claude for Rolehack, at Lucas's asking and to his
-review.
+`LICENSE`).  Apothecary tiles and doll layers by Claude for Rolehack, at
+Lucas Ruiz's invitation.  The page and these tools were also written by
+Claude, at Lucas's asking and to his review.

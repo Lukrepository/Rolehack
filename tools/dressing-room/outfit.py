@@ -18,6 +18,8 @@ opens the Dressing Room already dressed.  The page reads the link's #token
               or its appearance ("opera cloak" finds the cloak of invisibility).
     costume=off   draw the role's own kit over its tile anyway
     doll=off      show the plain tile
+    lefty=1       a left-handed hero (default right-handed): the weapon in the
+                  other hand, the shield moved to the main grip
 
 Prints the link, and a local file: link for previewing in the browser pane.
 Any python 3; reads data.json beside it (export.py writes it).
@@ -51,7 +53,7 @@ def main(argv):
     if f"{key},{gender}" not in bodies:
         sys.exit(f"no body '{key}'; one of: {', '.join(keys)}")
     parts = [key.replace(" ", "_") + "-" + gender[0]]
-    tone, extra, worn = 2, [], []
+    tone, extra, worn, lefty = 2, [], [], False
     for k, v in pairs:
         k = ALIAS.get(k.lower(), k.lower())
         if k == "tone":
@@ -62,6 +64,10 @@ def main(argv):
             extra += [] if v.lower() in ("on", "1", "yes") else ["k0"]
         elif k == "doll":
             extra += [] if v.lower() in ("on", "1", "yes") else ["n0"]
+        elif k == "lefty":
+            if v.lower() not in ("1", "on", "yes", "0", "off", "no"):
+                sys.exit("lefty is 1 (left-handed) or 0 (right-handed)")
+            lefty = v.lower() in ("1", "on", "yes")
         elif k in CODES:
             want = "weapon" if k == "offhand" else k
             pool = [i for i in data["items"] if i["slot"] == want and not (k == "offhand" and i.get("held"))]
@@ -77,8 +83,9 @@ def main(argv):
         else:
             sys.exit(f"unknown slot '{k}'; slots are {', '.join(CODES)}")
     parts.insert(1, f"t{tone}")
-    tok = ".".join(parts + extra)
-    print(f"{key}, {gender}, skin tone {tone}" + ("".join(f"\n  {w}" for w in worn) or "\n  (nothing worn)"))
+    tok = ".".join(parts + extra + (["l1"] if lefty else []))   # l1 last, as the page writes it
+    print(f"{key}, {gender}, skin tone {tone}" + (", left-handed" if lefty else "") +
+          ("".join(f"\n  {w}" for w in worn) or "\n  (nothing worn)"))
     print(f"{URL}#{tok}")
     print((HERE / "rolehack-dressing-room.html").resolve().as_uri() + "#" + tok)
 

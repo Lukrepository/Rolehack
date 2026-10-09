@@ -322,6 +322,7 @@ footer p { margin: 0; max-width: 78ch; }
           <div class="row">
             <label class="toggle"><input type="checkbox" id="costume" checked> Costume rule</label>
             <label class="toggle"><input type="checkbox" id="dollOn" checked> Paper doll on</label>
+            <label class="toggle"><input type="checkbox" id="lefty"> Left-handed</label>
             <label class="toggle"><input type="checkbox" id="grid"> Pixel grid</label>
           </div>
           <p class="note" id="ruleNote"></p>
@@ -594,13 +595,25 @@ function recolour(px, bg, x, y, col) {
   if (p === bg || p === 0) return;
   px[y * 16 + x] = col;
 }
-function stamp(px, bg, s, ox, oy, mirror, ramp) {
+// ... and, when foot is given, marks there every place it writes: the sprite's footprint
+function stamp(px, bg, s, ox, oy, mirror, ramp, foot) {
   for (const [ys, x0, row] of s) for (let i = 0; i < row.length; i++) {
     const c = row[i]; if (c === ".") continue;
     const dx = x0 + i, x = ox + (mirror ? -dx : dx), y = oy + ys;
     if (x < 0 || x >= 16 || y < 0 || y >= 16) continue;
     px[y * 16 + x] = c === "~" ? bg : c === "l" ? ramp[0] : c === "m" ? ramp[1] : c === "d" ? ramp[2] : fixed(c);
+    if (foot) foot[y * 16 + x] = true;
   }
+}
+// the rightmost column a sprite draws ("." is not drawn), relative to where it is stamped
+function xmax(s) {
+  let m = -Infinity;
+  for (const [ys, x0, row] of s) for (let i = 0; i < row.length; i++) if (row[i] !== ".") m = Math.max(m, x0 + i);
+  return m;
+}
+// x, y, colour edits to a tile: "~" the background, "L" the hero's skin, else a palette letter
+function repaint(px, bg, skin, xyc) {
+  for (let i = 0; i + 2 < xyc.length; i += 3) { const c = xyc[i + 2]; putPx(px, xyc[i], xyc[i + 1], c === "~" ? bg : c === "L" ? skin : fixed(c)); }
 }
 function stampKeep(px, s, a, ramp) {
   for (const [y, x0, row] of s) for (let i = 0; i < row.length; i++) {
@@ -822,11 +835,12 @@ function dressHuman(px, bg, look, a, skin, tile) {
   if (look.draws("gloves")) stampGloves(px, bg, look, a, a.hands || [a.main[0], a.main[1], a.off[0], a.off[1]]);
   if (look.draws("helmet")) stampHelmet(px, bg, look, a);
   if (look.draws("eyewear")) stamp(px, bg, eyewearSprite(look, false), a.head[0], a.head[1], false, ramp(look.item("eyewear"), false));
+  if (look.lefty) { holdLeftHanded(px, bg, look, a, tile); return; }
   if (look.draws("shield")) stamp(px, bg, shieldSprite(look), a.off[0], a.off[1], false, ramp(look.item("shield"), false));
   if (look.has("weapon")) stamp(px, bg, heldSprite(look, "weapon"), a.main[0], a.main[1], false, ramp(look.item("weapon"), false));
   if (look.has("offhand")) stamp(px, bg, heldSprite(look, "offhand"), a.off[0], a.off[1], true, ramp(look.item("offhand"), false));
 }
-function dressShort(px, bg, look, a) {
+function dressShort(px, bg, look, a, tile) {
   const front = look.has("cloak") && (look.shape("cloak") & FRONT) !== 0;
   const capeOn = look.draws("cloak") && !front, covered = look.has("suit") || front;
   if (capeOn) stampCloakBehind(px, bg, look, a);
@@ -839,10 +853,46 @@ function dressShort(px, bg, look, a) {
   if (look.draws("gloves")) stampGloves(px, bg, look, a, [a.main[0], a.main[1], a.off[0], a.off[1]]);
   if (look.draws("helmet")) stampHelmet(px, bg, look, a);
   if (look.draws("eyewear")) stamp(px, bg, eyewearSprite(look, true), 0, 0, false, ramp(look.item("eyewear"), false));
+  if (look.lefty) { holdLeftHanded(px, bg, look, a, tile); return; }
   if (look.draws("shield")) stamp(px, bg, shieldSprite(look), a.off[0], a.off[1], false, ramp(look.item("shield"), false));   // full size (Lucas)
   // weapons at full size: pound for pound the small races are the strong ones (Lucas, 2026-09-26)
   if (look.has("weapon")) stamp(px, bg, heldSprite(look, "weapon"), a.main[0], a.main[1], false, ramp(look.item("weapon"), false));
   if (look.has("offhand")) stamp(px, bg, heldSprite(look, "offhand"), a.off[0], a.off[1], true, ramp(look.item("offhand"), false));
+}
+// A left-handed hero's hands, on either frame (the core's flags word, bit 0, ULEFTY; Lucas, 2026-10-08,
+// "your pick claude"; tools/paperdoll/lefty-spec-2026-10-08.md).  Same order as the right hand's: the
+// shield to the main grip, moved and not mirrored, its black edge (its rightmost column) on main x + 1,
+// the tile's arm separator; the weapon to the off grip, mirrored so it still points outward; a second
+// weapon to the main grip.  The weapon's halo comes between: the weapon would vanish into the tile's
+// black drop shadow, so the shadow gives way to background beside it.  The second weapon gets none.
+function holdLeftHanded(px, bg, look, a, tile) {
+  if (look.draws("shield")) {
+    const s = shieldSprite(look);
+    stamp(px, bg, s, a.main[0] + 1 - xmax(s), a.main[1], false, ramp(look.item("shield"), false));
+  }
+  if (look.has("weapon")) {
+    const foot = new Array(256).fill(false);
+    stamp(px, bg, heldSprite(look, "weapon"), a.off[0], a.off[1], true, ramp(look.item("weapon"), false), foot);
+    halo(px, bg, foot, a, tile);
+  }
+  if (look.has("offhand")) stamp(px, bg, heldSprite(look, "offhand"), a.main[0], a.main[1], false, ramp(look.item("offhand"), false));
+}
+// The weapon's halo.  Its pixels are its footprint (foot): every place its stamp wrote, whether or not
+// the colour changed -- a black blade pixel laid on the black shadow is still the blade's.  Each
+// 4-neighbour of one that is not a weapon pixel itself, lies on the shadow side (x > off x), and is black
+// both now and in the tile's own pixels (the base before any gear) turns to background.  Neighbours are
+// tested against the footprint, not each other, and only black changes, so the order does not matter.
+function halo(px, bg, foot, a, tile) {
+  for (let i = 0; i < 256; i++) {
+    if (!foot[i]) continue;
+    const x = i % 16, y = (i - x) / 16;
+    for (let d = 0; d < 4; d++) {
+      const X = x + (d === 0 ? 1 : d === 1 ? -1 : 0), Y = y + (d === 2 ? 1 : d === 3 ? -1 : 0);
+      if (X < 0 || X >= 16 || Y < 0 || Y >= 16) continue;
+      const j = Y * 16 + X;
+      if (!foot[j] && X > a.off[0] && (px[j] & 0xffffff) === 0 && (tile[j] & 0xffffff) === 0) px[j] = bg;
+    }
+  }
 }
 // The look the core would send (winandroid.c, and_send_hero_look()).
 function makeLook(bodyId, st) {
@@ -867,14 +917,19 @@ function makeLook(bodyId, st) {
     return v;
   };
   return { body, item, shape, has: s => !!item(s), draws: s => !!item(s) && !(shape(s) & COSTUME),
-           art: s => (shape(s) >> 17) & 0x3f };
+           art: s => (shape(s) >> 17) & 0x3f, lefty: !!st.lefty };   // lefty: the flags word's bit 0 (ULEFTY)
 }
 function compose(bodyId, st) {
-  const look = makeLook(bodyId, st), a = look.body.anchor, px = Int32Array.from(look.body.pxa), bg = px[0];
+  const look = makeLook(bodyId, st), base = look.body.anchor, px = Int32Array.from(look.body.pxa), bg = px[0];
   const skin = TONES[st.tone];
   for (let i = 0; i < 256; i++) if (px[i] === VANILLA_SKIN) px[i] = skin;
+  // a left-hander whose tile has a pose of its own (the Apothecary raises the flask in his right hand)
+  // wears it before any layer, with the doll off too, and dresses by its anchor
+  const leftPose = look.lefty && base.leftPose && base.leftPose.length > 0;
+  if (leftPose) repaint(px, bg, skin, base.leftPose);
+  const a = leftPose ? Object.assign({}, base, base.leftAnchor) : base;
   if (!st.doll) return px;
-  if (a.short) dressShort(px, bg, look, a); else dressHuman(px, bg, look, a, skin, Int32Array.from(px));
+  if (a.short) dressShort(px, bg, look, a, Int32Array.from(px)); else dressHuman(px, bg, look, a, skin, Int32Array.from(px));
   return px;
 }
 
@@ -894,7 +949,7 @@ const SLOTS = [
 const byName = n => D.items.find(i => i.name === n && !i.held).id;
 const ASCENSION = { suit: "gray dragon scale mail", cloak: "cloak of magic resistance", boots: "speed boots", gloves: "gauntlets of power", helmet: "helm of brilliance", shield: "shield of reflection", amulet: "amulet of life saving", weapon: "long sword" };
 const state = {
-  body: "gnome,male", race: true, tone: 5, costume: true, doll: true, grid: false,
+  body: "gnome,male", race: true, tone: 5, costume: true, doll: true, grid: false, lefty: false,
   slots: { helmet: byName("helm of brilliance"), eyewear: null, amulet: null, cloak: byName("cloak of protection"), suit: byName("black dragon scale mail"), shirt: null, gloves: byName("gauntlets of power"), boots: byName("speed boots"), weapon: byName("long sword"), offhand: null, shield: byName("shield of reflection") },
 };
 const $ = id => document.getElementById(id);
@@ -903,7 +958,8 @@ const app = $("app");
 // An outfit as a link: the artifact passes only a bare #token (letters, digits,
 // . _ ~ -), so the outfit is one dotted token, e.g. gnome-f.t6.s117.c149 --
 // body-gender, t<tone 1-8>, then a slot letter and an item id per worn item,
-// and k0 / n0 when the costume rule or the doll is off.  tools/paperdoll/
+// k0 / n0 when the costume rule or the doll is off, and l1 for a left-hander
+// (absent: right-handed, so older links still load).  tools/paperdoll/
 // viewer/outfit.py writes these from plain item names.
 const ARTIFACT_URL = "https://claude.ai/artifact/Q71uL4CefJHJRnfe8g4t7r";
 const CODES = { helmet: "h", eyewear: "e", amulet: "a", cloak: "c", suit: "s", shirt: "u", gloves: "g", boots: "b", weapon: "w", offhand: "o", shield: "d" };
@@ -914,6 +970,7 @@ function tokenOf() {
   for (const [s] of SLOTS) if (state.slots[s] != null) parts.push(CODES[s] + state.slots[s]);
   if (!state.costume) parts.push("k0");
   if (!state.doll) parts.push("n0");
+  if (state.lefty) parts.push("l1");
   return parts.join(".");
 }
 function applyToken(tok) {
@@ -923,13 +980,14 @@ function applyToken(tok) {
   const id = m[1].replace(/_/g, " ") + "," + (m[2] === "m" ? "male" : "female");
   if (!BODY[id]) return false;
   state.body = id; state.race = BODY[id].group === "race";
-  state.costume = true; state.doll = true;
+  state.costume = true; state.doll = true; state.lefty = false;
   for (const [s] of SLOTS) state.slots[s] = null;
   for (const p of parts.slice(1)) {
     const c = p[0], v = p.slice(1);
     if (c === "t") { const n = +v; if (n >= 1 && n <= 8) state.tone = n - 1; }
     else if (c === "k") state.costume = v !== "0";
     else if (c === "n") state.doll = v !== "0";
+    else if (c === "l") state.lefty = v === "1";
     else if (SLOT_OF[c]) {
       const s = SLOT_OF[c], it = ITEM[+v];
       if (it && (it.slot === s || (s === "weapon" && it.slot === "weapon") || (s === "offhand" && it.slot === "weapon" && !it.held)))
@@ -942,7 +1000,7 @@ function applyToken(tok) {
 function applyHash() {
   const tok = decodeURIComponent((location.hash || "").slice(1));
   if (tok && applyToken(tok)) {
-    $("showrace").checked = state.race; $("costume").checked = state.costume; $("dollOn").checked = state.doll;
+    $("showrace").checked = state.race; $("costume").checked = state.costume; $("dollOn").checked = state.doll; $("lefty").checked = state.lefty;
     return true;
   }
   return false;
@@ -1037,6 +1095,7 @@ function buildControls() {
   });
   $("costume").addEventListener("change", e => { state.costume = e.target.checked; render(); });
   $("dollOn").addEventListener("change", e => { state.doll = e.target.checked; render(); });
+  $("lefty").addEventListener("change", e => { state.lefty = e.target.checked; render(); });
   $("grid").addEventListener("change", e => { state.grid = e.target.checked; render(); });
 
   const cast = $("cast");
@@ -1098,7 +1157,7 @@ function render() {
   // the hero
   put($("doll").getContext("2d"), compose(state.body, state), 0, 0);
   $("gridOver").hidden = !state.grid;
-  $("who").textContent = `${b.label} · ${b.gender} · skintone:${state.tone + 1}`;
+  $("who").textContent = `${b.label} · ${b.gender} · skintone:${state.tone + 1}` + (state.lefty ? " · left-handed" : "");
   const ul = $("worn"); ul.textContent = "";
   const lines = describe(look);
   if (!lines.length) { const li = document.createElement("li"); li.className = "none"; li.textContent = "wearing nothing the doll draws"; ul.appendChild(li); }
@@ -1196,10 +1255,11 @@ function showBeat(beat) {
   if (beat.tone != null) state.tone = beat.tone;
   if (beat.doll != null) state.doll = beat.doll;
   state.costume = true;
+  state.lefty = false;   // every beat is right-handed: set each time, never carried over from the page
   if (beat.strip) for (const [s] of SLOTS) state.slots[s] = null;
   for (const [s, n] of Object.entries(beat.set || {})) state.slots[s] = n == null ? null : itemId(n);
   ruleCheck();
-  $("showrace").checked = state.race; $("costume").checked = state.costume; $("dollOn").checked = state.doll;
+  $("showrace").checked = state.race; $("costume").checked = state.costume; $("dollOn").checked = state.doll; $("lefty").checked = state.lefty;
   render();
   $("capWhere").textContent = beat.where || "";
   $("capLine").textContent = beat.line || "";
