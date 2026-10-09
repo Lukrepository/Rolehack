@@ -1,0 +1,308 @@
+<!--
+  Rolehack Colour Vision: research brief and design proposal.
+  Generated 2026-09-28 by tools/cvd/build_page.py from the code at
+  RolehackFront e3113a6 (rolehack-ui), RolehackDroid 4b9112228 (rolehack),
+  NetHack-web be8c9983a (web). Written by Claude for Lucas Ruiz.
+  Swatches are simulations; see "How this was tested".
+-->
+<title>Rolehack Colour Vision</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=VT323&display=swap">
+<style>
+:root {
+  --ground: #ebe4d3;
+  --surface: #f8f4ea;
+  --ink: #26221e;
+  --muted: #655d51;
+  --rule: #d1c7b0;
+  --accent: #8a4b0c;
+  --accent-soft: #f1dcb9;
+  --bad: #8a2a17;
+  --screen-edge: #3a322b;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --cond: "IBM Plex Sans Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --vt: "VT323", "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #161310; --surface: #211d19; --ink: #f1e8d5; --muted: #aa9f8c; --rule: #3a342d;
+    --accent: #f2a64a; --accent-soft: #3b2a14; --bad: #ff9a80; --screen-edge: #4b443e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #161310; --surface: #211d19; --ink: #f1e8d5; --muted: #aa9f8c; --rule: #3a342d;
+  --accent: #f2a64a; --accent-soft: #3b2a14; --bad: #ff9a80; --screen-edge: #4b443e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font: 16px/1.6 var(--sans); padding-inline: 16px; padding-block: 28px 64px; }
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 40px; }
+.prose { max-width: 70ch; }
+h1, h2, h3 { font-family: var(--cond); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 12px; }
+h3 { font-size: 1.12rem; font-weight: 600; }
+p { margin: 0 0 12px; }
+a { color: var(--accent); }
+code { font: 0.86em/1.4 var(--mono); background: var(--accent-soft); padding: 1px 4px; border-radius: 3px; overflow-wrap: anywhere; }
+.eyebrow { font: 600 0.78rem/1.3 var(--cond); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.lede { font-size: 1.12rem; max-width: 64ch; margin-top: 14px; }
+section { display: grid; gap: 14px; }
+.sec-head { display: grid; gap: 4px; }
+.kicker { font: 600 0.8rem var(--cond); letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+
+/* the glass, as the game draws it */
+.hero-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+figure { margin: 0; display: grid; gap: 6px; }
+figcaption { font: 600 0.8rem var(--cond); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.screen { font: 20px/1.15 var(--vt); padding: 12px 14px; border-radius: 6px; border: 3px solid var(--screen-edge); overflow-x: auto; white-space: pre; }
+.screen .inv { margin-top: 10px; }
+.hpbar { padding: 0 1px; }
+.gbadge { padding: 0 4px; margin-left: 5px; }
+
+.summary { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 18px 20px; }
+.summary ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+
+table { border-collapse: collapse; width: 100%; font-size: 0.93rem; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font: 600 0.8rem var(--cond); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.card p { margin: 0; font-size: 0.93rem; }
+.card .where { color: var(--muted); }
+.card .note { font-size: 0.9rem; }
+.sim { display: grid; gap: 4px; margin-top: 4px; }
+.simrow { display: grid; grid-template-columns: 7.2rem 1fr auto; align-items: center; gap: 8px; }
+.vl { font: 500 0.82rem var(--cond); color: var(--muted); }
+.chips { min-width: 0; overflow-x: auto; }
+.de { font: 0.8rem var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+.de i { font-style: normal; font-family: var(--cond); }
+.de-collides { color: var(--bad); font-weight: 600; }
+.glass { display: inline-flex; flex-wrap: nowrap; gap: 8px; align-items: center; padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
+.vt { font: 19px/1.1 var(--vt); }
+.vt.big { font-size: 24px; letter-spacing: 3px; }
+.badge { font: 700 11px/1 var(--mono); padding: 3px 5px; border-radius: 3px; border: 1.5px solid transparent; }
+.b-bold { font-weight: 800; outline: 1px solid rgba(255,255,255,.5); outline-offset: 1px; }
+.b-out { background: transparent; }
+.b-plain { background: transparent; padding-inline: 2px; }
+.cell { display: inline-grid; place-items: center; width: 34px; height: 30px; font: 14px var(--vt); }
+.key { display: inline-block; font: 600 11px/1 var(--cond); letter-spacing: .06em; padding: 7px 7px; border-radius: 4px; margin-right: 4px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.88rem; color: var(--muted); }
+
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 620px; }
+.tiles img { width: 100%; image-rendering: pixelated; border-radius: 4px; display: block; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg label { font: 500 0.85rem var(--cond); border: 1px solid var(--rule); background: var(--surface); padding: 5px 10px; border-radius: 999px; cursor: pointer; }
+.seg input { accent-color: var(--accent); }
+.seg label:has(input:checked) { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.seg input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.routes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.route { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+.route h3 { margin-bottom: 8px; }
+.layers { display: grid; gap: 12px; }
+.layer { display: grid; grid-template-columns: 6.5rem 1fr; gap: 12px; padding: 14px 0; border-top: 1px solid var(--rule); }
+.layer:first-child { border-top: 0; }
+.layer .tag { font: 700 0.95rem var(--cond); color: var(--accent); }
+.decisions { counter-reset: q; display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; }
+.decisions li { counter-increment: q; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px 14px 52px; position: relative; }
+.decisions li::before { content: "Q" counter(q); position: absolute; left: 14px; top: 14px; font: 700 0.95rem var(--cond); color: var(--accent); }
+.lean { display: block; margin-top: 6px; font-size: 0.92rem; color: var(--muted); }
+.lean b { color: var(--ink); }
+.sources { font-size: 0.9rem; columns: 2 320px; column-gap: 32px; padding-left: 18px; }
+.sources li { break-inside: avoid; margin-bottom: 6px; }
+footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--rule); padding-top: 14px; }
+@media (max-width: 520px) {
+  .simrow { grid-template-columns: 1fr auto; }
+  .simrow .chips { grid-column: 1 / -1; grid-row: 2; }
+  .layer { grid-template-columns: 1fr; gap: 4px; }
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Rolehack &middot; research brief and design proposal &middot; 2026-09-28 &middot; for Lucas</div>
+  <h1>Colour Vision in Rolehack</h1>
+  <p class="lede">What a colour-blind player loses in Rolehack today, what other games and the guidelines do about it, and seven decisions to make before anything is built. Every swatch below is computed from the colours in the code.</p>
+  <p class="prose" style="font-size:.93rem"><b>What happened next (2026-09-28):</b> Lucas took all seven leans, and all three layers were built the same day on the phone and the web and confirmed by him on the phone: safe red-green defaults (layer 1), the Colour vision setting (layer 2), and vanilla's <code>glyph:</code> colours and symbols (layer 3). Then Q6 changed: Lucas asked for the tiles too, and each mode now has its own tile palette as well (the companion page, Colour Vision Tiles). A colour-blind playtester (Q7) is still to be found, so on 2026-10-08 Lucas marked the setting <b>beta</b> on both builds: it is tuned by simulation, and no colour-blind player has checked it yet. On the web it sits in Settings' own Accessibility box. The swatches below show Rolehack as it was before any of this. One count was corrected after publishing: the web palette's same-letter collisions are 155, not 134.</p>
+</header>
+
+<section>
+  %%HERO%%
+  <p class="prose" style="font-size:.93rem;color:var(--muted)">An example: the same status lines and inventory, drawn with Rolehack's colours (the inventory in the web build's palette). For a deuteranope, Hungry and Burdened wear one colour, and the blessed knife and the cursed potion look alike. Every word is still there; what goes is the glance.</p>
+</section>
+
+<section class="summary">
+  <h2>The short answer</h2>
+  <ul>
+    <li><b>Rolehack's own controls mostly pass already.</b> Every key is labelled and never moves, the lamps are labelled and switch by brightness, a layer names itself in its chip, a badge spells out its condition, and search mode and the armed state light a labelled lamp instead of recolouring keys.</li>
+    <li><b>Five signals still lean on colour:</b> the HP colour, the hero's outline on the phone map, the badge tiers, the blessed/uncursed/cursed menu colours, and the map itself. Two collide for deuteranopes: the badge tiers (serious against warning) and the web build's blessed against cursed. The badge tiers also collide for deuteranomaly, the commonest type.</li>
+    <li><b>The map is the big one.</b> In ASCII, same-letter monsters differ only by colour: 155 pairs collapse for red-green viewers in the web palette, 37 in the phone's. In tiles, %%NLOST%% pairs are the same sprite recoloured and merge, cockatrice and pyrolisk among them.</li>
+    <li><b>The skins don't own the risky colours.</b> HP, badges, menu colours, the map palette and the tiles are shared by Terminal, Terminal light and GameCube alike, so making one skin safe would miss most of the problem.</li>
+    <li><b>A per-type filter would repeat the phone.</b> Android, iOS and Windows already offer protan, deutan, tritan and greyscale filters, the first two with an intensity slider. What only the game can do is choose its own colours and add second cues.</li>
+    <li><b>My lean:</b> safe defaults for red-green in every skin, a Colour vision setting that swaps palettes (with the standard names), and letting vanilla's own <code>glyph:</code> option work on both builds. Tiles can wait for a colour-blind playtester.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="sec-head"><span class="kicker">1 &middot; Who this is for</span><h2>The types of colour blindness</h2></div>
+  <div class="prose">
+    <p>Colour vision rests on three kinds of cone. An <b>anomalous trichromat</b> has all three but one is shifted, and sees the usual confusions more weakly. A <b>dichromat</b> is missing one kind outright. The protan types involve the long-wavelength (red) cones, so reds also look darker; deutan types the middle (green) cones; tritan types the short (blue) cones, which confuses blue with green and yellow with violet. <b>Achromatopsia</b> (rod monochromacy) sees no colour at all, and usually comes with light sensitivity and low acuity.</p>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th>Type</th><th>What goes</th><th class="num">Men</th><th class="num">Women</th></tr></thead>
+    <tbody>
+      <tr><td>Deuteranomaly</td><td>red and green weakened</td><td class="num">5%</td><td class="num">0.4%</td></tr>
+      <tr><td>Deuteranopia</td><td>red against green, brown, orange</td><td class="num">1.5%</td><td class="num">0.01%</td></tr>
+      <tr><td>Protanomaly</td><td>as deuteranomaly; reds dimmer</td><td class="num">1%</td><td class="num">0.01%</td></tr>
+      <tr><td>Protanopia</td><td>as deuteranopia; reds look dark</td><td class="num">1%</td><td class="num">0.01%</td></tr>
+      <tr><td>Tritanomaly</td><td>blue against green, yellow against violet, weakened</td><td class="num">rare</td><td class="num">rare</td></tr>
+      <tr><td>Tritanopia</td><td>blue against green, yellow against violet</td><td class="num">0.008%</td><td class="num">0.008%</td></tr>
+      <tr><td>Achromatopsia</td><td>all hue; light-sensitive, low acuity</td><td class="num" colspan="2">about 1 in 30,000 people</td></tr>
+      <tr><td><b>All types</b></td><td></td><td class="num"><b>about 8%</b></td><td class="num"><b>about 0.5%</b></td></tr>
+    </tbody>
+  </table></div>
+  <div class="prose">
+    <p>Figures are Kalloniatis and Luu's summary for populations of European descent; Birch (2012) gives 4 to 6.5% of men of Chinese and Japanese ethnicity. The red-green types are nearly all colour-blind players. Deuteranomaly alone is five of the eight percent: about one man in twelve is colour-blind, and one in twenty has the mildest common form.</p>
+    <p>For design, the useful fact is this: a colour pair that a dichromat can tell apart, the anomalous trichromat of the same type can too. In every pair we tested that the dichromat model rates below 15, the anomalous model rates it as far apart or farther (within 1). So a palette built for deuteranopia also serves deuteranomaly, and a severity slider has nothing to adjust.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="kicker">2 &middot; Method</span><h2>How this was tested</h2></div>
+  <div class="prose">
+    <p><b>Simulation.</b> Dichromats: Brettel, Vi&eacute;not and Mollon (1997), with DaltonLens's constants for sRGB. Anomalous trichromats: Machado, Oliveira and Fernandes (2009) at severity 0.6. Monochrome: luminance only. All three run in linear RGB; DaltonLens's review shows that skipping that step gives wrong results.</p>
+    <p><b>Distance.</b> CIEDE2000 (&Delta;E), the standard measure of how different two colours look; the implementation reproduces three of Sharma, Wu and Dalal's published test pairs.</p>
+    <p><b>The bar.</b> The Okabe&ndash;Ito palette, the usual colour-blind-safe set (Wong 2011), keeps its closest pair at 11.7 for deuteranopes. So below, <b>&#9679; clear</b> means 12 or more (as safe as Okabe&ndash;Ito), <b>&#9680; weak</b> means 8 to 12, and <b>&#9675; collides</b> means under 8. That rule is mine, anchored to Okabe&ndash;Ito; it is not a published standard. Each row shows the worst pair among the colours in the card.</p>
+    <p><b>Limits.</b> Simulations model an average observer. The Xbox guidelines say plainly that they don't replace testing with colour-blind players. And no choice of hue helps monochrome vision: only lightness and shape do.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="kicker">3 &middot; Audit</span><h2>What leans on colour today</h2></div>
+  <p class="prose">Signals that already pass are left out: the SEARCH, ARMED and MORE lamps are labelled and keep at least 3.8:1 between on and off in every vision; the context key lights a lamp and changes its label; keys carry their names and never move; message dimming is lightness.</p>
+  <div class="cards">
+%%AUDIT%%
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="kicker">4 &middot; Tiles</span><h2>The same sprite, recoloured</h2></div>
+  <div class="prose">
+    <p>Of the pairs of monsters sharing a letter, %%NSAME%% have tiles with the same silhouette (under 2% of pixels differ between figure and background). %%NLOST%% of those lose more than 60% of their difference for protanopes or deuteranopes, measured as mean &Delta;E over the tile.</p>
+  </div>
+  <div class="seg" role="radiogroup" aria-label="Compare normal vision with">%%TILEOPTS%%</div>
+  <div class="tiles">
+    <figure><figcaption>Normal</figcaption><img src="%%TILENORMAL%%" alt="Monster tiles in normal vision"></figure>
+    <figure><figcaption id="tv-cap">Deuteranopia</figcaption><img id="tv-img" src="%%TILEDEUT%%" alt="The same tiles, simulated"></figure>
+  </div>
+  <p class="prose" style="font-size:.9rem;color:var(--muted)">Rows: %%TILEGROUPS%%.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Monster</th><th>against</th><th class="num">Normal</th><th class="num">Deuteranopia</th><th class="num">Protanopia</th><th class="num">Monochrome</th></tr></thead>
+    <tbody>%%TILEROWS%%</tbody>
+  </table></div>
+  <p class="prose">Mean &Delta;E over all 256 pixels runs smaller than a single-colour &Delta;E, since most pixels are shared background; read the drop, not the number. The floating eye row shows the other case: its silhouette is its own, so it survives every vision.</p>
+</section>
+
+<section>
+  <div class="sec-head"><span class="kicker">5 &middot; Elsewhere</span><h2>What guidelines and other games do</h2></div>
+  <div class="prose">
+    <p><b>The guidelines agree.</b> The Game Accessibility Guidelines make "no essential information is conveyed by a fixed colour alone" a <i>basic</i> item: use colour as a back-up to text, symbol, pattern or shape, by default or through a setting; offer presets for the common types and custom choices; and avoid recolouring the whole game, which they describe as heavy-handed and poorly received by colour-blind players. Xbox Accessibility Guideline 103 says the same, adds that where colour is the primary channel players should be able to pick the colours, from presets or ideally any colour they like, and shows Forza Horizon 4's Deuteranopia, Protanopia, Tritanopia and High Contrast presets and Black Ops Cold War's per-marker colour pickers.</p>
+    <p><b>Filters are out of favour.</b> The accessibility specialist Ian Hamilton, on Tekken 8's filters (December 2023), said they generally don't help, and that "filters aren't a fix for colourblindness".</p>
+    <p><b>The phone already has one.</b> Android's Colour correction offers Deuteranomaly, Protanomaly, Tritanomaly and Greyscale with an intensity slider; iOS Color Filters offer Protanopia, Deuteranopia, Tritanopia and Greyscale with intensity; Windows 11 has red-green and blue-yellow filters and greyscale. A Rolehack filter would duplicate all three.</p>
+    <p><b>Roguelikes.</b> Caves of Qud has options, labelled for colour blindness, to turn off full-screen colour effects and to show tinkering bits as letters instead of coloured dots; the second is on by default. Brogue CE has a "hide color effects" mode. Dwarf Fortress players swap <code>colors.txt</code>; its wiki keeps a "Chromatically Challenged" scheme and a red-green variant. Cataclysm: DDA has a colour manager with themes, and colour-blind presets are an open request (issue 57589, 2022). Crawl's options guide has regex menu and message colours but no palette remap.</p>
+    <p><b>NetHack 5.0 itself</b> can recolour any map glyph: <code>OPTIONS=glyph:G_pool/U+224B/0-0-160</code> (the Guidebook's own example) sets a symbol and colour, the colour as R-G-B or a name from <code>coloratt.c</code>'s table (Guidebook, "Customizing Map Glyph Representations"). Both our builds parse it (<code>ENHANCED_SYMBOLS</code> is on) but neither draws it: <code>winandroid.c</code> and <code>winshim.c</code> send <code>gm.sym.color</code> and ignore <code>gm.customcolor</code>, which tty and curses honour. <code>MENUCOLOR</code> and <code>hilite_status</code> take only the 16 basic colours, with bold, underline, inverse and blink as extra cues.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="kicker">6 &middot; The two routes</span><h2>A safe default, or a setting per type</h2></div>
+  <div class="routes">
+    <div class="route">
+      <h3>Route 1: one of our defaults, safe as it ships</h3>
+      <p>Done literally, as one safe skin, this touches the least risky part: keys, which are already labelled. The colours that fail live in the shared layer that every skin draws: HP, badges, menu colours, the map palette.</p>
+      <p>Done as <b>safe defaults</b>, it fixes that layer for everyone: the badge tiers get a style each, HP and the outline change hue, and the web's palette gets the phone's spread of lightness. No setting to find, and redundancy helps players with normal vision too (a phone in sunlight, a tired eye). The cost: small visible changes for everyone, and some convention (green for full health, green for blessed) may move.</p>
+    </div>
+    <div class="route">
+      <h3>Route 2: a setting per type and degree</h3>
+      <p>As a filter, it repeats the OS and the guidelines advise against it. As <b>palettes</b>, it does what the OS can't: pick the 16 colours the game's names map to, and the interface's own tokens, for each type. That reaches the ASCII map, menus and messages on both builds without touching the core.</p>
+      <p>Degrees fall away: a palette safe for the dichromat is safe for the milder form (section 1). Standard names still help, because players look for them. Protanopia and Deuteranopia can share one palette, as Okabe&ndash;Ito does, or be tuned apart. Monochrome is mostly second cues plus a lightness-ordered palette.</p>
+    </div>
+  </div>
+  <div class="layers route">
+    <div class="layer"><span class="tag">Layer 1<br>defaults</span><div>Second cues for the five signals and a red-green-safe choice of hues, in every skin, with no setting. Mostly token changes plus the badge styles and the outline stroke. <i>Small.</i></div></div>
+    <div class="layer"><span class="tag">Layer 2<br>setting</span><div><b>Colour vision:</b> Standard, Protanopia, Deuteranopia, Tritanopia, Monochrome. Each swaps the 16-colour game palette (<code>winandroid.c</code>'s <code>palette[]</code>, <code>web.js</code>'s <code>COLORS</code>) and the interface tokens. In Settings on the phone, in the menu on the web. <i>Medium.</i></div></div>
+    <div class="layer"><span class="tag">Layer 3<br>vanilla</span><div>Draw <code>gm.customcolor</code> in both ports, so a player's own <code>glyph:</code> lines work, and ship a few worked examples as comments in <code>defaults.nh</code>. Port-only, as tty does it. <i>Small.</i></div></div>
+    <div class="layer"><span class="tag">Tiles</span><div>Leave them for now. Far look and <code>autodescribe</code> name any monster, and molds don't move. A per-type tile palette (the tile files share one table of 29 colours) or marks on the %%NLOST%% recoloured pairs can follow if a colour-blind playtester asks. <i>Medium to large, and an art call.</i></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="kicker">7 &middot; Candidates</span><h2>What the fixes could look like</h2></div>
+  <p class="prose">Drafts to react to, tested the same way. None is built.</p>
+  <div class="cards">
+%%PROPOSAL%%
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="kicker">8 &middot; For Lucas</span><h2>Decisions</h2></div>
+  <ol class="decisions">
+    <li><b>Safe defaults for red-green, in every skin?</b> Second cues for the five signals and red-green-safe hues, with no setting to turn on.<span class="lean">My lean: <b>yes</b>. It covers nearly all colour-blind players and costs the others very little.</span></li>
+    <li><b>HP colours:</b> A (blue, yellow, vermillion), B (plain, yellow, vermillion), or keep green, amber and red and add only the inverse step and the outline's double stroke?<span class="lean">My lean: <b>B</b>. Colour appears only when something is wrong, which also suits the terminal look.</span></li>
+    <li><b>Menu colours:</b> change the names in <code>defaults.nh</code> for everyone (blessed becomes cyan, both builds), or keep the names and change only the web's RGB to the phone's lightness spread?<span class="lean">My lean: <b>fix the web's RGB now</b>; move blessed to cyan only inside the Colour vision setting, since green-for-blessed is a habit many players share.</span></li>
+    <li><b>The Colour vision setting:</b> which entries (Standard, Protanopia, Deuteranopia, Tritanopia, Monochrome), and one red-green palette behind two names or two tuned palettes? No intensity slider: the phone's own Colour correction has one.<span class="lean">My lean: <b>all five names, one shared red-green palette to start</b>, split only if a tester asks.</span></li>
+    <li><b>Vanilla's <code>glyph:</code> option:</b> make both ports draw its custom colours (and later its symbols)?<span class="lean">My lean: <b>yes</b>. It is port-only, matches tty, and lets a player fix any pair we missed.</span></li>
+    <li><b>Tiles:</b> leave them, a per-type tile palette, or marks on the recoloured families?<span class="lean">My lean: <b>leave them for now</b>, and revisit with a tester.</span></li>
+    <li><b>A colour-blind playtester:</b> about one man in twelve. Is there one among our playtesters or their friends?<span class="lean">Simulation got us this far; a real player should sign off before we call it done.</span></li>
+  </ol>
+</section>
+
+<section>
+  <div class="sec-head"><span class="kicker">Sources</span><h2>Where the facts come from</h2></div>
+  <ul class="sources">
+    <li>Kalloniatis, M. and Luu, C. "Color Perception", Webvision, Table 1. <a href="https://www.webvision.pitt.edu/book/part-viii-psychophysics-of-vision/color-perception/">webvision.pitt.edu</a></li>
+    <li>Birch, J. (2012). Worldwide prevalence of red-green color deficiency. JOSA A 29(3):313&ndash;320. <a href="https://opg.optica.org/josaa/abstract.cfm?uri=josaa-29-3-313">optica.org</a></li>
+    <li>MedlinePlus Genetics, "Achromatopsia" (updated 2025-08-07). <a href="https://medlineplus.gov/download/genetics/condition/achromatopsia.pdf">medlineplus.gov</a></li>
+    <li>Wong, B. (2011). Points of view: Color blindness. Nature Methods 8:441; 2023 correction credits Okabe and Ito. <a href="https://www.nature.com/articles/nmeth.1618">nature.com</a> &middot; <a href="https://www.nature.com/articles/s41592-023-01974-0">correction</a></li>
+    <li>Brettel, H., Vi&eacute;not, F. and Mollon, J. (1997), via DaltonLens: <a href="https://github.com/DaltonLens/libDaltonLens">libDaltonLens</a> and <a href="https://daltonlens.org/understanding-cvd-simulation/">"Understanding CVD simulation"</a></li>
+    <li>Machado, G., Oliveira, M. and Fernandes, L. (2009). A physiologically-based model for simulation of color vision deficiency. IEEE TVCG 15(6). <a href="https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html">matrices</a></li>
+    <li>Sharma, G., Wu, W. and Dalal, E. (2005). The CIEDE2000 color-difference formula: implementation notes, supplementary test data. Color Research &amp; Application 30(1):21&ndash;30.</li>
+    <li>Game Accessibility Guidelines, "Ensure no essential information is conveyed by a fixed colour alone". <a href="https://gameaccessibilityguidelines.com/ensure-no-essential-information-is-conveyed-by-a-fixed-colour-alone/">gameaccessibilityguidelines.com</a></li>
+    <li>Xbox Accessibility Guideline 103. <a href="https://learn.microsoft.com/en-us/gaming/accessibility/xbox-accessibility-guidelines/103">learn.microsoft.com</a></li>
+    <li>Ian Hamilton on Tekken 8's filters, mxdwn Games, 2023-12-29. <a href="https://games.mxdwn.com/news/tekken-8s-new-colorblind-filter-is-facing-criticism-from-disabled-community-for-causing-nausea-migraines/">mxdwn.com</a></li>
+    <li>Android colour correction (AbilityNet, Android 16). <a href="https://mcmw.abilitynet.org.uk/how-to-use-colour-correction-to-adapt-for-colour-blindness-in-android-16">abilitynet.org.uk</a></li>
+    <li>iPhone Color Filters. <a href="https://support.apple.com/en-us/111773">support.apple.com</a> &middot; Windows 11 color filters. <a href="https://www.howtogeek.com/751353/how-to-use-color-filters-in-windows-11/">howtogeek.com</a></li>
+    <li>Caves of Qud options. <a href="https://wiki.cavesofqud.com/wiki/Options">wiki.cavesofqud.com</a> &middot; Brogue CE changelog. <a href="https://github.com/tmewett/BrogueCE/blob/master/CHANGELOG.md">github.com</a></li>
+    <li>Dwarf Fortress colour schemes. <a href="https://dwarffortresswiki.org/index.php/Color_scheme">dwarffortresswiki.org</a> &middot; Cataclysm: DDA issue 57589. <a href="https://github.com/CleverRaven/Cataclysm-DDA/issues/57589">github.com</a> &middot; Crawl options guide. <a href="https://github.com/crawl/crawl/blob/master/crawl-ref/docs/options_guide.txt">github.com</a></li>
+    <li>NetHack 5.0: <code>doc/Guidebook.mn</code>, <code>include/optlist.h</code>, <code>include/wintype.h</code>, <code>src/coloratt.c</code>, <code>win/tty/wintty.c</code>, <code>include/monsters.h</code>, <code>win/share/monsters.txt</code>.</li>
+  </ul>
+</section>
+
+<footer>Generated 2026-09-28 by <code>tools/cvd/build_page.py</code> from RolehackFront <code>e3113a6</code>, RolehackDroid <code>4b9112228</code> and NetHack-web <code>be8c9983a</code>. The simulation scripts and their raw numbers are in <code>tools/cvd/</code>; rerun them against any new palette as its acceptance test.</footer>
+
+</div>
+
+<script>
+(function () {
+  var imgs = %%TILEDATA%%;
+  var names = { deuteranopia: 'Deuteranopia', protanopia: 'Protanopia', tritanopia: 'Tritanopia', achromatopsia: 'Monochrome' };
+  var img = document.getElementById('tv-img'), cap = document.getElementById('tv-cap');
+  document.querySelectorAll('input[name="tv"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      if (!r.checked || !imgs[r.value]) return;
+      img.src = imgs[r.value];
+      cap.textContent = names[r.value] || r.value;
+    });
+  });
+})();
+</script>

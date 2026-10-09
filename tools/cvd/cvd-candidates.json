@@ -1,0 +1,373 @@
+{
+ "HP now": {
+  "worst": {
+   "normal": [
+    32.5,
+    "hurt/critical"
+   ],
+   "protanomaly": [
+    13.7,
+    "healthy/hurt"
+   ],
+   "deuteranomaly": [
+    14.1,
+    "healthy/hurt"
+   ],
+   "tritanomaly": [
+    24.5,
+    "hurt/critical"
+   ],
+   "protanopia": [
+    7.7,
+    "healthy/hurt"
+   ],
+   "deuteranopia": [
+    9.7,
+    "healthy/hurt"
+   ],
+   "tritanopia": [
+    17.2,
+    "hurt/critical"
+   ],
+   "achromatopsia": [
+    2.0,
+    "healthy/hurt"
+   ]
+  },
+  "on_glass": {
+   "healthy": 11.63,
+   "hurt": 10.63,
+   "critical": 6.33
+  }
+ },
+ "HP A: blue / yellow / vermillion": {
+  "worst": {
+   "normal": [
+    45.6,
+    "hurt/critical"
+   ],
+   "protanomaly": [
+    27.4,
+    "hurt/critical"
+   ],
+   "deuteranomaly": [
+    20.4,
+    "hurt/critical"
+   ],
+   "tritanomaly": [
+    41.3,
+    "hurt/critical"
+   ],
+   "protanopia": [
+    27.1,
+    "hurt/critical"
+   ],
+   "deuteranopia": [
+    15.9,
+    "hurt/critical"
+   ],
+   "tritanopia": [
+    26.4,
+    "hurt/critical"
+   ],
+   "achromatopsia": [
+    5.4,
+    "healthy/critical"
+   ]
+  },
+  "on_glass": {
+   "healthy": 8.48,
+   "hurt": 14.79,
+   "critical": 6.86
+  }
+ },
+ "HP B: plain / yellow / vermillion": {
+  "worst": {
+   "normal": [
+    24.9,
+    "healthy/hurt"
+   ],
+   "protanomaly": [
+    23.9,
+    "healthy/hurt"
+   ],
+   "deuteranomaly": [
+    17.8,
+    "hurt/critical"
+   ],
+   "tritanomaly": [
+    21.6,
+    "healthy/hurt"
+   ],
+   "protanopia": [
+    22.9,
+    "healthy/hurt"
+   ],
+   "deuteranopia": [
+    13.6,
+    "hurt/critical"
+   ],
+   "tritanopia": [
+    21.3,
+    "healthy/hurt"
+   ],
+   "achromatopsia": [
+    2.5,
+    "healthy/hurt"
+   ]
+  },
+  "on_glass": {
+   "healthy": 14.71,
+   "hurt": 13.21,
+   "critical": 6.86
+  }
+ },
+ "BUC phone now": {
+  "worst": {
+   "normal": [
+    41.5,
+    "blessed/uncursed"
+   ],
+   "protanomaly": [
+    27.9,
+    "blessed/cursed"
+   ],
+   "deuteranomaly": [
+    22.2,
+    "blessed/cursed"
+   ],
+   "tritanomaly": [
+    41.8,
+    "blessed/uncursed"
+   ],
+   "protanopia": [
+    14.1,
+    "blessed/cursed"
+   ],
+   "deuteranopia": [
+    12.2,
+    "blessed/cursed"
+   ],
+   "tritanopia": [
+    40.4,
+    "uncursed/cursed"
+   ],
+   "achromatopsia": [
+    4.3,
+    "blessed/cursed"
+   ]
+  },
+  "on_glass": {
+   "blessed": 4.21,
+   "uncursed": 18.22,
+   "cursed": 4.89
+  }
+ },
+ "BUC web now": {
+  "worst": {
+   "normal": [
+    30.3,
+    "blessed/uncursed"
+   ],
+   "protanomaly": [
+    19.9,
+    "blessed/uncursed"
+   ],
+   "deuteranomaly": [
+    18.8,
+    "blessed/cursed"
+   ],
+   "tritanomaly": [
+    34.3,
+    "blessed/uncursed"
+   ],
+   "protanopia": [
+    17.1,
+    "blessed/uncursed"
+   ],
+   "deuteranopia": [
+    5.2,
+    "blessed/cursed"
+   ],
+   "tritanopia": [
+    33.6,
+    "uncursed/cursed"
+   ],
+   "achromatopsia": [
+    10.1,
+    "blessed/cursed"
+   ]
+  },
+  "on_glass": {
+   "blessed": 6.54,
+   "uncursed": 14.44,
+   "cursed": 4.51
+  }
+ },
+ "BUC A: sky blue / yellow / vermillion": {
+  "worst": {
+   "normal": [
+    45.6,
+    "uncursed/cursed"
+   ],
+   "protanomaly": [
+    27.4,
+    "uncursed/cursed"
+   ],
+   "deuteranomaly": [
+    20.4,
+    "uncursed/cursed"
+   ],
+   "tritanomaly": [
+    41.3,
+    "uncursed/cursed"
+   ],
+   "protanopia": [
+    27.1,
+    "uncursed/cursed"
+   ],
+   "deuteranopia": [
+    15.9,
+    "uncursed/cursed"
+   ],
+   "tritanopia": [
+    26.4,
+    "uncursed/cursed"
+   ],
+   "achromatopsia": [
+    5.4,
+    "blessed/cursed"
+   ]
+  },
+  "on_glass": {
+   "blessed": 8.48,
+   "uncursed": 14.79,
+   "cursed": 6.86
+  }
+ },
+ "BUC B: bluish green / yellow / vermillion": {
+  "worst": {
+   "normal": [
+    35.2,
+    "blessed/uncursed"
+   ],
+   "protanomaly": [
+    27.4,
+    "uncursed/cursed"
+   ],
+   "deuteranomaly": [
+    20.4,
+    "uncursed/cursed"
+   ],
+   "tritanomaly": [
+    34.2,
+    "blessed/uncursed"
+   ],
+   "protanopia": [
+    22.1,
+    "blessed/cursed"
+   ],
+   "deuteranopia": [
+    15.9,
+    "uncursed/cursed"
+   ],
+   "tritanopia": [
+    26.4,
+    "uncursed/cursed"
+   ],
+   "achromatopsia": [
+    6.6,
+    "blessed/cursed"
+   ]
+  },
+  "on_glass": {
+   "blessed": 8.91,
+   "uncursed": 14.79,
+   "cursed": 6.86
+  }
+ },
+ "badge fills now": {
+  "worst": {
+   "normal": [
+    19.8,
+    "critical/serious"
+   ],
+   "protanomaly": [
+    11.6,
+    "serious/warning"
+   ],
+   "deuteranomaly": [
+    7.7,
+    "serious/warning"
+   ],
+   "tritanomaly": [
+    15.4,
+    "critical/serious"
+   ],
+   "protanopia": [
+    11.5,
+    "serious/warning"
+   ],
+   "deuteranopia": [
+    5.5,
+    "serious/warning"
+   ],
+   "tritanopia": [
+    11.4,
+    "serious/warning"
+   ],
+   "achromatopsia": [
+    4.2,
+    "critical/info"
+   ]
+  },
+  "on_glass": {
+   "critical": 3.81,
+   "serious": 6.17,
+   "warning": 8.09,
+   "info": 3.27
+  }
+ },
+ "badge fills A (Okabe-Ito)": {
+  "worst": {
+   "normal": [
+    21.7,
+    "serious/warning"
+   ],
+   "protanomaly": [
+    15.2,
+    "serious/warning"
+   ],
+   "deuteranomaly": [
+    12.9,
+    "serious/warning"
+   ],
+   "tritanomaly": [
+    18.5,
+    "critical/serious"
+   ],
+   "protanopia": [
+    14.9,
+    "serious/warning"
+   ],
+   "deuteranopia": [
+    11.7,
+    "serious/warning"
+   ],
+   "tritanopia": [
+    15.4,
+    "critical/serious"
+   ],
+   "achromatopsia": [
+    8.3,
+    "critical/info"
+   ]
+  },
+  "on_glass": {
+   "critical": 5.06,
+   "serious": 8.68,
+   "warning": 14.79,
+   "info": 3.77
+  }
+ }
+}
