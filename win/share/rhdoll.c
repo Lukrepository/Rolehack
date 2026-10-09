@@ -20,7 +20,7 @@
  * doll ignores hallucination, as the core does for the hero's own glyph.
  *
  * Layout of the int array (RH_DOLL_LEN):
- *   [0] version (2)   [1] u.ux   [2] u.uy
+ *   [0] version (3)   [1] u.ux   [2] u.uy
  *   [3] tile of the hero's own glyph (hero_glyph: role, or race with showrace),
  *       or -1 when the doll must step aside (polymorphed, riding, engulfed,
  *       underwater, mimicking)
@@ -61,6 +61,12 @@
  *   (a hash of ubirthday, which the save keeps) and the skintone option
  *   (0 = random, else the tone the options file fixed).  The interface owns
  *   the tones themselves; it has RH_SKINTONES of them.
+ *
+ *   then, from version 3, a flags word: RH_DOLL_LEFTY when the hero is
+ *   left-handed (ULEFTY; u_init.c rolls it, 1 in 10), the other bits 0.
+ *   From version 3 the seed, the tone and the flags sit at the fixed places
+ *   RH_DOLL_SEED (37), RH_DOLL_TONE (38) and RH_DOLL_FLAGS (39), so a word
+ *   added later goes after them without moving them.
  *
  * The Android port sends it when the game waits for a command and when the
  * hero's own square is drawn -- otherwise the welcome screens show the plain
@@ -318,7 +324,7 @@ rh_hero_look(int *look, int (*to_rgb)(int))
     slots[4] = uarms; slots[5] = uarmg; slots[6] = uarmf; slots[7] = ublindf;
     slots[8] = uamul; slots[9] = uwep; slots[10] = u.twoweap ? uswapwep : 0;
 
-    look[0] = 2;
+    look[0] = 3;
     look[1] = u.ux;
     look[2] = u.uy;
     if (Upolyd || u.usteed || u.uswallow || Underwater
@@ -355,10 +361,12 @@ rh_hero_look(int *look, int (*to_rgb)(int))
                                             SIZE(rh_eyewear_looks));
     /* Knuth's multiplicative hash, high bits: games started seconds apart
        should not just step through the tones in order. */
-    look[RH_DOLL_LEN - 2] = (int) ((((unsigned) ubirthday) * 2654435761U) >> 16);
+    look[RH_DOLL_SEED] = (int) ((((unsigned) ubirthday) * 2654435761U) >> 16);
     /* the skintone option lives only in the Android tree so far:
        0 is a random tone per character */
-    look[RH_DOLL_LEN - 1] = 0;
+    look[RH_DOLL_TONE] = 0;
+    /* a left-hander holds the weapon in the other hand (Lucas, 2026-10-08) */
+    look[RH_DOLL_FLAGS] = ULEFTY ? RH_DOLL_LEFTY : 0;
     return RH_DOLL_LEN;
 }
 

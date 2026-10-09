@@ -2,10 +2,16 @@
 //
 // The paper doll for the web page: RhDoll.java's drawing, as ported line for
 // line to JavaScript for the Dressing Room (RolehackDroid
-// tools/dressing-room/template.html @ 459de7f9c), fed by the core's look
+// tools/dressing-room/template.html), fed by the core's look
 // (win/share/rhdoll.c) instead of the Dressing Room's picker.  The section
-// between the rules below is that port unchanged: when RhDoll.java changes,
+// between the rules below is that port's doll section, copied unchanged from
+// its "the doll" marker to just before makeLook: when RhDoll.java changes,
 // port the change to the Dressing Room and copy the section here again.
+// First copied at 459de7f9c; copied again on 2026-10-08 with left-handed
+// heroes (the workspace's tools/paperdoll/lefty-spec-2026-10-08.md).  The
+// web's own parts follow the second rule: RhDoll.java's anchor table by tile
+// number, the left-handed Apothecary's pose and anchor (the Dressing Room
+// reads these from its data.json), and the reader of the core's look.
 
 // ---- palette: letters of win/share/monsters.txt, set from tiles.json and,
 // in a Colour vision mode, moved by its tile palette (web.js TILE_MODES)
@@ -260,13 +266,25 @@ function recolour(px, bg, x, y, col) {
   if (p === bg || p === 0) return;
   px[y * 16 + x] = col;
 }
-function stamp(px, bg, s, ox, oy, mirror, ramp) {
+// ... and, when foot is given, marks there every place it writes: the sprite's footprint
+function stamp(px, bg, s, ox, oy, mirror, ramp, foot) {
   for (const [ys, x0, row] of s) for (let i = 0; i < row.length; i++) {
     const c = row[i]; if (c === ".") continue;
     const dx = x0 + i, x = ox + (mirror ? -dx : dx), y = oy + ys;
     if (x < 0 || x >= 16 || y < 0 || y >= 16) continue;
     px[y * 16 + x] = c === "~" ? bg : c === "l" ? ramp[0] : c === "m" ? ramp[1] : c === "d" ? ramp[2] : fixed(c);
+    if (foot) foot[y * 16 + x] = true;
   }
+}
+// the rightmost column a sprite draws ("." is not drawn), relative to where it is stamped
+function xmax(s) {
+  let m = -Infinity;
+  for (const [ys, x0, row] of s) for (let i = 0; i < row.length; i++) if (row[i] !== ".") m = Math.max(m, x0 + i);
+  return m;
+}
+// x, y, colour edits to a tile: "~" the background, "L" the hero's skin, else a palette letter
+function repaint(px, bg, skin, xyc) {
+  for (let i = 0; i + 2 < xyc.length; i += 3) { const c = xyc[i + 2]; putPx(px, xyc[i], xyc[i + 1], c === "~" ? bg : c === "L" ? skin : fixed(c)); }
 }
 function stampKeep(px, s, a, ramp) {
   for (const [y, x0, row] of s) for (let i = 0; i < row.length; i++) {
@@ -488,11 +506,12 @@ function dressHuman(px, bg, look, a, skin, tile) {
   if (look.draws("gloves")) stampGloves(px, bg, look, a, a.hands || [a.main[0], a.main[1], a.off[0], a.off[1]]);
   if (look.draws("helmet")) stampHelmet(px, bg, look, a);
   if (look.draws("eyewear")) stamp(px, bg, eyewearSprite(look, false), a.head[0], a.head[1], false, ramp(look.item("eyewear"), false));
+  if (look.lefty) { holdLeftHanded(px, bg, look, a, tile); return; }
   if (look.draws("shield")) stamp(px, bg, shieldSprite(look), a.off[0], a.off[1], false, ramp(look.item("shield"), false));
   if (look.has("weapon")) stamp(px, bg, heldSprite(look, "weapon"), a.main[0], a.main[1], false, ramp(look.item("weapon"), false));
   if (look.has("offhand")) stamp(px, bg, heldSprite(look, "offhand"), a.off[0], a.off[1], true, ramp(look.item("offhand"), false));
 }
-function dressShort(px, bg, look, a) {
+function dressShort(px, bg, look, a, tile) {
   const front = look.has("cloak") && (look.shape("cloak") & FRONT) !== 0;
   const capeOn = look.draws("cloak") && !front, covered = look.has("suit") || front;
   if (capeOn) stampCloakBehind(px, bg, look, a);
@@ -505,10 +524,46 @@ function dressShort(px, bg, look, a) {
   if (look.draws("gloves")) stampGloves(px, bg, look, a, [a.main[0], a.main[1], a.off[0], a.off[1]]);
   if (look.draws("helmet")) stampHelmet(px, bg, look, a);
   if (look.draws("eyewear")) stamp(px, bg, eyewearSprite(look, true), 0, 0, false, ramp(look.item("eyewear"), false));
+  if (look.lefty) { holdLeftHanded(px, bg, look, a, tile); return; }
   if (look.draws("shield")) stamp(px, bg, shieldSprite(look), a.off[0], a.off[1], false, ramp(look.item("shield"), false));   // full size (Lucas)
   // weapons at full size: pound for pound the small races are the strong ones (Lucas, 2026-09-26)
   if (look.has("weapon")) stamp(px, bg, heldSprite(look, "weapon"), a.main[0], a.main[1], false, ramp(look.item("weapon"), false));
   if (look.has("offhand")) stamp(px, bg, heldSprite(look, "offhand"), a.off[0], a.off[1], true, ramp(look.item("offhand"), false));
+}
+// A left-handed hero's hands, on either frame (the core's flags word, bit 0, ULEFTY; Lucas, 2026-10-08,
+// "your pick claude"; tools/paperdoll/lefty-spec-2026-10-08.md).  Same order as the right hand's: the
+// shield to the main grip, moved and not mirrored, its black edge (its rightmost column) on main x + 1,
+// the tile's arm separator; the weapon to the off grip, mirrored so it still points outward; a second
+// weapon to the main grip.  The weapon's halo comes between: the weapon would vanish into the tile's
+// black drop shadow, so the shadow gives way to background beside it.  The second weapon gets none.
+function holdLeftHanded(px, bg, look, a, tile) {
+  if (look.draws("shield")) {
+    const s = shieldSprite(look);
+    stamp(px, bg, s, a.main[0] + 1 - xmax(s), a.main[1], false, ramp(look.item("shield"), false));
+  }
+  if (look.has("weapon")) {
+    const foot = new Array(256).fill(false);
+    stamp(px, bg, heldSprite(look, "weapon"), a.off[0], a.off[1], true, ramp(look.item("weapon"), false), foot);
+    halo(px, bg, foot, a, tile);
+  }
+  if (look.has("offhand")) stamp(px, bg, heldSprite(look, "offhand"), a.main[0], a.main[1], false, ramp(look.item("offhand"), false));
+}
+// The weapon's halo.  Its pixels are its footprint (foot): every place its stamp wrote, whether or not
+// the colour changed -- a black blade pixel laid on the black shadow is still the blade's.  Each
+// 4-neighbour of one that is not a weapon pixel itself, lies on the shadow side (x > off x), and is black
+// both now and in the tile's own pixels (the base before any gear) turns to background.  Neighbours are
+// tested against the footprint, not each other, and only black changes, so the order does not matter.
+function halo(px, bg, foot, a, tile) {
+  for (let i = 0; i < 256; i++) {
+    if (!foot[i]) continue;
+    const x = i % 16, y = (i - x) / 16;
+    for (let d = 0; d < 4; d++) {
+      const X = x + (d === 0 ? 1 : d === 1 ? -1 : 0), Y = y + (d === 2 ? 1 : d === 3 ? -1 : 0);
+      if (X < 0 || X >= 16 || Y < 0 || Y >= 16) continue;
+      const j = Y * 16 + X;
+      if (!foot[j] && X > a.off[0] && (px[j] & 0xffffff) === 0 && (tile[j] & 0xffffff) === 0) px[j] = bg;
+    }
+  }
 }
 // ======================================================================
 
@@ -546,20 +601,36 @@ pair(92, BEARDED);                                                              
 ANCHORS.set(338, BEARDED);                                                                         // gnome, male
 ANCHORS.set(339, A({ main: [4, 11], off: [8, 11], feetCols: [4, 5, 7, 8], short: true }));        // gnome, female
 pair(148, A({ head: [-2, 1], torso: [-2, 0], main: [2, 10], off: [9, 10], feetCols: [2, 3, 4, 6, 7, 8] })); // orc
+// A left-handed Apothecary (Claude's art, 2026-10-08): the flask goes up in his right hand -- now the
+// off hand -- and his left arm hangs; face, potion strap and drop shadow stay as drawn.  x, y and
+// '~' background, 'L' the hero's skin, else a palette letter: painted after the skin tone, before
+// any gear.  Male and female share it; they differ only in the hair.
+const APO_LEFT_POSE = [12, 3, "~", 12, 4, "~", 13, 4, "~", 12, 5, "~", 13, 5, "~", 12, 6, "~",
+  11, 7, "~", 11, 8, "O", 11, 9, "L", 11, 10, "L", 10, 9, "A", 10, 10, "A",
+  4, 8, "~", 4, 9, "~", 4, 10, "~", 5, 9, "A", 5, 10, "A",
+  4, 7, "O", 3, 6, "L", 3, 5, "L", 3, 4, "I", 2, 4, "I", 3, 3, "N"];
+// ... dressed with the 702 anchor but its hands, cuffs and kept flask neck mirrored, and a raised
+// (now right) arm that comes down when a shield or a second weapon is in that hand
+const APO_LEFT_ANCHOR = Object.assign({}, ANCHORS.get(702), {
+  hands: [11, 10, 3, 5, 4, 10], cuffs: [11, 9, 3, 6, 4, 9], keep: [3, 3],
+  offPose: [4, 7, "~", 3, 6, "~", 3, 5, "~", 3, 4, "~", 2, 4, "~", 3, 3, "~", 4, 8, "O", 4, 9, "L", 4, 10, "L"] });
+const APO_TILES = [702, 703];
 
 // ---- Rolehack web: the core's look array (rhdoll.c) as the port's look
 // [0] version  [1] x  [2] y  [3] base tile or -1
-// then per slot {tile or -1, colour, shape}; then the skin seed and skintone
+// then per slot {tile or -1, colour, shape}; then, at fixed places, the skin
+// seed (37) and skintone (38), and from version 3 the flags (39: bit 0 left-handed)
 const SLOT = { helmet: 0, suit: 1, shirt: 2, cloak: 3, shield: 4, gloves: 5, boots: 6,
                eyewear: 7, amulet: 8, weapon: 9, offhand: 10 };
-export const LOOK_LEN = 4 + 3 * 11 + 2;
+const SEED_AT = 4 + 3 * 11, TONE_AT = SEED_AT + 1, FLAGS_AT = SEED_AT + 2;
+export const LOOK_LEN = 4 + 3 * 11 + 3;
 
 function coreLook(a, tilePx) {
   const tile = s => a[4 + 3 * SLOT[s]];
   const shape = s => (tile(s) >= 0 ? a[6 + 3 * SLOT[s]] : 0);
   const item = s => (tile(s) >= 0 ? { id: tile(s), pxa: tilePx(tile(s)) } : null);
   return { item, shape, has: s => tile(s) >= 0, draws: s => tile(s) >= 0 && !(shape(s) & COSTUME),
-           art: s => (shape(s) >> 17) & 0x3f };
+           art: s => (shape(s) >> 17) & 0x3f, lefty: a[0] >= 3 && (a[FLAGS_AT] & 1) !== 0 };
 }
 
 // The hero's tile, skin-toned and dressed, as 256 0xRRGGBB pixels; null when
@@ -567,14 +638,17 @@ function coreLook(a, tilePx) {
 // tilePx(n) gives tile n's pixels the same way.
 export function dressHero(a, tilePx) {
   if (!a || a[0] < 2 || a[3] < 0) return null;
-  const fixedTone = a[LOOK_LEN - 1];
+  const fixedTone = a[TONE_AT];
   const tone = fixedTone >= 1 && fixedTone <= TONES.length ? fixedTone - 1
-                                                           : (a[LOOK_LEN - 2] & 0x7fffffff) % TONES.length;
-  const skin = TONES[tone], anchor = ANCHORS.get(a[3]) || DEFAULT_ANCHOR;
+                                                           : (a[SEED_AT] & 0x7fffffff) % TONES.length;
+  const look = coreLook(a, tilePx);
+  const leftPose = look.lefty && APO_TILES.includes(a[3]);
+  const skin = TONES[tone], anchor = leftPose ? APO_LEFT_ANCHOR : (ANCHORS.get(a[3]) || DEFAULT_ANCHOR);
   const px = Int32Array.from(tilePx(a[3])), bg = px[0];
   for (let i = 0; i < 256; i++) if (px[i] === VANILLA_SKIN) px[i] = skin;
-  const look = coreLook(a, tilePx);
-  if (anchor.short) dressShort(px, bg, look, anchor);
+  if (leftPose) repaint(px, bg, skin, APO_LEFT_POSE);
+  // the tile as the layers find it: skin-toned and posed, before any gear
+  if (anchor.short) dressShort(px, bg, look, anchor, Int32Array.from(px));
   else dressHuman(px, bg, look, anchor, skin, Int32Array.from(px));
   return px;
 }
