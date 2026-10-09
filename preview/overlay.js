@@ -4326,9 +4326,10 @@ export class Overlay {
   openSettings() {
     this.closeAll();
     const seg = (id, label, options) => ({ seg: id, label, value: String(P.get(id)), options });
-    // "The view glides too" as it stands: unset (null) it follows the device
-    // (web.js viewGlides), so Done writes it only when the player changes it
-    const vs = P.get('smoothView'), viewOn = vs == null ? !reducedMotion() : vs !== false;
+    // "The view glides too": a device that asks for less motion always keeps the
+    // view still, whatever was chosen here (web.js viewGlides; Lucas,
+    // 2026-10-09: "fine to let the device decide"), so then the row is a note
+    const lessMotion = reducedMotion(), viewOn = P.get('smoothView') !== false;
     this.host.form('Settings', [
       seg('style', 'Style', [['terminal', 'Terminal'], ['light', 'Terminal (light)'], ['gamecube', 'GameCube']]),
       { seg: 'case', label: 'Case', value: P.get('case') ? 'on' : 'off', options: [['on', 'Show the case'], ['off', 'Caseless']] },
@@ -4358,15 +4359,16 @@ export class Overlay {
       // Smooth movement (glide.js; Lucas and his brother picked it in the Glide
       // or Snap mock, 2026-10-09), and the view gliding along with the hero,
       // which Lucas asked to be able to switch off
-      { seg: 'smoothMove', label: 'Smooth movement (beta): your hero glides from square to square instead of jumping, '
-          + 'in tiles. The game never waits for it'
-          + (!reducedMotion() ? '' : vs == null ? ". Your device asks for less motion, so the view's glide below starts off"
-            : '. Your device asks for less motion'),
+      { seg: 'smoothMove', label: 'Smooth movement (beta): your hero glides from square to square instead of jumping '
+          + '(on the tiles map; the text map stays still). The game never waits for it',
         value: P.get('smoothMove') ? 'on' : 'off', options: [['off', 'Off'], ['on', 'On']] },
-      { seg: 'smoothView', label: 'The view glides too (with smooth movement on): when the map follows your hero, it glides along with them; '
-          + 'off, the map jumps a square at a time and your hero jumps with it'
-          + (reducedMotion() && vs == null ? '. Your device asks for less motion, so this starts off; turn it on to have the view glide anyway' : ''),
-        value: viewOn ? 'on' : 'off', options: [['on', 'On'], ['off', 'Off']] },
+      lessMotion
+        ? { note: 'The view glides too: off, because your device asks for less motion (Remove animations on Android, '
+            + 'Reduce Motion on iPhone and Mac, Animation effects on Windows). With smooth movement on, your hero still '
+            + 'glides while the map stays put; when a step moves the map, the map jumps a square and your hero jumps with it.' }
+        : { seg: 'smoothView', label: 'The view glides too (with smooth movement on): when the map follows your hero, it glides along with them; '
+            + 'off, the map jumps a square at a time and your hero jumps with it',
+          value: viewOn ? 'on' : 'off', options: [['on', 'On'], ['off', 'Off']] },
       { id: 'userRc', multiline: true, value: P.get('userRc'),
         label: 'Your option lines, one per line, used from the next start. To recolour a monster on the text map, '
           + 'start with a symset line, OPTIONS=symset:Enhanced1 (DECgraphics draws garbled here), then e.g. '
@@ -4448,7 +4450,8 @@ export class Overlay {
         put('msgSize', Number(v.msgSize));
         put('mapMode', v.mapMode);
         put('smoothMove', v.smoothMove === 'on');
-        if ((v.smoothView !== 'off') !== viewOn) P.set('smoothView', v.smoothView !== 'off');
+        // the row is a note, and there is nothing to write, while the device asks for less motion
+        if (v.smoothView !== undefined && (v.smoothView !== 'off') !== viewOn) P.set('smoothView', v.smoothView !== 'off');
         put('userRc', String(v.userRc || '').replace(/\r/g, ''));
         put('padCell', parseInt(v.padCell, 10));
         if ((v.ghostDeck === 'on') !== this.ghostOn()) this.setGhostOn(v.ghostDeck === 'on');
@@ -4813,7 +4816,8 @@ const stairsPill = (act) => `${act.word.toUpperCase()}? CENTRE`;
 
 // a layout reason's first clause, for a settings line
 const firstReason = (r) => String(r || '').split('; ')[0];
-// the system's reduced-motion setting, said beside Smooth movement (which is off unless chosen)
+// the system's reduced-motion setting, read when Settings opens: while it is on, "The view glides too" is a
+// note, not a switch (web.js viewGlides reads the same query live and keeps the view still)
 const reducedMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
 
 // Twin banks' attack pins.  They are kept apart from classic's: PIN 2 starts
