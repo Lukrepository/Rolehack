@@ -1656,7 +1656,9 @@ export class Overlay {
   // (habitSwallows lets it).
   prayHabit(e) {
     const r = this.habitSpots && this.habitSpots.pray;
-    if (!r || !this.twin || !this.ghostOn()) return;
+    // never under a window of the game's, nor while a spot is picked (the
+    // history is full-screen, and a drag of it is no reach for SACRIFICE)
+    if (!r || !this.twin || !this.ghostOn() || this.guardsAside()) return;
     if (!(e.clientX >= r.x && e.clientX <= r.x + r.w && e.clientY >= r.y && e.clientY <= r.y + r.h)) return;
     this.prayHold = { id: e.pointerId, at: performance.now(), meant: false };
   }
