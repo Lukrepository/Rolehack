@@ -579,16 +579,16 @@ input.line::-webkit-calendar-picker-indicator { opacity: .45; cursor: pointer; }
 :root[data-case="off"] .form fieldset.group { color: #d9d1bd; }
 
 /* the soft keyboard: keycaps in a tray of the hood, above the windows (which
-   make room for it) so it can answer them */
+   make room for it) so it can answer them.  At the bottom in every layout: at
+   the desk it covers the dock row's middle while it is up, and the windows'
+   room for it is where it stands (Lucas, 2026-10-09; it came up 72 px from
+   the top there, over the top of a window, with a blank band below) */
 #kbd { position: fixed; left: 50%; bottom: 8px; transform: translateX(-50%); z-index: 56; display: none;
        width: min(680px, calc(100vw - 16px)); padding: 10px 10px 8px; border-radius: 12px;
        background: linear-gradient(180deg, var(--hood-top) 0%, var(--hood-bot) 100%);
        box-shadow: inset 0 1px 0 rgba(255,255,255,.14), inset 0 -2px 0 rgba(0,0,0,.35), 0 0 0 1px rgba(0,0,0,.35),
                    0 8px 28px rgba(0,0,0,.6); }
 #kbd.on { display: block; }
-/* at the desk the dock is under the map, where the soft keyboard stands: it
-   comes up at the map's top instead */
-:root[data-tier="desk"] #kbd { top: 72px; bottom: auto; }
 #kbd .row { display: flex; gap: 4px; justify-content: center; margin-top: 4px; }
 #kbd .row:first-child { margin-top: 0; }
 #kbd .cap { flex: 1 1 0; min-width: 0; padding: 2px 2px 7px; text-transform: none; font-size: clamp(10px, 2.5vw, 15px);
