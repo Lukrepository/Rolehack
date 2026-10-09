@@ -124,15 +124,22 @@ const KIND = {
 //    band over a key.
 // ---------------------------------------------------------------------------------------
 export const X_HEIGHT = { atkinson: 0.496, screen: 0.400 };   // Atkinson Hyperlegible Next, VT323 (OS/2 tables)
-export const MSG_X = 9.5, MSG_X_ANDROID = 10, MSG_LEADING = 1.35, STATUS_H = 48;
+export const MSG_X = 9.5, MSG_X_ANDROID = 10, MSG_LEADING = 1.35;
+// The status lines are set at the same text metric as the message rows (Lucas,
+// 2026-10-08; until then a 48 dp band of 14 px text): three lines, each one
+// message row tall (two in compact), plus the band's own padding, 3 dp above
+// and 4 below at the system's text size.
+export const STATUS_ROWS = 3, STATUS_PAD = 7;
 export function textMetrics({ msgFont = 'atkinson', msgSize = 1, textScale = 1, xHeight = MSG_X } = {}) {
   // the system's text size is clamped as overlay.js osTextScale() clamps it
   const s = clamp(Number(textScale) || 1, 0.8, 2);
   const xh = X_HEIGHT[msgFont] ?? X_HEIGHT.atkinson;
   const x = Number(xHeight) > 0 ? Number(xHeight) : MSG_X;
-  return { msgRowH: (x / xh) * (Number(msgSize) || 1) * s * MSG_LEADING, statusH: STATUS_H * s };
+  const msgRowH = (x / xh) * (Number(msgSize) || 1) * s * MSG_LEADING;
+  return { msgRowH, statusH: STATUS_ROWS * msgRowH + STATUS_PAD * s };
 }
 const ROW_H = textMetrics().msgRowH;          // 25.86 dp at the web's defaults (27.22 at Android's 10 dp)
+export const STATUS_H = textMetrics().statusH; // 84.59 dp at the web's defaults: three status lines at the text metric
 
 export const DEFAULTS = {
   padKey: 58,          // the player's movement key size: 46, 52 or 58 dp.  Never scaled to fit.
@@ -155,7 +162,7 @@ export const DEFAULTS = {
   msgRows: { landscape: 2, portrait: 3 },   // Lucas's settings (2026-09-28)
   shortScreenRows: 2,  // screens under 800 dp tall get at most this many message rows
   msgRowH: ROW_H,      // one message row, dp (textMetrics())
-  statusH: STATUS_H,   // three status lines
+  statusH: STATUS_H,   // three status lines at the text metric (textMetrics)
   statusW: 412,        // side by side, the status takes today's band width
   gripLift: 0,         // raise both banks along their side edges (same in both orientations; clamped to fit)
   hand: 'right',       // 'left' mirrors the layout: the movement pad takes the right corner
@@ -510,7 +517,7 @@ function placeBanks(W, H, M, st, table) {
 // 6. The text header: messages and status, side by side when the width allows (messages
 //    at most 960 dp, status at least 412), else stacked, messages first.
 // ---------------------------------------------------------------------------------------
-function header(x, y, w, rows, st, statusExtra = 0) {
+function header(x, y, w, rows, st) {
   const BH = bandH(rows, st.msgRowH);
   if (w >= HEADER_SIDE && st.header !== 'stacked') {
     const h = Math.max(BH, st.statusH);
@@ -519,16 +526,16 @@ function header(x, y, w, rows, st, statusExtra = 0) {
       h, sideBySide: true, rows,
       bands: [
         { name: `messages (${rows} rows; MORE lamp at the right end)`, x, y, w: mw, h },
-        { name: 'status (3 lines, then HP and Pw bars)', x: x + mw + 6, y, w: w - mw - 6, h },
+        { name: 'status (3 lines)', x: x + mw + 6, y, w: w - mw - 6, h },
       ],
     };
   }
-  const SH = st.statusH + statusExtra;
+  const SH = st.statusH;
   return {
     h: BH + 2 + SH, sideBySide: false, rows,
     bands: [
       { name: `messages (${rows} rows; MORE lamp at the right end)`, x, y, w, h: BH },
-      { name: statusExtra ? 'status (3 lines + HP/Pw bars)' : 'status (3 lines)', x, y: y + BH + 2, w, h: SH },
+      { name: 'status (3 lines)', x, y: y + BH + 2, w, h: SH },
     ],
   };
 }
@@ -636,8 +643,11 @@ function keptGlass(best, list, prev, W, H, pickAt, whole) {
   });
   return near ? kept : best;
 }
-// what a stored glass may be: { kind, over[, whole] }, or nothing
-const glassOf = (g) => (g && typeof g === 'object' && typeof g.kind === 'string' ? { kind: g.kind, over: !!g.over, whole: !!g.whole } : null);
+// what a stored glass may be: { kind, over[, whole][, portrait] }, or nothing; one that
+// says its orientation counts only in that orientation (a turn keeps no glass)
+const glassOf = (g, portrait) => (g && typeof g === 'object' && typeof g.kind === 'string'
+  && (g.portrait == null || portrait == null || !!g.portrait === !!portrait)
+  ? { kind: g.kind, over: !!g.over, whole: !!g.whole } : null);
 
 // ---------------------------------------------------------------------------------------
 // 8. One map cell per device, decided on the device's landscape geometry (the remembered
@@ -719,23 +729,81 @@ export function deviceCell(S, L, settings, M, table = BANK, Tfixed = null) {
 //      window can hold them.  Near-square split screens land here (443x460 on Lucas's
 //      phone beside a wiki): no rectangle is left for a map.
 // ---------------------------------------------------------------------------------------
+// One try of the rule with the bands' own fallbacks: the glass's band (section 7) never
+// costs a window its twin banks (a kept glass is clear of the keys, but may be too narrow for
+// the drawer: 600x620, where the column between the banks was kept 160 dp wide), so the
+// ranking's own pick decides then; nor does the desk's band (section 10) cost a window its
+// desk.
+function layoutOnce(W, H, pointer, st) {
+  const r = layoutCore(W, H, pointer, st);
+  if (!r.usable && (st.prevGlass || st.prevCellGlass)) {
+    const plain = layoutCore(W, H, pointer, { ...st, prevGlass: null, prevCellGlass: null });
+    if (plain.usable) return plain;
+  }
+  if (!r.usable && pointer === 'mouse' && st.prevDesk) {
+    const plain = layoutCore(W, H, pointer, { ...st, prevDesk: null });
+    if (plain.usable) return plain;
+  }
+  return r;
+}
+
 export function layout(W, H, pointer = 'touch', settings = {}) {
   try {
     const st = settings || {};
-    const r = layoutCore(W, H, pointer, st);
-    // The glass's band (section 7) never costs a window its twin banks: a kept glass is
-    // clear of the keys, but may be too narrow for the drawer (600x620, where the column
-    // between the banks was kept 160 dp wide), so the ranking's own pick decides then.
-    if (!r.usable && (st.prevGlass || st.prevCellGlass)) {
-      const plain = layoutCore(W, H, pointer, { ...st, prevGlass: null, prevCellGlass: null });
-      if (plain.usable) return plain;
+    // The status lines are the last thing to give way before classic (2026-10-08).  At the
+    // text metric three lines can be what costs a window its twin banks: an iPhone SE's
+    // Safari in portrait (375x553), a 360x640 phone at twice the system text size, the
+    // near-square windows of 528 to 552 by 608 at 52 and 46 dp keys, a desk window 825 wide
+    // at 520 tall.  So a window with no room for its lines drops one, then another (three,
+    // two, one: the page draws compact, then the HP line alone), and says so in
+    // fit.statusLines and fit.reasons.  How many lines a touch window can hold is judged at
+    // the default key size, so that smaller keys never show less of the map than larger ones
+    // (the sweep's rule: as the keys shrink the map never shrinks); a window usable with its
+    // lines at the player's own keys but not at 58 dp takes the count 58 dp needs.  At the
+    // desk the count is part of the arrangement the band keeps (info.desk.lines, given back
+    // in settings.prevDesk): while the band holds the arrangement it holds the count, and
+    // when it lets go the window takes the most lines its new arrangement holds.  Hidden
+    // lines (statusH 0) are nothing to drop.
+    const sd = settled(W, H, st);
+    const lines = sd.msgRowH > 0 ? Math.floor(sd.statusH / sd.msgRowH) : 0;
+    const at = (k, extra) => layoutOnce(W, H, pointer, k ? { ...st, ...extra, statusH: sd.statusH - k * sd.msgRowH } : { ...st, ...extra });
+    const mark = (r, k) => {
+      const left = lines - k;
+      if (k) {
+        r.spec.fit.statusLines = left;
+        r.spec.fit.reasons.push(left === 1 ? 'one status line: no room for more' : `two status lines: no room for ${lines}`);
+        if (r.info && r.info.fit) r.info.fit = { ...r.info.fit, reasons: r.spec.fit.reasons };
+      }
+      if (r.info && r.info.desk) r.info.desk = { ...r.info.desk, lines: left };
+      return r;
+    };
+    if (pointer === 'mouse') {
+      // the kept count first, and only while the kept arrangement holds
+      const pd = st.prevDesk, kept = pd && typeof pd === 'object' && Number.isFinite(pd.lines) ? Math.round(pd.lines) : 0;
+      if (kept > 0 && kept < lines) {
+        const r = at(lines - kept, {});
+        const d = r.usable && r.info && r.info.desk;
+        if (d && !!d.sideBySide === !!pd.sideBySide && !!d.beside === !!pd.beside && !!d.log === !!pd.log && !!d.inv === !!pd.inv) return mark(r, lines - kept);
+      }
+      let base = null;
+      for (let k = 0; k < Math.max(1, lines); k++) {
+        const r = at(k, {});
+        if (k === 0) base = r;
+        if (r.usable) return mark(r, k);
+      }
+      return base;
     }
-    // Nor does the desk's band (section 10 below) cost a window its desk.
-    if (!r.usable && pointer === 'mouse' && st.prevDesk) {
-      const plain = layoutCore(W, H, pointer, { ...st, prevDesk: null });
-      if (plain.usable) return plain;
+    let first = 0;
+    if (lines > 1 && sd.padKey < DEFAULTS.padKey - 1e-6) {
+      for (let k = 0; k < lines; k++) if (at(k, { padKey: DEFAULTS.padKey }).usable) { first = k; break; }
     }
-    return r;
+    let base = null;
+    for (let k = first; k < Math.max(1, lines); k++) {
+      const r = at(k, {});
+      if (k === 0) base = r;
+      if (r.usable) return mark(r, k);
+    }
+    return base || at(0, {});
   } catch (e) {
     return { spec: null, usable: false, info: null, degraded: true, reason: `layout() failed: ${e && e.message}` };
   }
@@ -868,7 +936,7 @@ function layoutCore(W0, H0, pointer, settings) {
   // Each window tried has its own cell: the device's, which a window without a budget
   // decides from its own sides (at 1366 wide the cell grows from 12 dp at 699 tall to 13.5
   // at 740, and the glass the ranking picks there at 13.5 is not the one it picks at 12).
-  let G = keptGlass(bestOf(scored), scored, glassOf(st.prevGlass), W, H, (w, h) => {
+  let G = keptGlass(bestOf(scored), scored, glassOf(st.prevGlass, portrait), W, H, (w, h) => {
     const Pn = placeBanks(w, h, M, st, table);
     let n = rowsFor(h, h > w, st), cs = candidates(w, h, M, Pn, st, n);
     while (!cs.length && n > 1) { n--; cs = candidates(w, h, M, Pn, st, n); }
@@ -946,8 +1014,8 @@ function layoutCore(W0, H0, pointer, settings) {
 }
 
 // Fill a glass candidate at cell T: the map (the cells actually drawn, at the top of the
-// glass, so spare height lies between the map and the banks), extra message rows, status
-// bars and panels from what the level does not need.
+// glass, so spare height lies between the map and the banks), extra message rows and
+// panels from what the level does not need.
 function fillGlass(G, T, a, tier, st, rows0, P, W, H) {
   const R = G.region;
   const c = cellsAt(R, T, a);
@@ -983,7 +1051,7 @@ function fillGlass(G, T, a, tier, st, rows0, P, W, H) {
   const hasLog = () => flank || panels.some((q) => q.name.startsWith('panel: message log'));
   let spare = R.h - mh;
   let y0 = R.y;
-  // spare height: first message rows (up to 4 in all), then status bars, then a log panel
+  // spare height: first message rows (up to 4 in all), then a log panel
   const canGrow = !G.over;                       // a header over the banks has a fixed height
   if (canGrow && spare > 1) {
     const msgBand = bands[0];
@@ -998,12 +1066,6 @@ function fillGlass(G, T, a, tier, st, rows0, P, W, H) {
         bands = bands.map((b, i) => (i === 0 ? { ...b, name: b.name.replace(/\d+ rows/, `${rowsMsg} rows`), h: b.h + grow }
           : b.x === msgBand.x && b.y > msgBand.y ? { ...b, y: b.y + grow } : { ...b, h: b.h + grow }));
         y0 += grow; spare -= grow;
-      }
-      // HP and Pw bars under the status lines -- none where the player hid the lines
-      // (statusH 0): the band is not drawn, and 14 dp kept for it stood empty over the map
-      if (!G.hd.sideBySide && spare >= 14 && st.statusH > 0) {
-        bands = bands.map((b, i) => (i === 1 ? { ...b, name: 'status (3 lines + HP/Pw bars)', h: b.h + 14 } : b));
-        y0 += 14; spare -= 14;
       }
       // what is still spare (two rows' worth or more) becomes the message log under the map:
       // on Lucas's phone in portrait, the 13.4 dp cell's 21 rows leave about 90 dp
@@ -1084,11 +1146,13 @@ function popupsFor(P, fill, st) {
 }
 
 // ---------------------------------------------------------------------------------------
-// 10. Desk (mouse and keyboard in use): the same two banks at 40 dp, in the same order,
-//     docked side by side and centred directly under the whole level, with keyboard legends.
-//     Panels fill the row beside and under the dock.  The cell is capped by its width, so
-//     Android's text cells stand taller than tiles; on 21:9 and wider the cap rises to 48 px
-//     rather than leave strips wider than a panel beside the map.
+// 10. Desk (mouse and keyboard in use): the same two banks at 40 dp, in the same order, at
+//     the outer edges of the row under the whole level, with keyboard legends (Lucas,
+//     2026-10-08; they stood side by side, centred under it, before).  Panels fill the row
+//     between and under the banks.  The cell is capped by its width, so Android's text cells
+//     stand taller than tiles; on 21:9 and wider the cap rises towards 48 px over WIDE_RAMP dp
+//     of width, as a tablet's does (tabletCap), rather than leave strips wider than a panel
+//     beside the map.  The desk lies within the safe insets (deskLayout, below).
 //     Desktop mode is being built (Lucas, 2026-10-06 and 2026-10-07; it was deferred from
 //     3 October until then): the page asks for the desk when its input switch says a mouse
 //     or a touchpad is in use (section 12).  Three things changed for the desk alone, and
@@ -1180,16 +1244,25 @@ function deskPlan(W, H, M0, st, choose = (part, own) => own) {
   const availH = Math.max(0, H - mapTop - 12 - dockH - 12 - 4);
   // The cap is on the cell's width, so Android's text cells may stand up to 57 dp tall; on
   // 21:9 and wider, where 32 px tiles would leave strips wider than a panel beside the
-  // level, tiles may grow to 48 px (text cells keep their cap).
-  let cap = st.deskCellMax / Math.min(1, a);
-  if ((W - 16 - 80 * a * cap) / 2 >= 240) cap = Math.max(cap, st.deskWideCellMax);
+  // level, tiles may grow to 48 px (text cells keep their cap).  They grow over WIDE_RAMP
+  // dp of width from there, as a tablet's do (tabletCap), not at once: at 1440 tall the
+  // cap leapt from 32 to 48 px at 3056 wide, and the level from 32 px to 38, with the
+  // panels moving from beside the map to the dock row, at a single pixel (the review of
+  // 2026-10-07; Lucas, 2026-10-08, "work on the 21:9 step").
+  const lo = st.deskCellMax / Math.min(1, a), hi = Math.max(lo, st.deskWideCellMax);
+  const ramp = clamp((W - 16 - 80 * a * lo - 2 * WIDE_STRIP) / WIDE_RAMP, 0, 1);
+  const cap = Math.min(hi, lo + ramp * Math.max(0, (W - 16) / (80 * a) - lo));
   // the cell in whole device pixels (the 1e-6: a quotient a rounding error short of whole)
   const fitD = Math.min(Math.floor((W - 16) * dpr / (80 * a) + 1e-6), Math.floor(availH * dpr / 21 + 1e-6));
   const raw = Math.min(fitD, Math.floor(cap * dpr + 1e-6));
   const floorD = Math.ceil(st.fitFloor * dpr - 1e-6);
   const ownWhole = raw / dpr >= st.fitFloor - 1e-9;
   const ownD = ownWhole ? raw : floorD;
-  const Td = choose('Td', ownD, (d) => d === floorD || (d > floorD && d <= fitD));
+  // whether the log and the inventory fit beside the map at a cell (d device px): the strips
+  // beside the level and the height beside it, as `beside` is judged below.  The band's cell
+  // asks it, so as not to push out panels the rule's own cell keeps there (keep()).
+  const besideAt = (d) => { const T = d / dpr; return (W - Math.min(W - 16, 80 * a * T)) / 2 - 16 >= 160 && Math.min(21 * T, availH) - 6 >= 60; };
+  const Td = choose('Td', ownD, (d) => d === floorD || (d > floorD && d <= fitD), besideAt);
   const whole = Td === ownD ? ownWhole : Td <= fitD;
   const T = Td / dpr;
   // never wider than the level's 80 columns (round 2, item 8), as on touch (fillGlass)
@@ -1229,7 +1302,54 @@ function deskPlan(W, H, M0, st, choose = (part, own) => own) {
   };
 }
 
+// The desk within the safe insets (section 13: "the text bands always pad by the safe
+// insets"; Lucas, 2026-10-08).  Every part of the desk keeps at least 2 dp from the
+// window's edges -- the glass round the bands and the map 2, the header and the panels 4,
+// the map's strips 8, the banks 12 and their wells 6 less (2.8 at the narrowest usable,
+// scaled dock) -- so an inset counts only beyond those 2 dp, as a cutout counts only
+// beyond the margin that already clears it: the desk is laid out in the window less what
+// is left of the insets, and moved in by it.  With no inset past 2 dp it is the desk as it
+// always was, to the last digit.  The band's windows around are taken in the same smaller
+// window.  (A first cut counted beyond 4 dp and left the glass and a scaled dock's wells
+// up to 2 dp inside an inset: the review of 2026-10-08.)
+const DESK_EDGE = 2;
 function deskLayout(W, H, M0, st, table, reasons) {
+  const ins = st.insets || {};
+  const e = {};
+  for (const k of ['l', 'r', 't', 'b']) e[k] = Math.max(0, num(ins[k], 0) - DESK_EDGE);
+  if (!(e.l || e.r || e.t || e.b)) return deskLayoutIn(W, H, M0, st, table, reasons);
+  const r = deskLayoutIn(Math.max(1, W - e.l - e.r), Math.max(1, H - e.t - e.b), M0, st, table, reasons);
+  return movedIn(r, W, H, e, ins);
+}
+
+// a desk laid out in the window less the insets, moved into the whole window
+function movedIn(r, W, H, e, ins) {
+  const done = new Set();
+  const mv = (o) => {
+    if (!o || typeof o !== 'object' || done.has(o)) return o;
+    done.add(o);
+    if (typeof o.x === 'number') o.x = r2(o.x + e.l);
+    if (typeof o.y === 'number') o.y = r2(o.y + e.t);
+    if (typeof o.x0 === 'number') { o.x0 += e.l; o.x1 += e.l; }
+    if (typeof o.y0 === 'number') { o.y0 += e.t; o.y1 += e.t; }
+    return o;
+  };
+  const S = r.spec;
+  for (const list of [S.controls, S.bands, S.popups, S.chrome, S.decor]) list.forEach(mv);
+  mv(S.glass); mv(S.mapArea);
+  S.source += `; within the safe insets ${['l', 'r', 't', 'b'].map((k) => r2(num(ins[k], 0))).join('/')} (l/r/t/b)`;
+  S.W = W; S.H = H;
+  const I = r.info;
+  Object.values(I.banks).forEach(mv);
+  I.bankTop += e.t;
+  const f = I.fill;
+  mv(f.map); mv(f.glass);
+  f.bands.forEach(mv); f.panels.forEach(mv);
+  I.S = Math.min(W, H); I.L = Math.max(W, H); I.portrait = H > W;
+  return r;
+}
+
+function deskLayoutIn(W, H, M0, st, table, reasons) {
   const a = st.cellAspect;
   // the band: the rule's own arrangement at the eight windows GLASS_BAND dp away, made only
   // when a part of the last one differs from the rule's own pick here, once for each set of
@@ -1250,7 +1370,7 @@ function deskLayout(W, H, M0, st, table, reasons) {
     if (!near.has(key)) near.set(key, NEAR.map(([dx, dy]) => deskPlan(Math.max(1, W + dx * GLASS_BAND), Math.max(1, H + dy * GLASS_BAND), M0, st, (p, own, fits) => (p in held && fits(held[p]) ? held[p] : own)).desk));
     return near.get(key);
   };
-  const keep = (part, own, fits) => {
+  const keep = (part, own, fits, besideAt) => {
     const v = prev[part];
     let out = own;
     if (v !== undefined && v !== own && fits(v)) {
@@ -1263,6 +1383,25 @@ function deskLayout(W, H, M0, st, table, reasons) {
       // while the cell is on its way to the rule's own, a part that is already what the
       // rule's own arrangement here has stays so, rather than change and change back
       else if (here.Td !== undefined && here.Td !== (plain || (plain = deskPlan(W, H, M0, st).desk)).Td && plain[part] === v) out = v;
+    } else if (part === 'Td' && v !== undefined && v > own) {
+      // A kept cell above the rule's own that no longer fits gives way to the largest cell
+      // under it that still fits, not to the rule's own: a window dragged smaller meets every
+      // cell, as one dragged larger does.  Inside the 21:9 ramp the rule's own cell is held
+      // under the largest that fits by the cap, and falling to it skipped 2 to 4 device px at
+      // a pixel (the review of 2026-10-08).
+      for (let d = v - 1; d > own; d--) if (fits(d)) { out = d; break; }
+    }
+    // A cell held above the rule's own gives way, to the largest that keeps them, where it
+    // would push the log and the inventory the last desk drew beside the map out of the
+    // strips there, and the rule's own cell keeps them: a window narrowed through the 21:9
+    // ramp sent them to the dock row at one pixel and back 11 dp on, when the held cell
+    // stepped down (1120 tall at dpr 1.25 with the status lines' taller header; the review
+    // of 2026-10-08 found the same at 1088 to 1103 tall without it).  The panels are what the
+    // eye follows; the cell then changes where the rule's own already has.
+    if (part === 'Td' && besideAt && prev.beside === true && out > own && !besideAt(out) && besideAt(own)) {
+      let d = out - 1;
+      while (d > own && !(fits(d) && besideAt(d))) d--;
+      out = d;
     }
     here[part] = out;
     return out;
