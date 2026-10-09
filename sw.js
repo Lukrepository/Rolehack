@@ -7,7 +7,7 @@
 // new one is active.  It never reloads a page: a game in progress keeps
 // running on the files it started with.
 
-const VERSION = 'ba507bf13674';
+const VERSION = 'fbb43b304524';
 // the cache is named for the channel the worker serves (channel.js: the
 // preview channel lives under /preview/), so the live page's worker and the
 // preview's share the origin's cache storage without touching each other
@@ -15,7 +15,7 @@ const CHANNEL = /\/preview\/sw\.js$/.test(self.location.pathname) ? 'rhpreview' 
 const CACHE = `${CHANNEL}-${VERSION}`;
 const FILES = [
   './', 'index.html', 'rolehack.css', 'manifest.json',
-  'web.js', 'overlay.js', 'commands.js', 'prefs.js', 'doll.js', 'feedback.js', 'layout.js', 'viewer.js', 'input.js', 'channel.js', 'defaults.nh', 'build.json',
+  'web.js', 'overlay.js', 'commands.js', 'prefs.js', 'doll.js', 'feedback.js', 'layout.js', 'viewer.js', 'input.js', 'channel.js', 'glide.js', 'defaults.nh', 'build.json',
   'sounds/key-tactile.ogg',
   'nethack.js', 'nethack.wasm', 'tiles.png', 'tiles.json',
   'fonts/VT323-Regular.ttf', 'fonts/IBMPlexSansCondensed-SemiBold.ttf', 'fonts/AtkinsonHyperlegibleNext-Variable.ttf',
