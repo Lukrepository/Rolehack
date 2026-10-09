@@ -1,0 +1,35 @@
+{
+ "maxde": 12.0,
+ "colors": [
+  "#777f81",
+  "#ff6267",
+  "#1a9b54",
+  "#cc5b10",
+  "#2c51ff",
+  "#9c2d8b",
+  "#23adba",
+  "#c6bfbb",
+  "#c2c2c2",
+  "#eea104",
+  "#55ff9f",
+  "#f2fd19",
+  "#34aeff",
+  "#f364c9",
+  "#4ee6fc",
+  "#f8fcf6"
+ ],
+ "score": [
+  0,
+  -1,
+  11.5700216250378,
+  14.487185868399592
+ ],
+ "collapsing_pairs": 0,
+ "blessed_cursed": {
+  "normal": 70.1,
+  "deuteranomaly": 21.4,
+  "deuteranopia": 11.6,
+  "protanopia": 11.6,
+  "achromatopsia": 5.5
+ }
+}
