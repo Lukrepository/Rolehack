@@ -90,4 +90,4 @@ notices before each release.
 | `win/share/rhrules.c` | added | 2026-09-28 | notice in file |
 | `win/share/monsters.txt` | changed | 2026-08-04 to 2026-09-26 | notice in file |
 | `win/share/objects.txt` | changed | 2026-09-25 | notice in file |
-| `win/shim/winshim.c` | changed | 2026-09-26 to 2026-10-07 | notice in file |
+| `win/shim/winshim.c` | changed | 2026-09-26 to 2026-10-09 | notice in file |

@@ -198,3 +198,21 @@ The original procedure, from the design folder:
 
 Never regenerate the fixtures from `win/web/layout.js` itself. They are there
 to catch the page's copy of the rule drifting from the design.
+
+`glide.test.mjs` checks smooth movement's rules (`../glide.js`, stage 1: the
+hero alone; the brief is `smooth-movement-brief-2026-10-08.md` in the
+workspace):
+
+- a step of one square glides; anything farther jumps, and so do steps that
+  ran with no paint between them (typed-ahead keys), mounting a steed, and a
+  step under which the view jumps ("The view glides too" off, or a device
+  that asks for less motion);
+- a single step eases out over 100 ms; faster steps glide evenly for 0.75 of
+  the time since the previous screen in which the hero moved, so a walk-mode
+  run's monster screens, 40 ms after the hero's, don't make it hop;
+- a step during a glide starts where the hero is drawn;
+- the square the hero glides onto shows what it last showed with nobody on
+  it: never a creature or the mark of one (the remembered 'I', a warning
+  digit), and not a boulder the hero just pushed;
+- `glide.js` stays a plain module, with no imports, no DOM and no clock, so
+  these tests can drive it.

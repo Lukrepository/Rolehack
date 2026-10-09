@@ -1,5 +1,5 @@
 /* NetHack 5.0 winshim.c    $NHDT-Date: 1781973099 2026/06/20 16:31:39 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.34 $ */
-/* Changed for Rolehack by Lucas Ruiz, 2026-09-26 to 2026-10-07.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-26 to 2026-10-09.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Adam Powers, 2020                                */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -359,6 +359,17 @@ int
 web_picking(void)
 {
     return web_getpos;
+}
+
+EMSCRIPTEN_KEEPALIVE int web_hero_enclosed(void);
+
+/* Rolehack (smooth movement): the hero's view is the 3x3 around him,
+   engulfed (display.c swallowed()) or underwater (under_water()), which
+   moves with him; the brief's rule is to suspend glides there */
+int
+web_hero_enclosed(void)
+{
+    return (u.uswallow || (Underwater && !Is_waterlevel(&u.uz))) ? 1 : 0;
 }
 
 /* Rolehack: a long press on a line of the history names it here
@@ -773,6 +784,14 @@ web_glyphinfo(const glyph_info *ginfo, int which)
             return (int) ginfo->gm.u->utf32ch;
 #endif
         return 0;
+    case 8:
+        /* Rolehack (smooth movement): 1 where a creature is drawn, 2 where
+           the mark of one is (the remembered 'I', a warning digit).  The page
+           draws neither under the hero gliding onto a square: a creature seen
+           there erases the mark (display.c:1025-1026) */
+        return glyph_is_monster(ginfo->glyph) ? 1
+               : (glyph_is_invisible(ginfo->glyph)
+                  || glyph_is_warning(ginfo->glyph)) ? 2 : 0;
     }
     return 0;
 }
