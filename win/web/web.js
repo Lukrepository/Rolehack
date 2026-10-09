@@ -161,6 +161,8 @@ const keyCode = (e) => keyCodeOf(e, MAC);
 const otherMouse = (e) => !!(geom && geom.twin) && e.pointerType === 'mouse' && (e.button !== 0 || (MAC && e.ctrlKey));
 
 let formOpen = null;
+// a window of the game's is up, and keys are its: the modal, or the message history
+const windowUp = () => !$('modal').hidden || !$('msglog').hidden;
 
 window.addEventListener('keydown', (e) => {
   if (formOpen) {
@@ -169,6 +171,8 @@ window.addEventListener('keydown', (e) => {
     return;
   }
   if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+  // the message history scrolls from the keyboard by itself (historyScrollKey)
+  if (!$('msglog').hidden && historyScrollKey(e)) { e.preventDefault(); return; }
   // Rolehack's own keys first (desktop mode's step 2): the prefix, Ctrl+;
   // by default, and the key after it; a layer it opened takes its places
   if (overlay && overlay.keyFirst(e)) { e.preventDefault(); return; }
@@ -178,11 +182,11 @@ window.addEventListener('keydown', (e) => {
   // a key typed to the game is input in use: the switch (input.js) counts it
   if (overlay) overlay.noteKey(e);
   // Esc closes the interface's own popups first, as Back did on the phone
-  if (k === 27 && $('modal').hidden && overlay && overlay.onBack()) return;
+  if (k === 27 && !windowUp() && overlay && overlay.onBack()) return;
   // a key meets what a touch or the mouse left open: armed Fight takes a
   // direction, a drawer its numbers; anything else closes first (Lucas's
   // answer 8)
-  if ($('modal').hidden && overlay && overlay.typedKey(k)) return;
+  if (!windowUp() && overlay && overlay.typedKey(k)) return;
   push({ key: k });
 });
 
@@ -1911,9 +1915,6 @@ function spacePages() {
   return true;
 }
 
-// A text window.  The history opens at its newest line, with keys to page
-// back and on, a window at a time (the message band research, step 4:
-// paging keeps a place where free scrolling loses it).
 // The message rules (rhrules.c): a long press on a line of the history, or a
 // right click, names that line and closes the history; the window port then
 // asks what the rule should do.  The rules live in the core, and this page
@@ -1922,20 +1923,35 @@ const RH_KEY_RULE = 0xE001;   // rhrules.h
 let ruleFrom = null;
 let rulesKept = false;        // the rc carried the kept rules, so the core's list is whole
 
+// The press is off once the finger has moved 8 px (the drawers' slop,
+// Android's), so a finger that scrolls the list never makes a rule, and the
+// line takes its pressed amber only after Android's tap timeout (100 ms), so
+// a scroll's first frames never flash it.  A press fires once at most: the
+// browser's own long press (contextmenu) and the timer both end in choose(),
+// and a press that outlives the history is nothing.
 function armRuleLines(body) {
   for (const d of body.children) {
     const text = d.textContent.trim();
     if (!text) continue;
     d.classList.add('histline');
-    let timer = null, x = 0, y = 0;
-    const cancel = () => { clearTimeout(timer); timer = null; d.classList.remove('pressing'); };
-    const choose = () => { cancel(); ruleFrom = text; push({ key: RH_KEY_RULE }); };
+    let timer = null, pressTimer = null, fired = false, x = 0, y = 0;
+    const cancel = () => {
+      clearTimeout(timer); clearTimeout(pressTimer); timer = pressTimer = null;
+      d.classList.remove('pressing');
+    };
+    const choose = () => {
+      cancel();
+      if (fired || $('msglog').hidden) return;
+      fired = true;
+      ruleFrom = text;
+      push({ key: RH_KEY_RULE });
+    };
     d.addEventListener('pointerdown', (e) => {
-      x = e.clientX; y = e.clientY;
-      d.classList.add('pressing');
+      x = e.clientX; y = e.clientY; fired = false;
+      pressTimer = setTimeout(() => d.classList.add('pressing'), 100);
       timer = setTimeout(choose, 550);
     });
-    d.addEventListener('pointermove', (e) => { if (timer && Math.hypot(e.clientX - x, e.clientY - y) > 10) cancel(); });
+    d.addEventListener('pointermove', (e) => { if (timer && Math.hypot(e.clientX - x, e.clientY - y) > 8) cancel(); });
     for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) d.addEventListener(ev, cancel);
     d.addEventListener('contextmenu', (e) => { e.preventDefault(); choose(); });
   }
@@ -1947,24 +1963,103 @@ function syncRules() {
   if (s !== String(P.get('msgRules') || '')) P.set('msgRules', s);
 }
 
-async function showText(lines, title, history = false) {
-  const caps = history
-    ? [capButton('Earlier', { key: '<', onTap: pushKey(60) }), capButton('Later', { key: '>', onTap: pushKey(62) })]
-    : [];
-  caps.push(capButton('OK', { key: 'Enter', amber: true, onTap: pushKey(13) }));
-  openModal(title, lines.map(lineHtml).join(''),
-            history ? '< > page · long-press a message for a rule · Enter closes' : 'Space pages · Enter or Esc closes', caps);
-  if (history) {
-    $('modal-body').scrollTop = $('modal-body').scrollHeight;
-    armRuleLines($('modal-body'));
-  }
+// A text window: help, the intro, discoveries, the tombstone, the score list.
+async function showText(lines, title) {
+  openModal(title, lines.map(lineHtml).join(''), 'Space pages · Enter or Esc closes',
+            [capButton('OK', { key: 'Enter', amber: true, onTap: pushKey(13) })]);
   for (;;) {
     const k = await nextKey();
-    if (history && k === RH_KEY_RULE) break;
     if (pageKey(k) || (k === 32 && spacePages())) continue;
     if (k === 32 || isEnter(k) || k === 27) break;
   }
   closeModal();
+}
+
+// The message history, as the phone shows it (ForkFront's NHW_Text under
+// RhDialogSkin; Lucas, 2026-10-08: it "feels in line with the feeling of
+// nethack", where the paged window read as odd): the whole window, every
+// kept message on a line of its own, oldest first, the band's own page in
+// bold at the end, opened at the end, and the browser scrolls it -- a
+// finger, the wheel, the arrows and the paging keys (historyScrollKey).  It
+// wears the band's glass, phosphor and face at the band's size.  Esc, Enter,
+// q and the Close key close it, and Space at the end, as on the phone; a tap
+// on a line does nothing, and a long press (or a right click) names the line
+// for a rule (armRuleLines).  The core waits inside doprev_message meanwhile,
+// so every key typed is the history's own (the keydown handler, nextKey).
+async function showHistory(lines) {
+  const log = $('msglog'), list = $('msglog-list');
+  // the band's face and size (layoutGlass), so the history reads as the band does
+  const textPx = msgTextPx();
+  list.style.fontFamily = P.get('msgFont') === 'screen' ? 'var(--screenfont)' : 'var(--msgfont)';
+  list.style.fontSize = `${textPx}px`;
+  list.style.lineHeight = `${textPx * MSG_LEADING}px`;
+  list.innerHTML = lines.map(lineHtml).join('');
+  $('msglog-hint').textContent = overlay && overlay.deskShown()
+    ? 'click to close \u00b7 right-click a message for a rule' : 'tap to close \u00b7 hold a message for a rule';
+  // the browser's own menu never opens over it: a right click has its work
+  // on the lines, and none elsewhere (the screen lies outside #app's guard)
+  log.oncontextmenu = (e) => e.preventDefault();
+  // A tap or a click anywhere closes it, as on the phone (NHW_Text, and the
+  // phone's one rule for putting things away).  A finger that scrolled sends
+  // no click, a long press has closed it already (the guard: a click that
+  // lands after the screen is gone is nobody's), and a right click is not a
+  // click.  No Close key: Android's text window has none.
+  log.onclick = () => { if (!log.hidden) push({ key: 27 }); };
+  log.hidden = false;
+  armRuleLines(list);
+  // Opened at the newest line.  The face may still be on its way
+  // (font-display: swap) and sets the height, so the end is sought again once
+  // the fonts are in; and again when the window turns, while the end was in
+  // view (a list scrolled up keeps its place).
+  const listAtEnd = () => list.scrollTop + list.clientHeight >= list.scrollHeight - 2;
+  let atEnd = true;
+  const toEnd = () => { list.scrollTop = list.scrollHeight; atEnd = true; };
+  const onScroll = () => { atEnd = listAtEnd(); };
+  const onResize = () => { if (atEnd) toEnd(); };
+  toEnd();
+  document.fonts.ready.then(() => { if (!log.hidden && atEnd) toEnd(); });
+  list.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onResize);
+  for (;;) {
+    const k = await nextKey();
+    if (k === RH_KEY_RULE || isEnter(k) || k === 27 || k === 113) break;
+    // tty's paging keys, and Space: a page on, and at the end it closes (NHW_Text)
+    if (k === 32 && listAtEnd()) break;
+    if (k === 32 || k === 62) scrollHistory('page', 1);
+    else if (k === 60) scrollHistory('page', -1);
+    else if (k === 94) list.scrollTop = 0;
+    else if (k === 124) toEnd();
+  }
+  list.removeEventListener('scroll', onScroll);
+  window.removeEventListener('resize', onResize);
+  closeHistory();
+}
+function closeHistory() {
+  const log = $('msglog');
+  if (!log.hidden) windowClosed();
+  log.hidden = true;
+  $('msglog-list').replaceChildren();
+}
+// The history scrolls by the line or the page: tty's keys in its own loop,
+// and the keyboard's arrows and paging keys, which the keydown handler asks
+// about first, before keyCodeOf makes vi-keys of them (input.js ARROWS).
+function scrollHistory(by, dir) {
+  const list = $('msglog-list');
+  const line = parseFloat(list.style.lineHeight) || 20;
+  list.scrollTop += dir * (by === 'page' ? Math.max(line, list.clientHeight - line) : line);
+}
+function historyScrollKey(e) {
+  const list = $('msglog-list');
+  switch (e.key) {
+    case 'ArrowUp': scrollHistory('line', -1); break;
+    case 'ArrowDown': scrollHistory('line', 1); break;
+    case 'PageUp': scrollHistory('page', -1); break;
+    case 'PageDown': scrollHistory('page', 1); break;
+    case 'Home': list.scrollTop = 0; break;
+    case 'End': list.scrollTop = list.scrollHeight; break;
+    default: return false;
+  }
+  return true;
 }
 
 const LETTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -2547,11 +2642,20 @@ const handlers = {
   shim_nhbell() {
     $('glass').animate([{ filter: 'brightness(1.8)' }, { filter: 'none' }], 150);
   },
-  // ^P: the history, newest last, the band's own page in bold at its end
+  // ^P: the history, newest last, the band's own page in bold at its end.
+  // The page is found by its first remembered message's number: a line the
+  // band shows but the history never kept ("Unknown command", ATR_NOHISTORY)
+  // is no line of the list's, and a page with none kept bolds nothing.
   async shim_doprev_message() {
-    const fromBold = history.length - Math.min(page.length, history.length);
+    const kept = page.find((e) => e.seq >= 0);
+    const fromBold = kept ? Math.max(0, Math.min(history.length, kept.seq - (histSeq - history.length)))
+                          : history.length;
     ruleFrom = null;
-    await showText(history.map((text, i) => ({ attr: i >= fromBold ? ATR.BOLD : 0, text })), 'Messages', true);
+    await showHistory(history.map((text, i) => ({ attr: i >= fromBold ? ATR.BOLD : 0, text })));
+    // Opening the history ends the band's page, as on the phone
+    // (NHW_Message.showLog clears it): the band shows it dimmed from here, and
+    // the next history bolds no page until a new message comes.
+    if (pageFresh) { pageFresh = false; render(); }
     if (ruleFrom) M.ccall('web_set_rule_text', null, ['string'], [ruleFrom]);
     ruleFrom = null;
     return 0;
@@ -2835,7 +2939,7 @@ overlay = new Overlay({
   channel: () => CHANNEL,
   saveSig: () => saveSig,
   tileSize: () => tileSize(),
-  guardsAside: () => moreShown || !$('modal').hidden || !$('formwrap').hidden,
+  guardsAside: () => moreShown || windowUp() || !$('formwrap').hidden,
   windowClosed,
   // the desk's own zoom, for the device report and Settings' Reset zoom
   deskZoom: () => deskZoom,

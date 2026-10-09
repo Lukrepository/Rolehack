@@ -49,7 +49,10 @@
 :root[data-phosphor="white"] { --phos: #cdd4e0; --phos-dim: #7d8698; }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; overflow: hidden; background: #0c0b0a; }
+/* The root never overscrolls: a scroll that chains out of a list (the history,
+   a window's body, a panel) must not pull the page to a refresh or swipe it
+   back, under a game in progress (the review, 2026-10-08). */
+html, body { margin: 0; height: 100%; overflow: hidden; background: #0c0b0a; overscroll-behavior: none; }
 body { font-family: var(--capfont); color: #f1e8d5; -webkit-tap-highlight-color: transparent;
        user-select: none; -webkit-user-select: none; touch-action: none; }
 
@@ -412,6 +415,47 @@ button.k:focus-visible { outline: 2px solid #f2a64a; outline-offset: 2px; }
                 font-size: 22px; line-height: 1.15;
                 touch-action: pan-y; scrollbar-width: thin; scrollbar-color: var(--phos-dim) transparent; }
 .screen .title:not([hidden]) + .body { padding-top: 2px; }
+/* ---- the message history (web.js showHistory): the phone's screen
+   (ForkFront's NHW_Text under RhDialogSkin), not a window on the bezel.  The
+   whole window is the message band's glass, in the band's phosphor and face
+   (web.js sets the face and size inline, as it does the band's); every kept
+   message on a line of its own, and the browser scrolls it.  One keycap at
+   the foot closes it; a long press on a line makes a rule.  Caseless it is
+   the phone's near-opaque glass (RhDialogSkin.Glass, 0xf2090d0a), not the
+   band's smoked one: a whole window of the map showing through would not
+   read. */
+#msglog { position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column;
+          background: var(--glass); color: var(--phos);
+          text-shadow: 0 0 3px color-mix(in srgb, var(--phos) 50%, transparent);
+          /* The lines, the hint and the key keep out of a phone's notch, corners
+             and home indicator (twin banks set viewport-fit=cover, overlay.js
+             setViewportFit, and lay the banks out by the same insets,
+             safeInsets); the glass itself still fills the window.  The keyboard
+             tray's room, while it is up, stands in for the bottom inset. */
+          padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+                   max(var(--kbd-room, 0px), env(safe-area-inset-bottom, 0px)) env(safe-area-inset-left, 0px); }
+:root[data-ui="twin"] #msglog {
+  padding-bottom: max(var(--kbd-room, 0px), var(--vv-room, 0px), env(safe-area-inset-bottom, 0px)); }
+#msglog[hidden] { display: none; }
+/* the glass's tube over the text, as over the band; none caseless, as on the phone */
+#msglog::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 70%, rgba(0,0,0,.4) 100%),
+    repeating-linear-gradient(180deg, rgba(0,0,0,.24) 0px, rgba(0,0,0,.24) 1px, rgba(0,0,0,0) 1px, rgba(0,0,0,0) 3px); }
+#msglog .list { flex: 1 1 auto; min-height: 0; overflow-x: hidden; overflow-y: auto; touch-action: pan-y;
+                overscroll-behavior: contain;
+                padding: 12px 14px; white-space: pre-wrap; overflow-wrap: anywhere;
+                scrollbar-width: thin; scrollbar-color: var(--phos-dim) transparent; }
+#msglog .deck { position: relative; z-index: 1;   /* over the tube: a keycap is no part of the picture */
+                height: auto; padding: 8px 14px 6px; text-shadow: none;
+                border-top: 1px solid color-mix(in srgb, var(--phos) 18%, transparent); }
+#msglog .deck .hint { color: var(--phos-dim); }
+:root[data-case="off"] #msglog { background: rgba(9,13,10,.95); }
+:root[data-case="off"] #msglog::after { display: none; }
+/* the band's page at the history's end is bold in weight, in the phosphor,
+   under every phosphor -- the phone's ATTR_BOLD (TextAttr.style sets a bold
+   StyleSpan; RhDialogSkin.glassText keeps it); the windows' tty-white bold is
+   untouched.  Hyperlegible has its own 700; a mono face gets one synthesized. */
+#msglog .bold { font-weight: 700; color: inherit; }
 /* the history's lines: a long press (or a right click) makes a rule */
 .histline { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; border-radius: 2px; }
 .histline.pressing { background: color-mix(in srgb, #ffb347 22%, transparent); }
