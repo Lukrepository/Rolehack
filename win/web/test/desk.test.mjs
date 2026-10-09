@@ -176,6 +176,35 @@ test('the cell drawn in a drag through the ramp changes a device pixel at a time
   }
 });
 
+test('narrowed through the ramp, the panels never leave the map\'s sides and come back', () => {
+  // The band held the cell a pixel or two over the rule's own, and at the held cell the
+  // strips beside the map fell just under a panel's 160 dp: the log and the inventory left
+  // for the dock row and came back 11 dp on, when the cell stepped down (the review of
+  // 2026-10-08, 1088 to 1103 tall at dpr 1.25; 1120 tall with the status lines' header).
+  // It needs the cell held from a wider window, so the drag goes wider first, then narrower;
+  // narrowed from a fresh start it never met the flip.  On the rule before the fix this
+  // finds 8 flips (1088 to 1102 tall: the panels leave at 3103 and are back at 3089).
+  const heights = [];
+  for (let H = 1084; H <= 1106; H += 2) heights.push(H);
+  for (let H = 1116; H <= 1124; H += 2) heights.push(H);
+  for (const H of heights) {
+    let prev = null, last = null;
+    const step = (W) => {
+      const r = desk(W, H, { dpr: 1.25, prevDesk: prev });
+      if (!r.usable) return;
+      const b = r.info.desk.beside;
+      if (last && b !== last.b) {
+        assert.ok(!(last.from === b && Math.abs(last.at - W) < 24), `${H} tall: beside ${last.from} -> ${last.b} at ${last.at}, back to ${b} at ${W}`);
+        last = { from: last.b, b, at: W };
+      } else if (!last) last = { from: b, b, at: Infinity };
+      prev = r.info.desk;
+    };
+    for (let W = 3040; W <= 3160; W++) step(W);
+    last = null;   // the turn: a change back after it is a new walk, not a flip
+    for (let W = 3160; W >= 3040; W--) step(W);
+  }
+});
+
 test('the desk lies within the safe insets, each counted beyond the 2 dp it keeps from every edge', () => {
   const inside = (r, ins) => {
     const S = r.spec;

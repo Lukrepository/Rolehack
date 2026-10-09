@@ -1196,7 +1196,11 @@ function deskPlan(W, H, M0, st, choose = (part, own) => own) {
   const floorD = Math.ceil(st.fitFloor * dpr - 1e-6);
   const ownWhole = raw / dpr >= st.fitFloor - 1e-9;
   const ownD = ownWhole ? raw : floorD;
-  const Td = choose('Td', ownD, (d) => d === floorD || (d > floorD && d <= fitD));
+  // whether the log and the inventory fit beside the map at a cell (d device px): the strips
+  // beside the level and the height beside it, as `beside` is judged below.  The band's cell
+  // asks it, so as not to push out panels the rule's own cell keeps there (keep()).
+  const besideAt = (d) => { const T = d / dpr; return (W - Math.min(W - 16, 80 * a * T)) / 2 - 16 >= 160 && Math.min(21 * T, availH) - 6 >= 60; };
+  const Td = choose('Td', ownD, (d) => d === floorD || (d > floorD && d <= fitD), besideAt);
   const whole = Td === ownD ? ownWhole : Td <= fitD;
   const T = Td / dpr;
   // never wider than the level's 80 columns (round 2, item 8), as on touch (fillGlass)
@@ -1304,7 +1308,7 @@ function deskLayoutIn(W, H, M0, st, table, reasons) {
     if (!near.has(key)) near.set(key, NEAR.map(([dx, dy]) => deskPlan(Math.max(1, W + dx * GLASS_BAND), Math.max(1, H + dy * GLASS_BAND), M0, st, (p, own, fits) => (p in held && fits(held[p]) ? held[p] : own)).desk));
     return near.get(key);
   };
-  const keep = (part, own, fits) => {
+  const keep = (part, own, fits, besideAt) => {
     const v = prev[part];
     let out = own;
     if (v !== undefined && v !== own && fits(v)) {
@@ -1324,6 +1328,18 @@ function deskLayoutIn(W, H, M0, st, table, reasons) {
       // under the largest that fits by the cap, and falling to it skipped 2 to 4 device px at
       // a pixel (the review of 2026-10-08).
       for (let d = v - 1; d > own; d--) if (fits(d)) { out = d; break; }
+    }
+    // A cell held above the rule's own gives way, to the largest that keeps them, where it
+    // would push the log and the inventory the last desk drew beside the map out of the
+    // strips there, and the rule's own cell keeps them: a window narrowed through the 21:9
+    // ramp sent them to the dock row at one pixel and back 11 dp on, when the held cell
+    // stepped down (1120 tall at dpr 1.25 with the status lines' taller header; the review
+    // of 2026-10-08 found the same at 1088 to 1103 tall without it).  The panels are what the
+    // eye follows; the cell then changes where the rule's own already has.
+    if (part === 'Td' && besideAt && prev.beside === true && out > own && !besideAt(out) && besideAt(own)) {
+      let d = out - 1;
+      while (d > own && !(fits(d) && besideAt(d))) d--;
+      out = d;
     }
     here[part] = out;
     return out;
