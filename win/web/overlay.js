@@ -4359,15 +4359,19 @@ export class Overlay {
       // Smooth movement (glide.js; Lucas and his brother picked it in the Glide
       // or Snap mock, 2026-10-09), and the view gliding along with the hero,
       // which Lucas asked to be able to switch off
-      { seg: 'smoothMove', label: 'Smooth movement (beta): your hero glides from square to square instead of jumping '
-          + '(on the tiles map; the text map stays still). The game never waits for it',
+      { seg: 'smoothMove', label: 'Smooth movement (beta): your hero and the creatures you see glide from square to square '
+          + 'instead of jumping (on the tiles map; the text map stays still). When the screen can\'t show which creature '
+          + 'went where (for example a fast one moving two squares at once, two alike close together when either could '
+          + 'be the one that moved, or any creature while you hallucinate), it jumps, as it would without this. '
+          + 'The game never waits for it',
         value: P.get('smoothMove') ? 'on' : 'off', options: [['off', 'Off'], ['on', 'On']] },
       lessMotion
         ? { note: 'The view glides too: off, because your device asks for less motion (Remove animations on Android, '
-            + 'Reduce Motion on iPhone and Mac, Animation effects on Windows). With smooth movement on, your hero still '
-            + 'glides while the map stays put; when a step moves the map, the map jumps a square and your hero jumps with it.' }
+            + 'Reduce Motion on iPhone and Mac, Animation effects on Windows). With smooth movement on, your hero and the '
+            + 'creatures still glide; when a step moves the map, the map jumps a square and your hero and the creatures '
+            + 'jump with it.' }
         : { seg: 'smoothView', label: 'The view glides too (with smooth movement on): when the map follows your hero, it glides along with them; '
-            + 'off, the map jumps a square at a time and your hero jumps with it',
+            + 'off, the map jumps a square at a time and your hero and the creatures jump with it',
           value: viewOn ? 'on' : 'off', options: [['on', 'On'], ['off', 'Off']] },
       { id: 'userRc', multiline: true, value: P.get('userRc'),
         label: 'Your option lines, one per line, used from the next start. To recolour a monster on the text map, '
