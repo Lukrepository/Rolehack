@@ -4,9 +4,11 @@
 // from wherever the rule's own arrangement changes, so its band is crossed a pixel at a
 // time; wider then narrower, and taller then shorter, each laid out with the arrangement the
 // last one drew (info.desk, given back as settings.prevDesk), at device pixel ratios 1, 1.25,
-// 1.5, 2 and 2.4375, with tiles and with Android's text cells.  Wherever the dragged
-// arrangement changes, the drag also turns back for 23 dp (1, 2, 4, 8 ... 23 dp back, each
-// laid out with the last), as a hand that overshoots does.
+// 1.5, 2 and 2.4375, with tiles and with Android's text cells, and once more with safe
+// insets on all four sides (47 dp each side, as a notched iPhone's in landscape, and 20 at
+// the top and 21 at the bottom: stricter than any one device).  Wherever the
+// dragged arrangement changes, the drag also turns back for 23 dp (1, 2, 4, 8 ... 23 dp
+// back, each laid out with the last), as a hand that overshoots does.
 //
 //   node doc/twin-banks/checks/desk.mjs [-v]
 //
@@ -17,13 +19,23 @@
 //   collisions); a pop-up over a key; a band or panel within 12 dp of a key;
 // - a map (spec.mapArea) wider than the level at the cell; a cell (info.T) that is not whole
 //   device pixels, as the page draws it (web.js drawnCell);
-// - the band, three ways: a part of the arrangement that changes and changes back within
+// - with safe insets, any key, band, panel, pop-up, well, the glass or the map reaching
+//   into them;
+// - a step: the cell changing by more than one device pixel between two windows of a drag
+//   that have the same header arrangement and are not degraded -- the rule's own cell (no
+//   prevDesk), and the cell drawn (before its ramp the 21:9 cap leapt from 32 to 48 px at
+//   3056 wide, the cell from 32 to 38 at 1440 tall; and a cell the band held that stopped
+//   fitting fell to the rule's own, skipping 2 to 4 px inside the ramp);
+// - the band (between drawn, usable desks only: an unusable one shows the thumb banks and is
+//   never handed on), three ways: a part of the arrangement that changes and changes back within
 //   24 dp of travel in the same direction (the cell: that turns the other way), a flip; a
 //   part that changes back when the drag turns back within 24 dp of where it changed (no
 //   band, or one narrower than 24 dp); and on the way up along one side, a part still what
 //   it was where the rule's own pick had left it at the windows 24 dp behind, straight back
-//   and diagonally (for the panels and the legend, those at the cell the drag showed): a
-//   band wider than 24 dp.
+//   and diagonally (for the panels and the legend, those at the cell the drag showed, and
+//   not when the rule's own pick at this window, with that cell held, is still what was
+//   drawn: in the 21:9 ramp the strips at a cell grow with the window): a band wider than
+//   24 dp.
 // Exit code 1 on any issue.  RH_LAYOUT=<path> runs another build of the rule.  The rule as it
 // was before desktop mode (c694b4c07) has issues here (no info.desk; 1264 dp maps round a 960
 // dp level; 18 device px cells at dpr 1.25), and so do one without the band (it changes back
@@ -57,6 +69,15 @@ function issuesOf(r, plain, st) {
   }
   const dr = drawable(S, r.info && r.info.fill);
   if (dr.length) is.push(`not drawable: ${dr.slice(0, 3).join(', ')}`);
+  // the safe insets: nothing of the desk within them
+  const ins = st.insets;
+  if (ins) {
+    const out = (q) => q.x < ins.l - 0.02 || q.y < ins.t - 0.02 || q.x + q.w > S.W - ins.r + 0.02 || q.y + q.h > S.H - ins.b + 0.02;
+    const named = [...S.controls.map((c) => [c.id, c]), ...[...S.bands, ...S.chrome, ...S.decor].map((b) => [b.name.split(' (')[0], b]),
+      ...S.popups.map((p) => [`pop-up ${p.label.slice(0, 24)}`, p]), ['the map', S.mapArea], ['the glass', S.glass]];
+    const bad = named.filter(([, q]) => out(q)).map(([n]) => n);
+    if (bad.length) is.push(`within the safe insets: ${bad.slice(0, 3).join(', ')}${bad.length > 3 ? ` and ${bad.length - 3} more` : ''}`);
+  }
   const co = collisions(S);
   if (co.length) is.push(`collisions: ${co.slice(0, 3).join(', ')}`);
   const live = S.controls.filter((c) => !c.behind);
@@ -90,9 +111,26 @@ function walk(along, a, b, other, st, prev, out) {
     // the walk goes a pixel at a time across each of the rule's own steps, so this is where
     if (deskOf(prevPlain) && deskOf(plain)) {
       for (const p of PARTS) if (prevPlain.info.desk[p] !== plain.info.desk[p]) left[p].set(prevPlain.info.desk[p], v);
+      // the rule's own cell grows with the window a device pixel at a time, unless the
+      // header's arrangement changed the room for it (or the dock scaled)
+      const a0 = prevPlain.info.desk, a1 = plain.info.desk;
+      if (prevPlain.usable && plain.usable && a0.sideBySide === a1.sideBySide && !prevPlain.spec.fit.degraded && !plain.spec.fit.degraded && Math.abs(a1.Td - a0.Td) > 1) {
+        out.issues.push(`${out.tag} ${name}: the rule's own cell ${a0.Td} -> ${a1.Td} device px between ${prevV} and ${v} (a step)`);
+      }
     }
     prevPlain = plain;
-    if (prevR && deskOf(r) && deskOf(prevR)) {
+    // the cell drawn, a device pixel at a time too
+    if (prevR && prevR.usable && r.usable && deskOf(r) && deskOf(prevR)) {
+      const a0 = prevR.info.desk, a1 = r.info.desk;
+      if (a0.sideBySide === a1.sideBySide && !prevR.spec.fit.degraded && !r.spec.fit.degraded && Math.abs(a1.Td - a0.Td) > 1) {
+        out.issues.push(`${out.tag} ${name}: the cell drawn ${a0.Td} -> ${a1.Td} device px between ${prevV} and ${v} (a step)`);
+      }
+    }
+    // the arrangement is the drawn desk's: an unusable one is never drawn (the page shows the
+    // thumb banks) nor handed on, so its parts are no change (insets at 520 tall made a
+    // 483 dp desk at 915 wide unusable, and the turn-back started from it, as the page never
+    // does; the rule before this branch does the same at 826x483 without insets)
+    if (prevR && prevR.usable && r.usable && deskOf(r) && deskOf(prevR)) {
       for (const p of PARTS) {
         const x = prevR.info.desk[p], y = r.info.desk[p];
         if (x === y) continue;
@@ -112,7 +150,14 @@ function walk(along, a, b, other, st, prev, out) {
           const behind = [-BAND, 0, BAND].map((d) => layout(...(along === 'W' ? [prevV - BAND, other + d] : [other + d, prevV - BAND]), 'mouse', st))
             .filter((q) => deskOf(q) && (!cellOnly || q.info.desk.Td === Td));
           const gone = behind.length > 0 && behind.every((q) => { const z = q.info.desk[p]; return z !== x && (p !== 'Td' || z > x); });
-          if (gone) out.issues.push(`${out.tag} ${name}: ${p} ${x} -> ${y} at ${v}, still ${x} at ${prevV}, where the rule's own had left it ${BAND} dp behind (at ${o}; a band wider than ${BAND} dp)`);
+          // ... unless the part is still the rule's own pick here at the cell drawn: while the
+          // cell is late (its own band), a wider window at that cell has wider strips, so in
+          // the 21:9 ramp the panels beside the map still fit at the cell drawn though they no
+          // longer did at it 24 dp behind (2026-10-08).  Asked of the rule with that cell held.
+          const d0 = prevR.info.desk;
+          const atCell = gone && cellOnly ? layout(...at(prevV), 'mouse', { ...st, prevDesk: { dpr: d0.dpr, a: d0.a, k: d0.k, Td } }) : null;
+          const ownAtCell = atCell && atCell.usable && deskOf(atCell) && atCell.info.desk.Td === Td && atCell.info.desk[p] === x;
+          if (gone && !ownAtCell) out.issues.push(`${out.tag} ${name}: ${p} ${x} -> ${y} at ${v}, still ${x} at ${prevV}, where the rule's own had left it ${BAND} dp behind (at ${o}; a band wider than ${BAND} dp)`);
         }
         out.lags.push(`${dir > 0 ? 'up' : 'down'} ${lag}`);
         // turn back: the part must not go back to what it was
@@ -149,16 +194,18 @@ function turnBack(at, v, dir, st, desk, p, x, y, name, out) {
 
 const t0 = Date.now();
 const out = { n: 0, kept: 0, back: 0, lags: [], issues: [], tag: '' };
-for (const a of ASPECTS) for (const dpr of DPRS) {
-  const st = { cellAspect: a, dpr };
-  out.tag = `${a === 1 ? 'tiles' : 'text cells'} dpr ${dpr}`;
+const VARIANTS = [...ASPECTS.flatMap((a) => DPRS.map((dpr) => ({ cellAspect: a, dpr }))),
+  { cellAspect: 1, dpr: 1.5, insets: { l: 47, r: 47, t: 20, b: 21 } }];
+for (const st of VARIANTS) {
+  const a = st.cellAspect, dpr = st.dpr;
+  out.tag = `${a === 1 ? 'tiles' : 'text cells'} dpr ${dpr}${st.insets ? ' with insets' : ''}`;
   const before = out.n;
   for (const W of span(W0, W1, LINE)) { const prev = { desk: null }; walk('H', H0, H1, W, st, prev, out); walk('H', H1, H0, W, st, prev, out); }
   for (const H of span(H0, H1, LINE)) { const prev = { desk: null }; walk('W', W0, W1, H, st, prev, out); walk('W', W1, W0, H, st, prev, out); }
   if (verbose) console.log(`  ${out.tag}: ${out.n - before} layouts, ${out.issues.length} issues so far (${((Date.now() - t0) / 1000).toFixed(0)} s)`);
 }
 const lagged = out.lags.filter((l) => !l.endsWith(' 0')).length;
-console.log(`desk: ${out.n} dragged layouts in ${((Date.now() - t0) / 1000).toFixed(0)} s (${ASPECTS.length * DPRS.length} variants, ${out.back} of them turned back): the band kept another arrangement at ${out.kept}; ${out.lags.length} changes, ${lagged} after the rule's own left the old part; ${out.issues.length} issues`);
+console.log(`desk: ${out.n} dragged layouts in ${((Date.now() - t0) / 1000).toFixed(0)} s (${VARIANTS.length} variants, ${out.back} of them turned back): the band kept another arrangement at ${out.kept}; ${out.lags.length} changes, ${lagged} after the rule's own left the old part; ${out.issues.length} issues`);
 if (verbose) { const h = {}; for (const l of out.lags) h[l] = (h[l] || 0) + 1; console.log('  lags (dp after the rule\'s own: changes):', JSON.stringify(h)); }
 for (const i of out.issues.slice(0, verbose ? 1e9 : 40)) console.log('  ' + i);
 if (out.issues.length > 40 && !verbose) console.log(`  ... ${out.issues.length - 40} more (-v)`);
