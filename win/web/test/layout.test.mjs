@@ -33,37 +33,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { layout, collisions } from '../layout.js';
+import { layout, collisions, textMetrics } from '../layout.js';
 import { EDGE, summary, expectDiff } from './edge-cli.mjs';
 
 const FIXTURES = new URL('./fixtures/', import.meta.url);
 const TOL = 0.5;          // dp: the fixtures are rounded to 0.01, the rule may drift less than this
 const SAME = 0.02;        // dp: parity is exact, up to the 0.01 rounding of two rects
 
-// How the design's layout-cli.mjs makes each fixture: the screens of a pair
-// are laid out with the pair's remembered budget (portrait width, landscape
-// height and width), as the page does once the device has been seen both
-// ways (section 12); each variant is the rule under one changed setting.
-// These must match layout-cli.mjs's SCREENS, PAIRS and VARIANTS.
-const PAIRS = [['896x443', '443x939'], ['640x360', '360x640'], ['915x412', '412x915'], ['844x390', '390x844'], ['1024x768', '768x1024']];
-const VARIANTS = {
-  'spec.json': {},
-  'spec-combat-left.json': { combatThumb: 'L' },
-  'spec-left-handed.json': { hand: 'left' },
-  'spec-text-cells.json': { cellAspect: 0.5625 },
-  'spec-pad46.json': { padKey: 46 },
-  'spec-pad52.json': { padKey: 52 },
-  'spec-cell-rows.json': { mapCell: 'rows' },
-};
-const SCREENS = ['896x443', '443x939', '640x360', '360x640', '915x412', '412x915', '844x390', '390x844',
-  '1024x768', '768x1024', '1180x820', '1366x768', '1280x800', '1920x1080', '2560x1440'];
-
-function screenSettings(W, H, settings) {
-  const key = `${W}x${H}`, pr = PAIRS.find(([l, p]) => l === key || p === key);
-  if (!pr) return settings;
-  const [lw, lh] = pr[0].split('x').map(Number), [pw] = pr[1].split('x').map(Number);
-  return { ...settings, budget: { w: pw, h: lh, l: lw } };
-}
+// How each fixture is made (the screens, the pairs' remembered budgets and
+// the variants' settings): spec-cli.mjs, which also rewrites the fixtures when
+// the design changes the rule on purpose.
+import { VARIANTS, SCREENS, screenSettings } from './spec-cli.mjs';
 
 // every way two rects differ by more than TOL, as text
 function rectDiff(what, a, b) {
@@ -373,13 +353,12 @@ test("header 'stacked' keeps the bands stacked in the glass", () => {
 // ---- the status lines hidden
 
 // With the status lines hidden (Settings, Status lines: Hidden) the page asks
-// for no status band (statusH 0) and draws none, so the rule keeps no room for
-// HP and Pw bars under lines that are not there: 14 dp kept for them stood
-// empty between the messages and the map (the review, 2026-10-02).  With the
-// lines shown the bars come as before.
-test('no room for bars under hidden status lines', () => {
+// for no status band (statusH 0) and draws none, so the rule keeps no empty
+// band there: 14 dp once kept for HP and Pw bars under lines that were not
+// there stood empty between the messages and the map (the review, 2026-10-02;
+// the bars themselves went on 2026-10-08).
+test('no band under hidden status lines', () => {
   const out = [];
-  let bars = 0;
   const windows = [...PHONES, ...TABLETS].flatMap(([S, L]) => [[L, S], [S, L]]);
   for (const [W, H] of windows) {
     for (const st of [{}, { mapCell: 'rows' }]) {
@@ -390,11 +369,10 @@ test('no room for bars under hidden status lines', () => {
       // as tall as they are, and grants nothing)
       const [msg, status] = hid.spec.bands, stacked = Math.abs(status.x - msg.x) <= 0.01;
       if (stacked && status.h > 0.01) out.push(`${W}x${H} ${JSON.stringify(st)}: ${status.name}, ${status.h} dp, with the lines hidden`);
-      if (shown.usable && shown.spec.bands[1].name === 'status (3 lines + HP/Pw bars)') bars++;
+      if (shown.usable && !/^status \(3 lines\)/.test(shown.spec.bands[1].name)) out.push(`${W}x${H} ${JSON.stringify(st)}: ${shown.spec.bands[1].name}`);
     }
   }
   assert.deepEqual(out, []);
-  assert.ok(bars > 0, 'no window got bars with the lines shown');
 });
 
 // ---- the tablet tier on a monitor's window
@@ -424,9 +402,11 @@ function voidShare(S, step = 4) {
 test("a monitor's window is a tablet with the whole level, its panels in the spare glass or beside the level", () => {
   const out = [];
   const ov = (a, b) => a.x + 0.01 < b.x + b.w && b.x + 0.01 < a.x + a.w && a.y + 0.01 < b.y + b.h && b.y + 0.01 < a.y + a.h;
-  // [W, H, cell, panels beside the level, the most void]
+  // [W, H, cell, panels beside the level, the most void].  2752x1152 and 2560x1080: the
+  // status lines at the text metric (2026-10-08) took a cell step from these short, wide
+  // windows (33.5 -> 32 and 30 -> 29 dp) and left a little more void (9.8% and 10.7%)
   const MONITORS = [[1280, 800, 15.5, false, 0.12], [1920, 1080, 23.5, false, 0.08], [1920, 1200, 23.5, false, 0.08],
-    [2560, 1440, 31.5, false, 0.06], [2752, 1152, 33.5, false, 0.08], [2560, 1080, 30, false, 0.1], [3440, 1440, 42.5, false, 0.09],
+    [2560, 1440, 31.5, false, 0.06], [2752, 1152, 32, false, 0.10], [2560, 1080, 29, false, 0.11], [3440, 1440, 42.5, false, 0.09],
     [3440, 1080, 37.5, false, 0.18], [3840, 1080, 42.5, false, 0.09], [3840, 1600, 47.5, false, 0.05], [3840, 2160, 47.5, false, 0.06],
     [5120, 1440, 48, true, 0.25], [5120, 2160, 48, false, 0.15]];
   for (const [W, H, T, beside, most] of MONITORS) {
@@ -501,6 +481,61 @@ test("a monitor's window dragged wider or taller grows the level half a dp at a 
 });
 
 // ---- 5. the page imports the file as it is
+
+// ---- the status lines give way before classic (2026-10-08)
+
+test('a window with no room for three status lines gets two before it falls back to classic', () => {
+  const ROW = textMetrics().msgRowH;
+  // an iPhone SE's Safari in portrait: a 7-row map with three lines, so two
+  const se = layout(375, 553, 'touch', {});
+  assert.equal(se.usable, true, se.reason);
+  assert.equal(se.spec.fit.statusLines, 2);
+  assert.ok(se.spec.fit.reasons.some((x) => /two status lines/.test(x)), se.spec.fit.reasons.join('; '));
+  assert.ok(Math.abs(se.spec.bands[1].h - (2 * ROW + 7)) < 0.01, `status band ${se.spec.bands[1].h}`);
+  // a small phone at twice the system text size
+  const big = layout(360, 640, 'touch', { text: { msgFont: 'atkinson', msgSize: 1, textScale: 2 } });
+  assert.equal(big.usable, true, big.reason);
+  assert.equal(big.spec.fit.statusLines, 2);
+  // a window with room keeps three and says nothing
+  const ok = layout(896, 443, 'touch', {});
+  assert.equal(ok.spec.fit.statusLines, undefined);
+  assert.ok(Math.abs(ok.spec.bands[1].h - (3 * ROW + 7)) < 0.01, `status band ${ok.spec.bands[1].h}`);
+  // compact already has room there, and hidden lines are nothing to drop
+  assert.equal(layout(375, 553, 'touch', { statusH: 2 * ROW + 7 }).spec.fit.statusLines, undefined);
+  assert.equal(layout(375, 553, 'touch', { statusH: 0 }).spec.fit.statusLines, undefined);
+  // the count is judged at the default keys, so smaller keys never show less of the map:
+  // 480x600 needs two lines at 58 dp, and takes two at 52 and 46 as well
+  const cells = (r) => r.info.fill.cols * r.info.fill.rows;
+  const at58 = layout(480, 600, 'touch', {}), at52 = layout(480, 600, 'touch', { padKey: 52 }), at46 = layout(480, 600, 'touch', { padKey: 46 });
+  assert.equal(at58.spec.fit.statusLines, 2);
+  assert.equal(at52.spec.fit.statusLines, 2);
+  assert.equal(at46.spec.fit.statusLines, 2);
+  assert.ok(cells(at46) >= cells(at52) - 1e-6 && cells(at52) >= cells(at58) - 1e-6, `${cells(at46)} / ${cells(at52)} / ${cells(at58)} cells at 46 / 52 / 58`);
+  // the desk too: 825x520 holds the stacked header only with two lines, 826x520 side by
+  // side with three; a window too short for any of it stays classic
+  const d825 = layout(825, 520, 'mouse', {}), d826 = layout(826, 520, 'mouse', {});
+  assert.equal(d825.usable, true, d825.reason);
+  assert.equal(d825.spec.fit.statusLines, 2);
+  assert.equal(d825.info.desk.lines, 2);
+  assert.equal(d826.spec.fit.statusLines, undefined);
+  assert.equal(d826.info.desk.lines, 3);
+  assert.equal(layout(700, 450, 'mouse', {}).usable, false);
+  // the count is part of the desk's kept arrangement: narrowed from 826 the lines drop with
+  // the stacked header at 825; widened back, the stacked two-line header is kept for the
+  // band's 24 dp, then the side-by-side header takes three lines again
+  let prevDesk = null;
+  const dragTo = (W) => { const r = layout(W, 520, 'mouse', { prevDesk }); if (r.usable && r.info.desk) prevDesk = r.info.desk; return r; };
+  const seq = [];
+  for (let W = 830; W >= 820; W--) seq.push([W, dragTo(W)]);
+  for (let W = 821; W <= 860; W++) seq.push([W, dragTo(W)]);
+  const at = (W, i) => seq.filter((q) => q[0] === W)[i][1];
+  assert.equal(at(826, 0).spec.fit.statusLines, undefined);
+  assert.equal(at(825, 0).spec.fit.statusLines, 2);
+  assert.equal(at(826, 1).spec.fit.statusLines, 2, 'widened back by a dp: the stacked two-line header is kept');
+  assert.equal(at(849, 0).spec.fit.statusLines, 2, "kept to the band's edge");
+  assert.equal(at(850, 0).spec.fit.statusLines, undefined, 'past the band: side by side, three lines');
+  assert.equal(at(850, 0).info.desk.sideBySide, true);
+});
 
 test('layout.js is a plain module: no imports, no DOM, no node', () => {
   const src = fs.readFileSync(new URL('../layout.js', import.meta.url), 'utf8').replace(/\/\/.*$/gm, '');

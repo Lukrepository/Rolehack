@@ -710,6 +710,7 @@ EMSCRIPTEN_KEEPALIVE int *web_hero_look(void);
 EMSCRIPTEN_KEEPALIVE int web_here_flags(void);
 EMSCRIPTEN_KEEPALIVE const char *web_here_monster(void);
 EMSCRIPTEN_KEEPALIVE int web_wizard(void);
+EMSCRIPTEN_KEEPALIVE int web_hitpointbar(void);
 EMSCRIPTEN_KEEPALIVE int web_creation(void);
 EMSCRIPTEN_KEEPALIVE int web_creation_hero(void);
 
@@ -846,6 +847,15 @@ int
 web_wizard(void)
 {
     return wizard ? 1 : 0;
+}
+
+/* vanilla's hitpointbar option (iflags.wc2_hitpointbar; off by default): the
+   page draws the inverse-video bar behind the name and title only while it is
+   on, as tty does (web.js statusHtml).  Rolehack, 2026-10-08. */
+int
+web_hitpointbar(void)
+{
+    return iflags.wc2_hitpointbar ? 1 : 0;
 }
 #endif /* __EMSCRIPTEN__ */
 

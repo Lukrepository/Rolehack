@@ -9,7 +9,45 @@ Everything comes from one function, `layout(W, H, pointer, settings)`, in `win/w
 
 ## CHANGES (v2, 2 October 2026)
 
+### The status lines at the text metric, vanilla's `hitpointbar`, no HP/Pw bars (Lucas, 2026-10-08)
+
+From Lucas's first laptop test of desktop mode (the status-lines brief, `status-lines-brief-2026-10-08.md` in the workspace): "the entire stat and status section needs to have larger text. the raw numbers are more valuable than seeing a bar", and, of the inverse-video name and title, "follow vanilla's hitpointbar option". His answers to the five questions put to him the same day:
+
+1. **`hitpointbar` stays off in our defaults** ("ship as vanilla does"). The inverse-video bar behind the name and title is vanilla's option (default off; tty draws it when on), and both builds drew it always. The web now reads `iflags.wc2_hitpointbar` from the core each time the status is drawn (`winshim.c` `web_hitpointbar()`, `web.js` `statusHtml()`): a plain title unless the player turns the option on. Lucas's larger goal, for later: a better guide to the options menu (vanilla's own "all options" menu, perhaps with tooltips).
+2. **The two thin HP and Pw bars are dropped for good**, no setting to keep them. They were this design's (section 10, the review of 2026-10-02), not vanilla's. `barsHtml()` and its CSS are gone; the rule no longer keeps 14 dp for them under a stacked status band, and `header()` has no `statusExtra`: that height goes back to the message rows (up to 4) and the log, as the rest of the spare does (section 9 of `layout.js`).
+3. **The status lines are set at the text metric**, as the message rows are (the band font of 2026-09-28): an x-height of 9.5 CSS px in the text face, times the Text size setting and the system's text size, one message row per line, 3 lines (2 in compact, none hidden) plus the band's 3 dp above and 4 below. `textMetrics()` returns `statusH` as `STATUS_ROWS × msgRowH + STATUS_PAD × textScale`; `STATUS_H`, the rule's default, is 84.59 dp (48 until now, with 14.2 px text of a 5.7 px x-height, under the critical print size). **One setting for both bands:** "Message size" is renamed **Text size** and "Message font" **Text font**; the ids (`msgSize`, `msgFont`) are unchanged, so players' choices keep. Classic is unchanged (its status stays at the case's scale in the screen font).
+4. **A line too long for a narrow band** (a phone in portrait: a long name and title with Dlvl, $ and T): the lines shrink together, as before, but only down to 80% of the text metric (the floor was 60% of the old size), and if that is not enough the rank title goes ("Rangeroni the Troglodyte" becomes "Rangeroni") and the lines are fitted again (`web.js` `renderStatus()`, `statusTitle()`). (a) first, then (b), as Lucas put it.
+5. **The phone follows** (RolehackFront's `RhScreen`: the same always-on bar and the same small text), after this is on the preview channel and seen.
+
+**What the taller band costs, by the rule** (`layout()`, the page's settings; the probe is in the layout session's notes):
+
+| window | before | after |
+|---|---|---|
+| Lucas's phone, landscape 896x443 | map 456x282 (all 21 rows), 3 message rows (one spare), status 62 | map unchanged; 2 message rows, status 85 |
+| his phone, portrait 443x939 | map 435x282, 4 rows, status 62, log 91 | map unchanged; the log loses 37 dp |
+| tablets 1024x768, 1280x800, 1180x820 | whole level | unchanged (the header is side by side above the banks) |
+| 1366x768 | whole level at 15 dp | whole level at 14 dp |
+| 640x360 / 360x640 | map 280x239 / 352x182 | 280x202 / 352x146: about 3 rows fewer |
+| 2752x1152, 2560x1080 | cells 33.5, 30 dp; void 8%, 10% | 32, 29 dp; 9.8%, 10.7% |
+| an iPhone SE's Safari in portrait, 375x553 | twin banks, a 10-row map | twin banks with **two status lines** (below): three would leave a 7-row map, under the rule's 8x8 |
+| **the desk** (merged the same day): Lucas's laptop, 1280x640 at density 1.5 | header 61 dp; cell 21 device px (14 dp), map 1120x294 | header 85 dp (the status stands beside the messages); cell 19 device px (12.67 dp), map 1013x266, the whole level |
+| the desk in his Edge tab, 1272x588 | 12 dp, map 960x247 | 12 dp, map 960x223: 24 dp less of the level |
+| the desk at 1366x768, 1920x1080, 1024x768 | | unchanged (the cell was never height-bound there) |
+
+**The ranking's steps moved with the band** (the table of 2026-10-04): at 1000 wide the cell now steps at 624 tall (600 before), so the glass's band holds it to 648 up and 599 down; at 1366 wide the map moves above the banks at 717 (693), held to 744 and 692; 968 wide at 800 tall is unchanged. `viewer.test.mjs` holds the new numbers.
+
+**Two hardenings the change exposed**, both in the rule or its helpers:
+- **A guessed budget never turns a window the rule alone cannot lay out into twin banks** (`viewer.js` `worse()`): a first visit lays out as the window alone does (section 12, rule 1). It showed on the SE: alone unusable, the guess gave 44 dp keys.
+- **A turn of the device keeps no glass, by construction**: the map's glass is remembered with its orientation (`classesOf()`), and `layout()` ignores a remembered glass from the other orientation (`glassOf()`, section 7). Until now that sentence held because no step lay within 24 dp of the fixtures' pairs.
+
+**Fixtures.** The golden screens and the edge windows change for every screen (the status band's height and what follows it), so they were rewritten from the rule: `win/web/test/spec-cli.mjs` is new, the in-repo stand-in for the design's `layout-cli.mjs` (`win/web/test/README.md`); `edge-cli.mjs`'s `700x450 mouse` numbers moved (pad 33.89, gap 20.33: the desk's header grew too). The figures in `figures/` still show the 48 dp band. The checks: 157 tests, `sweep.mjs` and `drag.mjs` (results in the pull request).
+
+**The lines give way before classic.** The sweep found 66 windows (of 73,470) that three lines at the text metric cost their twin banks, where the design promises that large text degrades and never costs the layout: small phones at 130 to 200% system text, the SE above, 360x640 with a grip lift, and near-square windows of 528 to 552 by 608 at 52 and 46 dp keys. So the status lines join the fit ladder as its last step: a window with no room for its lines drops one, then another (three, two, one: the page draws compact, then the HP line alone with the conditions beside it) before it falls back to classic, and `fit.statusLines` and `fit.reasons` say so ("two status lines: no room for 3"; "one status line: no room for more"). How many lines a touch window can hold is judged at the default key size, so that smaller keys never show less of the map than larger ones (the sweep's own rule). At the desk the count is part of the arrangement the band keeps (`info.desk.lines`, given back as `prevDesk`): a desk window 825 wide at 520 tall holds its stacked header only with two lines, and widened back past 826 it keeps the two-line stacked header for the band's 24 dp before the side-by-side header takes three again; without that, `desk.mjs` saw the header flip and flip back a dp apart. Hidden lines are nothing to drop. One corner stays classic: 360x640 with the screen font at Text size Larger and twice the system text (one status line alone is 104 dp there; the old 48 dp band at that size was 96), recorded as the sweep's one allowance in its text-size section. The sweep is back to 0 issues; `layout.test.mjs` holds the SE, a 360x640 at twice the system text, a window with room, the two settings that are not asked again, 480x600 at the three key sizes, and the desk. Built on the same day it was found, since the alternative was classic on windows that had twin banks the day before; Lucas can say otherwise.
+
+### The messages screen, like Android's (Lucas, 2026-10-08)
+
 ### The desk on very wide screens, and within the safe insets (Lucas, 2026-10-08)
+
 
 Lucas, after desktop mode was merged: "work on the 21:9 step and safe insets next. and we can plan on working on docked and hide-the-dock afterwards". Both are `layout.js` section 10, for the desk only (`checks/same.mjs`: every touch and pen layout identical).
 
