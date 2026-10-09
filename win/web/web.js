@@ -16,6 +16,7 @@ import { keyEvents } from './commands.js';
 import { keyCodeOf, macPlatform } from './input.js';
 import * as P from './prefs.js';
 import * as FB from './feedback.js';
+import * as GL from './glide.js';
 
 const COLNO = 80, ROWNO = 21;
 // CLR_BLACK .. CLR_WHITE; NO_COLOR (8) draws as gray.  Nudged apart for
@@ -28,7 +29,8 @@ const COLNO = 80, ROWNO = 21;
 const COLORS = ['#777f81', '#ff6267', '#1a9b54', '#cc5b10', '#2c51ff', '#9c2d8b',
                 '#23adba', '#c6bfbb', '#c6bfbb', '#eea104', '#55ff9f', '#f2fd19',
                 '#34aeff', '#f364c9', '#4ee6fc', '#f8fcf6'];
-const MG_PET = 0x10;
+const MG_HERO = 0x01, MG_PET = 0x10, MG_RIDDEN = 0x20;
+const TILE_BG = '#476c6c';   // the tiles' own background (palette '.' in win/share/*.txt)
 const MENU_ITEMFLAGS_SELECTED = 1;
 const MENU_BEHAVE_PERMINV = 1;   // wintype.h
 const ATR = { BOLD: 1, DIM: 2, ULINE: 4, BLINK: 5, INVERSE: 7 };
@@ -118,7 +120,70 @@ let overlay = null;
 
 function blankGrid() {
   return Array.from({ length: ROWNO }, () =>
-    Array.from({ length: COLNO }, () => ({ ch: 32, color: 8, flags: 0, tile: -1 })));
+    Array.from({ length: COLNO }, () => ({ ch: 32, color: 8, flags: 0, tile: -1, mon: 0 })));
+}
+
+/* ---------- smooth movement (glide.js) ---------- */
+
+// The glide's own record of the screen: the hero's square at each flush's end,
+// and what each square last showed with no creature, or the mark of one (an
+// 'I', a warning digit), on it (glide.js keepUnder), drawn under the hero
+// while it glides onto that square (never a monster: after a swap the pet
+// stands where the hero was, not where it goes).
+const glide = GL.makeGlide();
+let under = Array.from({ length: ROWNO }, () => new Array(COLNO).fill(null));
+let glideRaf = 0, paintMark = 0;
+const glideOn = () => !!P.get('smoothMove') && P.get('mapMode') !== 'text' && !!sheet;
+// the system's reduced-motion setting, read live (prefers-reduced-motion)
+const lessMotion = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)'); } catch (e) { return null; } })();
+// "The view glides too": unset (null) it follows the device, gliding unless the
+// device asks for less motion; an On or Off chosen in Settings wins (the
+// brief's 6.9, its question 4)
+const viewGlides = () => { const v = P.get('smoothView'); return v == null ? !(lessMotion && lessMotion.matches) : v !== false; };
+
+// The frame-end display_nhwindow(WIN_MAP): the screen the core just finished
+// drawing.  render() also runs part-way through a flush (a status update, a
+// delay), so this is the only place the glide learns of a new screen.
+function takeScreen() {
+  let hero = null;
+  for (let y = 0; y < ROWNO && !hero; y++) for (let x = 0; x < COLNO; x++)
+    if (grid[y][x].flags & MG_HERO) { hero = { x, y, ridden: !!(grid[y][x].flags & MG_RIDDEN) }; break; }
+  const prev = glide.hero;
+  // what each square shows with nobody on it, a pushed boulder's old square
+  // emptied (renderMap draws TILE_BG there)
+  GL.keepUnder(under, grid, prev, hero);
+  // engulfed or underwater the ring or the water window jumps with the hero,
+  // so the hero jumps with it (the brief's 6.3, Engulfed and Underwater: suspend)
+  const enclosed = !!(M._web_hero_enclosed && M._web_hero_enclosed());
+  GL.receive(glide, hero, performance.now(), {
+    on: glideOn() && !overview && !enclosed,
+    jumpWithView: !!(prev && hero && !viewGlides() && viewOriginMoves(prev, hero)),
+  });
+  // the next painted frame shows this screen
+  if (glideOn() && !paintMark) paintMark = requestAnimationFrame(() => { paintMark = 0; GL.painted(glide); });
+  if (glide.s) runGlide();
+}
+// a frame loop while the hero glides, drawing the map alone, once a frame; the
+// last frame draws it at rest
+function runGlide() {
+  if (glideRaf) return;
+  const frame = () => {
+    glideRaf = 0;
+    const t = performance.now();
+    const g = GL.at(glide, t);
+    if (!g || g.done) GL.snap(glide);   // done: drawn on its square, once
+    renderMap(t);
+    if (glide.s) glideRaf = requestAnimationFrame(frame);
+  };
+  glideRaf = requestAnimationFrame(frame);
+}
+// a question, a menu, a text window, --More--, getpos or the history: the hero
+// is shown on its square at once (the brief's 6.4)
+function glideSnap() {
+  if (!glide.s) return;
+  GL.snap(glide);
+  if (glideRaf) { cancelAnimationFrame(glideRaf); glideRaf = 0; }
+  renderMap();
 }
 
 /* ---------- input ---------- */
@@ -997,7 +1062,7 @@ const viewFocus = () => (focus.x >= 0 ? focus : cursor.x >= 0 ? cursor : { x: 40
 // view.T is the drawn cell and view.left and view.top sit on device pixels, so
 // the grid placed here is the grid drawn, to the pixel.  In the overview the
 // level fits both ways, so it is centred, and a pan in hand waits for the lift.
-function placeView() {
+function placeView(t = performance.now()) {
   const a = view.area, T = view.T = overview ? drawnCell(Math.min(a.w / COLNO, a.h / ROWNO), 1) : drawnCell(tileSize());
   const mapW = COLNO * T, mapH = ROWNO * T;
   const f = viewFocus();
@@ -1011,17 +1076,41 @@ function placeView() {
   // pan(), unbounded) -- until the hero moves.  It was kept inside the edges,
   // and could not move at all along a side it fits (Lucas, 2026-09-27: at most
   // zooms "I can't move the map down").
+  // The point the view centres on is put on a device pixel first, so a gliding
+  // hero (drawn at L + round(x * Td)) keeps one device pixel while the view
+  // follows it; rounded only at the end, the view's and the hero's roundings
+  // took turns, a pixel a frame.
   const axis = (len, avail, start, fc, pan) => (len <= avail ? start + (avail - len) / 2
-    : clamp(start + avail / 2 - (fc + 0.5) * T, start + avail - len, start)) + pan;
-  view.left = toDevicePx(axis(mapW, a.w, a.x, f.x, overview ? 0 : view.panX));
-  view.top = toDevicePx(axis(mapH, a.h, a.y, f.y, overview ? 0 : view.panY));
+    : clamp(toDevicePx(start + avail / 2 - T / 2) - fc * T, start + avail - len, start)) + toDevicePx(pan);
+  // While the hero glides the view follows where the hero is drawn, so the two
+  // move together (smooth movement; Lucas, 2026-10-09: "let the view glide along
+  // with them"), unless "The view glides too" is off.  Only when the view
+  // follows the hero: a getpos cursor or another point the core names is
+  // followed as before.
+  const g = viewGlides() ? GL.at(glide, t) : null;
+  const fc = g && !g.done && f.x === g.x1 && f.y === g.y1 ? g : f;
+  view.left = toDevicePx(axis(mapW, a.w, a.x, fc.x, overview ? 0 : view.panX));
+  view.top = toDevicePx(axis(mapH, a.h, a.y, fc.y, overview ? 0 : view.panY));
+}
+
+// Would the view, with no pan, move when the point it follows goes from a to
+// b?  With "The view glides too" off, a step under which the view moves is
+// shown as a jump, hero and all (the brief's rule b).
+function viewOriginMoves(a, b) {
+  const r = view.area;
+  if (!r) return false;
+  const T = drawnCell(tileSize());
+  const at = (len, avail, fc) => (len <= avail ? 0 : clamp(toDevicePx(avail / 2 - T / 2) - fc * T, avail - len, 0));
+  return toDevicePx(at(COLNO * T, r.w, a.x)) !== toDevicePx(at(COLNO * T, r.w, b.x))
+    || toDevicePx(at(ROWNO * T, r.h, a.y)) !== toDevicePx(at(ROWNO * T, r.h, b.y));
 }
 
 const HEART = ['.X.X.', 'XXXXX', '.XXX.', '..X..'];
 
-function renderMap() {
+// t: the time the glide is drawn at, one sample for the view and the hero
+function renderMap(t = performance.now()) {
   if (!view.area) return;
-  placeView();
+  placeView(t);
   const cv = $('map'), cx = cv.getContext('2d'), dpr = window.devicePixelRatio || 1;
   // whole device pixels already (placeView); the rounding only clears the
   // floating point
@@ -1037,6 +1126,9 @@ function renderMap() {
   cx.strokeRect(L - 4 + 1, Tp - 4 + 1, COLNO * Td + 8 - 2, ROWNO * Td + 8 - 2);
   const tiles = P.get('mapMode') !== 'text' && sheet;
   const look = tiles ? heroLook() : null;
+  // the hero gliding (smooth movement): where it is drawn, in squares
+  const gl = tiles && glide.s ? GL.at(glide, t) : null;
+  const gliding = gl && !gl.done ? gl : null;
   if (!tiles) {
     cx.font = `${Math.round(Td * 1.05)}px VT323, Consolas, monospace`;
     cx.textAlign = 'center';
@@ -1049,6 +1141,14 @@ function renderMap() {
       const dx = L + x * Td;
       if (dx + Td < 0 || dx > cv.width) continue;
       const c = grid[y][x];
+      if (gliding && x === gliding.x1 && y === gliding.y1) {
+        // the square the hero glides onto shows what it last showed with nobody
+        // on it; the hero is drawn after the map, where it is on its way
+        const u = under[y][x];
+        if (u) cx.drawImage(sheet, (u.tile % sheetCols) * 16, Math.floor(u.tile / sheetCols) * 16, 16, 16, dx, dy, Td, Td);
+        else { cx.fillStyle = TILE_BG; cx.fillRect(dx, dy, Td, Td); }
+        continue;
+      }
       if (tiles) {
         if (c.tile < 0) continue;
         // the doll only where the map shows the hero's own base tile
@@ -1072,6 +1172,14 @@ function renderMap() {
       }
     }
   }
+  // the gliding hero, dressed as on its square, at whole device pixels
+  const gx = gliding ? L + Math.round(gliding.x * Td) : 0, gy = gliding ? Tp + Math.round(gliding.y * Td) : 0;
+  if (gliding) {
+    const c = grid[gliding.y1][gliding.x1];
+    const doll = look && gliding.x1 === look[1] && gliding.y1 === look[2] && c.tile === look[3] ? dollCanvas(look) : null;
+    if (doll) cx.drawImage(doll, gx, gy, Td, Td);
+    else if (c.tile >= 0) cx.drawImage(sheet, (c.tile % sheetCols) * 16, Math.floor(c.tile / sheetCols) * 16, 16, 16, gx, gy, Td, Td);
+  }
   if (cursor.x >= 0) {
     // the hero's outline takes the status line's HP steps and colours, and
     // doubles below a third, as on the phone (colour vision, layer 1)
@@ -1080,7 +1188,9 @@ function renderMap() {
     const tier = hpmax > 0 ? hpTier(clamp(Number(bare('BL_HP')) / hpmax, 0, 1)) : 0;
     cx.strokeStyle = hpmax > 0 ? hpColour(tier) : '#e0b04a';
     cx.lineWidth = lw;
-    const x0 = L + cursor.x * Td, y0 = Tp + cursor.y * Td;
+    // it rides with a gliding hero
+    const withHero = gliding && cursor.x === gliding.x1 && cursor.y === gliding.y1;
+    const x0 = withHero ? gx : L + cursor.x * Td, y0 = withHero ? gy : Tp + cursor.y * Td;
     cx.strokeRect(x0 + lw / 2, y0 + lw / 2, Td - lw, Td - lw);
     if (tier === 2) cx.strokeRect(x0 + 2.5 * lw, y0 + 2.5 * lw, Td - 5 * lw, Td - 5 * lw);
   }
@@ -1556,6 +1666,7 @@ function startPage() { page.length = 0; scrollRow = 0; newPage = false; }
 // tty's more(): wait for Space or Enter (a tap on the glass is Space); Esc
 // skips the rest of the turn's messages
 async function more() {
+  glideSnap();
   moreShown = true;
   renderBands();
   for (;;) {
@@ -1750,7 +1861,9 @@ function fitStatus() {
 }
 
 function render() {
-  renderMap();
+  // while the hero glides, the frame runGlide asked for draws the map before
+  // the page paints
+  if (!glideRaf) renderMap();
   renderBands();
   if (M && overlay) {
     const flags = M._web_here_flags();
@@ -2525,7 +2638,13 @@ const handlers = {
   shim_clear_nhwindow(win) {
     const w = wins.get(win);
     if (!w) return;
-    if (w.type === K.WIN_TYPE.NHW_MAP) grid = blankGrid();
+    if (w.type === K.WIN_TYPE.NHW_MAP) {
+      grid = blankGrid();
+      // a new level, a #redraw, being engulfed or going underwater (cls()): the
+      // glide starts afresh; while they last, takeScreen suspends it
+      GL.reset(glide);
+      under = Array.from({ length: ROWNO }, () => new Array(COLNO).fill(null));
+    }
     else if (w.type === K.WIN_TYPE.NHW_MESSAGE) { pageFresh = false; unread = false; newPage = true; }
     else w.lines = [];
   },
@@ -2540,9 +2659,12 @@ const handlers = {
         newPage = true;
       }
     } else if ((w.type === K.WIN_TYPE.NHW_TEXT || w.type === K.WIN_TYPE.NHW_MENU) && w.lines.length) {
+      glideSnap();
       await showText(w.lines);
       w.lines = [];
     } else {
+      // the map's: the end of a flush (flush_screen), a screen the glide may answer
+      if (w.type === K.WIN_TYPE.NHW_MAP) takeScreen();
       render();
     }
   },
@@ -2579,7 +2701,11 @@ const handlers = {
     const w = wins.get(win);
     if (w && w.menu) w.menu.prompt = prompt || '';
   },
-  shim_select_menu(win, how, listPtr) { return takePermInventory(win, how, listPtr) ? 0 : selectMenu(win, how, listPtr); },
+  shim_select_menu(win, how, listPtr) {
+    if (takePermInventory(win, how, listPtr)) return 0;
+    glideSnap();
+    return selectMenu(win, how, listPtr);
+  },
   shim_message_menu(let_, how, mesg) { addMessage(mesg); return 0; },
   shim_mark_synch() { render(); },
   shim_wait_synch() { render(); },
@@ -2590,7 +2716,8 @@ const handlers = {
     if (y < 0 || y >= ROWNO || x < 0 || x >= COLNO) return;
     grid[y][x] = { ch: M._web_glyphinfo(gi, 1), color: M._web_glyphinfo(gi, 2) & 15,
                    custom: M._web_glyphinfo(gi, 6), u: M._web_glyphinfo(gi, 7),
-                   flags: M._web_glyphinfo(gi, 3), tile: M._web_glyphinfo(gi, 4) };
+                   flags: M._web_glyphinfo(gi, 3), tile: M._web_glyphinfo(gi, 4),
+                   mon: M._web_glyphinfo(gi, 8) };   // a creature is drawn here (1), or the mark of one: the remembered I, a warning digit (2)
   },
   shim_raw_print(str) { if (str) addMessage(str); },
   shim_raw_print_bold(str) { if (str) addMessage(str); },
@@ -2603,6 +2730,7 @@ const handlers = {
   async shim_nh_poskey(xp, yp, modp) {
     syncRules();
     const picking = !!(M._web_picking && M._web_picking());
+    if (picking) glideSnap();   // getpos: the cursor starts on the hero where it is
     if (overlay && M._web_picking) overlay.setPicking(picking);
     // a map tap now would travel (getpos takes it as the spot instead)
     commandWait = !picking;
@@ -2626,6 +2754,7 @@ const handlers = {
   // band shows but the history never kept ("Unknown command", ATR_NOHISTORY)
   // is no line of the list's, and a page with none kept bolds nothing.
   async shim_doprev_message() {
+    glideSnap();
     const kept = page.find((e) => e.seq >= 0);
     const fromBold = kept ? Math.max(0, Math.min(history.length, kept.seq - (histSeq - history.length)))
                           : history.length;
@@ -2640,6 +2769,7 @@ const handlers = {
     return 0;
   },
   async shim_yn_function(query, resp, def) {
+    glideSnap();   // a question: the hero shown where it is
     const shown = resp.split('\x1b')[0];
     const allowed = resp.replace('\x1b', '');
     let q = query;
@@ -2694,10 +2824,12 @@ const handlers = {
     return k > 127 ? 27 : k;
   },
   async shim_getlin(query, bufp) {
+    glideSnap();
     const s = await getLine(query);
     M.stringToUTF8(s === null ? '\x1b' : s, bufp, 256);
   },
   async shim_get_ext_cmd() {
+    glideSnap();
     const names = [];
     for (let i = 0; ; i++) {
       const p = M._web_extcmd_name(i);

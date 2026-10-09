@@ -4322,6 +4322,9 @@ export class Overlay {
   openSettings() {
     this.closeAll();
     const seg = (id, label, options) => ({ seg: id, label, value: String(P.get(id)), options });
+    // "The view glides too" as it stands: unset (null) it follows the device
+    // (web.js viewGlides), so Done writes it only when the player changes it
+    const vs = P.get('smoothView'), viewOn = vs == null ? !reducedMotion() : vs !== false;
     this.host.form('Settings', [
       seg('style', 'Style', [['terminal', 'Terminal'], ['light', 'Terminal (light)'], ['gamecube', 'GameCube']]),
       { seg: 'case', label: 'Case', value: P.get('case') ? 'on' : 'off', options: [['on', 'Show the case'], ['off', 'Caseless']] },
@@ -4346,6 +4349,18 @@ export class Overlay {
       seg('msgFont', 'Message font', [['atkinson', 'Hyperlegible'], ['screen', 'Screen font']]),
       seg('msgSize', 'Message size', [['0.85', 'Small'], ['1', 'Standard'], ['1.2', 'Large'], ['1.4', 'Larger']]),
       seg('mapMode', 'Map', [['tiles', 'Tiles'], ['text', 'Text']]),
+      // Smooth movement (glide.js; Lucas and his brother picked it in the Glide
+      // or Snap mock, 2026-10-09), and the view gliding along with the hero,
+      // which Lucas asked to be able to switch off
+      { seg: 'smoothMove', label: 'Smooth movement (beta): your hero glides from square to square instead of jumping, '
+          + 'in tiles. The game never waits for it'
+          + (!reducedMotion() ? '' : vs == null ? ". Your device asks for less motion, so the view's glide below starts off"
+            : '. Your device asks for less motion'),
+        value: P.get('smoothMove') ? 'on' : 'off', options: [['off', 'Off'], ['on', 'On']] },
+      { seg: 'smoothView', label: 'The view glides too (with smooth movement on): when the map follows your hero, it glides along with them; '
+          + 'off, the map jumps a square at a time and your hero jumps with it'
+          + (reducedMotion() && vs == null ? '. Your device asks for less motion, so this starts off; turn it on to have the view glide anyway' : ''),
+        value: viewOn ? 'on' : 'off', options: [['on', 'On'], ['off', 'Off']] },
       { id: 'userRc', multiline: true, value: P.get('userRc'),
         label: 'Your option lines, one per line, used from the next start. To recolour a monster on the text map, '
           + 'start with a symset line, OPTIONS=symset:Enhanced1 (DECgraphics draws garbled here), then e.g. '
@@ -4423,6 +4438,8 @@ export class Overlay {
         put('msgFont', v.msgFont);
         put('msgSize', Number(v.msgSize));
         put('mapMode', v.mapMode);
+        put('smoothMove', v.smoothMove === 'on');
+        if ((v.smoothView !== 'off') !== viewOn) P.set('smoothView', v.smoothView !== 'off');
         put('userRc', String(v.userRc || '').replace(/\r/g, ''));
         put('padCell', parseInt(v.padCell, 10));
         if ((v.ghostDeck === 'on') !== this.ghostOn()) this.setGhostOn(v.ghostDeck === 'on');
@@ -4787,6 +4804,8 @@ const stairsPill = (act) => `${act.word.toUpperCase()}? CENTRE`;
 
 // a layout reason's first clause, for a settings line
 const firstReason = (r) => String(r || '').split('; ')[0];
+// the system's reduced-motion setting, said beside Smooth movement (which is off unless chosen)
+const reducedMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
 
 // Twin banks' attack pins.  They are kept apart from classic's: PIN 2 starts
 // on Fire in twin and classic's second point stays empty, and with one array
