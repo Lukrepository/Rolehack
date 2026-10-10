@@ -1,9 +1,10 @@
 # The web port's tests
 
 Tests for the pieces of the page that run without a browser. Today those are
-`../layout.js`, the "guarded twin banks" layout rule, and `../viewer.js`, the
-budget the page remembers for it. They use node's own test runner and
-assertions, so there is nothing to install.
+`../layout.js`, the "guarded twin banks" layout rule, `../viewer.js`, the
+budget the page remembers for it, `../input.js`, `../glide.js` and
+`../channel.js`. They use node's own test runner and assertions, so there is
+nothing to install.
 
 ## Running them
 
@@ -199,9 +200,9 @@ The original procedure, from the design folder:
 Never regenerate the fixtures from `win/web/layout.js` itself. They are there
 to catch the page's copy of the rule drifting from the design.
 
-`glide.test.mjs` checks smooth movement's rules (`../glide.js`, stage 1: the
-hero alone; the brief is `smooth-movement-brief-2026-10-08.md` in the
-workspace):
+`glide.test.mjs` checks smooth movement's rules (`../glide.js`; stage 1, the
+hero, below, and stage 2, the creatures, after it; the brief is
+`smooth-movement-brief-2026-10-08.md` in the workspace):
 
 - a step of one square glides; anything farther jumps, and so do steps that
   ran with no paint between them (typed-ahead keys), mounting a steed, and a
@@ -216,3 +217,41 @@ workspace):
   digit), and not a boulder the hero just pushed;
 - `glide.js` stays a plain module, with no imports, no DOM and no clock, so
   these tests can drive it.
+
+Stage 2, the creatures (`screen()`, `pairMoves()`, `picture()`):
+
+- a creature glides only when its picture left one square and the same
+  picture appeared on exactly one neighbouring square, uniquely both ways, so
+  a line of identical jackals and two candidates for one square jump, as on
+  tty's two screens. The tests check each direction alone: one creature with
+  two identical pictures beside it jumps, and so do two creatures with one
+  picture between them;
+- creatures are paired on the picture drawn (tiles.json `same`, the first tile
+  with identical pixels; `picture()`), so a male and a female jackal, drawn
+  alike, are one picture and their competing moves jump. The test runs
+  `../tiles.py` (python3, as `build.sh` does) to check it;
+- a pet's heart makes it a different picture; the hero swapping with a pet or
+  a peaceful slides both, and the swap is paired first, so a second identical
+  pet nearby still glides; marks never glide;
+- a glide carries on while its creature stays, and ends when the creature is
+  gone (a corpse is never slid) or when the hero's square is where it was
+  headed; a chained creature glide is even; a square left and refilled in one
+  screen, and a pet following the hero, both glide;
+- two squares in one screen jump;
+- every glide in one batch (the screens up to the next paint: a shown message
+  flushes the map mid-turn) has one length, the hero's when it moved. Screens
+  in which the hero kept its square are timed from the last one in which a
+  creature moved, came or went, so a message, a missile's frames or a step by
+  a hero who isn't drawn doesn't shorten the next glide, while helpless turns
+  and a walk-mode run's monster screens still do;
+- a creature glides only from a square the last painted frame showed it on, so
+  one that moved twice with no paint between, or came into view since, jumps,
+  unless it ends one square from where it was last painted (a swap's message,
+  then the pet's own move);
+- every creature on a step under which the view jumps, and in the rest of
+  that batch, jumps too;
+- an effect's frames (a missile in flight: the core puts no cursor on the
+  hero) start no creature glide, so a missile passing two creatures drawn
+  alike never reads as one stepping onto the other's square;
+- hallucinating, only the hero glides, and the first screen after it pairs
+  with nothing.

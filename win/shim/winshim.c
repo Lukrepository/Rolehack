@@ -372,6 +372,18 @@ web_hero_enclosed(void)
     return (u.uswallow || (Underwater && !Is_waterlevel(&u.uz))) ? 1 : 0;
 }
 
+EMSCRIPTEN_KEEPALIVE int web_hero_hallucinating(void);
+
+/* Rolehack (smooth movement): hallucinating, every creature is drawn as
+   something else on every screen, so none of them glides.  Asked here, not
+   from the status condition, which the player can hide (cond_hallucinat,
+   status_updates) */
+int
+web_hero_hallucinating(void)
+{
+    return Hallucination ? 1 : 0;
+}
+
 /* Rolehack: a long press on a line of the history names it here
    (web_set_rule_text), and the rule is made once the history has closed */
 static char web_rule_text[BUFSZ];

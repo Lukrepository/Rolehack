@@ -6,8 +6,9 @@ Reads win/share/monsters.txt, objects.txt and other.txt, then monsters.txt
 again in grayscale for the statues -- the order util/tilemap numbers them in
 (statues are its "generated" tiles, after other.txt), so a tile's place on the
 sheet is the tileidx the core sends -- and writes tiles.png (40 tiles to a row, 16x16 each) and
-tiles.json (the sheet's shape and monsters.txt's palette, whose letters the
-paper doll's sprites use).  No imaging library needed.
+tiles.json (the sheet's shape, monsters.txt's palette, whose letters the
+paper doll's sprites use, and "same": each tile's first tile with identical
+pixels, which smooth movement pairs creatures by).  No imaging library needed.
 
   python3 tiles.py OUTDIR
 """
@@ -66,11 +67,20 @@ def main(out):
         ox, oy = (i % COLS) * SIZE, (i // COLS) * SIZE
         for y in range(SIZE):
             sheet[oy + y][ox:ox + SIZE] = t[y]
+    # Smooth movement (glide.js, 2026-10-09): each tile's picture, as the first
+    # tile with the same pixels.  The glide pairs creatures by the picture
+    # drawn, so a male and a female jackal, drawn alike, are one picture: their
+    # tile numbers differ, and pairing on those would tell them apart, which
+    # tty's two screens can't (smooth-movement-brief-2026-10-08.md, 6.1)
+    first, same = {}, []
+    for i, t in enumerate(tiles):
+        same.append(first.setdefault(tuple(tuple(r) for r in t), i))
     out.mkdir(parents=True, exist_ok=True)
     png(out / "tiles.png", COLS * SIZE, rows * SIZE, sheet)
     (out / "tiles.json").write_text(json.dumps({
         "cols": COLS, "size": SIZE, "count": len(tiles),
         "palette": {k: "#%02x%02x%02x" % v for k, v in palette.items()},
+        "same": same,
     }))
     print(f"{len(tiles)} tiles -> {out / 'tiles.png'}")
 
