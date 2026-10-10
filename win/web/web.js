@@ -8,7 +8,7 @@
 // follow; the message and status lines after RhScreen), menus, prompts and
 // forms.  The touch controls are overlay.js.
 import createNetHack from './nethack.js';
-import { CHANNEL, PREVIEW, LOCK, TITLE, FIRST_ERA, saveDbFor } from './channel.js';
+import { CHANNEL, PREVIEW, LOCK, TITLE, FIRST_ERA, saveDbFor, sysconfFor } from './channel.js';
 import { setPalette, dressHero, LOOK_LEN } from './doll.js';
 import { Overlay, STATUS_BAND, LINE, msgRows, msgBandPx, msgTextPx, MSG_LEADING, resetTextScale, creationCap,
   GHOST_CONFIRM_MS, RING_REACH } from './overlay.js';
@@ -3225,6 +3225,13 @@ async function start() {
       M = this;
       mountSaves(M).then(() => {
         $('boot').remove();
+        // the preview channel lets testers into wizard mode (channel.js
+        // sysconfFor); the core reads /sysconf when main() starts
+        if (PREVIEW) {
+          try {
+            M.FS.writeFile('/sysconf', sysconfFor(M.FS.readFile('/sysconf', { encoding: 'utf8' })));
+          } catch (e) { console.warn('sysconf', e); }
+        }
         M.ccall('shim_graphics_set_callback', null, ['string'], ['nethackCallback']);
         M.callMain([]);
       }).catch((e) => { $('boot').textContent = `The game failed to load: ${e}`; });

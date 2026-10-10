@@ -42,7 +42,7 @@ import { textMetrics, layout, STATUS_PAD } from './layout.js';
 import { budgetedLayout, withClasses, classesOf, deviceReport, browserFamily } from './viewer.js';
 import { startMode, freshInput, inputStep, inputSwitched, controlsOf,
   isPrefix, prefixChar, prefixEntry, PREFIX, PREFIX_CODES, placeOfKey, macPlatform, ARROWS } from './input.js';
-import { eraTag } from './channel.js';
+import { eraTag, PREVIEW } from './channel.js';
 
 // a Mac: Ctrl+click is its right-click (input.js macPlatform)
 const MAC = typeof navigator !== 'undefined' && macPlatform(navigator.platform, navigator.userAgent);
@@ -4377,7 +4377,9 @@ export class Overlay {
         label: 'Your option lines, one per line, used from the next start. To recolour a monster on the text map, '
           + 'start with a symset line, OPTIONS=symset:Enhanced1 (DECgraphics draws garbled here), then e.g. '
           + 'OPTIONS=glyph:G_male_brown_mold/0-128-255 and the same for G_female_brown_mold (a pet is G_pet_male_ '
-          + 'and G_pet_female_); put :U+2663 before the colour to change its symbol too' },
+          + 'and G_pet_female_); put :U+2663 before the colour to change its symbol too'
+          + (PREVIEW ? '. Preview channel only: OPTIONS=playmode:debug starts the game in wizard mode, '
+            + 'under the name wizard; take the line out to go back to your own games' : '') },
       // Lucas, 2026-10-02: twin banks by default, classic kept as it was.  When
       // this window has no room for twin banks, or squeezes them, the first
       // reason why is said here, in a line, never in a pop-up (the design's
