@@ -18,9 +18,11 @@ inside; open it in any browser.
 ## What Rolehack does now
 
 The phone and the browser version work alike. Colour vision is marked
-**beta**: the palettes are tuned by simulation, and no colour-blind player has
-checked them yet. Reports from players who see colour differently are what
-will take the label off.
+**beta**: the palettes are tuned by simulation. The first feedback (2026-10-09),
+relayed by a Reddit commenter whose dad has deuteranomaly, found the red-green
+palette in our pictures no easier to tell apart than Standard, so bolder
+palettes are being worked on. Reports from players who see colour differently
+are what will take the label off.
 
 1. **Safe defaults, for every player in every skin.** The HP colour is plain
    while HP is healthy, yellow below two thirds (white under the amber and green
