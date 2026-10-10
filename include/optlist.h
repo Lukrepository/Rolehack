@@ -1,5 +1,5 @@
 /* NetHack 5.0	optlist.h */
-/* Changed for Rolehack by Lucas Ruiz, 2026-09-25.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-25 to 2026-10-09.  See ROLEHACK-CHANGES.md. */
 /* NetHack may be freely redistributed.  See license for details. */
 
 #ifndef OPTLIST_H
@@ -298,7 +298,9 @@ static int optfn_##a(int, int, boolean, char *, char *);
     NHOPTB(dropped_nopick, Behavior, 0, opt_out, set_in_game,
            On, Yes, No, No, NoAlias, &flags.nopick_dropped, Term_False,
            "don't autopickup dropped items")
+#ifdef ANDROID /* Rolehack: iflags.dumplog exists only under ANDROID (flag.h) */
     NHOPTB(dumplog, General, 0, opt_in, set_in_game, On, Yes, No, No, NoAlias, &iflags.dumplog, Term_False, "(android-specific) dump logs")
+#endif
     NHOPTC(dungeon, Advanced, MAXDCHARS + 1,opt_in, set_in_config,
                 No, Yes, No, No, NoAlias,
                 "list of symbols to use in drawing the dungeon map")

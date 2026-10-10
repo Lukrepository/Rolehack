@@ -28,7 +28,7 @@ notices before each release.
 | `include/monsters.h` | changed | 2026-07-31 to 2026-08-16 | notice in file |
 | `include/obj.h` | changed | 2026-09-23 to 2026-09-27 | notice in file |
 | `include/objects.h` | changed | 2026-09-25 | notice in file |
-| `include/optlist.h` | changed | 2026-09-25 | notice in file |
+| `include/optlist.h` | changed | 2026-09-25 to 2026-10-09 | notice in file |
 | `include/patchlevel.h` | changed | 2026-09-25 | notice in file |
 | `include/rhability.h` | added | 2026-09-27 | notice in file |
 | `include/rhrules.h` | added | 2026-09-28 | notice in file |
