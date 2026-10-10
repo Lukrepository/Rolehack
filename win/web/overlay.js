@@ -4341,12 +4341,15 @@ export class Overlay {
         seg('colourVision', 'Colour vision (beta)',
           [['standard', 'Standard'], ['protanopia', 'Protanopia'], ['deuteranopia', 'Deuteranopia'],
            ['tritanopia', 'Tritanopia'], ['monochrome', 'Monochrome']]),
-        { note: 'Beta: the palettes are tuned by simulation, and no colour-blind player has checked them yet; '
+        { note: 'Beta: the palettes are tuned by simulation. The first feedback, relayed by a Reddit commenter '
+          + 'whose dad has deuteranomaly, found the red-green palette in our pictures no easier to tell apart '
+          + 'than Standard, so bolder palettes are being worked on; '
           + 'tell Lucas what works and what does not. A mode recolours menus, messages, the text map, the tiles '
           + 'and the paper doll for players who see colour differently. Protanopia and deuteranopia share a '
           + 'red-green palette and tritanopia has its own; monochrome sets blessed, uncursed, cursed and HP '
-          + 'apart by brightness. In simulation the tile palettes keep monsters drawn alike apart, except in '
-          + 'Monochrome, where 12 pairs still look alike (mostly dragons). Standard, the default, swaps nothing.' },
+          + 'apart by brightness. In simulation the tile palettes pull most monsters drawn alike further apart, '
+          + 'some a long way; a few pairs, mostly dragons, still look alike, and a few look a little closer '
+          + 'than before. Standard, the default, swaps nothing.' },
       ] },
       seg('statusLines', 'Status lines', [['full', 'Full'], ['compact', 'Compact'], ['hidden', 'Hidden']]),
       { seg: 'morePause', label: 'When the message band is full', value: P.get('morePause') ? 'on' : 'off',
@@ -4372,7 +4375,7 @@ export class Overlay {
       { id: 'userRc', multiline: true, value: P.get('userRc'),
         label: 'Your option lines, one per line, used from the next start. To recolour a monster on the text map, '
           + 'start with a symset line, OPTIONS=symset:Enhanced1 (DECgraphics draws garbled here), then e.g. '
-          + 'OPTIONS=glyph:G_male_brown_mold/0-128-255 and the same for G_female_brown_mold (a pet is G_pet_male_ '
+          + 'OPTIONS=glyph:G_male_brown_mold/192-255-255 and the same for G_female_brown_mold (a pet is G_pet_male_ '
           + 'and G_pet_female_); put :U+2663 before the colour to change its symbol too' },
       // Lucas, 2026-10-02: twin banks by default, classic kept as it was.  When
       // this window has no room for twin banks, or squeezes them, the first
