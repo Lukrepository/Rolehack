@@ -1,5 +1,5 @@
 /* NetHack 5.0	unixconf.h	$NHDT-Date: 1778686773 2026/05/13 15:39:33 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.60 $ */
-/* Changed for Rolehack by Lucas Ruiz, 2026-10-07.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-10-07 to 2026-10-09.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Pasi Kallinen, 2018. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -245,7 +245,7 @@
  * Comment out the USE_FCNTL if for some reason you have a strange
  * OS/filesystem combination for which fcntl(2) does not work. */
 #ifdef POSIX_TYPES
-#ifndef ANDROID /* the Android port locks with link(); any other build uses fcntl(2) */
+#ifndef ANDROID /* Android uses lock files (NO_FILE_LINKS); others use fcntl(2) */
 #define USE_FCNTL
 #endif
 #endif

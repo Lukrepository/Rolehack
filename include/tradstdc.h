@@ -1,4 +1,5 @@
 /* NetHack 5.0	tradstdc.h	$NHDT-Date: 1781973090 2026/06/20 16:31:30 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.71 $ */
+/* Changed for Rolehack by Lucas Ruiz, 2026-10-09.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Stichting Mathematisch Centrum, Amsterdam, 1985. */
 /*-Copyright (c) Robert Patrick Rankin, 2006. */
 /* NetHack may be freely redistributed.  See license for details. */
@@ -421,6 +422,7 @@ typedef genericptr genericptr_t; /* (void *) or (char *) */
 #define PRINTF_F(f,v) __attribute__ ((format (__printf__, f, v)))
 #elif (__GNUC__ >= 2) && !defined(USE_OLDARGS)
 #define PRINTF_F(f, v) __attribute__((format(printf, f, v)))
+#endif
 #if (__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
 #define PRINTF_F_PTR(f, v) PRINTF_F(f, v)
 #endif
@@ -509,7 +511,6 @@ typedef genericptr genericptr_t; /* (void *) or (char *) */
 
 #if !defined(UNUSED) && defined(ATTRUNUSED)
 #define UNUSED ATTRUNUSED
-#endif
 #endif
 
 /* Fallback implementations */

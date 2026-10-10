@@ -1,5 +1,5 @@
 /* NetHack 5.0	optlist.h */
-/* Changed for Rolehack by Lucas Ruiz, 2026-09-25 to 2026-10-07.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-09-25 to 2026-10-09.  See ROLEHACK-CHANGES.md. */
 /* NetHack may be freely redistributed.  See license for details. */
 
 #ifndef OPTLIST_H
