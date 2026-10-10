@@ -20,6 +20,17 @@ export const SAVE_DB = PREVIEW ? '/save-preview' : '/save';     // the IDBFS mou
 export const LOCK = PREVIEW ? 'rolehack-preview' : 'rolehack-game';
 export const TITLE = PREVIEW ? 'Rolehack preview' : 'Rolehack';
 
+// Debug (wizard) mode on the preview channel only (Lucas, 2026-10-09: "wizard
+// mode on preview only").  The core lets a player into it only when sysconf's
+// WIZARDS names their user (set_playmode, authorize_wizard_mode), and the
+// built sysconf says root and games (sys/libnh/sysconf), which a browser never
+// is.  So the preview page opens the line to everyone before main() runs
+// (web.js), and a tester asks for it with OPTIONS=playmode:debug in Settings ->
+// Your option lines; the live page keeps the file as built, and refuses.
+export function sysconfFor(text, preview = PREVIEW) {
+  return preview ? String(text).replace(/^WIZARDS=.*$/m, 'WIZARDS=*') : text;
+}
+
 // The save era (the release plan's B2, first piece; Lucas, 2026-10-06).  A
 // build's saves live in a store named for its save signature (winshim.c
 // web_save_signature: what check_version() compares in a save, plus the

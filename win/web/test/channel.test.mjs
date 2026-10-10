@@ -10,6 +10,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 let n = 0;
 async function channelAt(pathname) {
@@ -55,4 +56,18 @@ test('the save era: the first era keeps the store, a later one gets its own', as
 test('the first era is the 5.0.0 web build: version 5.0.0.0, its feature bits and entity count', async () => {
   const c = await channelAt('/Rolehack/');
   assert.match(c.FIRST_ERA, /^05000000\.00060040\.221e1184\.[0-9a-f]{160}$/);
+});
+
+test('wizard mode: the preview channel opens sysconf WIZARDS to everyone, the live page does not', async () => {
+  const conf = '# WIZARDS=root games, in a comment, stays\nWIZARDS=root games\nEXPLORERS=*\n';
+  const live = await channelAt('/Rolehack/');
+  assert.equal(live.sysconfFor(conf), conf);
+  const prev = await channelAt('/Rolehack/preview/');
+  assert.equal(prev.sysconfFor(conf), '# WIZARDS=root games, in a comment, stays\nWIZARDS=*\nEXPLORERS=*\n');
+  // the file the build embeds: one WIZARDS line, which preview opens and live keeps
+  const built = readFileSync(new URL('../../../sys/libnh/sysconf', import.meta.url), 'utf8');
+  assert.equal(built.match(/^WIZARDS=.*$/gm).length, 1);
+  assert.notEqual(built.match(/^WIZARDS=.*$/m)[0], 'WIZARDS=*', 'the built file does not already let everyone in');
+  assert.equal(prev.sysconfFor(built).match(/^WIZARDS=.*$/m)[0], 'WIZARDS=*');
+  assert.equal(live.sysconfFor(built), built);
 });
