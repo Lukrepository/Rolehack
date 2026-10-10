@@ -1,5 +1,5 @@
 /* NetHack 5.0	extern.h	$NHDT-Date: 1778886716 2026/05/15 15:11:56 $  $NHDT-Branch: NetHack-5.0 $:$NHDT-Revision: 1.1558 $ */
-/* Changed for Rolehack by Lucas Ruiz, 2026-08-16 to 2026-10-07.  See ROLEHACK-CHANGES.md. */
+/* Changed for Rolehack by Lucas Ruiz, 2026-08-16 to 2026-10-09.  See ROLEHACK-CHANGES.md. */
 /* Copyright (c) Steve Creps, 1988.                               */
 /* NetHack may be freely redistributed.  See license for details. */
 
@@ -3538,7 +3538,11 @@ extern void settty(const char *) NO_NNARGS;
 extern void setftty(void);
 extern void intron(void);
 extern void introff(void);
+#ifdef ANDROID /* error() is debuglog() (androidconf.h), which returns */
+extern void error(const char *, ...) PRINTF_F(1, 2);
+#else
 ATTRNORETURN extern void error(const char *, ...) PRINTF_F(1, 2) NORETURN;
+#endif
 #ifdef ENHANCED_SYMBOLS
 extern void tty_utf8graphics_fixup(void);
 #endif

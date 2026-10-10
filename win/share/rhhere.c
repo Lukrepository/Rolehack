@@ -51,21 +51,36 @@ rh_here_context(char *mon, int monsz)
     for (i = 0; i < 8; ++i) {
         coordxy x = u.ux + xdir[i], y = u.uy + ydir[i];
         struct monst *mtmp;
+        int glyph, sym;
 
         if (!isok(x, y))
             continue;
 
-        if (levl[x][y].typ == DOOR && (levl[x][y].doormask & D_CLOSED) != 0)
-            hflags |= RH_ADJ_CLOSED_DOOR;
-        /* Close, where doclose() would shut the door -- plainly open, and
-           nothing seen in the doorway (lock.c's obstructed() refuses an
-           object or a monster there). */
-        if (levl[x][y].typ == DOOR && levl[x][y].doormask == D_ISOPEN
-            && !OBJ_AT(x, y) && !((mtmp = m_at(x, y)) != 0 && canspotmon(mtmp)))
-            hflags |= RH_ADJ_OPEN_DOOR;
+        /* Open and Close follow the map as drawn (glyph_at(), what tty
+           shows), never the door itself.  Testing doormask told apart doors
+           that tty draws alike: a locked door has no D_CLOSED bit and a door
+           mimic stands in a D_NODOOR doorway, so neither got Open while a
+           plain closed door did; and a door the hero had never seen got Open
+           too.  Now every '+' the hero sees or remembers offers Open, and
+           #open finds the lock or the mimic as it does in vanilla (lock.c).
+           A doorway shows its open-door symbol only when nothing is drawn
+           over it -- no object, no monster seen or sensed, no remembered
+           'I' -- which is where doclose() can try to shut it. */
+        glyph = glyph_at(x, y);
+        if (glyph_is_cmap(glyph)) {
+            sym = glyph_to_cmap(glyph);
+            if (sym == S_vcdoor || sym == S_hcdoor)
+                hflags |= RH_ADJ_CLOSED_DOOR;
+            else if (sym == S_vodoor || sym == S_hodoor)
+                hflags |= RH_ADJ_OPEN_DOOR;
+        }
 
+        /* A hostile only where a monster is drawn: canspotmon() also counts
+           a mimic posing as an object or furniture, and mon_nam() would give
+           its true name.  (Nothing reads this flag or the name yet.) */
         mtmp = m_at(x, y);
-        if (mtmp && !mtmp->mtame && !mtmp->mpeaceful && canspotmon(mtmp)) {
+        if (mtmp && !mtmp->mtame && !mtmp->mpeaceful && canspotmon(mtmp)
+            && glyph_is_monster(glyph)) {
             hflags |= RH_ADJ_HOSTILE;
             if (!hostile)
                 hostile = mtmp;

@@ -15,7 +15,7 @@ const CHANNEL = /\/preview\/sw\.js$/.test(self.location.pathname) ? 'rhpreview' 
 const CACHE = `${CHANNEL}-${VERSION}`;
 const FILES = [
   './', 'index.html', 'rolehack.css', 'manifest.json',
-  'web.js', 'overlay.js', 'commands.js', 'prefs.js', 'doll.js', 'feedback.js', 'layout.js', 'viewer.js', 'input.js', 'channel.js', 'defaults.nh', 'build.json',
+  'web.js', 'overlay.js', 'commands.js', 'prefs.js', 'doll.js', 'feedback.js', 'layout.js', 'viewer.js', 'input.js', 'channel.js', 'glide.js', 'defaults.nh', 'build.json',
   'sounds/key-tactile.ogg',
   'nethack.js', 'nethack.wasm', 'tiles.png', 'tiles.json',
   'fonts/VT323-Regular.ttf', 'fonts/IBMPlexSansCondensed-SemiBold.ttf', 'fonts/AtkinsonHyperlegibleNext-Variable.ttf',

@@ -19,7 +19,7 @@ python3 win/web/icons.py targets/web
 cp targets/wasm/nethack.js targets/wasm/nethack.wasm win/web/index.html \
    win/web/rolehack.css win/web/web.js win/web/overlay.js win/web/commands.js \
    win/web/prefs.js win/web/doll.js win/web/feedback.js win/web/layout.js \
-   win/web/viewer.js win/web/input.js win/web/channel.js win/web/manifest.json win/web/defaults.nh targets/web/
+   win/web/viewer.js win/web/input.js win/web/channel.js win/web/glide.js win/web/manifest.json win/web/defaults.nh targets/web/
 cp win/web/fonts/* targets/web/fonts/
 cp win/web/sounds/* targets/web/sounds/
 # what the page was built from, for the page's own "source" link (the NGPL
