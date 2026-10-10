@@ -29,18 +29,22 @@ will take the label off.
    by colour: critical ones are framed and bold, serious ones solid, warnings
    outlined. On the web the 16 game colours were also nudged apart for red-green
    vision.
-2. **Colour vision (beta)**: on the phone, Settings → Mobile interface → Colour
-   vision (beta), with About colour vision (beta) under it; on the web,
-   Settings → Accessibility. Standard (the default, which swaps nothing),
+2. **Colour vision (beta)**, in Settings → Accessibility on both builds (on
+   the phone with About colour vision (beta) under it). Standard (the default, which swaps nothing),
    Protanopia, Deuteranopia, Tritanopia or Monochrome. A mode swaps the game's
    16 colours in menus, messages and the text map. Protanopia and deuteranopia
    share one red-green palette and tritanopia has its own; Monochrome sets
    blessed, uncursed, cursed and HP apart by brightness.
 3. **Tile palettes:** each mode also recolours NetHack's tiles and the paper
    doll, with palettes chosen by simulation to pull same-shaped monsters apart.
-   In the red-green and tritan simulations none stay merged; in Monochrome 12
-   pairs still do (mostly dragons), and need marks drawn on their tiles, which
-   are not drawn yet. On the phone a custom tileset is left as it is. On the
+   In simulation they widen most of the colour differences between such
+   monsters, some a long way (for protanopes, orange and green dragons go from
+   almost identical to clearly apart), but a few pairs, mostly dragons, stay
+   close, and a few get a little closer (in tritanopia, white and yellow baby
+   dragons). Those need marks drawn on their tiles, which are not drawn yet.
+   The tiles page's counts (11 to 0 for red-green) use a ratio rule that the
+   palettes partly met by narrowing what typical eyes see, so read them as an
+   upper bound. On the phone a custom tileset is left as it is. On the
    web, a browser that blocks reading the tile image (some privacy settings)
    keeps the plain tiles in every mode.
 4. **Vanilla's `glyph:` option works on the text map** (not on tiles): an
