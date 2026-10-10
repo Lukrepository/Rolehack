@@ -47,6 +47,8 @@ for f in index.html layout.js viewer.js input.js channel.js build.json; do
 done
 grep -q "\"commit\": \"$HEAD\"" "$OUT/build.json" || { echo "STOP: $OUT was built from another commit"; exit 1; }
 if grep -q '"short": "[0-9a-f]*+"' "$OUT/build.json"; then echo "STOP: built from uncommitted changes"; exit 1; fi
+# the game names its commit too (#version); build.sh rebuilds date.o for it
+grep -qaF "$HEAD" "$OUT/nethack.wasm" || { echo "STOP: the game in $OUT names another commit"; exit 1; }
 
 # the pages commit, in a temporary worktree from the remote's gh-pages
 PAGES="$(dirname "$SRC")/rh-pages"

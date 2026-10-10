@@ -22,6 +22,8 @@ From the top of a checkout in WSL, under bash with the Emscripten SDK in `$HOME/
 
 It writes `targets/web/` (live) and `targets/web-preview/` (preview). `build.json` in each names the commit; a `+` after the short hash means the tree had uncommitted changes, and such a build is refused by the deploy.
 
+The game names the same build: `#version` and `#versionshort` show the commit and branch (and the status line shows the branch, with `showvers`), which `src/date.c` takes from the flags `date.o` is compiled with. `build.sh` hands make the commit and branch it writes to `build.json`, and deletes `targets/wasm/date.o` whenever they differ from the ones it was built with (kept in `targets/wasm/date.stamp`), because make by itself rebuilds `date.o` only when a core source file changes. Before 10 October 2026 it didn't, so a build that changed nothing in the core kept the names of an earlier one: the live deploy `0bc5c405e` (`build.json`: `web` `852cfcc3c`) named the room commit `5ea2f7921` on `room/smooth-movement-2`. On a detached checkout the branch is the one branch name, local or on a remote, that points at exactly this commit, and `HEAD` when none or several do. A build from uncommitted changes adds `+` to the game's hash as well. `include/date.h` plays no part (makedefs writes it for reference only). To check a build by hand, look for the commit among the printable strings of `targets/web/nethack.wasm`; `deploy.sh` does, and refuses a build whose game names another commit.
+
 ## Trying a build before it goes live
 
 1. Commit the work on a `room/<piece>` branch (the handoff's rule), so the build names a real commit.
