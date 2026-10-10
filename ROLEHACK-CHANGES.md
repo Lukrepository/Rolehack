@@ -22,7 +22,7 @@ notices before each release.
 | `include/artifact.h` | changed | 2026-08-21 | notice in file |
 | `include/artilist.h` | changed | 2026-07-31 to 2026-09-23 | notice in file |
 | `include/config.h` | changed | 2026-10-07 | notice in file |
-| `include/extern.h` | changed | 2026-08-16 to 2026-08-21 | notice in file |
+| `include/extern.h` | changed | 2026-08-16 to 2026-10-09 | notice in file |
 | `include/flag.h` | changed | 2026-09-25 | notice in file |
 | `include/hack.h` | changed | 2026-07-31 to 2026-09-25 | notice in file |
 | `include/monsters.h` | changed | 2026-07-31 to 2026-08-16 | notice in file |
@@ -34,6 +34,7 @@ notices before each release.
 | `include/rhrules.h` | added | 2026-09-28 | notice in file |
 | `include/skills.h` | changed | 2026-08-16 | notice in file |
 | `include/timeout.h` | changed | 2026-09-27 | notice in file |
+| `include/tradstdc.h` | changed | 2026-10-09 | notice in file |
 | `src/artifact.c` | changed | 2026-08-21 to 2026-09-23 | notice in file |
 | `src/attrib.c` | changed | 2026-07-31 | notice in file |
 | `src/cmd.c` | changed | 2026-09-27 | notice in file |
