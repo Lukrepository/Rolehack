@@ -4341,7 +4341,9 @@ export class Overlay {
         seg('colourVision', 'Colour vision (beta)',
           [['standard', 'Standard'], ['protanopia', 'Protanopia'], ['deuteranopia', 'Deuteranopia'],
            ['tritanopia', 'Tritanopia'], ['monochrome', 'Monochrome']]),
-        { note: 'Beta: the palettes are tuned by simulation, and no colour-blind player has checked them yet; '
+        { note: 'Beta: the palettes are tuned by simulation. The first feedback, relayed by a Reddit commenter '
+          + 'whose dad has deuteranomaly, found the red-green palette in our pictures no easier to tell apart '
+          + 'than Standard, so bolder palettes are being worked on; '
           + 'tell Lucas what works and what does not. A mode recolours menus, messages, the text map, the tiles '
           + 'and the paper doll for players who see colour differently. Protanopia and deuteranopia share a '
           + 'red-green palette and tritanopia has its own; monochrome sets blessed, uncursed, cursed and HP '
